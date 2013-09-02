@@ -1,0 +1,45 @@
+Good News! You can now get rid of that nasty MS-VisualC++ compiler and use 
+Linux to also compile the dlls required for Windows RtCW server and 
+client!! :)
+
+This files contains instructions on how to cross-compile the required dlls 
+under Linux.
+
+What you'll need is a Mingw32 cross-compiler for Linux. You can find more 
+info on how to build one at: http://www.mingw.org/mingwfaq.shtml#faq-cross
+OR you can download a pre-built version: 
+http://www.libsdl.org/extras/win32/cross/mingw32-linux-x86-glibc-2.2.tar.gz
+(this version worked ok with me)
+
+You'll also need a small script called cross-make.sh. You can download 
+this one at: http://www.libsdl.org/extras/win32/cross/cross-make.sh. I've 
+also included this script in this source release.
+
+If you still haven't noticed, there are new makefiles for the 
+cross-compilation in the src/cgame, game and ui folders, called 
+makefile.w32.
+
+Install the Mingw32 cross-compiler package on your Linux system. Edit 
+cross-make.sh and change PREFIX (and other variables) to the path where 
+Mingw32 is installed. For example, I've installed it under 
+/usr/local/cross-tools/ on my system.
+
+The commands needed to cross-compile the Windows dlls are:
+
+$ cd src/cgame
+$ /path/to/cross-make.sh -f makefile.w32 all
+
+$ cd src/game
+$ /path/to/cross-make.sh -f makefile.w32 all
+
+$ cd src/ui
+$ /path/to/cross-make.sh -f makefile.w32 all
+
+
+This package is not supported by id Software or Activision or Grey
+Matter or Nerve in any way or form. Do NOT hassle them about it.
+
+
+Thanos Kyritsis (aka DJ Art) - djart@linux.gr -
+http://members.hellug.gr/djart/wolfsource
+
