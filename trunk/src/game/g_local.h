@@ -10,7 +10,7 @@
 
 // the "gameversion" client command will print this plus compile date
 //----(SA) Wolfenstein
-#define	GAMEVERSION	"main"
+#define	GAMEVERSION	"xMod Alpha"
 // done.
 
 #define BODY_QUEUE_SIZE		8
