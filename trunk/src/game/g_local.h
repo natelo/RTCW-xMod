@@ -421,6 +421,17 @@ typedef struct {
 #define	FOLLOW_ACTIVE1	-1
 #define	FOLLOW_ACTIVE2	-2
 
+// L0 - Admins
+typedef enum {
+	ADM_NONE, // Normal players	
+	ADM_1,    // Level 1 Admin
+	ADM_2,    // Level 2 Admin
+	ADM_3,    // Level 3 Admin
+	ADM_4,	  // Level 4 Admin 
+	ADM_5	  // Level 5 Admin
+} admLvls_t;
+// End
+
 // client data that stays across multiple levels or tournament restarts
 // this is achieved by writing all the data to cvar strings at game shutdown
 // time and reading them back at connection time.  Anything added here
@@ -440,6 +451,9 @@ typedef struct {
 	int			latchPlayerWeapon;	// DHM - Nerve :: for GT_WOLF not archived
 	int			latchPlayerItem;	// DHM - Nerve :: for GT_WOLF not archived
 	int			latchPlayerSkin;	// DHM - Nerve :: for GT_WOLF not archived
+	
+	// L0 - New stuff
+	admLvls_t	admin;				// Admins
 } clientSession_t;
 
 //

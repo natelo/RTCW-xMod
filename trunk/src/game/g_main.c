@@ -79,7 +79,7 @@ vmCvar_t	g_voiceChatsAllowed;	// DHM - Nerve
 vmCvar_t	g_alliedmaxlives;		// Xian
 vmCvar_t	g_axismaxlives;			// Xian
 vmCvar_t	g_fastres;				// Xian
-vmCvar_t  g_fastResMsec;
+vmCvar_t	g_fastResMsec;
 vmCvar_t	g_knifeonly;			// Xian
 vmCvar_t	g_enforcemaxlives;		// Xian
 
