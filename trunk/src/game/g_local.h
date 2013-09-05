@@ -1209,6 +1209,10 @@ extern vmCvar_t		g_antilag;
 
 extern vmCvar_t		g_dbgRevive;
 
+// L0 - New stuff
+extern vmCvar_t		g_screenShake;
+// End
+
 void	trap_Printf( const char *fmt );
 void	trap_Error( const char *fmt );
 int		trap_Milliseconds( void );

@@ -135,7 +135,7 @@ vmCvar_t	url;
 vmCvar_t	g_dbgRevive;
 
 // L0 - New stuff
-
+vmCvar_t	g_screenShake;	// Screenshaking on explosions (4 = default, 2 = half.. etc)
 // End
 
 cvarTable_t		gameCvarTable[] = {
@@ -216,7 +216,7 @@ cvarTable_t		gameCvarTable[] = {
 
 	{ &g_speed, "g_speed", "320", 0, 0, qtrue  },
 	{ &g_gravity, "g_gravity", "800", 0, 0, qtrue  },
-	{ &g_knockback, "g_knockback", "1000", 0, 0, qtrue  },
+	{ &g_knockback, "g_knockback", "100", 0, 0, qtrue  },
 	{ &g_quadfactor, "g_quadfactor", "3", 0, 0, qtrue  },
 	{ &g_weaponRespawn, "g_weaponrespawn", "5", 0, 0, qtrue  },
 	{ &g_weaponTeamRespawn, "g_weaponTeamRespawn", "30", 0, 0, qtrue },
@@ -269,6 +269,10 @@ cvarTable_t		gameCvarTable[] = {
 	{&url, "URL", "", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse},
 
 	{&g_antilag, "g_antilag", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse},
+
+	// L0 - New stuff
+	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
+	// End
 
 	{&g_dbgRevive, "g_dbgRevive", "0", 0, 0, qfalse}
 };
