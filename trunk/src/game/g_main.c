@@ -115,24 +115,28 @@ vmCvar_t	g_mg42arc;
 
 vmCvar_t	g_footstepAudibleRange;
 // JPW NERVE multiplayer reinforcement times
-vmCvar_t		g_redlimbotime;
-vmCvar_t		g_bluelimbotime;
+vmCvar_t	g_redlimbotime;
+vmCvar_t	g_bluelimbotime;
 // charge times for character class special weapons
-vmCvar_t		g_medicChargeTime;
-vmCvar_t		g_engineerChargeTime;
-vmCvar_t		g_LTChargeTime;
-vmCvar_t		g_soldierChargeTime;
+vmCvar_t	g_medicChargeTime;
+vmCvar_t	g_engineerChargeTime;
+vmCvar_t	g_LTChargeTime;
+vmCvar_t	g_soldierChargeTime;
 // screen shakey magnitude multiplier
-vmCvar_t		sv_screenshake;
+vmCvar_t	sv_screenshake;
 // jpw
 
 // Gordon
-vmCvar_t		g_antilag;
+vmCvar_t	g_antilag;
 
-vmCvar_t		mod_url;
-vmCvar_t		url;
+vmCvar_t	mod_url;
+vmCvar_t	url;
 
-vmCvar_t		g_dbgRevive;
+vmCvar_t	g_dbgRevive;
+
+// L0 - New stuff
+
+// End
 
 cvarTable_t		gameCvarTable[] = {
 	// don't override the cheat state set by the system
