@@ -1517,4 +1517,8 @@ typedef enum {
 #define VOTEFLAGS_KICK				(1<<6)
 #define VOTEFLAGS_MAP					(1<<7)
 
+// L0 - New stuff bellow
+#define ARRAY_LEN(x)	(sizeof(x) / sizeof(*(x)))
+void DecolorString( char *in, char *out);
+
 #endif	// __Q_SHARED_H

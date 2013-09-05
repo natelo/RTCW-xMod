@@ -454,6 +454,9 @@ typedef struct {
 	
 	// L0 - New stuff
 	admLvls_t	admin;				// Admins
+	int			incognito;			// Incognito for admins..
+	unsigned char ip[4];			// IPs
+	
 } clientSession_t;
 
 //
@@ -495,6 +498,15 @@ typedef struct {
 	qboolean	teamInfo;			// send team overlay updates?
 	
 	qboolean bAutoReloadAux; // TTimo - auxiliary storage for pmoveExt_t::bAutoReload, to achieve persistance
+
+	// L0 
+
+	// Admins
+	char cmd1[128];	// !command
+	char cmd2[128]; // !command attribute
+	char cmd3[128];	// !command attribute extra	
+
+	// L0 - End
 } clientPersistant_t;
 
 typedef struct {
@@ -775,6 +787,7 @@ void StopFollowing( gentity_t *ent );
 void SetTeam( gentity_t *ent, char *s );
 void SetWolfData( gentity_t *ent, char *ptype, char *weap, char *grenade, char *skinnum );	// DHM - Nerve
 void Cmd_FollowCycle_f( gentity_t *ent, int dir );
+void SanitizeString( char *in, char *out ); 
 
 //
 // g_items.c
@@ -1210,8 +1223,36 @@ extern vmCvar_t		g_antilag;
 extern vmCvar_t		g_dbgRevive;
 
 // L0 - New stuff
+
+// Admins
+extern vmCvar_t	a1_pass;	
+extern vmCvar_t	a2_pass;	
+extern vmCvar_t	a3_pass;	
+extern vmCvar_t	a4_pass;	
+extern vmCvar_t	a5_pass;	
+extern vmCvar_t	a1_tag;		
+extern vmCvar_t	a2_tag;		
+extern vmCvar_t	a3_tag;		
+extern vmCvar_t	a4_tag;		
+extern vmCvar_t	a5_tag;		
+extern vmCvar_t	a1_cmds;	
+extern vmCvar_t	a2_cmds;	
+extern vmCvar_t	a3_cmds;	
+extern vmCvar_t	a4_cmds;	
+extern vmCvar_t	a5_cmds;	
+extern vmCvar_t	a5_allowAll;
+extern vmCvar_t	adm_help;
+
+// System
+extern vmCvar_t g_extendedLog;
+
+// Static
+extern vmCvar_t	sv_hostname;
+
+// General
 extern vmCvar_t		g_screenShake;
-// End
+
+// L0 - End
 
 void	trap_Printf( const char *fmt );
 void	trap_Error( const char *fmt );
@@ -1439,3 +1480,28 @@ typedef enum
 void G_StoreClientPosition( gentity_t* ent );
 void G_HistoricalTrace( gentity_t* ent, trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
 void G_ResetMarkers( gentity_t* ent );
+
+/*========================== L0-new stuff bellow ===============================*/
+
+// Macros
+#define AP(x) trap_SendServerCommand(-1, x)					// Print to all
+#define CP(x) trap_SendServerCommand(ent-g_entities, x)		// Print to an ent
+#define CPx(x, y) trap_SendServerCommand(x, y)				// Print to id = x
+
+// Logs
+#define ADMLOG "./logs/adminLogins.log"
+#define PASSLOG "./logs/adminLoginAttempts.log"
+#define ADMACT "./logs/adminActions.log"
+#define BYPASSLOG "./logs/banBypass.log"
+#define STSPTH "./logs/stats/"
+
+//
+// g_admin.c
+//
+void logEntry (char *filename, char *info);
+qboolean cmds_admin(char cmd[MAX_TOKEN_CHARS], gentity_t *ent);
+void ParseAdmStr(const char *strInput, char *strCmd, char *strArgs);
+void cmd_incognito(gentity_t *ent);
+void cmd_do_logout(gentity_t *ent);
+void cmd_do_login (gentity_t *ent, qboolean silent);
+//void cmd_getstatus(gentity_t *ent);

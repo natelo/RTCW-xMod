@@ -1115,13 +1115,14 @@ static void ClientCleanName( const char *in, char *out, int outSize ) {
 			if( !*in ) {
 				break;
 			}
-
+	// L0 - useless..
+/*
 			// don't allow black in a name, period
 			if( ColorIndex(*in) == 0 ) {
 				in++;
 				continue;
 			}
-
+*/
 			// make sure room in dest for both chars
 			if( len > outSize - 2 ) {
 				break;
@@ -1288,6 +1289,28 @@ qboolean G_ParseAnimationFiles( char *modelname, gclient_t *cl )
 	return qtrue;
 }
 
+/*
+===========
+L0 - Save players IP
+============
+*/
+void SaveIP_f ( gclient_t * client, char * sip ) {
+	
+	if( strcmp( sip, "localhost" ) == 0 || sip == NULL ){
+		// Localhost, just enter 0 for all values:
+		client->sess.ip[0] = 0;
+		client->sess.ip[1] = 0;
+		client->sess.ip[2] = 0;
+		client->sess.ip[3] = 0;
+		return;
+	}	
+
+	sscanf(sip, "%3i.%3i.%3i.%3i",
+				(int *)&client->sess.ip[0], (int *)&client->sess.ip[1], 
+				(int *)&client->sess.ip[2], (int *)&client->sess.ip[3]);
+	return;
+}
+// End
 
 /*
 ===========
@@ -1331,6 +1354,12 @@ void ClientUserinfoChanged( int clientNum ) {
 	if ( s && !strcmp( s, "localhost" ) ) {
 		client->pers.localClient = qtrue;
 	}
+
+	// L0 - save IP for getstatus..
+	s = Info_ValueForKey( userinfo, "ip" );
+	if( s[0] != 0 ){
+		SaveIP_f( client, s );
+	} // L0 - end
 
 	// check the item prediction
 	s = Info_ValueForKey( userinfo, "cg_predictItems" );
@@ -1484,6 +1513,19 @@ void ClientUserinfoChanged( int clientNum ) {
 //----(SA) end
 
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
+
+	// L0 - We need to send client private info (ip, guid..) only to log..not a configstring
+	// as \configstrings reveals user data which is something we don't want..
+	if ( !(ent->r.svFlags & SVF_BOT) ) {
+		char *team;
+
+		team = (client->sess.sessionTeam == TEAM_RED) ? "Axis" : 
+			( (client->sess.sessionTeam == TEAM_BLUE) ? "Allied" : "Spectator" );
+		
+		// Print essentials and skip garbage
+		s = va( "name\\%s\\team\\%s\\IP\\%s",
+			client->pers.netname, team, Info_ValueForKey( userinfo, "ip" ));
+	}
 
 	// this is not the userinfo actually, it's the config string
 	G_LogPrintf( "ClientUserinfoChanged: %i %s\n", clientNum, s );

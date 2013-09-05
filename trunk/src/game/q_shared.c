@@ -1332,7 +1332,27 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 	strcat (s, newi);
 }
 
+/*********************** L0 - New stuff ***********************/
+/*
+==================
+L0 - Ported from et: NQ
+DecolorString
 
+Remove color characters
+==================
+*/
+void DecolorString( char *in, char *out)
+{
+	while(*in) {
+		if(*in == 27 || *in == '^') {
+			in++;		// skip color code
+			if(*in) in++;
+			continue;
+		}
+		*out++ = *in++;
+	}
+	*out = 0;
+}
 
 
 //====================================================================

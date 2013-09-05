@@ -939,6 +939,59 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	char		text[MAX_SAY_TEXT];
 	char		location[64];
 	qboolean	localize = qfalse;
+	// L0 - Admin stuff
+	char *tag;	
+	char arg[MAX_SAY_TEXT]; // ! & ? 
+	char cmd1[128];
+	char cmd2[128];
+	char cmd3[128];	
+
+	// Admin commands
+	Q_strncpyz ( text, chatText, sizeof( text ) );
+	if ( !ent->client->sess.admin == ADM_NONE ) {
+		// Command
+		if ( text[0] == '!' ){
+			ParseAdmStr(text, cmd1, arg);	
+			ParseAdmStr(arg, cmd2, cmd3);
+			Q_strncpyz ( ent->client->pers.cmd1, cmd1, sizeof( ent->client->pers.cmd1 ) );
+			Q_strncpyz ( ent->client->pers.cmd2, cmd2, sizeof( ent->client->pers.cmd2 ) );
+			Q_strncpyz ( ent->client->pers.cmd3, cmd3, sizeof( ent->client->pers.cmd3 ) );
+			cmds_admin("!", ent);
+
+			return;
+		// Help
+		} else if ( text[0] == '?' ){
+			ParseAdmStr(text, cmd1, arg);	
+			ParseAdmStr(arg, cmd2, cmd3);
+			Q_strncpyz ( ent->client->pers.cmd1, cmd1, sizeof( ent->client->pers.cmd1 ) );
+			Q_strncpyz ( ent->client->pers.cmd2, cmd2, sizeof( ent->client->pers.cmd2 ) );
+			Q_strncpyz ( ent->client->pers.cmd3, cmd3, sizeof( ent->client->pers.cmd3 ) );
+			cmds_admin("?", ent);
+
+			return;
+		}
+	}  
+
+	// Deal with Admin tags..
+	if (!ent->client->sess.incognito) {
+		if (ent->client->sess.admin == ADM_1) 
+			tag = va("^7(%s^7)", a1_tag.string);
+		else if (ent->client->sess.admin == ADM_2)
+			tag = va("^7(%s^7)", a2_tag.string);
+		else if (ent->client->sess.admin == ADM_3)
+			tag = va("^7(%s^7)", a3_tag.string);
+		else if (ent->client->sess.admin == ADM_4)
+			tag = va("^7(%s^7)", a4_tag.string);
+		else if (ent->client->sess.admin == ADM_5)
+			tag = va("^7(%s^7)", a5_tag.string);
+		else
+			tag = "";
+	// If Admin is hidden or not an admin at all..no tag.
+	} else {
+		tag = ""; 
+	} 	
+	// L0 - End
+
 
 	if ( g_gametype.integer < GT_TEAM && mode == SAY_TEAM ) {
 		mode = SAY_ALL;
@@ -947,8 +1000,8 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	switch ( mode ) {
 	default:
 	case SAY_ALL:
-		G_LogPrintf( "say: %s: %s\n", ent->client->pers.netname, chatText );
-		Com_sprintf (name, sizeof(name), "%s%c%c: ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
+		G_LogPrintf( "say: %s%s: %s\n", ent->client->pers.netname, tag, chatText ); // L0 - Squeeze admin tag here..
+		Com_sprintf (name, sizeof(name), "%s%s%c%c: ", ent->client->pers.netname, tag, Q_COLOR_ESCAPE, COLOR_WHITE );
 		color = COLOR_GREEN;
 		break;
 	case SAY_TEAM:
@@ -2395,6 +2448,30 @@ void ClientCommand( int clientNum ) {
 		Cmd_Team_f (ent);
 		return;
 	}
+
+	// L0 - Hook our commands above intermission
+	if ( Q_stricmp( cmd, "login" ) == 0 ) {
+		cmd_do_login( ent, qfalse );
+	return;
+	}
+	if ( Q_stricmp( cmd, "@login" ) == 0 ) {
+		cmd_do_login( ent, qtrue );
+	return;
+	} 
+	if ( Q_stricmp( cmd, "logout" ) == 0 ) {
+		cmd_do_logout( ent );
+	return;
+	} 
+	if ( Q_stricmp( cmd, "incognito" ) == 0 ) {
+		cmd_incognito( ent );
+	return;
+	} 
+	/*
+	if ( Q_stricmp( cmd, "getstatus" ) == 0 ) {
+		cmd_getstatus( ent );
+	return;
+	}
+	*/
 
 	// ignore all other commands when at intermission
 	if (level.intermissiontime) {

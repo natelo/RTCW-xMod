@@ -135,8 +135,37 @@ vmCvar_t	url;
 vmCvar_t	g_dbgRevive;
 
 // L0 - New stuff
+
+// Admins
+vmCvar_t a1_pass;		// Level 1 admin
+vmCvar_t a2_pass;		// Level 2 admin
+vmCvar_t a3_pass;		// Level 3 admin
+vmCvar_t a4_pass;		// Level 4 admin
+vmCvar_t a5_pass;		// Level 4 admin
+vmCvar_t a1_tag;		// Level 1 admin tag
+vmCvar_t a2_tag;		// Level 2 admin tag
+vmCvar_t a3_tag;		// Level 3 admin tag
+vmCvar_t a4_tag;		// Level 3 admin tag
+vmCvar_t a5_tag;		// Level 5 admin tag
+vmCvar_t a1_cmds;		// Level 1 admin commands
+vmCvar_t a2_cmds;		// Level 2 admin commands
+vmCvar_t a3_cmds;		// Level 3 admin commands
+vmCvar_t a4_cmds;		// Level 4 admin commands
+vmCvar_t a5_cmds;		// Level 5 admin commands
+vmCvar_t a5_allowAll;	// Allows level 5 to execute all admin commands + any other that's set in a5_cmds ->
+						// In this case, use a5_cmds for server specific cvars like g_allowVote that would otherwise require rcon etc..
+vmCvar_t adm_help;		// If enabled users can use !list_cmds to get list of commands for their level..
+
+// System
+vmCvar_t g_extendedLog;	// Logs admin actions (1 = essentials, 2 = all).
+
+// Static
+vmCvar_t sv_hostname;	// So it's more accesible
+
+// General
 vmCvar_t	g_screenShake;	// Screenshaking on explosions (4 = default, 2 = half.. etc)
-// End
+
+// L0 - End
 
 cvarTable_t		gameCvarTable[] = {
 	// don't override the cheat state set by the system
@@ -271,7 +300,32 @@ cvarTable_t		gameCvarTable[] = {
 	{&g_antilag, "g_antilag", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qfalse},
 
 	// L0 - New stuff
+
+	// Admins	
+	{ &a1_pass, "a1_pass", "none", CVAR_ARCHIVE, 0, qfalse },
+	{ &a2_pass, "a2_pass", "none", CVAR_ARCHIVE, 0, qfalse },
+	{ &a3_pass, "a3_pass", "none", CVAR_ARCHIVE, 0, qfalse },
+	{ &a4_pass, "a4_pass", "none", CVAR_ARCHIVE, 0, qfalse },
+	{ &a5_pass, "a5_pass", "none", CVAR_ARCHIVE, 0, qfalse },
+	{ &a1_tag, "a1_tag", "^1Referee", CVAR_ARCHIVE, 0, qfalse },
+	{ &a2_tag, "a2_tag", "^jMember", CVAR_ARCHIVE, 0, qfalse },
+	{ &a3_tag, "a3_tag", "^2Adm!n", CVAR_ARCHIVE, 0, qfalse },
+	{ &a4_tag, "a4_tag", "^3Adm!n", CVAR_ARCHIVE, 0, qfalse },
+	{ &a5_tag, "a5_tag", "^dAdm!n", CVAR_ARCHIVE, 0, qfalse },
+	{ &a1_cmds, "a1_cmds", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &a2_cmds, "a2_cmds", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &a3_cmds, "a3_cmds", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &a4_cmds, "a4_cmds", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &a5_cmds, "a5_cmds", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &a5_allowAll, "a5_allowAll", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &adm_help, "adm_help", "1", CVAR_ARCHIVE, 0, qfalse },
+	// System
+	{ &g_extendedLog, "g_extendedLog", "1", CVAR_ARCHIVE, 0, qfalse },
+	// Static
+	{ &sv_hostname, "sv_hostname", "", CVAR_SERVERINFO, 0, qfalse },
+	// General
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
+
 	// End
 
 	{&g_dbgRevive, "g_dbgRevive", "0", 0, 0, qfalse}

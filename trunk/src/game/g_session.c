@@ -22,7 +22,7 @@ void G_WriteClientSessionData( gclient_t *client ) {
 	const char	*s;
 	const char	*var;
 
-	s = va("%i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i",		// DHM - Nerve
+	s = va("%i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i",		// DHM - Nerve
 		client->sess.sessionTeam,
 		client->sess.spectatorTime,
 		client->sess.spectatorState,
@@ -40,7 +40,12 @@ void G_WriteClientSessionData( gclient_t *client ) {
 		client->sess.latchPlayerSkin,		// DHM - Nerve
 
 		// L0 - New stuff
-		client->sess.admin
+		client->sess.admin,
+		client->sess.incognito,
+		client->sess.ip[0],
+		client->sess.ip[1],
+		client->sess.ip[2],
+		client->sess.ip[3]
 		);
 
 	var = va( "session%i", client - level.clients );
@@ -63,7 +68,7 @@ void G_ReadSessionData( gclient_t *client ) {
 	var = va( "session%i", client - level.clients );
 	trap_Cvar_VariableStringBuffer( var, s, sizeof(s) );
 
-	sscanf( s, "%i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i",		// DHM - Nerve
+	sscanf( s, "%i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i",		// DHM - Nerve
 		(int *)&client->sess.sessionTeam,
 		&client->sess.spectatorTime,
 		(int *)&client->sess.spectatorState,
@@ -81,7 +86,13 @@ void G_ReadSessionData( gclient_t *client ) {
 		&client->sess.latchPlayerSkin,		// DHM - Nerve
 
 		// L0 - New stuff
-		(int *)&client->sess.admin
+		(int *)&client->sess.admin,
+		&client->sess.incognito,		
+		(int *)&client->sess.ip[0],			
+		(int *)&client->sess.ip[1],			
+		(int *)&client->sess.ip[2],			
+		(int *)&client->sess.ip[3]
+
 		);
 
 	// NERVE - SMF
@@ -171,6 +182,7 @@ void G_InitSessionData( gclient_t *client, char *userinfo ) {
 
 	// L0 - New stuff
 	sess->admin = ADM_NONE;		// Start as non-admin
+	sess->incognito = 0;		// Incognito for admins
 	// End
 
 	G_WriteClientSessionData( client );
