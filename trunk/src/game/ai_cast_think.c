@@ -934,26 +934,28 @@ AICast_PredictMovement
 */
 void AICast_PredictMovement( cast_state_t *cs, int numframes, float frametime, aicast_predictmove_t *move, usercmd_t *ucmd, int checkHitEnt )
 {
-	int			frame, i;
-	playerState_t	ps;
-	pmove_t		pm;
-	trace_t		tr;
-	vec3_t		end, startHitVec, thisHitVec, lastOrg, projPoint;
-	qboolean	checkReachMarker;
+	int frame, i;
+	playerState_t ps;
+	pmove_t pm;
+	trace_t tr;
+	vec3_t end, startHitVec, thisHitVec, lastOrg, projPoint;
+	qboolean checkReachMarker;
 
 //int pretime = Sys_MilliSeconds();
 //G_Printf("PredictMovement: %f duration, %i frames\n", frametime, numframes );
+	VectorCopy( vec3_origin, startHitVec );
 
-	if (cs->bs)
+	if ( cs->bs ) {
 		ps = cs->bs->cur_ps;
-	else
+	} else {
 		ps = g_entities[cs->entityNum].client->ps;
+	}
 
 	ps.eFlags |= EF_DUMMY_PMOVE;
 
 	move->stopevent = PREDICTSTOP_NONE;
 
-	if (checkHitEnt >= 0 && !Q_stricmp(g_entities[checkHitEnt].classname, "ai_marker")) {
+	if ( checkHitEnt >= 0 && !Q_stricmp( g_entities[checkHitEnt].classname, "ai_marker" ) ) {
 		checkReachMarker = qtrue;
 		VectorSubtract( g_entities[checkHitEnt].r.currentOrigin, ps.origin, startHitVec );
 		VectorCopy( ps.origin, lastOrg );
@@ -967,17 +969,17 @@ void AICast_PredictMovement( cast_state_t *cs, int numframes, float frametime, a
 //		frametime /= 2;
 //	}
 
-	for (frame=0; frame<numframes; frame++)
+	for ( frame = 0; frame < numframes; frame++ )
 	{
-		memset (&pm, 0, sizeof(pm));
+		memset( &pm, 0, sizeof( pm ) );
 		pm.ps = &ps;
 		pm.cmd = *ucmd;
 		pm.oldcmd = *ucmd;
 		pm.ps->commandTime = 0;
-		pm.cmd.serverTime = (int)(1000.0*frametime);
-		pm.tracemask = g_entities[cs->entityNum].clipmask;//MASK_PLAYERSOLID;
-		
-		pm.trace = trap_TraceCapsule;//trap_Trace;
+		pm.cmd.serverTime = (int)( 1000.0 * frametime );
+		pm.tracemask = g_entities[cs->entityNum].clipmask; //MASK_PLAYERSOLID;
+
+		pm.trace = trap_TraceCapsule; //trap_Trace;
 		pm.pointcontents = trap_PointContents;
 		pm.debugLevel = qfalse;
 		pm.noFootsteps = qtrue;
@@ -985,16 +987,16 @@ void AICast_PredictMovement( cast_state_t *cs, int numframes, float frametime, a
 		//pm.noWeapClips = qtrue;	// (SA) AI's ignore weapon clips
 
 		// perform a pmove
-		Pmove (&pm);
+		Pmove( &pm );
 
-		if (checkHitEnt >= 0) {
+		if ( checkHitEnt >= 0 ) {
 			// if we've hit the checkent, abort
-			if (checkReachMarker) {
+			if ( checkReachMarker ) {
 				VectorSubtract( g_entities[checkHitEnt].r.currentOrigin, pm.ps->origin, thisHitVec );
-				if (DotProduct( startHitVec, thisHitVec ) < 0) {
+				if ( DotProduct( startHitVec, thisHitVec ) < 0 ) {
 					// project the marker onto the movement vec, and check distance
 					ProjectPointOntoVector( g_entities[checkHitEnt].r.currentOrigin, lastOrg, pm.ps->origin, projPoint );
-					if (VectorDistance( g_entities[checkHitEnt].r.currentOrigin, projPoint ) < 8) {
+					if ( VectorDistance( g_entities[checkHitEnt].r.currentOrigin, projPoint ) < 8 ) {
 						move->stopevent = PREDICTSTOP_HITENT;
 						goto done;
 					}
@@ -1004,18 +1006,19 @@ void AICast_PredictMovement( cast_state_t *cs, int numframes, float frametime, a
 				VectorCopy( pm.ps->origin, lastOrg );
 			}
 			// if we didnt reach the marker, then check for something that blocked us
-			for (i=0; i<pm.numtouch; i++) {
-				if (pm.touchents[i] == pm.ps->groundEntityNum)
+			for ( i = 0; i < pm.numtouch; i++ ) {
+				if ( pm.touchents[i] == pm.ps->groundEntityNum ) {
 					continue;
-				if (pm.touchents[i] == checkHitEnt) {
+				}
+				if ( pm.touchents[i] == checkHitEnt ) {
 					move->stopevent = PREDICTSTOP_HITENT;
 					goto done;
-				} else if (pm.touchents[i] < MAX_CLIENTS ||
-					(pm.touchents[i] != ENTITYNUM_WORLD && (g_entities[pm.touchents[i]].s.eType != ET_MOVER || g_entities[pm.touchents[i]].moverState != MOVER_POS1))) {
+				} else if ( pm.touchents[i] < MAX_CLIENTS ||
+							( pm.touchents[i] != ENTITYNUM_WORLD && ( g_entities[pm.touchents[i]].s.eType != ET_MOVER || g_entities[pm.touchents[i]].moverState != MOVER_POS1 ) ) ) {
 					// we have hit another entity, so abort
 					move->stopevent = PREDICTSTOP_HITCLIENT;
 					goto done;
-				} else if (!Q_stricmp(g_entities[pm.touchents[i]].classname, "script_mover")) {
+				} else if ( !Q_stricmp( g_entities[pm.touchents[i]].classname, "script_mover" ) ) {
 					// avoid script_mover's
 					move->stopevent = PREDICTSTOP_HITCLIENT;
 					goto done;
@@ -1028,11 +1031,11 @@ done:
 
 	// hack, if we are above ground, chances are it's because we only did one frame, and gravity isn't applied until
 	// after the frame, so try and drop us down some
-	if (move->groundEntityNum == ENTITYNUM_NONE) {
+	if ( move->groundEntityNum == ENTITYNUM_NONE ) {
 		VectorCopy( move->endpos, end );
 		end[2] -= 32;
 		trap_Trace( &tr, move->endpos, pm.mins, pm.maxs, end, pm.ps->clientNum, pm.tracemask );
-		if (!tr.startsolid && !tr.allsolid && tr.fraction < 1) {
+		if ( !tr.startsolid && !tr.allsolid && tr.fraction < 1 ) {
 			VectorCopy( tr.endpos, pm.ps->origin );
 			pm.ps->groundEntityNum = tr.entityNum;
 		}
@@ -1044,7 +1047,7 @@ done:
 	//move->presencetype = cs->bs->presencetype;
 	VectorCopy( pm.ps->velocity, move->velocity );
 	move->numtouch = pm.numtouch;
-	memcpy( move->touchents, pm.touchents, sizeof(pm.touchents) );
+	memcpy( move->touchents, pm.touchents, sizeof( pm.touchents ) );
 	move->groundEntityNum = pm.ps->groundEntityNum;
 
 //G_Printf("PredictMovement: %i ms\n", -pretime + Sys_MilliSeconds() );
@@ -1057,104 +1060,104 @@ AICast_GetAvoid
 */
 qboolean AICast_GetAvoid( cast_state_t *cs, bot_goal_t *goal, vec3_t outpos, qboolean reverse, int blockEnt )
 {
-	float	yaw, oldyaw, distmoved, bestmoved, bestyaw;
-	vec3_t	bestpos;
-	aicast_predictmove_t	castmove;
-	usercmd_t	ucmd;
-	qboolean	enemyVisible;
-	float		angleDiff;
-  // TTimo might be used uninitialized
-	int			starttraveltime = 0;
-  int besttraveltime, traveltime;
-	int			invert;
-	float		inc;
-	qboolean	averting=qfalse;
-	float		maxYaw, simTime;
+	float yaw, oldyaw, distmoved, bestmoved;
+	vec3_t bestpos;
+	aicast_predictmove_t castmove;
+	usercmd_t ucmd;
+	qboolean enemyVisible;
+	float angleDiff;
+	// TTimo might be used uninitialized
+	int starttraveltime = 0;
+	int traveltime;
+	int invert;
+	float inc;
+	qboolean averting = qfalse;
+	float maxYaw;
 	static int lastTime;
+
+	VectorCopy( vec3_origin, bestpos );
+
 	//
 	// if we are in the air, no chance of avoiding
-	if (cs->bs->cur_ps.groundEntityNum == ENTITYNUM_NONE && g_entities[cs->entityNum].waterlevel <= 1) {
+	if ( cs->bs->cur_ps.groundEntityNum == ENTITYNUM_NONE && g_entities[cs->entityNum].waterlevel <= 1 ) {
 		return qfalse;
 	}
 	//
-	if (cs->lastAvoid > level.time-rand()%500)
+	if ( cs->lastAvoid > level.time - rand() % 500 ) {
 		return qfalse;
-	cs->lastAvoid = level.time + 50 + rand()%500;
+	}
+	cs->lastAvoid = level.time + 50 + rand() % 500;
 	//
-	if (lastTime == level.time)
+	if ( lastTime == level.time ) {
 		return qfalse;
+	}
 	lastTime = level.time;
 
 	// if they have an enemy, and can currently see them, don't move out of their view
-	enemyVisible =	(cs->bs->enemy >= 0) &&
-					(AICast_CheckAttack( cs, cs->bs->enemy, qfalse ));
+	enemyVisible =  ( cs->bs->enemy >= 0 ) &&
+				   ( AICast_CheckAttack( cs, cs->bs->enemy, qfalse ) );
 	//
 	// look for a good direction to move out of the way
 	bestmoved = 0;
-	bestyaw = 360;
-	besttraveltime = 9999999;
-	if (goal)
+	if ( goal ) {
 		starttraveltime = trap_AAS_AreaTravelTimeToGoalArea( cs->bs->areanum, cs->bs->origin, goal->areanum, cs->travelflags );
-	memcpy( &ucmd, &cs->bs->lastucmd, sizeof(usercmd_t) );
+	}
+	memcpy( &ucmd, &cs->bs->lastucmd, sizeof( usercmd_t ) );
 	ucmd.forwardmove = 127;
 	ucmd.rightmove = 0;
 	ucmd.upmove = 0;
-	if (cs->dangerEntity >= 0 && cs->dangerEntityValidTime >= level.time) {
+	if ( cs->dangerEntity >= 0 && cs->dangerEntityValidTime >= level.time ) {
 		averting = qtrue;
-	} else if (!goal) {
-		averting = qtrue;	// not heading for a goal, so we must be getting out of someone's way
+	} else if ( !goal ) {
+		averting = qtrue;   // not heading for a goal, so we must be getting out of someone's way
 	}
 	//
 	maxYaw = 0;
-	simTime = 1.2;
 	//
-	if (averting) {
+	if ( averting ) {
 		// avoiding danger, go anywhere!
 		angleDiff = 300;
 		inc = 60;
 		invert = 1;
 	} else {
-		if (level.time%1000 < 500)
+		if ( level.time % 1000 < 500 ) {
 			invert = 1;
-		else
+		} else {
 			invert = -1;
+		}
 		angleDiff = 140;
 		inc = 35;
 	}
-	if (blockEnt > aicast_maxclients) {
+	if ( blockEnt > aicast_maxclients ) {
 		maxYaw = angleDiff;
-		simTime = 0.5;
 	}
 	//
-	for (yaw=-angleDiff*invert; yaw*invert<=maxYaw; yaw+=inc*invert) {
-		if (!averting && !yaw)
+	for ( yaw = -angleDiff * invert; yaw*invert <= maxYaw; yaw += inc * invert ) {
+		if ( !averting && !yaw ) {
 			continue;
+		}
 		oldyaw = cs->bs->cur_ps.viewangles[YAW];
-		cs->bs->cur_ps.viewangles[YAW] += yaw + reverse*180;
+		cs->bs->cur_ps.viewangles[YAW] += yaw + reverse * 180;
 		//
-		ucmd.angles[YAW] = ANGLE2SHORT(AngleMod(cs->bs->cur_ps.viewangles[YAW]));
+		ucmd.angles[YAW] = ANGLE2SHORT( AngleMod( cs->bs->cur_ps.viewangles[YAW] ) );
 		//
 		AICast_PredictMovement( cs, 5, 0.4, &castmove, &ucmd, -1 );
 		// if we have a danger entity, try and get away from it at all costs
-		if (cs->dangerEntity >= 0 && cs->dangerEntityValidTime >= level.time) {
+		if ( cs->dangerEntity >= 0 && cs->dangerEntityValidTime >= level.time ) {
 			distmoved = Distance( castmove.endpos, cs->dangerEntityPos );
-		} else if (goal) {
+		} else if ( goal ) {
 			//distmoved = 99999 - trap_AAS_AreaTravelTimeToGoalArea( BotPointAreaNum(castmove.endpos), castmove.endpos, goal->areanum, cs->travelflags );
 			distmoved = 99999 - Distance( castmove.endpos, goal->origin );
 		} else {
 			distmoved = Distance( castmove.endpos, cs->bs->cur_ps.origin );
 		}
-		if (	(distmoved > bestmoved)
-			//&&	((cs->bs->origin[2] - castmove.endpos[2]) < 64)	// allow up, but not down (falling)
-			&&	(castmove.groundEntityNum != ENTITYNUM_NONE))
-		{
+		if (    ( distmoved > bestmoved )
+				//&&	((cs->bs->origin[2] - castmove.endpos[2]) < 64)	// allow up, but not down (falling)
+				&&  ( castmove.groundEntityNum != ENTITYNUM_NONE ) ) {
 			// they all passed, check any other stuff
-			if (!enemyVisible || AICast_CheckAttackAtPos(cs->entityNum, cs->bs->enemy, castmove.endpos, qfalse, qfalse ))
-			{
-				if (!goal || (traveltime = trap_AAS_AreaTravelTimeToGoalArea( BotPointAreaNum(castmove.endpos), castmove.endpos, goal->areanum, cs->travelflags )) < (starttraveltime+200)) {
-					bestyaw = yaw;
+			if ( !enemyVisible || AICast_CheckAttackAtPos( cs->entityNum, cs->bs->enemy, castmove.endpos, qfalse, qfalse ) ) {
+				if ( !goal || ( traveltime = trap_AAS_AreaTravelTimeToGoalArea( BotPointAreaNum( castmove.endpos ), castmove.endpos, goal->areanum, cs->travelflags ) ) < ( starttraveltime + 200 ) ) {
 					bestmoved = distmoved;
-					besttraveltime = traveltime;
 					VectorCopy( castmove.endpos, bestpos );
 				}
 			}
@@ -1163,7 +1166,7 @@ qboolean AICast_GetAvoid( cast_state_t *cs, bot_goal_t *goal, vec3_t outpos, qbo
 		cs->bs->cur_ps.viewangles[YAW] = oldyaw;
 	}
 	//
-	if (bestmoved > 0) {
+	if ( bestmoved > 0 ) {
 		VectorCopy( bestpos, outpos );
 		return qtrue;
 	} else {

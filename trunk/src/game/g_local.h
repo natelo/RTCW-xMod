@@ -824,7 +824,7 @@ void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
 void G_AddEvent( gentity_t *ent, int event, int eventParm );
 void G_SetOrigin( gentity_t *ent, vec3_t origin );
 void AddRemap(const char *oldShader, const char *newShader, float timeOffset);
-const char *BuildShaderStateConfig();
+const char *BuildShaderStateConfig( void );
 void G_SetAngle( gentity_t *ent, vec3_t angle );
 
 qboolean infront (gentity_t *self, gentity_t *other);
@@ -951,8 +951,7 @@ qboolean G_FilterPacket (char *from);
 qboolean G_FilterMaxLivesPacket (char *from);
 void AddMaxLivesIP( char *str );
 void AddMaxLivesGUID( char *str );
-void ClearMaxLivesIP ();
-void ClearMaxLivesGUID ();
+void ClearMaxLivesGUID ( void );
 
 //
 // g_weapon.c

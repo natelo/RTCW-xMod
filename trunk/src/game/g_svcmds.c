@@ -159,7 +159,7 @@ static void UpdateIPBans (void)
 	trap_Cvar_Set( "g_banIPs", iplist_final );
 }
 
-void PrintMaxLivesGUID ()
+void PrintMaxLivesGUID (void)
 {
 	int		i;
 
@@ -348,7 +348,7 @@ void Svcmd_RemoveIP_f (void)
 /*
  Xian - Clears out the entire list maxlives enforcement banlist
 */
-void ClearMaxLivesGUID ()
+void ClearMaxLivesGUID ( void )
 {
 	int			i;
 	
@@ -509,7 +509,7 @@ Svcmd_StartMatch_f
 NERVE - SMF - starts match if in tournament mode
 ============
 */
-void Svcmd_StartMatch_f() {
+void Svcmd_StartMatch_f(void) {
 	if ( !g_noTeamSwitching.integer ) {
 		trap_SendServerCommand( -1, va("print \"g_noTeamSwitching not activated.\n\""));
 		return;
@@ -540,7 +540,7 @@ NERVE - SMF - this has three behaviors
 - if in stopwatch mode, reset back to first round
 ============
 */
-void Svcmd_ResetMatch_f() {
+void Svcmd_ResetMatch_f(void) {
 	if ( g_gametype.integer == GT_WOLF_STOPWATCH ) {
 		trap_Cvar_Set( "g_currentRound", "0" );
 		trap_Cvar_Set( "g_nextTimeLimit", "0" );
@@ -563,7 +563,7 @@ Svcmd_SwapTeams_f
 NERVE - SMF - swaps all clients to opposite team
 ============
 */
-void Svcmd_SwapTeams_f() {
+void Svcmd_SwapTeams_f(void) {
 //  if ( g_gamestate.integer != GS_PLAYING ) {
 	if ( (g_gamestate.integer == GS_INITIALIZE) || // JPW NERVE -- so teams can swap between checkpoint rounds
 		 (g_gamestate.integer == GS_WAITING_FOR_PLAYERS) ||

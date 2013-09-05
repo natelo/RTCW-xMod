@@ -1898,73 +1898,79 @@ BotEntityToActivate
 //#define OBSTACLEDEBUG 
 
 int BotEntityToActivate(int entitynum) {
-	int i, ent, cur_entities[10];
+int i, ent, cur_entities[10];
 	char model[MAX_INFO_STRING], tmpmodel[128];
 	char target[128], classname[128];
 	float health;
 	char targetname[10][128];
 	aas_entityinfo_t entinfo;
 
-	BotEntityInfo(entitynum, &entinfo);
-	Com_sprintf(model, sizeof( model ), "*%d", entinfo.modelindex);
-	for (ent = trap_AAS_NextBSPEntity(0); ent; ent = trap_AAS_NextBSPEntity(ent)) {
-		if (!trap_AAS_ValueForBSPEpairKey(ent, "model", tmpmodel, sizeof(tmpmodel))) continue;
-		if (!strcmp(model, tmpmodel)) break;
+	BotEntityInfo( entitynum, &entinfo );
+	Com_sprintf( model, sizeof( model ), "*%d", entinfo.modelindex );
+	for ( ent = trap_AAS_NextBSPEntity( 0 ); ent; ent = trap_AAS_NextBSPEntity( ent ) ) {
+		if ( !trap_AAS_ValueForBSPEpairKey( ent, "model", tmpmodel, sizeof( tmpmodel ) ) ) {
+			continue;
+		}
+		if ( !strcmp( model, tmpmodel ) ) {
+			break;
+		}
 	}
-	if (!ent) {
-		BotAI_Print(PRT_ERROR, "BotEntityToActivate: no entity found with model %s\n", model);
+	if ( !ent ) {
+		BotAI_Print( PRT_ERROR, "BotEntityToActivate: no entity found with model %s\n", model );
 		return 0;
 	}
-	trap_AAS_ValueForBSPEpairKey(ent, "classname", classname, sizeof(classname));
-	if (!classname) {
-		BotAI_Print(PRT_ERROR, "BotEntityToActivate: entity with model %s has no classname\n", model);
+	trap_AAS_ValueForBSPEpairKey( ent, "classname", classname, sizeof( classname ) );
+	if ( !*classname ) {
+		BotAI_Print( PRT_ERROR, "BotEntityToActivate: entity with model %s has no classname\n", model );
 		return 0;
 	}
 	//if it is a door
-	if (!strcmp(classname, "func_door")) {
-		if (trap_AAS_FloatForBSPEpairKey(ent, "health", &health)) {
+	if ( !strcmp( classname, "func_door" ) ) {
+		if ( trap_AAS_FloatForBSPEpairKey( ent, "health", &health ) ) {
 			//if health the door must be shot to open
-			if (health) return ent;
+			if ( health ) {
+				return ent;
+			}
 		}
 	}
 	//get the targetname so we can find an entity with a matching target
-	if (!trap_AAS_ValueForBSPEpairKey(ent, "targetname", targetname[0], sizeof(targetname[0]))) {
+	if ( !trap_AAS_ValueForBSPEpairKey( ent, "targetname", targetname[0], sizeof( targetname[0] ) ) ) {
 #ifdef OBSTACLEDEBUG
-		BotAI_Print(PRT_ERROR, "BotEntityToActivate: entity with model \"%s\" has no targetname\n", model);
+		BotAI_Print( PRT_ERROR, "BotEntityToActivate: entity with model \"%s\" has no targetname\n", model );
 #endif //OBSTACLEDEBUG
 		return 0;
 	}
-	cur_entities[0] = trap_AAS_NextBSPEntity(0);
-	for (i = 0; i >= 0 && i < 10;) {
-		for (ent = cur_entities[i]; ent; ent = trap_AAS_NextBSPEntity(ent)) {
-			if (!trap_AAS_ValueForBSPEpairKey(ent, "target", target, sizeof(target))) continue;
-			if (!strcmp(targetname[i], target)) {
-				cur_entities[i] = trap_AAS_NextBSPEntity(ent);
+	cur_entities[0] = trap_AAS_NextBSPEntity( 0 );
+	for ( i = 0; i >= 0 && i < 10; ) {
+		for ( ent = cur_entities[i]; ent; ent = trap_AAS_NextBSPEntity( ent ) ) {
+			if ( !trap_AAS_ValueForBSPEpairKey( ent, "target", target, sizeof( target ) ) ) {
+				continue;
+			}
+			if ( !strcmp( targetname[i], target ) ) {
+				cur_entities[i] = trap_AAS_NextBSPEntity( ent );
 				break;
 			}
 		}
-		if (!ent) {
-			BotAI_Print(PRT_ERROR, "BotEntityToActivate: no entity with target \"%s\"\n", targetname[i]);
+		if ( !ent ) {
+			BotAI_Print( PRT_ERROR, "BotEntityToActivate: no entity with target \"%s\"\n", targetname[i] );
 			i--;
 			continue;
 		}
-		if (!trap_AAS_ValueForBSPEpairKey(ent, "classname", classname, sizeof(classname))) {
-			BotAI_Print(PRT_ERROR, "BotEntityToActivate: entity with target \"%s\" has no classname\n", targetname[i]);
+		if ( !trap_AAS_ValueForBSPEpairKey( ent, "classname", classname, sizeof( classname ) ) ) {
+			BotAI_Print( PRT_ERROR, "BotEntityToActivate: entity with target \"%s\" has no classname\n", targetname[i] );
 			continue;
 		}
-		if (!strcmp(classname, "func_button")) {
+		if ( !strcmp( classname, "func_button" ) ) {
 			//BSP button model
 			return ent;
-		}
-		else if (!strcmp(classname, "trigger_multiple")) {
+		} else if ( !strcmp( classname, "trigger_multiple" ) )        {
 			//invisible trigger multiple box
 			return ent;
-		}
-		else {
+		} else {
 			i--;
 		}
 	}
-	BotAI_Print(PRT_ERROR, "BotEntityToActivate: unknown activator with classname \"%s\"\n", classname);
+	BotAI_Print( PRT_ERROR, "BotEntityToActivate: unknown activator with classname \"%s\"\n", classname );
 	return 0;
 }
 
@@ -2032,233 +2038,238 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
 	char netname[MAX_NETNAME];
 #endif
 
-	if (!moveresult->blocked) return;
+	if ( !moveresult->blocked ) {
+		return;
+	}
 	//
-	BotEntityInfo(moveresult->blockentity, &entinfo);
+	BotEntityInfo( moveresult->blockentity, &entinfo );
 #ifdef OBSTACLEDEBUG
-	ClientName(bs->client, netname, sizeof(netname));
-	BotAI_Print(PRT_MESSAGE, "%s: I'm blocked by model %d\n", netname, entinfo.modelindex);
-#endif OBSTACLEDEBUG
-	//if blocked by a bsp model and the bot wants to activate it if possible
-	if (entinfo.modelindex > 0 && entinfo.modelindex <= max_bspmodelindex && activate) {
+	ClientName( bs->client, netname, sizeof( netname ) );
+	BotAI_Print( PRT_MESSAGE, "%s: I'm blocked by model %d\n", netname, entinfo.modelindex );
+#endif //OBSTACLEDEBUG
+	   //if blocked by a bsp model and the bot wants to activate it if possible
+	if ( entinfo.modelindex > 0 && entinfo.modelindex <= max_bspmodelindex && activate ) {
 		//find the bsp entity which should be activated in order to remove
 		//the blocking entity
-		ent = BotEntityToActivate(entinfo.number);
-		if (!ent) {
-			strcpy(classname, "");
+		ent = BotEntityToActivate( entinfo.number );
+		if ( !ent ) {
+			strcpy( classname, "" );
 #ifdef OBSTACLEDEBUG
-			BotAI_Print(PRT_MESSAGE, "%s: can't find activator for blocking entity\n", ClientName(bs->client, netname, sizeof(netname)));
+			BotAI_Print( PRT_MESSAGE, "%s: can't find activator for blocking entity\n", ClientName( bs->client, netname, sizeof( netname ) ) );
 #endif //OBSTACLEDEBUG
-		}
-		else {
-			trap_AAS_ValueForBSPEpairKey(ent, "classname", classname, sizeof(classname));
+		} else {
+			trap_AAS_ValueForBSPEpairKey( ent, "classname", classname, sizeof( classname ) );
 #ifdef OBSTACLEDEBUG
-			ClientName(bs->client, netname, sizeof(netname));
-			BotAI_Print(PRT_MESSAGE, "%s: I should activate %s\n", netname, classname);
-#endif OBSTACLEDEBUG
+			ClientName( bs->client, netname, sizeof( netname ) );
+			BotAI_Print( PRT_MESSAGE, "%s: I should activate %s\n", netname, classname );
+#endif //OBSTACLEDEBUG
 		}
 #ifdef OBSTACLEDEBUG
 //		ClientName(bs->client, netname, sizeof(netname));
 //		BotAI_Print(PRT_MESSAGE, "%s: I've got no brain cells for activating entities\n", netname);
-#endif OBSTACLEDEBUG
-		/*
-		//the bot should now activate one of the following entities
-		//"func_button", "trigger_multiple", "func_door"
-		//all these activators use BSP models, so it should be a matter of
-		//finding where this model is located using AAS and then activating
-		//by walking against the model it or shooting at it
-		//
-		//if it is a door we should shoot at
-		if (!strcmp(classname, "func_door"))
-		{
-			//get the door model
-			model = AAS_ValueForBSPEpairKey(ent, "model");
-			modelindex = AAS_IndexFromModel(model);
-			//if the model is not loaded
-			if (!modelindex) return;
-			VectorClear(angles);
-			AAS_BSPModelMinsMaxsOrigin(modelindex - 1, angles, mins, maxs, NULL);
-			//get a goal to shoot at
-			VectorAdd(maxs, mins, goalorigin);
-			VectorScale(goalorigin, 0.5, goalorigin);
-			VectorSubtract(goalorigin, bs->origin, movedir);
-			//
-			vectoangles(movedir, moveresult->ideal_viewangles);
-			moveresult->flags |= MOVERESULT_MOVEMENTVIEW;
-			//select the blaster
-			EA_UseItem(bs->client, "Blaster");
-			//shoot
-			EA_Attack(bs->client);
-			//
-			return;
-		} //end if*/
-		if (!strcmp(classname, "func_button"))
-		{
+#endif //OBSTACLEDEBUG
+	   /*
+	   //the bot should now activate one of the following entities
+	   //"func_button", "trigger_multiple", "func_door"
+	   //all these activators use BSP models, so it should be a matter of
+	   //finding where this model is located using AAS and then activating
+	   //by walking against the model it or shooting at it
+	   //
+	   //if it is a door we should shoot at
+	   if (!strcmp(classname, "func_door"))
+	   {
+		   //get the door model
+		   model = AAS_ValueForBSPEpairKey(ent, "model");
+		   modelindex = AAS_IndexFromModel(model);
+		   //if the model is not loaded
+		   if (!modelindex) return;
+		   VectorClear(angles);
+		   AAS_BSPModelMinsMaxsOrigin(modelindex - 1, angles, mins, maxs, NULL);
+		   //get a goal to shoot at
+		   VectorAdd(maxs, mins, goalorigin);
+		   VectorScale(goalorigin, 0.5, goalorigin);
+		   VectorSubtract(goalorigin, bs->origin, movedir);
+		   //
+		   vectoangles(movedir, moveresult->ideal_viewangles);
+		   moveresult->flags |= MOVERESULT_MOVEMENTVIEW;
+		   //select the blaster
+		   EA_UseItem(bs->client, "Blaster");
+		   //shoot
+		   EA_Attack(bs->client);
+		   //
+		   return;
+	   } //end if*/
+		if ( !strcmp( classname, "func_button" ) ) {
 			//create a bot goal towards the button
-			trap_AAS_ValueForBSPEpairKey(ent, "model", model, sizeof(model));
-			modelindex = atoi(model+1);
+			trap_AAS_ValueForBSPEpairKey( ent, "model", model, sizeof( model ) );
+			modelindex = atoi( model + 1 );
 			//if the model is not loaded
-			if (!modelindex) return;
-			VectorClear(angles);
-			BotModelMinsMaxs(modelindex, mins, maxs);
+			if ( !modelindex ) {
+				return;
+			}
+			VectorClear( angles );
+			BotModelMinsMaxs( modelindex, mins, maxs );
 			//get the lip of the button
-			trap_AAS_FloatForBSPEpairKey(ent, "lip", &lip);
-			if (!lip) lip = 4;
+			trap_AAS_FloatForBSPEpairKey( ent, "lip", &lip );
+			if ( !lip ) {
+				lip = 4;
+			}
 			//get the move direction from the angle
-			trap_AAS_FloatForBSPEpairKey(ent, "angle", &angle);
-			VectorSet(angles, 0, angle, 0);
-			BotSetMovedir(angles, movedir);
+			trap_AAS_FloatForBSPEpairKey( ent, "angle", &angle );
+			VectorSet( angles, 0, angle, 0 );
+			BotSetMovedir( angles, movedir );
 			//button size
-			VectorSubtract(maxs, mins, size);
+			VectorSubtract( maxs, mins, size );
 			//button origin
-			VectorAdd(mins, maxs, origin);
-			VectorScale(origin, 0.5, origin);
+			VectorAdd( mins, maxs, origin );
+			VectorScale( origin, 0.5, origin );
 			//touch distance of the button
-			dist = fabs(movedir[0]) * size[0] + fabs(movedir[1]) * size[1] + fabs(movedir[2]) * size[2];
+			dist = fabs( movedir[0] ) * size[0] + fabs( movedir[1] ) * size[1] + fabs( movedir[2] ) * size[2];
 			dist *= 0.5;
 			//
-			trap_AAS_FloatForBSPEpairKey(ent, "health", &health);
+			trap_AAS_FloatForBSPEpairKey( ent, "health", &health );
 			//if the button is shootable
-			if (health)
-			{
+			if ( health ) {
 				//calculate the goal origin
-				VectorMA(origin, -dist, movedir, goalorigin);
+				VectorMA( origin, -dist, movedir, goalorigin );
 				//
 				//AAS_ClearShownDebugLines();
 				//AAS_DrawArrow(bs->origin, goalorigin, LINECOLOR_BLUE, LINECOLOR_YELLOW);
 				//
-				VectorSubtract(goalorigin, bs->origin, movedir);
-				vectoangles(movedir, moveresult->ideal_viewangles);
+				VectorSubtract( goalorigin, bs->origin, movedir );
+				vectoangles( movedir, moveresult->ideal_viewangles );
 				moveresult->flags |= MOVERESULT_MOVEMENTVIEW;
 				//select the blaster
-				trap_EA_SelectWeapon(bs->client, WEAPONINDEX_MACHINEGUN);
+				trap_EA_SelectWeapon( bs->client, WEAPONINDEX_MACHINEGUN );
 				//shoot
-				trap_EA_Attack(bs->client);
+				trap_EA_Attack( bs->client );
 				return;
 			} //end if
 			else
 			{
 				//add bounding box size to the dist
-				trap_AAS_PresenceTypeBoundingBox(PRESENCE_CROUCH, bboxmins, bboxmaxs);
-				for (i = 0; i < 3; i++)
+				trap_AAS_PresenceTypeBoundingBox( PRESENCE_CROUCH, bboxmins, bboxmaxs );
+				for ( i = 0; i < 3; i++ )
 				{
-					if (movedir[i] < 0) dist += fabs(movedir[i]) * fabs(bboxmaxs[i]);
-					else dist += fabs(movedir[i]) * fabs(bboxmins[i]);
+					if ( movedir[i] < 0 ) {
+						dist += fabs( movedir[i] ) * fabs( bboxmaxs[i] );
+					} else { dist += fabs( movedir[i] ) * fabs( bboxmins[i] );}
 				} //end for
-				//calculate the goal origin
-				VectorMA(origin, -dist, movedir, goalorigin);
+				  //calculate the goal origin
+				VectorMA( origin, -dist, movedir, goalorigin );
 				//
-				VectorCopy(goalorigin, start);
+				VectorCopy( goalorigin, start );
 				start[2] += 24;
-				VectorCopy(start, end);
+				VectorCopy( start, end );
 				end[2] -= 100;
-				numareas = trap_AAS_TraceAreas(start, end, areas, NULL, 10);
+				numareas = trap_AAS_TraceAreas( start, end, areas, NULL, 10 );
 				//
-				for (i = 0; i < numareas; i++) {
-					if (trap_AAS_AreaReachability(areas[i])) {
+				for ( i = 0; i < numareas; i++ ) {
+					if ( trap_AAS_AreaReachability( areas[i] ) ) {
 						break;
 					}
 				}
-				if (i < numareas)
-				{
+				if ( i < numareas ) {
 					//
 #ifdef OBSTACLEDEBUG
-					if (bs->activatemessage_time < trap_AAS_Time())
-					{
-						Com_sprintf(buf, sizeof(buf), "I have to activate a button at %1.1f %1.1f %1.1f in area %d\n",
-										goalorigin[0], goalorigin[1], goalorigin[2], areas[i]);
-						trap_EA_Say(bs->client, buf);
+					if ( bs->activatemessage_time < trap_AAS_Time() ) {
+						Com_sprintf( buf, sizeof( buf ), "I have to activate a button at %1.1f %1.1f %1.1f in area %d\n",
+									 goalorigin[0], goalorigin[1], goalorigin[2], areas[i] );
+						trap_EA_Say( bs->client, buf );
 						bs->activatemessage_time = trap_AAS_Time() + 5;
 					} //end if
 #endif //OBSTACLEDEBUG
 					//
 					//VectorMA(origin, -dist, movedir, goalorigin);
 					//
-					VectorCopy(origin, bs->activategoal.origin);
+					VectorCopy( origin, bs->activategoal.origin );
 					bs->activategoal.areanum = areas[i];
-					VectorSubtract(mins, origin, bs->activategoal.mins);
-					VectorSubtract(maxs, origin, bs->activategoal.maxs);
+					VectorSubtract( mins, origin, bs->activategoal.mins );
+					VectorSubtract( maxs, origin, bs->activategoal.maxs );
 					//
-					VectorAdd(bs->activategoal.mins, extramins, bs->activategoal.mins);
-					VectorAdd(bs->activategoal.maxs, extramaxs, bs->activategoal.maxs);
+					VectorAdd( bs->activategoal.mins, extramins, bs->activategoal.mins );
+					VectorAdd( bs->activategoal.maxs, extramaxs, bs->activategoal.maxs );
 					//
 					bs->activategoal.entitynum = entinfo.number;
 					bs->activategoal.number = 0;
 					bs->activategoal.flags = 0;
 					bs->activate_time = trap_AAS_Time() + 10;
-					AIEnter_Seek_ActivateEntity(bs);
+					AIEnter_Seek_ActivateEntity( bs );
 				} //end if
 				else
 				{
 #ifdef OBSTACLEDEBUG
-					BotAI_Print(PRT_MESSAGE, "button area has no reachabilities\n");
+					BotAI_Print( PRT_MESSAGE, "button area has no reachabilities\n" );
 #endif //OBSTACLEDEBUG
-					if (bs->ainode == AINode_Seek_NBG) bs->nbg_time = 0;
-					else if (bs->ainode == AINode_Seek_LTG) bs->ltg_time = 0;
+					if ( bs->ainode == AINode_Seek_NBG ) {
+						bs->nbg_time = 0;
+					} else if ( bs->ainode == AINode_Seek_LTG ) {
+						bs->ltg_time = 0;
+					}
 				} //end else
 			} //end else
 		} //end if
-		/*
-		if (!strcmp(classname, "trigger_multiple"))
-		{
-			//create a bot goal towards the trigger
-			model = AAS_ValueForBSPEpairKey(ent, "model");
-			modelindex = AAS_IndexFromModel(model);
-			//if the model is not precached (bad thing but happens) assume model is "*X"
-			if (!modelindex) modelindex = atoi(model+1);
-			VectorClear(angles);
-			AAS_BSPModelMinsMaxsOrigin(modelindex - 1, angles, mins, maxs, NULL);
-			VectorAdd(mins, maxs, mid);
-			VectorScale(mid, 0.5, mid);
-			VectorCopy(mid, start);
-			start[2] = maxs[2] + 24;
-			VectorSet(end, start[0], start[1], start[2] - 100);
-			trace = AAS_TraceClientBBox(start, end, PRESENCE_CROUCH, -1);
-			if (trace.startsolid) return;
-			//trace.endpos is now the goal origin
-			VectorCopy(trace.endpos, goalorigin);
-			//
-#ifdef OBSTACLEDEBUG
-			if (bs->activatemessage_time < AAS_Time())
-			{
-				Com_sprintf(buf, sizeof(buf), "I have to activate a trigger at %1.1f %1.1f %1.1f in area %d\n",
-								goalorigin[0], goalorigin[1], goalorigin[2], AAS_PointAreaNum(goalorigin));
-				EA_Say(bs->client, buf);
-				bs->activatemessage_time = AAS_Time() + 5;
-			} //end if* /
-#endif //OBSTACLEDEBUG
-			//
-			VectorCopy(mid, bs->activategoal.origin);
-			bs->activategoal.areanum = AAS_PointAreaNum(goalorigin);
-			VectorSubtract(mins, mid, bs->activategoal.mins);
-			VectorSubtract(maxs, mid, bs->activategoal.maxs);
-			bs->activategoal.entitynum = entinfo.number;
-			bs->activategoal.number = 0;
-			bs->activategoal.flags = 0;
-			bs->activate_time = AAS_Time() + 10;
-			if (!AAS_AreaReachability(bs->activategoal.areanum))
-			{
-#ifdef OBSTACLEDEBUG
-				botimport.Print(PRT_MESSAGE, "trigger area has no reachabilities\n");
-#endif //OBSTACLEDEBUG
-				if (bs->ainode == AINode_Seek_NBG) bs->nbg_time = 0;
-				else if (bs->ainode == AINode_Seek_LTG) bs->ltg_time = 0;
-			} //end if
-			else
-			{
-				AIEnter_Seek_ActivateEntity(bs);
-			} //end else
-			return;
-		} //end if*/
+		  /*
+		  if (!strcmp(classname, "trigger_multiple"))
+		  {
+			  //create a bot goal towards the trigger
+			  model = AAS_ValueForBSPEpairKey(ent, "model");
+			  modelindex = AAS_IndexFromModel(model);
+			  //if the model is not precached (bad thing but happens) assume model is "*X"
+			  if (!modelindex) modelindex = atoi(model+1);
+			  VectorClear(angles);
+			  AAS_BSPModelMinsMaxsOrigin(modelindex - 1, angles, mins, maxs, NULL);
+			  VectorAdd(mins, maxs, mid);
+			  VectorScale(mid, 0.5, mid);
+			  VectorCopy(mid, start);
+			  start[2] = maxs[2] + 24;
+			  VectorSet(end, start[0], start[1], start[2] - 100);
+			  trace = AAS_TraceClientBBox(start, end, PRESENCE_CROUCH, -1);
+			  if (trace.startsolid) return;
+			  //trace.endpos is now the goal origin
+			  VectorCopy(trace.endpos, goalorigin);
+			  //
+  #ifdef OBSTACLEDEBUG
+			  if (bs->activatemessage_time < AAS_Time())
+			  {
+				  Com_sprintf(buf, sizeof(buf), "I have to activate a trigger at %1.1f %1.1f %1.1f in area %d\n",
+								  goalorigin[0], goalorigin[1], goalorigin[2], AAS_PointAreaNum(goalorigin));
+				  EA_Say(bs->client, buf);
+				  bs->activatemessage_time = AAS_Time() + 5;
+			  } //end if* /
+  #endif //OBSTACLEDEBUG
+			  //
+			  VectorCopy(mid, bs->activategoal.origin);
+			  bs->activategoal.areanum = AAS_PointAreaNum(goalorigin);
+			  VectorSubtract(mins, mid, bs->activategoal.mins);
+			  VectorSubtract(maxs, mid, bs->activategoal.maxs);
+			  bs->activategoal.entitynum = entinfo.number;
+			  bs->activategoal.number = 0;
+			  bs->activategoal.flags = 0;
+			  bs->activate_time = AAS_Time() + 10;
+			  if (!AAS_AreaReachability(bs->activategoal.areanum))
+			  {
+  #ifdef OBSTACLEDEBUG
+				  botimport.Print(PRT_MESSAGE, "trigger area has no reachabilities\n");
+  #endif //OBSTACLEDEBUG
+				  if (bs->ainode == AINode_Seek_NBG) bs->nbg_time = 0;
+				  else if (bs->ainode == AINode_Seek_LTG) bs->ltg_time = 0;
+			  } //end if
+			  else
+			  {
+				  AIEnter_Seek_ActivateEntity(bs);
+			  } //end else
+			  return;
+		  } //end if*/
 	}
 	//just some basic dynamic obstacle avoidance code
 	hordir[0] = moveresult->movedir[0];
 	hordir[1] = moveresult->movedir[1];
 	hordir[2] = 0;
 	//if no direction just take a random direction
-	if (VectorNormalize(hordir) < 0.1) {
-		VectorSet(angles, 0, 360 * random(), 0);
-		AngleVectors(angles, hordir, NULL, NULL);
+	if ( VectorNormalize( hordir ) < 0.1 ) {
+		VectorSet( angles, 0, 360 * random(), 0 );
+		AngleVectors( angles, hordir, NULL, NULL );
 	}
 	//
 //	if (moveresult->flags & MOVERESULT_ONTOPOFOBSTACLE) movetype = MOVE_JUMP;
@@ -2266,34 +2277,39 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
 	movetype = MOVE_WALK;
 	//if there's an obstacle at the bot's feet and head then
 	//the bot might be able to crouch through
-	VectorCopy(bs->origin, start);
-	start[2] += 18;
-	VectorMA(start, 5, hordir, end);
-	VectorSet(mins, -16, -16, -24);
-	VectorSet(maxs, 16, 16, 4);
+	//VectorCopy( bs->origin, start );
+	//start[2] += 18;
+	//VectorMA( start, 5, hordir, end );
+	//VectorSet( mins, -16, -16, -24 );
+	//VectorSet( maxs, 16, 16, 4 );
 	//
 //	bsptrace = AAS_Trace(start, mins, maxs, end, bs->entitynum, MASK_PLAYERSOLID);
 //	if (bsptrace.fraction >= 1) movetype = MOVE_CROUCH;
 	//get the sideward vector
-	CrossProduct(hordir, up, sideward);
+	CrossProduct( hordir, up, sideward );
 	//
-	if (bs->flags & BFL_AVOIDRIGHT) VectorNegate(sideward, sideward);
+	if ( bs->flags & BFL_AVOIDRIGHT ) {
+		VectorNegate( sideward, sideward );
+	}
 	//try to crouch straight forward?
-	if (movetype != MOVE_CROUCH || !trap_BotMoveInDirection(bs->ms, hordir, 400, movetype)) {
+	if ( movetype != MOVE_CROUCH || !trap_BotMoveInDirection( bs->ms, hordir, 400, movetype ) ) {
 		//perform the movement
-		if (!trap_BotMoveInDirection(bs->ms, sideward, 400, movetype)) {
+		if ( !trap_BotMoveInDirection( bs->ms, sideward, 400, movetype ) ) {
 			//flip the avoid direction flag
 			bs->flags ^= BFL_AVOIDRIGHT;
 			//flip the direction
-			VectorNegate(sideward, sideward);
+			VectorNegate( sideward, sideward );
 			//move in the other direction
-			trap_BotMoveInDirection(bs->ms, sideward, 400, movetype);
+			trap_BotMoveInDirection( bs->ms, sideward, 400, movetype );
 		}
 	}
 	//just reset goals and hope the bot will go into another direction
 	//still needed??
-	if (bs->ainode == AINode_Seek_NBG) bs->nbg_time = 0;
-	else if (bs->ainode == AINode_Seek_LTG) bs->ltg_time = 0;
+	if ( bs->ainode == AINode_Seek_NBG ) {
+		bs->nbg_time = 0;
+	} else if ( bs->ainode == AINode_Seek_LTG ) {
+		bs->ltg_time = 0;
+	}
 }
 
 /*

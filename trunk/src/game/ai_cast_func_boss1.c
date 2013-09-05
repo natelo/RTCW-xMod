@@ -277,7 +277,7 @@ char *AIFunc_FZombie_LightningAttack( cast_state_t *cs )
 					continue;
 				if (VectorDistance( cs->bs->origin, trav->s.origin ) < 48)
 					continue;
-				if (trav->count < 10 == ent->count < 10) {	// this marker is on our wall
+				if ( ( trav->count < 10 ) == ( ent->count < 10 ) ) { 	// this marker is on our wall
 					// if this marker no visible from the enemy
 					if (!AICast_VisibleFromPos( g_entities[cs->bs->enemy].client->ps.origin, cs->bs->enemy, trav->s.origin, cs->entityNum, qfalse )) {
 						cs->followEntity = trav->s.number;

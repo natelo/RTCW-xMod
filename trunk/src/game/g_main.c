@@ -935,7 +935,7 @@ void G_FindTeams( void ) {
 G_RemapTeamShaders
 ==============
 */
-void G_RemapTeamShaders() {
+void G_RemapTeamShaders(void) {
 #ifdef MISSIONPACK
 	char string[1024];
 	float f = level.time * 0.001;
@@ -2294,7 +2294,7 @@ CheckWolfMP
 NERVE - SMF
 =============
 */
-void CheckGameState() {
+void CheckGameState(void) {
 	gamestate_t current_gs;
 
 	current_gs = trap_Cvar_VariableIntegerValue( "gamestate" );
@@ -2346,7 +2346,7 @@ CheckWolfMP
 NERVE - SMF - Once a frame, check for changes in wolf MP player state
 =============
 */
-void CheckWolfMP() {
+void CheckWolfMP(void) {
   // TTimo unused
 //	static qboolean latch = qfalse;
 
