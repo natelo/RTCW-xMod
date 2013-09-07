@@ -2689,6 +2689,13 @@ static void PM_Weapon( void ) {
 	if(pm->waterlevel == 3) {
 		if(	pm->ps->weapon != WP_KNIFE &&
 			pm->ps->weapon != WP_KNIFE2 &&
+// L0 - New ones
+			pm->ps->weapon != WP_LUGER &&
+            pm->ps->weapon != WP_COLT &&
+            pm->ps->weapon != WP_MEDIC_SYRINGE &&
+			pm->ps->weapon != WP_MEDKIT &&
+			pm->ps->weapon != WP_AMMO &&
+// End
 			pm->ps->weapon != WP_GRENADE_LAUNCHER&&
 			pm->ps->weapon != WP_GRENADE_PINEAPPLE &&
 			pm->ps->weapon != WP_DYNAMITE &&

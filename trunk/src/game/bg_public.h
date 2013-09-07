@@ -1210,7 +1210,7 @@ typedef struct gitem_s {
 	char		*precaches;		// string of all models and images this item will use
 	char		*sounds;		// string of all sounds this item will use
 
-	int			gameskillnumber[5];
+	int			gameskillnumber[5];	
 } gitem_t;
 // END JOSEPH
 

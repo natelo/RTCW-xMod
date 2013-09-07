@@ -406,6 +406,14 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 		if (other->client->ps.ammoclip[BG_FindClipForWeapon(weapon)] < i)
 			other->client->ps.ammoclip[BG_FindClipForWeapon(weapon)]++;
 		COM_BitSet(other->client->ps.weapons,weapon);
+
+		// L0 - Give med's a syringe
+		if (other->client->ps.stats[STAT_PLAYER_CLASS] == PC_MEDIC)
+		{
+			if (other->client->ps.ammoclip[BG_FindAmmoForWeapon(WP_MEDIC_SYRINGE)] < 10) 
+				other->client->ps.ammoclip[BG_FindAmmoForWeapon(WP_MEDIC_SYRINGE)]++; 
+				COM_BitSet(other->client->ps.weapons, WP_MEDIC_SYRINGE); 
+		}
 		
 		// TTimo - add 8 pistol bullets
 		if (other->client->sess.sessionTeam == TEAM_RED)
@@ -1131,6 +1139,10 @@ void ClearRegisteredItems( void ) {
 //			but for now, re-register the MP40 automatically
 //	RegisterItem( BG_FindItemForWeapon( WP_MP40 ) );
 	RegisterItem( BG_FindItem("Med Health") );			// NERVE - SMF - this is so med packs properly display
+	// L0 - For dropping nade packs
+	RegisterItem( BG_FindItem( "Grenades" ) );
+	RegisterItem( BG_FindItem( "Pineapples" ) );
+
 }
 
 /*
