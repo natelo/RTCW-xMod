@@ -35,7 +35,7 @@ char *sortTag(gentity_t *ent) {
 	Q_CleanStr(tag);	
 	tag[20] = 0;	 // 20 should be enough..
 
-return tag;
+	return tag;
 }
 
 /*
@@ -1393,14 +1393,14 @@ void cmd_permignore(gentity_t *ent, qboolean unignore) {
 
 		// Unignores players
 		if (unignore) {
-			if (!g_entities[nums[i]].client->sess.ignored) {
-				CP(va("print \"%s ^7is already unignored^1!\n\"", g_entities[nums[i]].client->pers.netname));
-				return;
-			} else {
+			// Poor man's solution to (semi)avoid useless messages
+			if (g_entities[nums[i]].client->sess.ignored)			
 				AP(va("chat \"console: %s has removed permanent ignore from player %s^3!\n\"", tag, g_entities[nums[i]].client->pers.netname));
-				g_entities[nums[i]].client->sess.ignored = 0;
-				UNIGNORE_CLIENT(g_entities[nums[i]].client->sess.guid);
-			}
+			else
+				CP(va("print \"You removed permanent ignore from player %s^3!\n\"", g_entities[nums[i]].client->pers.netname));
+
+			g_entities[nums[i]].client->sess.ignored = 0;
+			UNIGNORE_CLIENT(g_entities[nums[i]].client->sess.guid);		
 			action = va("unignored");
 
 		// Ignores player
@@ -1450,6 +1450,8 @@ void cmd_permclientignore(gentity_t *ent, qboolean unignore) {
 		// Poor man's solution to (semi)avoid useless messages
 		if (targetclient->client->sess.ignored)
 			AP(va("chat \"console: %s has removed permanent ignore from player %s^3!\n\"", tag, targetclient->client->pers.netname));
+		else
+			CP(va("print \"You removed permanent ignore from player %s^3!\n\"", targetclient->client->pers.netname));
 
 		targetclient->client->sess.ignored = 0;
 		UNIGNORE_CLIENT(targetclient->client->sess.guid);		

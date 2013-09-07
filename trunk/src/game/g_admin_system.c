@@ -562,7 +562,7 @@ void UNIGNORE_CLIENT(char *guid)
 	if (!Q_stricmp (guid, "")) 
 		return;
 
-	client_ignored(guid);
+	write_tempignored(guid);
 
 	return;
 }
@@ -688,33 +688,33 @@ void SB_chatWarn(gentity_t *ent) {
 
 	if (ent->client->pers.sb_chatWarned == 0) {
 		if (n == 0) 			
-			CP("chat \"^3SB: Strike one! ^7You should really wash your mouth.\n\"");
+			CP("chat \"^3Strike one! ^7You should really wash your mouth.\n\"");
 		else if (n == 1)
-			CP("chat \"^3SB: Strike one! ^7You got warned for foul language..\n\"");		
+			CP("chat \"^3Strike one! ^7You got warned for foul language..\n\"");		
 		else if (n == 2)
-			CP("chat \"^3SB: Strike one! ^7This is not your local pub..\n\"");		
+			CP("chat \"^3Strike one! ^7This is not your local pub..\n\"");		
 		else 			
-			CP("chat \"^3SB: Strike one! ^7Cursing is not allowed here.\n\"");
+			CP("chat \"^3Strike one! ^7Cursing is not allowed here.\n\"");
 	}
 	else if (ent->client->pers.sb_chatWarned == 1) {
 		if (n == 0) 		
-			CP("chat \"^3SB: Strike two! ^7Don't push it..\n\"");
+			CP("chat \"^3Strike two! ^7Don't push it..\n\"");
 		else if (n == 1) 			
-			CP("chat \"^3SB: Strike two! ^7You where warned..\n\"");
+			CP("chat \"^3Strike two! ^7You where warned..\n\"");
 		else if (n == 2) 			
-			CP("chat \"^3SB: Strike two! ^7Do you talk to your parents like this?\n\"");
+			CP("chat \"^3Strike two! ^7Do you talk to your parents like this?\n\"");
 		else
-			CP("chat \"^3SB: Strike two! ^7Foul language is not allowed here.\n\"");			
+			CP("chat \"^3Strike two! ^7Foul language is not allowed here.\n\"");			
 	}
 	else if (ent->client->pers.sb_chatWarned == 2) {
 		if (n == 0) 
-			CP("chat \"^3SB: Strike three! ^7Last warning!\n\"");			
+			CP("chat \"^3Strike three! ^7Last warning!\n\"");			
 		else if (n == 1)
-			CP("chat \"^3SB: Strike three! ^7There wont be strike four..\n\"");			
+			CP("chat \"^3Strike three! ^7There wont be strike four..\n\"");			
 		else if (n == 2)
-			CP("chat \"^3SB: Strike three! ^7There's no more warnings after this one.\n\"");		
+			CP("chat \"^3Strike three! ^7There's no more warnings after this one.\n\"");		
 		 else 
-			CP("chat \"^3SB: Strike three! ^7Care to see how strike four looks like?\n\"");
+			CP("chat \"^3Strike three! ^7Care to see how strike four looks like?\n\"");
 	} else {		
 		if (sb_censorPenalty.integer == 1) {
 			ent->client->sess.ignored = 1;
