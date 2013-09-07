@@ -1540,7 +1540,7 @@ void ParseAdmStr(const char *strInput, char *strCmd, char *strArgs);
 void cmd_incognito(gentity_t *ent);
 void cmd_do_logout(gentity_t *ent);
 void cmd_do_login (gentity_t *ent, qboolean silent);
-//void cmd_getstatus(gentity_t *ent);
+void cmd_getstatus(gentity_t *ent);
 
 //
 // g_admin_system.c

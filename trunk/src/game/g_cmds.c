@@ -2797,7 +2797,7 @@ void ClientCommand( int clientNum ) {
 		return;
 	}
 
-	// L0 - Hook our commands above intermission
+// L0 - Hook our commands above intermission
 	if ( Q_stricmp( cmd, "login" ) == 0 ) {
 		cmd_do_login( ent, qfalse );
 	return;
@@ -2813,13 +2813,13 @@ void ClientCommand( int clientNum ) {
 	if ( Q_stricmp( cmd, "incognito" ) == 0 ) {
 		cmd_incognito( ent );
 	return;
-	} 
-	/*
-	if ( Q_stricmp( cmd, "getstatus" ) == 0 ) {
+	}
+	if ((Q_stricmp( cmd, "getstatus" ) == 0) || 
+		(Q_stricmp( cmd, "listplayers" ) == 0)) {
 		cmd_getstatus( ent );
 	return;
 	}
-	*/
+// End	
 
 	// ignore all other commands when at intermission
 	if (level.intermissiontime) {

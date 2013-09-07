@@ -1525,5 +1525,6 @@ typedef enum {
 void DecolorString( char *in, char *out);
 int is_numeric(const char *p);
 char *Q_StrReplace(char *haystack, char *needle, char *newVal);
+void stripChars( char *input, char *output, int cutSize );
 
 #endif	// __Q_SHARED_H

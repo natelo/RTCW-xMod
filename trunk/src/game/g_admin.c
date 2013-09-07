@@ -1410,7 +1410,7 @@ void cmd_permignore(gentity_t *ent, qboolean unignore) {
 				return;
 			} else {
 				AP(va("chat \"console: %s has ^3permanently ignored ^7player %s^3!\n\"", tag, g_entities[nums[i]].client->pers.netname));
-				g_entities[nums[i]].client->sess.ignored = 1;
+				g_entities[nums[i]].client->sess.ignored = 2;
 				IGNORE_CLIENT(g_entities[nums[i]].client->sess.guid);
 			}
 			action = va("ignored");
@@ -1464,7 +1464,7 @@ void cmd_permclientignore(gentity_t *ent, qboolean unignore) {
 			return;
 		} else {
 			AP(va("chat \"console: %s has ^3permanently ignored ^7player %s^3!\n\"", tag, targetclient->client->pers.netname));
-			targetclient->client->sess.ignored = 1;
+			targetclient->client->sess.ignored = 2;
 			IGNORE_CLIENT(targetclient->client->sess.guid);
 		}
 		action = va("ignored");
@@ -1720,6 +1720,114 @@ void cmd_addIp(gentity_t *ent) {
 
 	return;
 }
+
+/*
+===========
+Getstatus
+
+Prints IP's, GUIDs and some match info..
+===========
+*/
+void cmd_getstatus(gentity_t *ent) {
+	int	j;
+	// uptime
+	int secs = level.time / 1000;
+	int mins = (secs / 60) % 60;
+	int hours = (secs / 3600) % 24;
+	int days = (secs / (3600 * 24));
+	qtime_t ct;
+	trap_RealTime(&ct);	
+
+	CP(va("print \"\n^7Server: %s    ^7%02d:%02d:%02d ^3(^7%02d %s %d^3)\n\"", sv_hostname.string, ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, cMonths[ct.tm_mon], 1900+ct.tm_year));
+	CP("print \"^3--------------------------------------------------------------------------\n\"");
+	CP("print \"^7Slot : Team : Name       : ^3IP           ^7: ^3Guid         ^7: Status \n\"");
+	CP("print \"^3--------------------------------------------------------------------------\n\"");
+
+	for ( j = 0; j <= (MAX_CLIENTS-1); j++) {	
+
+		if ( g_entities[j].client && !( ent->r.svFlags & SVF_BOT ) ) {
+			char *team, *slot, *ip, *tag, *sortTag, *extra;
+			char n1[MAX_NETNAME]; 
+			char n2[MAX_NETNAME];	
+			char guid[13];
+
+			// Has to be done twice to cope with double carrots..
+			DecolorString(g_entities[j].client->pers.netname, n1);
+			SanitizeString(n1, n2, qfalse); 
+			Q_CleanStr(n2);	
+			n2[10] = 0;	
+
+			// player is connecting
+			if ( g_entities[j].client->pers.connected == CON_CONNECTING ) {				
+				CP(va("print \"%3d  : >><< : %-10s : ^3>>Connecting<<  ^7:\n\"", j, n2));
+			}
+			
+			// player is connected
+			if ( g_entities[j].client->pers.connected == CON_CONNECTED ) { 
+					
+				// Sort it :C
+				sortTag = "";
+				slot = va("%3d", j);
+				team = (g_entities[j].client->sess.sessionTeam == TEAM_SPECTATOR) ? "^3SPEC^7" : 
+					(g_entities[j].client->sess.sessionTeam == TEAM_RED ? "^1Axis^7" : "^4Alld^7" );
+									
+				ip = ( ent->client->sess.admin == ADM_NONE ) ?
+					va("%i.%i.*.*", g_entities[j].client->sess.ip[0], g_entities[j].client->sess.ip[1] ) :
+					va("%i.%i.%i.%i", g_entities[j].client->sess.ip[0], g_entities[j].client->sess.ip[1], g_entities[j].client->sess.ip[2], g_entities[j].client->sess.ip[3]  );					
+					
+				switch (g_entities[j].client->sess.admin) {
+					case ADM_NONE:
+						sortTag = "";
+					break;
+					case ADM_1:
+						sortTag = (g_entities[j].client->sess.incognito) ? va("%s ^7*", a1_tag.string) : va("%s", a1_tag.string);
+					break;
+					case ADM_2:
+						sortTag = (g_entities[j].client->sess.incognito) ? va("%s ^7*", a2_tag.string) : va("%s", a2_tag.string);
+					break;
+					case ADM_3:
+						sortTag = (g_entities[j].client->sess.incognito) ? va("%s ^7*", a3_tag.string) : va("%s", a3_tag.string);
+					break;
+					case ADM_4:
+						sortTag = (g_entities[j].client->sess.incognito) ? va("%s ^7*", a4_tag.string) : va("%s", a4_tag.string);
+					break;
+					case ADM_5:
+						sortTag = (g_entities[j].client->sess.incognito) ? va("%s ^7*", a5_tag.string) : va("%s", a5_tag.string);
+					break;
+				}	
+
+				// Sort Admin tags..
+				tag = "";
+				extra = (g_entities[j].client->sess.admin == ADM_NONE && g_entities[j].client->sess.ignored) ? 
+					((g_entities[j].client->sess.ignored > 1) ? "^3perm Ignored" : "^3Ignored") : "";
+				if (ent->client->sess.admin == ADM_NONE) {
+					tag = (g_entities[j].client->sess.admin != ADM_NONE && !g_entities[j].client->sess.incognito) ? sortTag : extra;
+				} else if (ent->client->sess.admin != ADM_NONE) {
+					tag = (g_entities[j].client->sess.admin == ADM_NONE && g_entities[j].client->sess.ignored) ? "^1Ignored" : sortTag;
+				}	
+
+				// Guid
+				stripChars(g_entities[j].client->sess.guid, guid, 12);
+				
+					// Print it now
+					CP(va("print \"%-4s : %s : %-10s : ^3%-12s ^7: ^3%-12s ^7: %-12s \n\"", 
+						slot, 
+						team, 
+						n2,
+						ip,
+						guid,
+						tag
+					));	
+			}
+		}
+	}	
+	CP("print \"^3--------------------------------------------------------------------------\n\"");		
+	CP( va("print \"^7Uptime: ^3%d ^7day%s ^3%d ^7hours ^3%d ^7minutes\n\"", days, (days != 1 ? "s" : ""), hours, mins));
+	CP("print \"\n\"");	
+	
+return;
+}
+
 
 /*********************************** INTERACTIONS ************************************/
 /*

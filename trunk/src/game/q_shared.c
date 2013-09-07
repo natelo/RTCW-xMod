@@ -1421,6 +1421,21 @@ char *Q_StrReplace(char *haystack, char *needle, char *newp)
 	return final;
 }
 
+/*
+==================
+L0 - Strip the chars when need it
+==================
+*/
+void stripChars( char *input, char *output, int cutSize ) {
+	int lenght = strlen( input );
+	int i = 0, k = 0;
+
+	for ( i = lenght - cutSize; i < lenght; i++ )
+		output[k++] = input[i];
+
+output[k++] = '\0';
+}
+
 
 //====================================================================
 
