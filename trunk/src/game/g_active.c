@@ -201,8 +201,6 @@ void P_WorldEffects( gentity_t *ent ) {
 	// jpw
 }
 
-
-
 /*
 ===============
 G_SetClientSound

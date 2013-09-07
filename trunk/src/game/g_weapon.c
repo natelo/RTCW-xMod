@@ -2071,27 +2071,24 @@ LIGHTNING GUN
 // TTimo - extracted G_FlameDamage to unify with Weapon_FlamethrowerFire usage
 void G_BurnMeGood( gentity_t *self, gentity_t *body)
 {
-		// add the new damage
-		body->flameQuota += 5;
-		body->flameQuotaTime = level.time;
+	// add the new damage
+	body->flameQuota += 5;
+	body->flameQuotaTime = level.time;
 
-		// JPW NERVE -- yet another flamethrower damage model, trying to find a feels-good damage combo that isn't overpowered
-		if (body->lastBurnedFrameNumber != level.framenum) {
-			G_Damage(body,self->parent,self->parent,vec3_origin,self->r.currentOrigin,5,0,MOD_FLAMETHROWER); // was 2 dmg in release ver, hit avg. 2.5 times per frame
-			body->lastBurnedFrameNumber = level.framenum;
-		}
-		// jpw
+	if (level.time - body->lastBurnedFrameNumber >= 1) {
+		G_Damage(body, self->parent, self->parent, vec3_origin, self->r.currentOrigin, 4, 0, MOD_FLAMETHROWER);	
+		body->lastBurnedFrameNumber = level.time;
+	}
 		
-		// make em burn
-		if (body->client && (body->health <= 0 || body->flameQuota > 0)) { // JPW NERVE was > FLAME_THRESHOLD
-			if (body->s.onFireEnd < level.time)
-				body->s.onFireStart = level.time;
+	if (body->client && (body->health <= 0 || body->flameQuota > 0)) { // JPW NERVE was > FLAME_THRESHOLD
+		if (body->s.onFireEnd < level.time)
+			body->s.onFireStart = level.time;
 
-			body->s.onFireEnd = level.time + FIRE_FLASH_TIME;
-			body->flameBurnEnt = self->s.number;
-			// add to playerState for client-side effect
-			body->client->ps.onFireStart = level.time;
-		}	
+		body->s.onFireEnd = level.time + FIRE_FLASH_TIME;
+		body->flameBurnEnt = self->s.number;
+		// add to playerState for client-side effect
+		body->client->ps.onFireStart = level.time;
+	}
 }
 
 // those are used in the cg_ traces calls
@@ -2114,15 +2111,15 @@ void Weapon_FlamethrowerFire( gentity_t *ent ) {
 	VectorMA( start, -8, forward, start );
 	VectorMA( start, 10, right, start );
 	VectorMA( start, -6, up, start );
-	
+
 	// prevent flame thrower cheat, run & fire while aiming at the ground, don't get hurt
 	// 72 total box height, 18 xy -> 77 trace radius (from view point towards the ground) is enough to cover the area around the feet
 	VectorMA( trace_start, 77.0, forward, trace_end);
-	trap_Trace( &trace, trace_start, flameChunkMins, flameChunkMaxs, trace_end, ent->s.number, MASK_SHOT | MASK_WATER );	
+	trap_Trace( &trace, trace_start, flameChunkMins, flameChunkMaxs, trace_end, ent->s.number, MASK_SHOT | MASK_WATER );
 	if (trace.fraction != 1.0)
 	{
 		// additional checks to filter out false positives
-		if (trace.endpos[2] > (ent->r.currentOrigin[2]+ent->r.mins[2]-8) && trace.endpos[2] < ent->r.currentOrigin[2]) 
+		if (trace.endpos[2] > (ent->r.currentOrigin[2]+ent->r.mins[2]-8) && trace.endpos[2] < ent->r.currentOrigin[2])
 		{
 			// trigger in a 21 radius around origin
 			trace_start[0] -= trace.endpos[0];
@@ -2135,7 +2132,7 @@ void Weapon_FlamethrowerFire( gentity_t *ent ) {
 		}
 	}
 
-	traceEnt = fire_flamechunk ( ent, start, forward );	
+	traceEnt = fire_flamechunk ( ent, start, forward );
 }
 
 //======================================================================
