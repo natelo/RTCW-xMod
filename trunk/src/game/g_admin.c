@@ -1439,8 +1439,8 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd,"restart"))		{ if (canUse(ent, qtrue)) cmd_restart(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"reset"))			{ if (canUse(ent, qtrue)) cmd_resetmatch(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"swap"))			{ if (canUse(ent, qtrue)) cmd_swap(ent); else cantUse(ent); return qtrue;} 
-	else if (!strcmp(cmd,"shuffle"))		{ if (canUse(ent, qtrue)) cmd_shuffle(ent, qfalse); else cantUse(ent); return qtrue;} 
-	else if (!strcmp(cmd,"@shuffle"))		{ if (canUse(ent, qtrue)) cmd_shuffle(ent, qtrue); else cantUse(ent); return qtrue;} 
+	else if (!strcmp(cmd,"shuffle"))		{ if (canUse(ent, qtrue)) cmd_shuffle(ent, qtrue); else cantUse(ent); return qtrue;} 
+	else if (!strcmp(cmd,"@shuffle"))		{ if (canUse(ent, qtrue)) cmd_shuffle(ent, qfalse); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"spec999"))		{ if (canUse(ent, qtrue)) cmd_specs999(ent); else cantUse(ent); return qtrue;} 	
 	else if (!strcmp(cmd,"whereis"))		{ if (canUse(ent, qtrue)) cmd_revealCamper(ent); else cantUse(ent); return qtrue;}
 	else if (!strcmp(cmd,"rename"))			{ if (canUse(ent, qtrue)) cmd_rename(ent); else cantUse(ent); return qtrue;}
@@ -1504,7 +1504,7 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("reset", "Resets the match.", NULL)
 	_HELP("swap", "Swaps the teams.", NULL)
 	_HELP("shuffle", "Shuffles the teams and resets the match.", NULL)
-	_HELP("@shuffle", "Shuffles the teams during match without resetting the match.", NULL)
+	_HELP("@shuffle", "Shuffles the teams and starts the match.", NULL)
 	_HELP("spec999", "Moves all lagged (999) players to spectators.", NULL)
 	_HELP("whereis", "Reveals players location to all.", "Uses client slot number!")
 	_HELP("rename", "Renames players.", "!rename <client slot> <new name>")
