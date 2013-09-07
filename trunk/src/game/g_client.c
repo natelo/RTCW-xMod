@@ -1291,10 +1291,21 @@ qboolean G_ParseAnimationFiles( char *modelname, gclient_t *cl )
 
 /*
 ===========
-L0 - Save players IP
+L0  
+
+Save players IP
 ============
 */
 void SaveIP_f ( gclient_t * client, char * sip ) {
+
+	// Don't blindly save if entry already exists..
+	if (client->sess.ip[0] && 
+		client->sess.ip[1] && 
+		client->sess.ip[2] && 
+		client->sess.ip[3])
+	{
+		return;
+	}
 	
 	if( strcmp( sip, "localhost" ) == 0 || sip == NULL ){
 		// Localhost, just enter 0 for all values:
@@ -1310,7 +1321,52 @@ void SaveIP_f ( gclient_t * client, char * sip ) {
 				(int *)&client->sess.ip[2], (int *)&client->sess.ip[3]);
 	return;
 }
-// End
+
+/*
+===========
+L0 - Check spoofing..
+
+Used ETpub for reference
+============
+*/
+char *spoofcheck( gclient_t *client, char *guid, char *ip ){
+	char *cIP;
+
+	if(Q_stricmp(client->sess.guid, guid)) {
+		if( !client->sess.guid ||
+			!Q_stricmp( client->sess.guid, "" ) ||
+			!Q_stricmp( client->sess.guid, "NOGUID" ) ) {
+			
+			if( Q_stricmp( guid, "unknown" ) && Q_stricmp( guid, "NO_GUID" ) ) {
+				Q_strncpyz( client->sess.guid, guid, sizeof( client->sess.guid ) );
+			}
+		} else {
+			G_LogPrintf( "GUID SPOOF: client %i Original guid %s"
+				"Secondary guid %s\n",
+				client->ps.clientNum,
+				client->sess.guid,
+				guid);
+			
+			// We use more permanent (no options to disable it) version
+			return "You are kicked for GUID spoofing";
+		}
+	}
+
+	cIP = va("%i.%i.%i.%i", client->sess.ip[0], client->sess.ip[1], client->sess.ip[2], client->sess.ip[3] );
+	if(Q_stricmp(cIP, ip) != 0) {
+		G_LogPrintf( 
+			"IP SPOOF: client %i Original ip %s"
+			"Secondary ip %s\n",
+			client->ps.clientNum,
+			cIP,
+			ip
+		);
+	
+		return "You are kicked for IP spoofing";
+	}
+
+	return 0;
+}
 
 /*
 ===========
@@ -1337,6 +1393,11 @@ void ClientUserinfoChanged( int clientNum ) {
 	char	*c1;
 	char	userinfo[MAX_INFO_STRING];
 
+	// L0 - New stuff
+	char guid[PB_GUID_LENGTH + 1]; 
+	char *reason;
+	// End
+
 	ent = g_entities + clientNum;
 	client = ent->client;
 
@@ -1355,11 +1416,23 @@ void ClientUserinfoChanged( int clientNum ) {
 		client->pers.localClient = qtrue;
 	}
 
-	// L0 - save IP for getstatus..
+// L0
+	// Save IP for getstatus..
 	s = Info_ValueForKey( userinfo, "ip" );
 	if( s[0] != 0 ){
 		SaveIP_f( client, s );
-	} // L0 - end
+	} 
+
+	// Spoofs
+	Q_strncpyz(guid, Info_ValueForKey(userinfo, "cl_guid"), sizeof(guid));
+	// IP & Guid check
+	if( !( ent->r.svFlags & SVF_BOT ) ) { 
+		reason = spoofcheck( client, guid, Info_ValueForKey( userinfo, "ip"  ) );
+		if( reason ) {
+			trap_DropClient( clientNum, va( "^1%s", reason ));
+		}
+	}
+// L0 - end
 
 	// check the item prediction
 	s = Info_ValueForKey( userinfo, "cg_predictItems" );
@@ -1523,8 +1596,9 @@ void ClientUserinfoChanged( int clientNum ) {
 			( (client->sess.sessionTeam == TEAM_BLUE) ? "Allied" : "Spectator" );
 		
 		// Print essentials and skip garbage
-		s = va( "name\\%s\\team\\%s\\IP\\%s",
-			client->pers.netname, team, Info_ValueForKey( userinfo, "ip" ));
+		// TODO : Do VSP stats expect cl_guid or guid?
+		s = va( "name\\%s\\team\\%s\\IP\\%s\\guid\\%s", 
+			client->pers.netname, team, Info_ValueForKey( userinfo, "ip" ), guid);
 	}
 
 	// this is not the userinfo actually, it's the config string
@@ -1558,10 +1632,15 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	gclient_t	*client;
 	char		userinfo[MAX_INFO_STRING];
 	gentity_t	*ent;
+	char		guid[PB_GUID_LENGTH + 1];
 
 	ent = &g_entities[ clientNum ];
 
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
+
+	// L0 - GUID
+	value = Info_ValueForKey(userinfo, "cl_guid");
+	Q_strncpyz(guid, value, sizeof(guid));
 
 	// IP filtering
 	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=500
@@ -1571,6 +1650,10 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	if ( G_FilterPacket( value ) ) {
 		return "You are banned from this server.";
 	}
+
+	// L0 - IP spoof (unsophisticated spoof)
+	if (!Q_stricmp(value, ""))
+		return "^1Socket/IP Spoof- ^7Entrance refused^1!";
 	
 	// Xian - check for max lives enforcement ban
 	if (g_enforcemaxlives.integer && (g_maxlives.integer > 0 || g_axismaxlives.integer > 0 || g_alliedmaxlives.integer > 0))
@@ -1612,6 +1695,16 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		G_InitSessionData( client, userinfo );
 	}
 	G_ReadSessionData( client );
+
+	// L0 - Add guid if it's not already added..
+	if( !client->sess.guid || 
+		!Q_stricmp( client->sess.guid, "" ) ||
+		!Q_stricmp( client->sess.guid, "NOGUID" ) ) {
+			
+		if( Q_stricmp( guid, "unknown" ) && Q_stricmp( guid, "NO_GUID" ) ) {
+			Q_strncpyz( client->sess.guid, guid, sizeof( client->sess.guid ) );
+		}
+	}
 
 	if( isBot ) {
 		ent->r.svFlags |= SVF_BOT;

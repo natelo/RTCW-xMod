@@ -939,7 +939,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	char		text[MAX_SAY_TEXT];
 	char		location[64];
 	qboolean	localize = qfalse;
-	// L0 - Admin stuff
+// L0 - Admin stuff
 	char *tag;	
 	char arg[MAX_SAY_TEXT]; // ! & ? 
 	char cmd1[128];
@@ -990,7 +990,15 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	} else {
 		tag = ""; 
 	} 	
-	// L0 - End
+
+	// Ignored 
+	if (ent->client->sess.ignored && ent->client->sess.admin == ADM_NONE) 
+	{
+		CP("print \"^1You are ignored^7! Chat dismissed.. \n\"" );
+		return;
+	}
+
+// L0 - End
 
 
 	if ( g_gametype.integer < GT_TEAM && mode == SAY_TEAM ) {
@@ -1065,6 +1073,13 @@ static void Cmd_Say_f( gentity_t *ent, int mode, qboolean arg0 ) {
 		return;
 	}
 
+	// Ignored 
+	if (ent->client->sess.ignored && ent->client->sess.admin == ADM_NONE) 
+	{
+		CP("print \"^1You are ignored^7! Chat dismissed.. \n\"" );
+		return;
+	}
+
 	if (arg0)
 	{
 		p = ConcatArgs( 0 );
@@ -1089,6 +1104,13 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	char		arg[MAX_TOKEN_CHARS];
 
 	if ( trap_Argc () < 2 ) {
+		return;
+	}
+
+	// Ignored 
+	if (ent->client->sess.ignored && ent->client->sess.admin == ADM_NONE) 
+	{
+		CP("print \"^1You are ignored^7! Tell dismissed.. \n\"" );
 		return;
 	}
 
@@ -1132,6 +1154,13 @@ static void G_VoiceTo( gentity_t *ent, gentity_t *other, int mode, const char *i
 		return;
 	}
 
+	// Ignored 
+	if (ent->client->sess.ignored && ent->client->sess.admin == ADM_NONE) 
+	{
+		CP("print \"^1You are ignored^7! Vsay dismissed.. \n\"" );
+		return;
+	}
+
 	if (mode == SAY_TEAM) {
 		color = COLOR_CYAN;
 		cmd = "vtchat";
@@ -1155,6 +1184,13 @@ void G_Voice( gentity_t *ent, gentity_t *target, int mode, const char *id, qbool
 
 	if ( g_gametype.integer < GT_TEAM && mode == SAY_TEAM ) {
 		mode = SAY_ALL;
+	}
+
+	// Ignored 
+	if (ent->client->sess.ignored && ent->client->sess.admin == ADM_NONE) 
+	{
+		CP("print \"^1You are ignored^7! Vsay dismissed.. \n\"" );
+		return;
 	}
 
 	// DHM - Nerve :: Don't allow excessive spamming of voice chats
@@ -1396,6 +1432,13 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	char	cleanName[64]; // JPW NERVE
 	int		mask = 0;
 
+	// Ignored 
+	if (ent->client->sess.ignored && ent->client->sess.admin == ADM_NONE) 
+	{
+		CP("print \"^1You are ignored^7! Vote dismissed.. \n\"" );
+		return;
+	}
+
 	if ( !g_voteFlags.integer ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Voting not enabled on this server.\n\"" );
 		return;
@@ -1409,7 +1452,8 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, "print \"You have called the maximum number of votes.\n\"" );
 		return;
 	}
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+	// L0 - Admins can call votes from spectators..disallowed votes will still be server depended
+	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR && ent->client->sess.admin == ADM_NONE) {
 		trap_SendServerCommand( ent-g_entities, "print \"Not allowed to call a vote as spectator.\n\"" );
 		return;
 	}

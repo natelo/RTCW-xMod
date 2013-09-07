@@ -421,7 +421,9 @@ typedef struct {
 #define	FOLLOW_ACTIVE1	-1
 #define	FOLLOW_ACTIVE2	-2
 
-// L0 - Admins
+// L0 
+
+// Admins
 typedef enum {
 	ADM_NONE, // Normal players	
 	ADM_1,    // Level 1 Admin
@@ -430,7 +432,11 @@ typedef enum {
 	ADM_4,	  // Level 4 Admin 
 	ADM_5	  // Level 5 Admin
 } admLvls_t;
-// End
+
+// PB
+#define PB_GUID_LENGTH 32
+
+// L0 - End
 
 // client data that stays across multiple levels or tournament restarts
 // this is achieved by writing all the data to cvar strings at game shutdown
@@ -456,6 +462,8 @@ typedef struct {
 	admLvls_t	admin;				// Admins
 	int			incognito;			// Incognito for admins..
 	unsigned char ip[4];			// IPs
+	char		guid[PB_GUID_LENGTH + 1];
+	int			ignored;			// Ignored clients
 	
 } clientSession_t;
 

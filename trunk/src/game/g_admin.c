@@ -680,7 +680,7 @@ void cmd_specs(gentity_t *ent) {
 		if (g_entities[nums[i]].client->sess.sessionTeam == TEAM_SPECTATOR) {
 			CP(va("print \"Player %s ^7is already a spectator^3!\n\"", g_entities[nums[i]].client->pers.netname));
 			return;
-		}  else
+		} else
 			SetTeam( &g_entities[nums[i]], "spectator", qtrue );				
 			AP(va("chat \"console: ^7%s has forced player %s ^7to ^3spectators^7!\n\"", tag, g_entities[nums[i]].client->pers.netname));
 
@@ -751,7 +751,7 @@ void cmd_allied(gentity_t *ent) {
 	if (count == 0) {			
 		CP("print \"Client not on server^3!\n\"");
 		return;
-	 }else if (count > 1) {	
+	 } else if (count > 1) {	
 		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	}
@@ -1261,6 +1261,113 @@ void cmd_revealCamper(gentity_t *ent) {
 		logEntry (ADMACT, log);
 }
 
+/*
+==================
+Ignore user (uses name)
+==================
+*/
+void cmd_ignore(gentity_t *ent, qboolean unignore) {
+	int count = 0;
+	int i;
+	int nums[MAX_CLIENTS];
+	char *tag, *log, *action;
+
+	tag = sortTag(ent);
+	count = ClientNumberFromNameMatch(ent->client->pers.cmd2, nums);
+
+	if (count == 0) {			
+		CP("print \"Client not on server^1!\n\"");
+		return;
+	} else if (count > 1) {
+		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		return;
+	} 
+		
+	for (i = 0; i < count; i++) {	
+
+		// Unignores players
+		if (unignore) {
+			if (!g_entities[nums[i]].client->sess.ignored) {
+				CP(va("print \"%s ^7is already unignored^1!\n\"", g_entities[nums[i]].client->pers.netname));
+				return;
+			} else {
+				AP(va("chat \"console: %s has unignored player %s^3!\n\"", tag, g_entities[nums[i]].client->pers.netname));
+				g_entities[nums[i]].client->sess.ignored = 0;
+			}
+			action = va("unignored");
+
+		// Ignores player
+		} else {
+			if (g_entities[nums[i]].client->sess.ignored) {
+				CP(va("print \"%s ^7is already ignored^1!\n\"", g_entities[nums[i]].client->pers.netname));
+				return;
+			} else {
+				AP(va("chat \"console: %s has ignored player %s^3!\n\"", tag, g_entities[nums[i]].client->pers.netname));
+				g_entities[nums[i]].client->sess.ignored = 1;
+			}
+			action = va("ignored");
+		}
+
+		// Log it
+		log =va("Player %s (IP:%i.%i.%i.%i) has %s user %s.", 
+			ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
+			ent->client->sess.ip[3], action, g_entities[nums[i]].client->pers.netname);
+		logEntry (ADMACT, log);
+	}
+}
+
+/*
+==================
+Ignore user (uses clientslot)
+==================
+*/
+void cmd_clientignore(gentity_t *ent, qboolean unignore) {
+	int	clientNum;
+	gentity_t	*targetclient;	
+	char *tag, *log, *action;
+
+	tag = sortTag(ent);
+
+	clientNum = ClientNumberFromString( ent, ent->client->pers.cmd2 );
+	if ( clientNum == -1 ) {
+		CP("print \"Client not on server^1!\n\"");
+		return; 
+	}
+
+	// Give values to these
+	targetclient = g_entities + clientNum;	
+
+	// Unignores players
+	if (unignore) {
+		if (!targetclient->client->sess.ignored) {
+			CP(va("print \"%s ^7is already unignored^1!\n\"", targetclient->client->pers.netname));
+			return;
+		} else {
+			AP(va("chat \"console: %s has unignored player %s^3!\n\"", tag, targetclient->client->pers.netname));
+			targetclient->client->sess.ignored = 0;
+		}
+		action = va("unignored");
+
+	// Ignores player
+	} else {
+		if (targetclient->client->sess.ignored) {
+			CP(va("print \"%s ^7is already ignored^1!\n\"", targetclient->client->pers.netname));
+			return;
+		} else {
+			AP(va("chat \"console: %s has ignored player %s^3!\n\"", tag, targetclient->client->pers.netname));
+			targetclient->client->sess.ignored = 1;
+		}
+		action = va("ignored");
+	}
+
+	// Log it
+	log =va("Player %s (IP:%i.%i.%i.%i) has %s user %s.", 
+		ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
+		ent->client->sess.ip[3], action, targetclient->client->pers.netname);
+	logEntry (ADMACT, log);
+
+}
+
 /*********************************** INTERACTIONS ************************************/
 /*
 ===========
@@ -1279,7 +1386,7 @@ void cmd_listCmds(gentity_t *ent) {
 	cmds = "incognito list_cmds commands cmds kick clientlick"
 		   "slap kill specs axis allied exec nextmap map vstr cpa"
 		   "cp warn chat cancelvote passvote restart reset swap shuffle"
-		   "@shuffle specs999 whereis rename"		
+		   "@shuffle specs999 whereis rename ignore unignore clientignore clientunignore"		
 		;
 
 	if (ent->client->sess.admin == ADM_1)
@@ -1338,6 +1445,10 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd,"whereis"))		{ if (canUse(ent, qtrue)) cmd_revealCamper(ent); else cantUse(ent); return qtrue;}
 	else if (!strcmp(cmd,"rename"))			{ if (canUse(ent, qtrue)) cmd_rename(ent); else cantUse(ent); return qtrue;}
 	else if (!strcmp(cmd,"vstr"))			{ if (canUse(ent, qtrue)) cmd_vstr(ent); else cantUse(ent); return qtrue;}	
+	else if (!strcmp(cmd,"ignore"))			{ if (canUse(ent, qtrue)) cmd_ignore(ent, qfalse); else cantUse(ent); return qtrue;}
+	else if (!strcmp(cmd,"unignore"))		{ if (canUse(ent, qtrue)) cmd_ignore(ent, qtrue); else cantUse(ent); return qtrue;}
+	else if (!strcmp(cmd,"clientignore"))	{ if (canUse(ent, qtrue)) cmd_clientignore(ent, qfalse); else cantUse(ent); return qtrue;}
+	else if (!strcmp(cmd,"clientunignore"))	{ if (canUse(ent, qtrue)) cmd_clientignore(ent, qtrue); else cantUse(ent); return qtrue;}
 
 	// Any other command (server cvars..)
 	else if (canUse(ent, qfalse))			{ cmdCustom(ent, cmd); return qtrue; }	
@@ -1398,6 +1509,10 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("whereis", "Reveals players location to all.", "Uses client slot number!")
 	_HELP("rename", "Renames players.", "!rename <client slot> <new name>")
 	_HELP("vstr", "Loads a level from rotation file. Note - You need to know rotation labels..", "!vstr map1")
+	_HELP("ignore", "Takes ability to call votes, chat and use vsay from client", "!ignore <unique part of name>")
+	_HELP("unignore", "Restores client's ability to call votes, chat and use vsay", "!unignore <unique part of name>")
+	_HELP("clientignore", "Takes ability to call votes, chat and use vsay from client", "!ignore <client slot>")
+	_HELP("clientunignore", "Restores client's ability to call votes, chat and use vsay", "!unignore <client slot>")
 	// --> Add new ones after this line..
 
 	{NULL, NULL, NULL}
