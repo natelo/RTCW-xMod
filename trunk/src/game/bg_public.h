@@ -1155,6 +1155,11 @@ typedef enum {
 	MOD_ENGINEER,	// not sure if we'll use
 	MOD_MEDIC,		// these like this or not
 //
+
+// L0 - Hacks basically
+	MOD_ADMKILL,
+// End
+
 	MOD_BAT
 
 } meansOfDeath_t;

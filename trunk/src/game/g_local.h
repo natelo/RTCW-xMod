@@ -784,10 +784,12 @@ qboolean G_CallSpawn( gentity_t *ent );
 void Cmd_Score_f (gentity_t *ent);
 void StopFollowing( gentity_t *ent );
 //void BroadcastTeamChange( gclient_t *client, int oldTeam );
-void SetTeam( gentity_t *ent, char *s );
+void SetTeam( gentity_t *ent, char *s, qboolean forced );
 void SetWolfData( gentity_t *ent, char *ptype, char *weap, char *grenade, char *skinnum );	// DHM - Nerve
 void Cmd_FollowCycle_f( gentity_t *ent, int dir );
 void SanitizeString( char *in, char *out ); 
+int ClientNumberFromString( gentity_t *to, char *s );
+char *ConcatArgs( int start );
 
 //
 // g_items.c
@@ -1013,6 +1015,7 @@ void SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... );
 void QDECL G_DPrintf( const char *fmt, ... );
 void QDECL G_Error( const char *fmt, ... );
+void CheckVote( void );
 
 //
 // g_client.c

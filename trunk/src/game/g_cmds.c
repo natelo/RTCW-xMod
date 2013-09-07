@@ -493,7 +493,7 @@ void Cmd_Kill_f( gentity_t *ent ) {
 SetTeam
 =================
 */
-void SetTeam( gentity_t *ent, char *s ) {
+void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 	int					team, oldTeam;
 	gclient_t			*client;
 	int					clientNum;
@@ -695,7 +695,7 @@ void StopFollowing( gentity_t *ent ) {
 		VectorCopy(client->ps.viewangles, angle);
 		// ATVI Wolfenstein Misc #414, backup enterTime
 		enterTime = client->pers.enterTime;
-		SetTeam(ent, "spectator");
+		SetTeam(ent, "spectator", qfalse);
 		client->pers.enterTime = enterTime;
 		VectorCopy(pos, client->ps.origin);
 		SetClientViewAngle(ent, angle);		
@@ -757,7 +757,7 @@ void Cmd_Team_f( gentity_t *ent ) {
 
 	trap_Argv( 1, s, sizeof( s ) );
 
-	SetTeam( ent, s );
+	SetTeam( ent, s, qfalse );
 }
 
 /*
@@ -804,7 +804,7 @@ void Cmd_Follow_f( gentity_t *ent ) {
 
 	// first set them to spectator
 	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		SetTeam( ent, "spectator" );
+		SetTeam( ent, "spectator", qfalse );
 	}
 
 	ent->client->sess.spectatorState = SPECTATOR_FOLLOW;
@@ -826,7 +826,7 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	}
 	// first set them to spectator
 	if (( ent->client->sess.spectatorState == SPECTATOR_NOT ) && (!( ent->client->ps.pm_flags & PMF_LIMBO)) ) { // JPW NERVE for limbo state
-		SetTeam( ent, "spectator" );
+		SetTeam( ent, "spectator", qfalse );
 	}
 
 	if ( dir != 1 && dir != -1 ) {
@@ -1007,7 +1007,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	case SAY_TEAM:
 		localize = qtrue;
 		G_LogPrintf( "sayteam: %s: %s\n", ent->client->pers.netname, chatText );
-		if (Team_GetLocationMsg(ent, location, sizeof(location)))
+		if (Team_GetLocationMsg(ent, location, sizeof(location), qfalse))
 			Com_sprintf (name, sizeof(name), "[lof](%s%c%c) (%s): ", 
 				ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
 		else
@@ -1018,7 +1018,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	case SAY_TELL:
 		if (target && g_gametype.integer >= GT_TEAM &&
 			target->client->sess.sessionTeam == ent->client->sess.sessionTeam &&
-			Team_GetLocationMsg(ent, location, sizeof(location)))
+			Team_GetLocationMsg(ent, location, sizeof(location), qfalse))
 			Com_sprintf (name, sizeof(name), "[%s%c%c] (%s): ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location );
 		else
 			Com_sprintf (name, sizeof(name), "[%s%c%c]: ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
