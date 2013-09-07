@@ -469,7 +469,6 @@ typedef struct {
 
 //
 #define MAX_NETNAME			36
-#define	MAX_VOTE_COUNT		3
 
 #define PICKUP_ACTIVATE	0	// pickup items only when using "+activate"
 #define PICKUP_TOUCH	1	// pickup items when touched
@@ -1256,6 +1255,7 @@ extern vmCvar_t	adm_help;
 
 // System
 extern vmCvar_t g_extendedLog;
+extern vmCvar_t g_maxVotes;
 
 // Static
 extern vmCvar_t	sv_hostname;

@@ -581,6 +581,76 @@ void Svcmd_SwapTeams_f(void) {
 	trap_SendConsoleCommand( EXEC_APPEND, va( "map_restart 0 %i\n", GS_WARMUP ) );
 }
 
+/*
+===========
+L0 - Shuffle
+===========
+*/
+void Svcmd_Shuffle_f( void )
+{
+	int count=0, tmpCount, i;
+	int players[MAX_CLIENTS];
+
+	memset(players, -1, sizeof(players));
+	
+	if (g_gamestate.integer == GS_RESET)
+	return;
+	
+	for (i = 0; i < MAX_CLIENTS; i++)
+	{
+		//skip client numbers that aren't used
+		if ((!g_entities[i].inuse) || (level.clients[i].pers.connected != CON_CONNECTED))
+			continue;
+
+		//ignore spectators
+		if ((level.clients[i].sess.sessionTeam != TEAM_RED) && (level.clients[i].sess.sessionTeam != TEAM_BLUE))
+			continue;
+
+		players[count] = i;	
+		count++;
+	}
+
+	tmpCount = count;	// copy the number of active clients
+
+	//loop through all the active players
+	for (i = 0; i < count; i++)
+	{
+		int j;
+			
+		do {
+			j = (rand() % count);		
+		} while (players[j] == -1);
+
+		//put every other random choice on allies
+		if (i & 1)
+			level.clients[players[j]].sess.sessionTeam = TEAM_BLUE;
+		else
+			level.clients[players[j]].sess.sessionTeam = TEAM_RED;
+		
+		ClientUserinfoChanged(players[j]);
+		ClientBegin(players[j]);
+
+
+		players[j] = players[tmpCount-1];
+		players[tmpCount-1] = -1;
+		tmpCount--;
+	}
+
+	// Reset match if there's a shuffle!
+	Svcmd_ResetMatch_f();
+
+	AP("chat \"console: Teams were shuffled^3!\n\"");
+}
+
+/*
+============
+L0 - Print Poll answer..
+============
+*/
+void Svcmd_PollPrint_f( void ) {
+	AP("chat \"console:^7 Poll result is ^2Yes^7!\n\"");
+}
+
 
 
 char	*ConcatArgs( int start );
@@ -635,7 +705,20 @@ qboolean	ConsoleCommand( void ) {
 		PrintMaxLivesGUID();
 		return qtrue;
 	}
+
+// L0 - New stuff
+	// Shuffle
+	if ( Q_stricmp( cmd, "shuffle" ) == 0 ) {
+		Svcmd_Shuffle_f();
+		return qtrue;
+	} 
 	
+	// Poll
+	if (Q_stricmp(cmd, "poll") == 0){
+		Svcmd_PollPrint_f();
+		return qtrue;
+	}
+// End
 
 	// NERVE - SMF
 	if (Q_stricmp (cmd, "start_match") == 0) {

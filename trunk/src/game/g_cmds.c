@@ -1274,7 +1274,6 @@ void G_Voice( gentity_t *ent, gentity_t *target, int mode, const char *id, qbool
 	}
 	// end
 
-
 	if ( target ) {
 		G_VoiceTo( ent, target, mode, id, voiceonly );
 		return;
@@ -1513,7 +1512,8 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, "print \"A vote is already in progress.\n\"" );
 		return;
 	}
-	if ( ent->client->pers.voteCount >= MAX_VOTE_COUNT ) {
+	// L0 - Replaced hardcored limit & patched so Admins are not subjected to max vote limit..
+	if ( ent->client->pers.voteCount >= g_maxVotes.integer && ent->client->sess.admin == ADM_NONE ) {
 		trap_SendServerCommand( ent-g_entities, "print \"You have called the maximum number of votes.\n\"" );
 		return;
 	}
@@ -1558,6 +1558,13 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		mask = VOTEFLAGS_RESETMATCH;
 	} else if ( !Q_stricmp( arg1, "swap_teams" ) ) {		// NERVE - SMF
 		mask = VOTEFLAGS_SWAP;
+// L0 - New votes
+	} else if ( !Q_stricmp( arg1, "shuffle" ) ) {  
+		mask = VOTEFLAGS_SHUFFLE;
+	} else if ( !Q_stricmp( arg1, "?" )) {
+		mask = VOTEFLAGS_POLL;
+// End
+
 // JPW NERVE
 #ifndef PRE_RELEASE_DEMO
 	} else if ( !Q_stricmp( arg1, testid1 ) ) { 
@@ -1567,7 +1574,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 // jpw
 	} else {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, start_match, swap_teams, reset_match, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, start_match, swap_teams, reset_match, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, ? (poll), shuffle\n\"" );
 		return;
 	}
 	
@@ -1644,6 +1651,23 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			return;
 		}
 // jpw
+
+// L0 - New votes
+	// Shuffle
+	} else if ( !Q_stricmp( arg1, "shuffle" ) ) {	
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "Shuffle teams?" );
+
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
+	// Poll
+	} else if ( !Q_stricmp( arg1, "?" ) ) {
+		char	*s;
+		s = ConcatArgs(2);
+
+		if (*s) {
+			Com_sprintf( level.voteString, sizeof( level.voteString ), "\"poll\""); 
+		} 
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Poll: %s", s ); 
+// End
 	} else {
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
@@ -1651,10 +1675,15 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 	trap_SendServerCommand( -1, va("print \"[lof]%s [lon]called a vote.\n\"", ent->client->pers.netname ) );
 
-	// start the voting, the caller autoamtically votes yes
+	// L0 - For verbosity print in console as well
+	AP(va("print \"^3Vote^7: %s \n\"", level.voteDisplayString));
+
+	// start the voting, the caller automatically votes yes
 	level.voteTime = level.time;
 	level.voteYes = 1;
 	level.voteNo = 0;
+	// L0 - Ehm, and where's the user vote count? Doh..
+	ent->client->pers.voteCount++;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		level.clients[i].ps.eFlags &= ~EF_VOTED;

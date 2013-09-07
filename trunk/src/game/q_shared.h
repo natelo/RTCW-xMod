@@ -1508,14 +1508,17 @@ typedef enum {
 } gamestate_t;
 
 // TTimo - voting config flags
-#define VOTEFLAGS_RESTART			(1<<0)
+#define VOTEFLAGS_RESTART		(1<<0)
 #define VOTEFLAGS_RESETMATCH	(1<<1)
 #define VOTEFLAGS_STARTMATCH	(1<<2)
-#define VOTEFLAGS_NEXTMAP			(1<<3)
-#define VOTEFLAGS_SWAP				(1<<4)
-#define VOTEFLAGS_TYPE				(1<<5)
-#define VOTEFLAGS_KICK				(1<<6)
-#define VOTEFLAGS_MAP					(1<<7)
+#define VOTEFLAGS_NEXTMAP		(1<<3)
+#define VOTEFLAGS_SWAP			(1<<4)
+#define VOTEFLAGS_TYPE			(1<<5)
+#define VOTEFLAGS_KICK			(1<<6)
+#define VOTEFLAGS_MAP			(1<<7)
+// L0 - New ones
+#define VOTEFLAGS_SHUFFLE		(1<<8)	
+#define VOTEFLAGS_POLL			(1<<9)
 
 // L0 - New stuff bellow
 #define ARRAY_LEN(x)	(sizeof(x) / sizeof(*(x)))

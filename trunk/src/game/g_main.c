@@ -158,6 +158,7 @@ vmCvar_t adm_help;		// If enabled users can use !list_cmds to get list of comman
 
 // System
 vmCvar_t g_extendedLog;	// Logs admin actions (1 = essentials, 2 = all).
+vmCvar_t g_maxVotes;	// Max votes user can call per round
 
 // Static
 vmCvar_t sv_hostname;	// So it's more accesible
@@ -321,6 +322,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &adm_help, "adm_help", "1", CVAR_ARCHIVE, 0, qfalse },
 	// System
 	{ &g_extendedLog, "g_extendedLog", "1", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_maxVotes, "g_maxVotes", "3", CVAR_ARCHIVE, 0, qfalse },
 	// Static
 	{ &sv_hostname, "sv_hostname", "", CVAR_SERVERINFO, 0, qfalse },
 	// General
