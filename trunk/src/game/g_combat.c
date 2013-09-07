@@ -315,6 +315,20 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		killer, self->s.number, meansOfDeath, killerName, 
 		self->client->pers.netname, obit );
 
+	// L0 - Stats (TODO)
+	if (attacker && attacker->client){
+		// Life kills & death spress
+		if (!OnSameTeam(attacker, self)) {		
+			
+				
+		// Count teamkill
+		} else {
+			// Admin bot - teamKills
+			if (attacker != self) 	
+				SB_maxTeamKill(attacker);
+		}
+	} 
+
 	// L0 - Don't send this if there's a custom MOD
 	if (meansOfDeath != MOD_ADMKILL) { 
 		if (meansOfDeath != MOD_SELFKILL ) {
@@ -385,6 +399,10 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	// Add team bonuses
 	Team_FragBonuses(self, inflictor, attacker);
+
+	// L0 - AB low score
+	// TODO: Add mod_switchteam check..
+	SB_minLowScore(self);
 
 	// if client is in a nodrop area, don't drop anything
 // JPW NERVE new drop behavior
@@ -1049,6 +1067,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if ( attacker->client && targ != attacker && targ->health > 0 ) {
 		if ( OnSameTeam( targ, attacker ) ) {
 			attacker->client->ps.persistant[PERS_HITS] -= damage;
+			// L0 - Admin bot, Team bleed
+			SB_maxTeamBleed(attacker);
 		} else {
 			attacker->client->ps.persistant[PERS_HITS] += damage;
 		}

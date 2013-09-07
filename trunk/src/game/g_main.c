@@ -160,6 +160,14 @@ vmCvar_t g_maxVotes;	// Max votes user can call per round
 vmCvar_t IP_handling;	// If enabled it checks for IP bans and tempbans..
 vmCvar_t bannedMSG;		// Message that will be printed to banned users.
 
+// Server Bot
+vmCvar_t sb_system;			// Controls all SB functionality
+vmCvar_t sb_maxTKs;			// Max TK's before client gets kicked
+vmCvar_t sb_maxTeamBleed;	// Max bleeding pts before client gets kicked (1 hit = 1 point)
+vmCvar_t sb_minLowScore;	// Minimum score allowed before client gets kicked for low score
+vmCvar_t sb_maxPingFlux;	// Top limit ping can hit before client gets kicked
+vmCvar_t sb_maxPingHits;	// How many seconds or times (1 time = 1 sec) can it peak above limit
+
 // Static
 vmCvar_t sv_hostname;	// So it's more accesible
 
@@ -317,13 +325,24 @@ cvarTable_t		gameCvarTable[] = {
 	{ &a5_cmds, "a5_cmds", "", CVAR_ARCHIVE, 0, qfalse },
 	{ &a5_allowAll, "a5_allowAll", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &adm_help, "adm_help", "1", CVAR_ARCHIVE, 0, qfalse },
+
 	// System
 	{ &g_extendedLog, "g_extendedLog", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_maxVotes, "g_maxVotes", "3", CVAR_ARCHIVE, 0, qfalse },
 	{ &IP_handling, "IP_handling", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &bannedMSG, "bannedMSG", "^7You are ^1Banned ^7from this server^1!", CVAR_ARCHIVE, 0, qfalse },
+
+	// ServerBot
+	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_maxTKs, "sb_maxTKs", "-1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_maxTeamBleed, "sb_maxTeamBleed", "-1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_minLowScore, "sb_minLowScore", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_maxPingFlux, "sb_maxPingFlux", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_maxPingHits, "sb_maxPingHits", "30", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+
 	// Static
 	{ &sv_hostname, "sv_hostname", "", CVAR_SERVERINFO, 0, qfalse },
+
 	// General
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
 

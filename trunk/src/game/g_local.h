@@ -513,6 +513,14 @@ typedef struct {
 	char cmd2[128]; // !command attribute
 	char cmd3[128];	// !command attribute extra	
 
+	// Server Bot
+	int sb_teamBleed;
+	int sb_ping;
+	int sb_maxPing;
+	int sb_chatWarned;
+	int sb_ignored;
+	int	sb_teamKills;
+
 	// L0 - End
 } clientPersistant_t;
 
@@ -1254,6 +1262,14 @@ extern vmCvar_t g_maxVotes;
 extern vmCvar_t IP_handling;
 extern vmCvar_t bannedMSG;
 
+// Server Bot
+extern vmCvar_t sb_system;
+extern vmCvar_t sb_maxTKs;
+extern vmCvar_t sb_maxTeamBleed;
+extern vmCvar_t sb_minLowScore;
+extern vmCvar_t sb_maxPingFlux;
+extern vmCvar_t sb_maxPingHits;	
+
 // Static
 extern vmCvar_t	sv_hostname;
 
@@ -1526,3 +1542,7 @@ void clean_tempbans_guids(void);
 void IGNORE_CLIENT(char *guid);
 void UNIGNORE_CLIENT(char *guid);
 int checkIgnored(char *guid);
+void SB_maxTeamKill(gentity_t *ent);
+void SB_maxTeamBleed(gentity_t *ent);
+void SB_minLowScore(gentity_t *ent);
+void SB_maxPingFlux(gclient_t *client);

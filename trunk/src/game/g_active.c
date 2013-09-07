@@ -942,6 +942,9 @@ void ClientThink_real( gentity_t *ent ) {
 		return;
 	}
 
+	// L0 - Admin bot, ping fluxation
+	SB_maxPingFlux(client);
+
 	if (reloading || client->cameraPortal) {
 		ucmd->buttons = 0;
 		ucmd->forwardmove = 0;
