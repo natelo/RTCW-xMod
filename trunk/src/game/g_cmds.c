@@ -135,17 +135,21 @@ SanitizeString
 Remove case and control characters
 ==================
 */
-void SanitizeString( char *in, char *out ) {
-	while ( *in ) {
-		if ( *in == 27 ) {
-			in += 2;		// skip color code
+void SanitizeString( char *in, char *out, qboolean fToLower )
+{
+	while(*in) {
+		if(*in == 27 || *in == '^') {
+			in++;		// skip color code
+			if(*in) in++;
 			continue;
 		}
-		if ( *in < 32 ) {
+
+		if(*in < 32) {
 			in++;
 			continue;
 		}
-		*out++ = tolower( *in++ );
+
+		*out++ = (fToLower) ? tolower(*in++) : *in++;
 	}
 
 	*out = 0;
@@ -182,12 +186,12 @@ int ClientNumberFromString( gentity_t *to, char *s ) {
 	}
 
 	// check for a name match
-	SanitizeString( s, s2 );
+	SanitizeString( s, s2, qtrue );
 	for ( idnum=0,cl=level.clients ; idnum < level.maxclients ; idnum++,cl++ ) {
 		if ( cl->pers.connected != CON_CONNECTED ) {
 			continue;
 		}
-		SanitizeString( cl->pers.netname, n2 );
+		SanitizeString( cl->pers.netname, n2, qtrue );
 		if ( !strcmp( n2, s2 ) ) {
 			return idnum;
 		}
@@ -970,6 +974,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	char cmd1[128];
 	char cmd2[128];
 	char cmd3[128];	
+	char censoredText[MAX_SAY_TEXT];	// censored text
 
 	// Admin commands
 	Q_strncpyz ( text, chatText, sizeof( text ) );
@@ -1032,8 +1037,17 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	   return;
 	}
 
-// L0 - End
+	// L0 - censored text	
+	Q_strncpyz ( text, chatText, sizeof( text ) );
+	if (g_censorWords.string[0]) {
+		SanitizeString(text, censoredText, qtrue);
+		if (G_CensorText(censoredText,&censorDictionary)) {		
+			Q_strncpyz( text, censoredText, sizeof(text) );
+			SB_chatWarn(ent);
+		}
+	} 
 
+// L0 - End
 
 	if ( g_gametype.integer < GT_TEAM && mode == SAY_TEAM ) {
 		mode = SAY_ALL;

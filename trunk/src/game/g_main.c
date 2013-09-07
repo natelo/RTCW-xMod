@@ -1,5 +1,10 @@
 #include "g_local.h"
 
+// L0 - (etPUB port) censored
+wordDictionary censorDictionary;
+wordDictionary censorNamesDictionary;
+// L0 - end
+
 level_locals_t	level;
 
 typedef struct {
@@ -155,10 +160,13 @@ vmCvar_t a5_allowAll;	// Allows level 5 to execute all admin commands + any othe
 vmCvar_t adm_help;		// If enabled users can use !list_cmds to get list of commands for their level..
 
 // System
-vmCvar_t g_extendedLog;	// Logs admin actions (1 = essentials, 2 = all).
-vmCvar_t g_maxVotes;	// Max votes user can call per round
-vmCvar_t IP_handling;	// If enabled it checks for IP bans and tempbans..
-vmCvar_t bannedMSG;		// Message that will be printed to banned users.
+vmCvar_t g_extendedLog;			// Logs admin actions (1 = essentials, 2 = all).
+vmCvar_t g_maxVotes;			// Max votes user can call per round
+vmCvar_t IP_handling;			// If enabled it checks for IP bans and tempbans..
+vmCvar_t bannedMSG;				// Message that will be printed to banned users.
+vmCvar_t g_censorWords;			// Censored words
+vmCvar_t g_disallowedNames;		// Disallowed names
+vmCvar_t g_noHardcodedCensor;	// Don't use hardcoded censor..
 
 // Server Bot
 vmCvar_t sb_system;			// Controls all SB functionality
@@ -167,6 +175,7 @@ vmCvar_t sb_maxTeamBleed;	// Max bleeding pts before client gets kicked (1 hit =
 vmCvar_t sb_minLowScore;	// Minimum score allowed before client gets kicked for low score
 vmCvar_t sb_maxPingFlux;	// Top limit ping can hit before client gets kicked
 vmCvar_t sb_maxPingHits;	// How many seconds or times (1 time = 1 sec) can it peak above limit
+vmCvar_t sb_censorPenalty;	// Auto ignores (1) or kicks (2) client after 4th warning for cursing..
 
 // Static
 vmCvar_t sv_hostname;	// So it's more accesible
@@ -331,6 +340,9 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_maxVotes, "g_maxVotes", "3", CVAR_ARCHIVE, 0, qfalse },
 	{ &IP_handling, "IP_handling", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &bannedMSG, "bannedMSG", "^7You are ^1Banned ^7from this server^1!", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_censorWords, "g_censorWords", "fuuck", 0 },
+	{ &g_disallowedNames, "g_disallowedNames", "nazi, admin, console", 0 },
+	{ &g_noHardcodedCensor, "g_noHardcodedCensor", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
@@ -339,6 +351,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &sb_minLowScore, "sb_minLowScore", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
 	{ &sb_maxPingFlux, "sb_maxPingFlux", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
 	{ &sb_maxPingHits, "sb_maxPingHits", "30", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_censorPenalty, "sb_censorPenalty", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 
 	// Static
 	{ &sv_hostname, "sv_hostname", "", CVAR_SERVERINFO, 0, qfalse },
@@ -2554,11 +2567,52 @@ void CheckReloadStatus(void) {
 
 /*
 ==================
+L0 - Censored
+==================
+*/
+void InitCensorStructure( void )
+{
+	int i;
+	// null out the spaces and commas in g_censor.string for new filter
+	censorDictionary.num_nulled_words = 0;
+	for ( i = 0; g_censorWords.string[i] != '\0'; i++ ) {
+		if ( g_censorWords.string[i] == ' ' || g_censorWords.string[i] == ',' ) {
+			g_censorWords.string[i] = '\0';
+			censorDictionary.num_nulled_words++;
+		}
+	}
+	if ( g_censorWords.string[0] != '\0' )
+		censorDictionary.num_nulled_words++;
+
+}
+void InitCensorNamesStructure( void )
+{
+	int i;
+	// null out the spaces and commas in g_censorNames.string for new filter
+	censorNamesDictionary.num_nulled_words = 0;
+	for ( i = 0; g_disallowedNames.string[i] != '\0'; i++ ) {
+		if ( g_disallowedNames.string[i] == ' ' || g_disallowedNames.string[i] == ',' ) {
+			g_disallowedNames.string[i] = '\0';
+			censorNamesDictionary.num_nulled_words++;
+		}
+	}
+	if ( g_disallowedNames.string[0] != '\0' )
+		censorNamesDictionary.num_nulled_words++;
+
+
+}// L0 - end
+
+/*
+==================
 CheckCvars
 ==================
 */
 void CheckCvars( void ) {
 	static int lastMod = -1;
+	// L0 - censored
+	static int g_censorWords_lastMod = -1;
+	static int g_disallowedNames_lastMod = -1;
+	// L0 - end
 
 	if ( g_password.modificationCount != lastMod ) {
 		lastMod = g_password.modificationCount;
@@ -2568,6 +2622,18 @@ void CheckCvars( void ) {
 			trap_Cvar_Set( "g_needpass", "0" );
 		}
 	}
+
+	// L0 - censored
+	if ( g_censorWords.modificationCount != g_censorWords_lastMod ) {
+		g_censorWords_lastMod = g_censorWords.modificationCount;
+		InitCensorStructure();
+	}
+
+	if ( g_disallowedNames.modificationCount != g_disallowedNames_lastMod ) {
+		g_disallowedNames_lastMod = g_disallowedNames.modificationCount;
+		InitCensorNamesStructure();
+	}
+	// L0 - end
 }
 
 /*

@@ -802,7 +802,7 @@ void StopFollowing( gentity_t *ent );
 void SetTeam( gentity_t *ent, char *s, qboolean forced );
 void SetWolfData( gentity_t *ent, char *ptype, char *weap, char *grenade, char *skinnum );	// DHM - Nerve
 void Cmd_FollowCycle_f( gentity_t *ent, int dir );
-void SanitizeString( char *in, char *out ); 
+void SanitizeString( char *in, char *out, qboolean fToLower); 
 int ClientNumberFromString( gentity_t *to, char *s );
 char *ConcatArgs( int start );
 
@@ -1261,6 +1261,9 @@ extern vmCvar_t g_extendedLog;
 extern vmCvar_t g_maxVotes;
 extern vmCvar_t IP_handling;
 extern vmCvar_t bannedMSG;
+extern vmCvar_t	g_censorWords;
+extern vmCvar_t g_disallowedNames;
+extern vmCvar_t g_noHardcodedCensor;
 
 // Server Bot
 extern vmCvar_t sb_system;
@@ -1269,6 +1272,7 @@ extern vmCvar_t sb_maxTeamBleed;
 extern vmCvar_t sb_minLowScore;
 extern vmCvar_t sb_maxPingFlux;
 extern vmCvar_t sb_maxPingHits;	
+extern vmCvar_t sb_censorPenalty;
 
 // Static
 extern vmCvar_t	sv_hostname;
@@ -1546,3 +1550,20 @@ void SB_maxTeamKill(gentity_t *ent);
 void SB_maxTeamBleed(gentity_t *ent);
 void SB_minLowScore(gentity_t *ent);
 void SB_maxPingFlux(gclient_t *client);
+void SB_chatWarn(gentity_t *ent);
+
+// 
+// g_censored.c
+//
+// (etPUB port)
+//
+typedef struct {
+	int num_nulled_words;
+} wordDictionary;
+
+extern wordDictionary censorDictionary;
+extern wordDictionary censorNamesDictionary;
+
+qboolean G_CensorName(char *testname, char *userinfo, int clientNum);
+qboolean G_CensorText(char *text, wordDictionary *dictionary);
+qboolean G_ReservedName(char *testname, char *userinfo, int clientNum);

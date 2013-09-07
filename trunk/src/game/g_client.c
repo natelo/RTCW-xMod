@@ -1472,6 +1472,12 @@ void ClientUserinfoChanged( int clientNum ) {
 	}
 
 	if ( client->pers.connected == CON_CONNECTED ) {
+		// L0 - disallowed names
+		if (g_disallowedNames.string[0] ) {
+			// returns true if they're kicked
+			G_CensorName(client->pers.netname, userinfo, clientNum);			
+		}	
+
 		if ( strcmp( oldname, client->pers.netname ) ) {
 			trap_SendServerCommand( -1, va("print \"[lof]%s" S_COLOR_WHITE " [lon]renamed to[lof] %s\n\"", oldname, 
 				client->pers.netname) );
@@ -1696,6 +1702,29 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 			return "Invalid password";
 		}
 	}
+
+	// if a player reconnects quickly after a disconnect, the client disconnect may never
+	// be called, thus flag can get lost in the ether
+	if (ent->inuse) {
+		G_LogPrintf("Forcing disconnect on active client: %i\n", clientNum);
+		// so lets just fix up anything that should happen on a disconnect
+		ClientDisconnect(clientNum);
+	}
+
+	// L0 - disallowed names
+	if (g_disallowedNames.string[0]) {
+		char censoredName[MAX_NETNAME];
+		char *line;
+
+		value = Info_ValueForKey (userinfo, "name");
+		SanitizeString((char *)value, censoredName, qtrue);
+		if (G_CensorText(censoredName,&censorNamesDictionary)) {
+			Info_SetValueForKey( userinfo, "name", censoredName);
+			trap_SetUserinfo( clientNum, userinfo );		   
+			line=va("^7Name ^3%s ^7not allowed^3! ^7To enter please change your name.", value);		
+			return va("%s\n",line);
+		}
+	} 
 
 	// they can connect
 	ent->client = level.clients + clientNum;
