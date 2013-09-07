@@ -1315,8 +1315,12 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 		if ( clientNum >= 0 ) {
 			cl = &level.clients[ clientNum ];
 			if ( cl->pers.connected == CON_CONNECTED && cl->sess.sessionTeam != TEAM_SPECTATOR ) {
+				// L0 - Ping and Score fix (solves issue with \serverstatus showing who's spectating who)
+				int ping = ent->client->ps.ping; 
+				int score = ent->client->ps.persistant[PERS_SCORE];
 				// DHM - Nerve :: carry flags over
-				flags = (cl->ps.eFlags & ~(EF_VOTED)) | (ent->client->ps.eFlags & (EF_VOTED));
+				flags = (cl->ps.eFlags & ~(EF_VOTED)) | (ent->client->ps.eFlags & (EF_VOTED));				
+
 				// JPW NERVE -- limbo latch
 				if (ent->client->sess.sessionTeam != TEAM_SPECTATOR && ent->client->ps.pm_flags & PMF_LIMBO) {
 					// abuse do_respawn var
@@ -1341,6 +1345,9 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 				// jpw
 				// DHM - Nerve :: carry flags over
 				ent->client->ps.eFlags = flags;
+				// L0 - Ping & Score fix
+				ent->client->ps.ping = ping; 
+				ent->client->ps.persistant[PERS_SCORE] = score;
 				return;
 			} else {
 				// drop them to free spectators unless they are dedicated camera followers
