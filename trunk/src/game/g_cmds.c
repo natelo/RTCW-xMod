@@ -1017,9 +1017,10 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	} 	
 
 	// Ignored 
-	if (ent->client->sess.ignored && ent->client->sess.admin == ADM_NONE) 
-	{
-		CP("print \"^1You are ignored^7! Chat dismissed.. \n\"" );
+	if (ent->client->sess.ignored) 
+	{		
+		CP(va("print \"You are %s^7!\n\"", 
+			(ent->client->sess.ignored == 2) ? "^1permanently ignored ^7on this server" : "^1ignored") );
 		return;
 	}
 
@@ -1106,10 +1107,11 @@ static void Cmd_Say_f( gentity_t *ent, int mode, qboolean arg0 ) {
 		return;
 	}
 
-	// Ignored 
+	// Ignored - admin check is only here so admin can unignore him/her self.
 	if (ent->client->sess.ignored && ent->client->sess.admin == ADM_NONE) 
-	{
-		CP("print \"^1You are ignored^7! Chat dismissed.. \n\"" );
+	{		
+		CP(va("print \"You are %s^7!\n\"", 
+			(ent->client->sess.ignored == 2) ? "^1permanently ignored ^7on this server" : "^1ignored") );
 		return;
 	}
 
@@ -1141,9 +1143,10 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	}
 
 	// Ignored 
-	if (ent->client->sess.ignored && ent->client->sess.admin == ADM_NONE) 
-	{
-		CP("print \"^1You are ignored^7! Tell dismissed.. \n\"" );
+	if (ent->client->sess.ignored) 
+	{		
+		CP(va("print \"You are %s^7!\n\"", 
+			(ent->client->sess.ignored == 2) ? "^1permanently ignored ^7on this server" : "^1ignored") );
 		return;
 	}
 
@@ -1188,9 +1191,10 @@ static void G_VoiceTo( gentity_t *ent, gentity_t *other, int mode, const char *i
 	}
 
 	// Ignored 
-	if (ent->client->sess.ignored && ent->client->sess.admin == ADM_NONE) 
-	{
-		CP("print \"^1You are ignored^7! Vsay dismissed.. \n\"" );
+	if (ent->client->sess.ignored) 
+	{		
+		CP(va("print \"You are %s^7!\n\"", 
+			(ent->client->sess.ignored == 2) ? "^1permanently ignored ^7on this server" : "^1ignored") );
 		return;
 	}
 
@@ -1220,9 +1224,10 @@ void G_Voice( gentity_t *ent, gentity_t *target, int mode, const char *id, qbool
 	}
 
 	// Ignored 
-	if (ent->client->sess.ignored && ent->client->sess.admin == ADM_NONE) 
-	{
-		CP("print \"^1You are ignored^7! Vsay dismissed.. \n\"" );
+	if (ent->client->sess.ignored) 
+	{		
+		CP(va("print \"You are %s^7!\n\"", 
+			(ent->client->sess.ignored == 2) ? "^1permanently ignored ^7on this server" : "^1ignored") );
 		return;
 	}
 
@@ -1497,9 +1502,10 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	char	*check;
 
 	// Ignored 
-	if (ent->client->sess.ignored && ent->client->sess.admin == ADM_NONE) 
-	{
-		CP("print \"^1You are ignored^7! Vote dismissed.. \n\"" );
+	if (ent->client->sess.ignored) 
+	{		
+		CP(va("print \"You are %s^7!\n\"", 
+			(ent->client->sess.ignored == 2) ? "^1permanently ignored ^7on this server" : "^1ignored") );
 		return;
 	}
 

@@ -1251,6 +1251,8 @@ extern vmCvar_t	adm_help;
 // System
 extern vmCvar_t g_extendedLog;
 extern vmCvar_t g_maxVotes;
+extern vmCvar_t IP_handling;
+extern vmCvar_t bannedMSG;
 
 // Static
 extern vmCvar_t	sv_hostname;
@@ -1511,3 +1513,16 @@ void cmd_incognito(gentity_t *ent);
 void cmd_do_logout(gentity_t *ent);
 void cmd_do_login (gentity_t *ent, qboolean silent);
 //void cmd_getstatus(gentity_t *ent);
+
+//
+// g_admin_system.c
+//
+void TEMPBAN_CLIENT(gentity_t *ent, const int minsbanned);
+void clean_tempbans(void);
+extern char *TempBannedMessage;
+int checkBanned(char *data, char * password, qboolean guid);
+void TEMPBAN_GUID_CLIENT(char *guid, const int minsbanned);
+void clean_tempbans_guids(void);
+void IGNORE_CLIENT(char *guid);
+void UNIGNORE_CLIENT(char *guid);
+int checkIgnored(char *guid);

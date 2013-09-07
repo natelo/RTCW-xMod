@@ -1354,6 +1354,21 @@ void DecolorString( char *in, char *out)
 	*out = 0;
 }
 
+/*
+==================
+L0 - Wish it would be like in php and i wouldn't need to bother with this..
+==================
+*/
+int is_numeric(const char *p) {
+	if (*p) {
+		char c;
+		while ((c=*p++)) {
+			if (!isdigit(c)) return 0;
+		}
+		return 1;
+	}
+return 0;
+}
 
 //====================================================================
 

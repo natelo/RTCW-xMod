@@ -1633,6 +1633,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	char		userinfo[MAX_INFO_STRING];
 	gentity_t	*ent;
 	char		guid[PB_GUID_LENGTH + 1];
+	qboolean	ignored=qfalse;
 
 	ent = &g_entities[ clientNum ];
 
@@ -1640,12 +1641,40 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 
 	// L0 - GUID
 	value = Info_ValueForKey(userinfo, "cl_guid");
-	Q_strncpyz(guid, value, sizeof(guid));
-	
+	Q_strncpyz(guid, value, sizeof(guid));	
 
-	// L0 - IP spoof (unsophisticated spoof)
-	if (!Q_stricmp(value, ""))
-		return "^1Socket/IP Spoof- ^7Entrance refused^1!";
+	// L0 
+	if (firstTime) {	
+		// IP spoof (low level spoof)
+		value = Info_ValueForKey (userinfo, "ip");	
+		if (!Q_stricmp(value, ""))
+			return "^1Socket/IP Spoof- ^7Entrance refused^1!";
+/*
+		// Basic sanity check..
+		if (strlen(Info_ValueForKey( userinfo, "cl_guid" )) != 32)  
+			return "^7Your GUID is corrupted^1!";
+*/
+		// Only bother with this if IP handling is enabled..
+		if (IP_handling.integer) {	
+
+			// Note that this approach is flawed because IP's can be spoofed easily.				
+			if (checkBanned(Info_ValueForKey (userinfo, "ip"), Info_ValueForKey (userinfo, "password"), qfalse) == 1)
+				return bannedMSG.string;
+			else if (checkBanned(Info_ValueForKey (userinfo, "ip"), Info_ValueForKey (userinfo, "password"), qfalse) == 2)
+				return TempBannedMessage;		
+		}
+
+		// Guid is always checked..
+		if (checkBanned(guid, NULL, qtrue) == 3)
+			return bannedMSG.string;
+		else if (checkBanned(guid, NULL, qtrue) == 4)
+			return TempBannedMessage;
+
+		// Check if user is ignored
+		if (checkIgnored(Info_ValueForKey (userinfo, "cl_guid")))
+			ignored = qtrue;
+			
+	} // End
 	
 	// Xian - check for max lives enforcement ban
 	if (g_enforcemaxlives.integer && (g_maxlives.integer > 0 || g_axismaxlives.integer > 0 || g_alliedmaxlives.integer > 0))
@@ -1716,6 +1745,10 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		if (!ent->r.svFlags & SVF_CASTAI)
 		// done.
 		trap_SendServerCommand( -1, va("print \"[lof]%s" S_COLOR_WHITE " [lon]connected\n\"", client->pers.netname) );
+
+		// L0 - Ignore client if they're suppose to be..
+		if (ignored)
+			ent->client->sess.ignored = 2;
 	}
 
 	// count current clients and rank for scoreboard

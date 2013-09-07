@@ -157,12 +157,14 @@ vmCvar_t adm_help;		// If enabled users can use !list_cmds to get list of comman
 // System
 vmCvar_t g_extendedLog;	// Logs admin actions (1 = essentials, 2 = all).
 vmCvar_t g_maxVotes;	// Max votes user can call per round
+vmCvar_t IP_handling;	// If enabled it checks for IP bans and tempbans..
+vmCvar_t bannedMSG;		// Message that will be printed to banned users.
 
 // Static
 vmCvar_t sv_hostname;	// So it's more accesible
 
 // General
-vmCvar_t	g_screenShake;	// Screenshaking on explosions (4 = default, 2 = half.. etc)
+vmCvar_t g_screenShake;	// Screenshaking on explosions (4 = default, 2 = half.. etc)
 
 // L0 - End
 
@@ -318,6 +320,8 @@ cvarTable_t		gameCvarTable[] = {
 	// System
 	{ &g_extendedLog, "g_extendedLog", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_maxVotes, "g_maxVotes", "3", CVAR_ARCHIVE, 0, qfalse },
+	{ &IP_handling, "IP_handling", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &bannedMSG, "bannedMSG", "^7You are ^1Banned ^7from this server^1!", CVAR_ARCHIVE, 0, qfalse },
 	// Static
 	{ &sv_hostname, "sv_hostname", "", CVAR_SERVERINFO, 0, qfalse },
 	// General
@@ -1861,6 +1865,13 @@ void ExitLevel (void) {
 
 	// we need to do this here before chaning to CON_CONNECTING
 	G_WriteSessionData();
+
+	// L0 - Clean up the (IP) tempbans
+	if (IP_handling.integer)
+		clean_tempbans();
+	
+	// L0 - Clean up the (GUID) tempbans
+	clean_tempbans_guids();
 
 	// change all client states to connecting, so the early players into the
 	// next level will know the others aren't done reconnecting

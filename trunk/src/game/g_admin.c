@@ -1365,7 +1365,358 @@ void cmd_clientignore(gentity_t *ent, qboolean unignore) {
 		ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
 		ent->client->sess.ip[3], action, targetclient->client->pers.netname);
 	logEntry (ADMACT, log);
+}
 
+/*
+==================
+Permanently Ignores user (uses name)
+==================
+*/
+void cmd_permignore(gentity_t *ent, qboolean unignore) {
+	int count = 0;
+	int i;
+	int nums[MAX_CLIENTS];
+	char *tag, *log, *action;
+
+	tag = sortTag(ent);
+	count = ClientNumberFromNameMatch(ent->client->pers.cmd2, nums);
+
+	if (count == 0) {			
+		CP("print \"Client not on server^1!\n\"");
+		return;
+	} else if (count > 1) {
+		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		return;
+	} 
+		
+	for (i = 0; i < count; i++) {	
+
+		// Unignores players
+		if (unignore) {
+			if (!g_entities[nums[i]].client->sess.ignored) {
+				CP(va("print \"%s ^7is already unignored^1!\n\"", g_entities[nums[i]].client->pers.netname));
+				return;
+			} else {
+				AP(va("chat \"console: %s has removed permanent ignore from player %s^3!\n\"", tag, g_entities[nums[i]].client->pers.netname));
+				g_entities[nums[i]].client->sess.ignored = 0;
+				UNIGNORE_CLIENT(g_entities[nums[i]].client->sess.guid);
+			}
+			action = va("unignored");
+
+		// Ignores player
+		} else {
+			if (g_entities[nums[i]].client->sess.ignored) {
+				CP(va("print \"%s ^7is already ignored^1!\n\"", g_entities[nums[i]].client->pers.netname));
+				return;
+			} else {
+				AP(va("chat \"console: %s has ^3permanently ignored ^7player %s^3!\n\"", tag, g_entities[nums[i]].client->pers.netname));
+				g_entities[nums[i]].client->sess.ignored = 1;
+				IGNORE_CLIENT(g_entities[nums[i]].client->sess.guid);
+			}
+			action = va("ignored");
+		}
+
+		// Log it
+		log =va("Player %s (IP:%i.%i.%i.%i) has permanently %s user %s.", 
+			ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
+			ent->client->sess.ip[3], action, g_entities[nums[i]].client->pers.netname);
+		logEntry (ADMACT, log);
+	}
+}
+
+/*
+==================
+Ignore user (uses clientslot)
+==================
+*/
+void cmd_permclientignore(gentity_t *ent, qboolean unignore) {
+	int	clientNum;
+	gentity_t	*targetclient;	
+	char *tag, *log, *action;
+
+	tag = sortTag(ent);
+
+	clientNum = ClientNumberFromString( ent, ent->client->pers.cmd2 );
+	if ( clientNum == -1 ) {
+		CP("print \"Client not on server^1!\n\"");
+		return; 
+	}
+
+	// Give values to these
+	targetclient = g_entities + clientNum;	
+
+	// Unignores player
+	if (unignore) {	
+		// Poor man's solution to (semi)avoid useless messages
+		if (targetclient->client->sess.ignored)
+			AP(va("chat \"console: %s has removed permanent ignore from player %s^3!\n\"", tag, targetclient->client->pers.netname));
+
+		targetclient->client->sess.ignored = 0;
+		UNIGNORE_CLIENT(targetclient->client->sess.guid);		
+		action = va("unignored");
+
+	// Ignores player
+	} else {
+		if (targetclient->client->sess.ignored) {
+			CP(va("print \"%s ^7is already ignored^1!\n\"", targetclient->client->pers.netname));
+			return;
+		} else {
+			AP(va("chat \"console: %s has ^3permanently ignored ^7player %s^3!\n\"", tag, targetclient->client->pers.netname));
+			targetclient->client->sess.ignored = 1;
+			IGNORE_CLIENT(targetclient->client->sess.guid);
+		}
+		action = va("ignored");
+	}
+
+	// Log it
+	log =va("Player %s (IP:%i.%i.%i.%i) has permanently %s user %s.", 
+		ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
+		ent->client->sess.ip[3], action, targetclient->client->pers.netname);
+	logEntry (ADMACT, log);
+}
+
+/*
+===========
+Ban guid
+===========
+*/
+void cmd_banGuid(gentity_t *ent) {
+	int count = 0;
+	int i;
+	int nums[MAX_CLIENTS];
+	char *tag, *log;
+
+	tag = sortTag(ent);
+	count = ClientNumberFromNameMatch(ent->client->pers.cmd2, nums);
+		if (count == 0){			
+			CP("print \"Client not on server^3!\n\"");
+		return;
+		}else if (count > 1){			
+			CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		return;
+		} 
+		
+		for (i = 0; i < count; i++){
+			// Ban player			
+			trap_SendConsoleCommand(EXEC_APPEND, va("addguid %s", g_entities[nums[i]].client->sess.guid));
+
+			// Kick player now
+			trap_DropClient( nums[i], va( "^3banned by ^3%s \n^7%s", tag, ent->client->pers.cmd3));			
+			AP(va("chat \"console: %s has banned player %s^1! ^3%s\n\"", tag, g_entities[nums[i]].client->pers.netname,ent->client->pers.cmd3));		
+
+			// Log it
+			log =va("Player %s (GUID: %s) has banned user %s (GUID: %s)", 
+				ent->client->pers.netname, ent->client->sess.guid, g_entities[nums[i]].client->pers.netname, g_entities[nums[i]].client->sess.guid);
+			logEntry (ADMACT, log);
+		}
+	return;
+}
+
+/*
+===========
+Ban client guid
+
+May seem as an overkill but ppl go over all sort of
+length to avoid bans (renaming while processed..)
+===========
+*/
+void cmd_banClientGuid(gentity_t *ent) {
+	int	player_id;
+	gentity_t	*targetclient;	
+	char *tag, *log;
+
+	tag = sortTag(ent);
+	player_id = ClientNumberFromString( ent, ent->client->pers.cmd2 );
+	if ( player_id == -1 ) { 
+		return;
+	}
+
+	targetclient = g_entities + player_id; 
+
+	// Ban player	
+	trap_SendConsoleCommand(EXEC_APPEND, va("addguid %s", targetclient->client->sess.guid));
+
+	// Kick the client
+	trap_DropClient( player_id, va( "^3banned by ^3%s \n^7%s", tag, ent->client->pers.cmd3));	
+	AP(va("chat \"console: %s has banned player %s^3! ^3%s\n\"", tag, targetclient->client->pers.netname, ent->client->pers.cmd3));
+
+	// Log it
+	log =va("Player %s (GUID: %s) has banned user %s (GUID: %s)", 
+		ent->client->pers.netname, ent->client->sess.guid, targetclient->client->pers.netname,targetclient->client->sess.guid);
+	logEntry (ADMACT, log);
+
+	return;
+}
+
+/*
+===========
+Temp ban guid
+===========
+*/
+void cmd_tempbanGuid(gentity_t *ent) {
+	int count = 0;
+	int i;
+	int nums[MAX_CLIENTS];
+	char *tag, *log;
+
+	tag = sortTag(ent);
+
+
+	count = ClientNumberFromNameMatch(ent->client->pers.cmd2, nums);
+	if (count == 0){			
+		CP("print \"Client not on server^3!\n\"");
+	return;
+	} else if (count > 1){			
+		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+	return;
+	} else if (!is_numeric(ent->client->pers.cmd3)) {
+		CPx(ent-g_entities, "print \"^1Error: ^7Invalid syntax used for tempban command. Make sure you use numbers only.\n\"");
+	return;
+	}
+		
+	for (i = 0; i < count; i++){
+		// Ban player	
+		trap_SendConsoleCommand(EXEC_APPEND, va("tempbanguid %s %s", g_entities[nums[i]].client->sess.guid, ent->client->pers.cmd3));		
+
+		// Kick player now
+		trap_DropClient( nums[i], va( "^3Temporarily banned by ^3%s\n^7Tempban will expire in ^3%s ^7minute(s)", tag, ent->client->pers.cmd3));			
+		AP(va("chat \"console: %s has tempbanned player %s ^7for ^3%s ^7minute(s)^3!\n\"", tag, g_entities[nums[i]].client->pers.netname,ent->client->pers.cmd3));		
+
+		// Log it
+		log =va("Player %s (GUID: %s) tempbanned user %s (GUID: %s) for %s minute(s).", 
+			ent->client->pers.netname, ent->client->sess.guid, g_entities[nums[i]].client->pers.netname, g_entities[nums[i]].client->sess.guid, ent->client->pers.cmd3 );	
+		logEntry (ADMACT, log);
+		
+	}
+
+	return;
+}
+
+/*
+===========
+Ban ip
+===========
+*/
+void cmd_banIp(gentity_t *ent) {
+	int count = 0;
+	int i;
+	int nums[MAX_CLIENTS];
+	char *tag, *log;
+
+	if (!IP_handling.integer)
+	{
+		CP("print \"IP handling is disabled on this server. Use GUID related commands.\n\"");
+		return;
+	}
+
+	tag = sortTag(ent);
+	count = ClientNumberFromNameMatch(ent->client->pers.cmd2, nums);
+
+	if (count == 0){			
+		CP("print \"Client not on server^3!\n\"");
+		return;
+	} else if (count > 1) {
+		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		return;
+	} 
+		
+	for (i = 0; i < count; i++){
+		// Ban player			
+		trap_SendConsoleCommand(EXEC_APPEND, va("addip %i.%i.%i.%i", 
+			g_entities[nums[i]].client->sess.ip[0], g_entities[nums[i]].client->sess.ip[1], 
+			g_entities[nums[i]].client->sess.ip[2], g_entities[nums[i]].client->sess.ip[3] ));
+
+		// Kick player now
+		trap_DropClient( nums[i], va( "^3banned by ^3%s \n^7%s", tag, ent->client->pers.cmd3));			
+		AP(va("chat \"console: %s has banned player %s^3! ^3%s\n\"", tag, g_entities[nums[i]].client->pers.netname,ent->client->pers.cmd3));		
+
+		// Log it
+		log =va("Player %s (IP:%i.%i.%i.%i) has (IP)banned user %s", 
+			ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
+			ent->client->sess.ip[3], g_entities[nums[i]].client->pers.netname);
+		logEntry (ADMACT, log);
+	}
+
+	return;
+}
+
+/*
+===========
+tempBan ip
+===========
+*/
+void cmd_tempBanIp(gentity_t *ent) {
+	int count = 0;
+	int i;
+	int nums[MAX_CLIENTS];
+	char *tag, *log;
+
+	if (!IP_handling.integer)
+	{
+		CP("print \"IP handling is disabled on this server. Use GUID related commands.\n\"");
+		return;
+	}
+
+	tag = sortTag(ent);
+	count = ClientNumberFromNameMatch(ent->client->pers.cmd2, nums);
+	if (count == 0){			
+		CP("print \"Client not on server^3!\n\"");
+		return;
+	} else if (count > 1) {
+		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		return;
+	} 
+		
+	for (i = 0; i < count; i++){
+		// TempBan player			
+		trap_SendConsoleCommand(EXEC_APPEND, va("tempban %i %s", nums[i], ent->client->pers.cmd3 ));
+
+		// Kick player now
+		trap_DropClient( nums[i], va( "^3temporarily banned by ^3%s \n^7Tempban will expire in ^3%s ^7minute(s)", tag, ent->client->pers.cmd3));			
+		AP(va("chat \"console: %s has tempbanned player %s ^7for ^3%s ^7minute(s)^3!\n\"", tag, g_entities[nums[i]].client->pers.netname,ent->client->pers.cmd3));		
+
+		// Log it
+		log =va("Player %s (IP:%i.%i.%i.%i) tempbanned user %s by IP for %s minute(s).", 
+			ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
+			ent->client->sess.ip[3], g_entities[nums[i]].client->pers.netname, ent->client->pers.cmd3 );	
+		logEntry (ADMACT, log);
+	}
+
+	return;
+}
+
+/*
+===========
+Add IP
+===========
+*/
+void cmd_addIp(gentity_t *ent) {
+	char *tag, *log;
+
+	tag = sortTag(ent);
+
+	if (!IP_handling.integer)
+	{
+		CP("print \"IP handling is disabled on this server. Use GUID related commands.\n\"");
+		return;
+	}
+
+	if (!IPv4Valid(ent->client->pers.cmd2)) {
+		CP(va("print \"^1Error: ^7%s is not a valid IPv4 address^1!\n\"", ent->client->pers.cmd2));
+		return;
+	}
+
+	// Note that this blindly accepts what ever user inputs. Not ideal..
+	trap_SendConsoleCommand(EXEC_APPEND, va("addip %s", ent->client->pers.cmd2 ));	
+	AP(va("chat \"console: %s has added IP ^3%s ^7to banned file.\n\"", tag, ent->client->pers.cmd2));	
+
+	// Log it
+	log =va("Player %s (IP:%i.%i.%i.%i) added IP %s to banned file.", 
+		ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
+		ent->client->sess.ip[3], ent->client->pers.cmd2  );	
+	logEntry (ADMACT, log);
+
+	return;
 }
 
 /*********************************** INTERACTIONS ************************************/
@@ -1383,10 +1734,11 @@ void cmd_listCmds(gentity_t *ent) {
 	}
 
 	// Keep an eye on this..so it's not to big..
-	cmds = "incognito list_cmds commands cmds kick clientlick"
-		   "slap kill specs axis allied exec nextmap map vstr cpa"
-		   "cp warn chat cancelvote passvote restart reset swap shuffle"
-		   "@shuffle specs999 whereis rename ignore unignore clientignore clientunignore"		
+	cmds = "incognito list_cmds commands cmds kick clientlick "
+		   "slap kill specs axis allied exec nextmap map vstr cpa "
+		   "cp warn chat cancelvote passvote restart reset swap shuffle "
+		   "@shuffle specs999 whereis rename ignore unignore clientignore clientunignore permignore "	
+		   "permunignore permclientignore permclientunignore ban banclient tempban banip tempbanip addip "
 		;
 
 	if (ent->client->sess.admin == ADM_1)
@@ -1449,6 +1801,16 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd,"unignore"))		{ if (canUse(ent, qtrue)) cmd_ignore(ent, qtrue); else cantUse(ent); return qtrue;}
 	else if (!strcmp(cmd,"clientignore"))	{ if (canUse(ent, qtrue)) cmd_clientignore(ent, qfalse); else cantUse(ent); return qtrue;}
 	else if (!strcmp(cmd,"clientunignore"))	{ if (canUse(ent, qtrue)) cmd_clientignore(ent, qtrue); else cantUse(ent); return qtrue;}
+	else if (!strcmp(cmd,"permignore"))		{ if (canUse(ent, qtrue)) cmd_permignore(ent, qfalse); else cantUse(ent); return qtrue;}
+	else if (!strcmp(cmd,"permunignore"))	{ if (canUse(ent, qtrue)) cmd_permignore(ent, qtrue); else cantUse(ent); return qtrue;}
+	else if (!strcmp(cmd,"permclientignore"))	{ if (canUse(ent, qtrue)) cmd_permclientignore(ent, qfalse); else cantUse(ent); return qtrue;}
+	else if (!strcmp(cmd,"permclientunignore"))	{ if (canUse(ent, qtrue)) cmd_permclientignore(ent, qtrue); else cantUse(ent); return qtrue;}
+	else if (!strcmp(cmd,"ban"))			{ if (canUse(ent, qtrue)) cmd_banGuid(ent); else cantUse(ent); return qtrue;}
+	else if (!strcmp(cmd,"ban"))			{ if (canUse(ent, qtrue)) cmd_banClientGuid(ent); else cantUse(ent); return qtrue;}	
+	else if (!strcmp(cmd,"tempban"))		{ if (canUse(ent, qtrue)) cmd_tempbanGuid(ent); else cantUse(ent); return qtrue;}	
+	else if (!strcmp(cmd,"banip"))			{ if (canUse(ent, qtrue)) cmd_banIp(ent); else cantUse(ent); return qtrue;}		
+	else if (!strcmp(cmd,"tempbanip"))		{ if (canUse(ent, qtrue)) cmd_tempBanIp(ent); else cantUse(ent); return qtrue;}		
+	else if (!strcmp(cmd,"addip"))			{ if (canUse(ent, qtrue)) cmd_addIp(ent); else cantUse(ent); return qtrue;}		
 
 	// Any other command (server cvars..)
 	else if (canUse(ent, qfalse))			{ cmdCustom(ent, cmd); return qtrue; }	
@@ -1509,10 +1871,20 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("whereis", "Reveals players location to all.", "Uses client slot number!")
 	_HELP("rename", "Renames players.", "!rename <client slot> <new name>")
 	_HELP("vstr", "Loads a level from rotation file. Note - You need to know rotation labels..", "!vstr map1")
-	_HELP("ignore", "Takes ability to call votes, chat and use vsay from client", "!ignore <unique part of name>")
-	_HELP("unignore", "Restores client's ability to call votes, chat and use vsay", "!unignore <unique part of name>")
-	_HELP("clientignore", "Takes ability to call votes, chat and use vsay from client", "!ignore <client slot>")
-	_HELP("clientunignore", "Restores client's ability to call votes, chat and use vsay", "!unignore <client slot>")
+	_HELP("ignore", "Takes ability to call votes, chat and use vsay from client.", "!ignore <unique part of name>")
+	_HELP("unignore", "Restores client's ability to call votes, chat and use vsay.", "!unignore <unique part of name>")
+	_HELP("clientignore", "Takes ability to call votes, chat and use vsay from client.", "!ignore <client slot>")
+	_HELP("clientunignore", "Restores client's ability to call votes, chat and use vsay.", "!unignore <client slot>")
+	_HELP("permignore", "Permanently ignores players. Note that client will need to be permUnignored as unignore will only work until player leaves.", "!permignore <unique part of name>")
+	_HELP("permunignore", "Removes client from permanently ignored list.", "!permunignore <unique part of name>")
+	_HELP("permclientignore", "Permanently ignores players. Note that client will need to be permUnignored as unignore will only work until player leaves.", "!permclientignore <client slot>")
+	_HELP("permclientunignore", "Removes client from permanently ignored list.", "!permclientunignore <client slot>")
+	_HELP("ban", "Bans player (GUID based) from server.", "!ban <unique part of name>")
+	_HELP("banclient", "Bans player (GUID based) from server.", "!banclient <client slot number>")
+	_HELP("tempban", "Temporarily bans player (GUID based) from server.", "!tempban <unique part of name> <mins>")
+	_HELP("banip", "Bans player by IP.", "!banip <unique part of name>")
+	_HELP("tempbanip", "Temporarily Bans player by IP.", "!tempbanip <unique part of name> <mins>")
+	_HELP("addip", "Adds IP to banned file. You can use wildcards for subrange bans.", "example - !addip 100.*.*.*")
 	// --> Add new ones after this line..
 
 	{NULL, NULL, NULL}

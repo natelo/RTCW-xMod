@@ -1523,5 +1523,6 @@ typedef enum {
 // L0 - New stuff bellow
 #define ARRAY_LEN(x)	(sizeof(x) / sizeof(*(x)))
 void DecolorString( char *in, char *out);
+int is_numeric(const char *p);
 
 #endif	// __Q_SHARED_H

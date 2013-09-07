@@ -1,3 +1,10 @@
+/*
+===========================================================================
+L0 
+
+Removed bunch of useless stuff for old way of IP banning as it's severly outdated.
+===========================================================================
+*/
 #include "g_local.h"
 
 typedef struct ipGUID_s
@@ -5,9 +12,9 @@ typedef struct ipGUID_s
 	char		compare[33];
 } ipGUID_t;
 
-#define	MAX_IPFILTERS	1024
+#define	MAX_GUIDFILTERS	1024
 
-static ipGUID_t		ipMaxLivesFilters[MAX_IPFILTERS];
+static ipGUID_t		ipMaxLivesFilters[MAX_GUIDFILTERS];
 static int			numMaxLivesFilters = 0;
 
 void PrintMaxLivesGUID (void)
@@ -45,7 +52,7 @@ that prevents them from quitting a disconnecting
 */
 void AddMaxLivesGUID( char *str )
 {
-	if (numMaxLivesFilters == MAX_IPFILTERS)
+	if (numMaxLivesFilters == MAX_GUIDFILTERS)
 	{
 		G_Printf ("MaxLives GUID filter list is full\n");
 		return;
@@ -66,6 +73,94 @@ void ClearMaxLivesGUID ( void )
 	}
 	numMaxLivesFilters = 0;
 }
+
+/*
+=================
+L0 - Svcmd_AddIP_f
+
+- from wolfX
+- wolfX took it from S4NDMoD
+=================
+*/
+void Svcmd_AddIP_f( void ) {
+	FILE		*bannedfile;
+
+	char	arg1[MAX_STRING_TOKENS];
+	trap_Argv(1, arg1, sizeof(arg1));
+
+	bannedfile=fopen("banned.txt","a+");//Open file
+
+	fputs(va("%s\n",arg1),bannedfile);
+	G_LogPrintf ("%s was added to the banned file\n", arg1);
+    
+	fclose(bannedfile);
+}
+
+
+/*
+=================
+L0 
+
+Svcmd_AddGUID_f
+=================
+*/
+void Svcmd_AddGUID_f( void ) {
+	FILE		*bannedfile;
+
+	char	arg1[MAX_STRING_TOKENS];
+	trap_Argv(1, arg1, sizeof(arg1));
+
+	bannedfile=fopen("bannedGuids.txt","a+");//Open file
+
+	fputs(va("%s\n",arg1),bannedfile);
+	G_LogPrintf ("%s was added to the banned file\n", arg1);
+    
+	fclose(bannedfile);
+}
+
+/*
+================
+L0 - Svcmd_tempban_f 
+
+- from wolfX
+- wolfX took it from S4NDMoD
+================
+*/
+void Svcmd_tempban_f(void){
+	int			clientNum;
+	int			bannedtime;
+	gentity_t	*ent;
+	char		arg1[MAX_STRING_TOKENS];
+	char		arg2[MAX_STRING_TOKENS];	
+
+	trap_Argv( 1, arg1, sizeof( arg1 ) );
+	clientNum = atoi(arg1);
+	ent = &g_entities[ clientNum ];
+
+	trap_Argv( 2, arg2, sizeof( arg2 ) );
+	bannedtime = atoi(arg2);
+
+	TEMPBAN_CLIENT(ent,bannedtime);
+} 
+
+/*
+================
+L0  
+
+Svcmd_tempban_guid_f 
+================
+*/
+void Svcmd_tempban_guid_f(void){	
+	int			bannedtime;
+	char		arg1[MAX_STRING_TOKENS];
+	char		arg2[MAX_STRING_TOKENS];
+
+	trap_Argv( 1, arg1, sizeof( arg1 ) );
+	trap_Argv( 2, arg2, sizeof( arg2 ) );
+	bannedtime = atoi(arg2);	
+
+	TEMPBAN_GUID_CLIENT(arg1,bannedtime);
+} 
 
 /*
 ===================
@@ -409,6 +504,31 @@ qboolean	ConsoleCommand( void ) {
 		Svcmd_PollPrint_f();
 		return qtrue;
 	}
+
+	// Modifed AddIP command
+	if ( Q_stricmp( cmd, "addip" ) == 0 ) {
+		Svcmd_AddIP_f();
+		return qtrue;
+	}
+
+	// AddGuid
+	if ( Q_stricmp( cmd, "addguid" ) == 0 ) {
+		Svcmd_AddGUID_f();
+		return qtrue;
+	}
+
+	// Tempban (IP)
+	if (Q_stricmp(cmd, "tempban") == 0){
+        Svcmd_tempban_f();
+  		return qtrue;
+	}
+
+	// TempbanGuid
+	if (Q_stricmp(cmd, "tempbanguid") == 0){
+        Svcmd_tempban_guid_f();
+  		return qtrue;
+	}	
+	// End
 // End
 
 	// NERVE - SMF

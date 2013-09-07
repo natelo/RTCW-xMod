@@ -177,6 +177,9 @@
     <ClCompile Include="..\..\src\game\g_admin.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\game\g_admin_system.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\game\surfaceflags.h">
