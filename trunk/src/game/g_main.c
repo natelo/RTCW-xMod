@@ -171,6 +171,7 @@ vmCvar_t g_shortcuts;			// Enable shortcuts
 
 // Game
 vmCvar_t g_unlockWeapons;	// Gives ability to drop weapon to all classes..
+vmCvar_t g_fixedphysics;	// Tries to keep things more fair..
 
 // Server Bot
 vmCvar_t sb_system;			// Controls all SB functionality
@@ -351,6 +352,7 @@ cvarTable_t		gameCvarTable[] = {
 
 	// Game
 	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &g_fixedphysics, "g_fixedphysics", "1", CVAR_ARCHIVE|CVAR_SERVERINFO },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 

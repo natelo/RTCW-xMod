@@ -1021,6 +1021,11 @@ void ClientThink_real( gentity_t *ent ) {
 	if (ent->aiCharacter && AICast_NoReload(ent->s.number))
 		pm.noWeapClips = qtrue;	// ensure AI characters don't use clips if they're not supposed to.
 
+	// L0 - Fixedpsyhics
+	if ( g_fixedphysics.integer ) {
+		pm.fixedphysicsfps = 125;
+	} // End
+
 	// Ridah
 //	if (ent->r.svFlags & SVF_NOFOOTSTEPS)
 //		pm.noFootsteps = qtrue;

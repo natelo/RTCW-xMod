@@ -291,6 +291,9 @@ typedef struct {
 	// for fixed msec Pmove
 	int			pmove_fixed;
 	int			pmove_msec;
+	// L0 - Fixed physics
+	int			fixedphysicsfps;
+	// End
 
 	// callbacks to test the world
 	// these will be different functions during game and cgame

@@ -1274,6 +1274,7 @@ extern vmCvar_t g_shortcuts;
 
 // Game
 extern vmCvar_t g_unlockWeapons;
+extern vmCvar_t g_fixedphysics;
 
 // Server Bot
 extern vmCvar_t sb_system;
