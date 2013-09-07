@@ -609,6 +609,15 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 		return;	// ignore the request
 	}
 
+	// L0 - in warmup wait 2 sec before you allow team switch to fix the team switch nuke
+	// After warmup we have teamswitch cvar that will handle it..
+	if ( g_gametype.integer >= GT_WOLF && team != oldTeam && !level.warmupTime == 0 && (level.time - client->pers.enterTime) < 2000 && !forced ) {
+		trap_SendServerCommand( clientNum, 
+			"cp \"Wait ^32 ^7sec before team switch^3!\n\" 3" );
+		return;
+	}
+	// L0 - end
+
 	// DHM - Nerve :: Force players to wait 30 seconds before they can join a new team.
 	if ( g_gametype.integer >= GT_WOLF && team != oldTeam && level.warmupTime == 0 && !client->pers.initialSpawn
 		&& ( (level.time - client->pers.connectTime) > 10000 ) && ( (level.time - client->pers.enterTime) < 30000 ) ) {
@@ -1014,6 +1023,14 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		return;
 	}
 
+	// Not sure if 1.4 has this fixed but i'm lazy.. so check for the Nuke
+    if( strlen(chatText) >= 700 ){
+		trap_SendServerCommand(-1, va("chat \"console: %s ^7kicked: ^3Nuking^7.\n\"", ent->client-> pers.netname ));
+		G_LogPrintf( "Nuking(text >= 700): %s  (Guid: %s).\n", ent->client->pers.netname, ent->client->sess.guid);
+		trap_DropClient( ent-g_entities, "^7Player Kicked: ^3Nuking" );
+	   return;
+	}
+
 // L0 - End
 
 
@@ -1207,6 +1224,14 @@ void G_Voice( gentity_t *ent, gentity_t *target, int mode, const char *id, qbool
 	{
 		CP("print \"^1You are ignored^7! Vsay dismissed.. \n\"" );
 		return;
+	}
+
+	// Not sure if 1.4 has this fixed but i'm lazy.. so check for the Nuke
+    if( strlen(id) >= 700 ){
+		trap_SendServerCommand(-1, va("chat \"console: %s ^7kicked: ^3Nuking^7.\n\"", ent->client-> pers.netname ));
+		G_LogPrintf( "Nuking(voice >= 700): %s  (Guid: %s).\n", ent->client->pers.netname, ent->client->sess.guid);
+		trap_DropClient( ent-g_entities, "^7Player Kicked: ^3Nuking" );
+	   return;
 	}
 
 	// DHM - Nerve :: Don't allow excessive spamming of voice chats
@@ -1447,6 +1472,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	char	arg2[MAX_STRING_TOKENS];
 	char	cleanName[64]; // JPW NERVE
 	int		mask = 0;
+	char	*check;
 
 	// Ignored 
 	if (ent->client->sess.ignored && ent->client->sess.admin == ADM_NONE) 
@@ -1478,10 +1504,18 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	trap_Argv( 1, arg1, sizeof( arg1 ) );
 	trap_Argv( 2, arg2, sizeof( arg2 ) );
 
-	if( strchr( arg1, ';' ) || strchr( arg2, ';' ) ) {
-		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		return;
-	}
+	// L0 - callvote exploit fix
+	for( check = arg2; *check; ++check) {
+		switch(*check) {
+			case '\n':
+			case '\r':
+			case '"':
+			case ';':
+				trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
+				return;
+			break;
+		}
+	} 
 
 	if ( !Q_stricmp( arg1, "map_restart" ) ) {
 		mask = VOTEFLAGS_RESTART;
