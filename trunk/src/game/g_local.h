@@ -982,10 +982,7 @@ qboolean SpotWouldTelefrag( gentity_t *spot );
 // g_svcmds.c
 //
 qboolean	ConsoleCommand( void );
-void G_ProcessIPBans(void);
-qboolean G_FilterPacket (char *from);
 qboolean G_FilterMaxLivesPacket (char *from);
-void AddMaxLivesIP( char *str );
 void AddMaxLivesGUID( char *str );
 void ClearMaxLivesGUID ( void );
 
@@ -1177,8 +1174,6 @@ extern	vmCvar_t	g_weaponTeamRespawn;
 extern	vmCvar_t	g_doWarmup;
 extern	vmCvar_t	g_teamAutoJoin;
 extern	vmCvar_t	g_teamForceBalance;
-extern	vmCvar_t	g_banIPs;
-extern	vmCvar_t	g_filterBan;
 extern	vmCvar_t	g_rankings;
 extern	vmCvar_t	g_enableBreath;
 extern	vmCvar_t	g_smoothClients;

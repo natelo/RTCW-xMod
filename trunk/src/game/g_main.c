@@ -89,8 +89,6 @@ vmCvar_t	g_doWarmup;
 vmCvar_t	g_teamAutoJoin;
 vmCvar_t	g_teamForceBalance;
 vmCvar_t	g_listEntity;
-vmCvar_t	g_banIPs;
-vmCvar_t	g_filterBan;
 vmCvar_t	g_rankings;
 vmCvar_t	g_enableBreath;
 vmCvar_t	g_smoothClients;
@@ -238,9 +236,6 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_logSync, "g_logSync", "0", CVAR_ARCHIVE, 0, qfalse  },
 
 	{ &g_password, "g_password", "", CVAR_USERINFO, 0, qfalse  },
-	{ &g_banIPs, "g_banIPs", "", CVAR_ARCHIVE, 0, qfalse  },
-	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=500
-	{ &g_filterBan, "g_filterBan", "1", CVAR_ARCHIVE, 0, qfalse  },
 
 	{ &g_dedicated, "dedicated", "0", 0, 0, qfalse  },
 
@@ -1151,7 +1146,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	// Xian enforcemaxlives stuff	
 	/*
 	we need to clear the list even if enforce maxlives is not active
-	in cas ethe g_maxlives was changed, and a map_restart happened
+	in case the g_maxlives was changed, and a map_restart happened
 	*/
 	ClearMaxLivesGUID();
 	
@@ -1159,8 +1154,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	if (g_enforcemaxlives.integer && (g_maxlives.integer > 0 || g_axismaxlives.integer > 0 || g_alliedmaxlives.integer > 0)) { 
 		G_Printf ( "EnforceMaxLives-Cleared GUID List\n" );
 	}
-
-	G_ProcessIPBans();
 
 	G_InitMemory();
 

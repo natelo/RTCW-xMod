@@ -1,52 +1,4 @@
-
-
-
-// this file holds commands that can be executed by the server console, but not remote clients
-
 #include "g_local.h"
-
-
-/*
-==============================================================================
-
-PACKET FILTERING
- 
-
-You can add or remove addresses from the filter list with:
-
-addip <ip>
-removeip <ip>
-
-The ip address is specified in dot format, and you can use '*' to match any value
-so you can specify an entire class C network with "addip 192.246.40.*"
-
-Removeip will only remove an address specified exactly the same way.  You cannot addip a subnet, then removeip a single host.
-
-listip
-Prints the current list of filters.
-
-g_filterban <0 or 1>
-
-If 1 (the default), then ip addresses matching the current list will be prohibited from entering the game.  This is the default setting.
-
-If 0, then only addresses matching the list will be allowed.  This lets you easily set up a private game, or a game that only allows players from your local network.
-
-TTimo NOTE: GUID functions are copied over from the model of IP banning,
-used to enforce max lives independently from server reconnect and team changes (Xian)
-
-TTimo NOTE: for persistence, bans are stored in g_banIPs cvar MAX_CVAR_VALUE_STRING
-The size of the cvar string buffer is limiting the banning to around 20 masks
-this could be improved by putting some g_banIPs2 g_banIps3 etc. maybe
-still, you should rely on PB for banning instead
-
-==============================================================================
-*/
-
-typedef struct ipFilter_s
-{
-	unsigned	mask;
-	unsigned	compare;
-} ipFilter_t;
 
 typedef struct ipGUID_s
 {
@@ -55,109 +7,8 @@ typedef struct ipGUID_s
 
 #define	MAX_IPFILTERS	1024
 
-static ipFilter_t	ipFilters[MAX_IPFILTERS];
 static ipGUID_t		ipMaxLivesFilters[MAX_IPFILTERS];
-static int			numIPFilters;
 static int			numMaxLivesFilters = 0;
-
-/*
-=================
-StringToFilter
-=================
-*/
-static qboolean StringToFilter (char *s, ipFilter_t *f)
-{
-	char	num[128];
-	int		i, j;
-	byte	b[4];
-	byte	m[4];
-	
-	for (i=0 ; i<4 ; i++)
-	{
-		b[i] = 0;
-		m[i] = 0;
-	}
-	
-	for (i=0 ; i<4 ; i++)
-	{
-		if (*s < '0' || *s > '9')
-		{
-			if (*s == '*') // 'match any'
-			{
-				// b[i] and m[i] to 0
-				s++;
-				if (!*s)
-					break;
-				s++;
-				continue;
-			}
-			G_Printf( "Bad filter address: %s\n", s );
-			return qfalse;
-		}
-		
-		j = 0;
-		while (*s >= '0' && *s <= '9')
-		{
-			num[j++] = *s++;
-		}
-		num[j] = 0;
-		b[i] = atoi(num);
-		m[i] = 255;
-
-		if (!*s)
-			break;
-		s++;
-	}
-	
-	f->mask = *(unsigned *)m;
-	f->compare = *(unsigned *)b;
-	
-	return qtrue;
-}
-
-/*
-=================
-UpdateIPBans
-=================
-*/
-static void UpdateIPBans (void)
-{
-	byte	b[4];
-	byte	m[4];
-	int		i,j;
-	char	iplist_final[MAX_CVAR_VALUE_STRING];
-	char	ip[64];
-
-	*iplist_final = 0;
-	for (i = 0 ; i < numIPFilters ; i++)
-	{
-		if (ipFilters[i].compare == 0xffffffff)
-			continue;
-
-		*(unsigned *)b = ipFilters[i].compare;
-		*(unsigned *)m = ipFilters[i].mask;
-		*ip = 0;
-		for (j = 0 ; j < 4 ; j++)
-		{
-			if (m[j]!=255)
-				Q_strcat(ip, sizeof(ip), "*");
-			else
-				Q_strcat(ip, sizeof(ip), va("%i", b[j]));
-			Q_strcat(ip, sizeof(ip), (j<3) ? "." : " ");
-		}		
-		if (strlen(iplist_final)+strlen(ip) < MAX_CVAR_VALUE_STRING)
-		{
-			Q_strcat( iplist_final, sizeof(iplist_final), ip);
-		}
-		else
-		{
-			Com_Printf("g_banIPs overflowed at MAX_CVAR_VALUE_STRING\n");
-			break;
-		}
-	}
-
-	trap_Cvar_Set( "g_banIPs", iplist_final );
-}
 
 void PrintMaxLivesGUID (void)
 {
@@ -171,40 +22,6 @@ void PrintMaxLivesGUID (void)
 }
 
 /*
-=================
-G_FilterPacket
-=================
-*/
-qboolean G_FilterPacket (char *from)
-{
-	int		i;
-	unsigned	in;
-	byte m[4];
-	char *p;
-
-	i = 0;
-	p = from;
-	while (*p && i < 4) {
-		m[i] = 0;
-		while (*p >= '0' && *p <= '9') {
-			m[i] = m[i]*10 + (*p - '0');
-			p++;
-		}
-		if (!*p || *p == ':')
-			break;
-		i++, p++;
-	}
-	
-	in = *(unsigned *)m;
-
-	for (i=0 ; i<numIPFilters ; i++)
-		if ( (in & ipFilters[i].mask) == ipFilters[i].compare)
-			return g_filterBan.integer != 0;
-
-	return g_filterBan.integer == 0;
-}
-
-/*
  Check to see if the user is trying to sneak back in with g_enforcemaxlives enabled
 */
 qboolean G_FilterMaxLivesPacket (char *from)
@@ -214,38 +31,11 @@ qboolean G_FilterMaxLivesPacket (char *from)
 	for (i=0 ; i<numMaxLivesFilters ; i++)
 	{
 		if ( !Q_stricmp (ipMaxLivesFilters[i].compare, from ) )
-			return 1;
+			return qtrue;
 	}
-	return 0;
+	return qfalse;
 }
 
-/*
-=================
-AddIP
-=================
-*/
-static void AddIP( char *str )
-{
-	int		i;
-
-	for (i = 0 ; i < numIPFilters ; i++)
-		if (ipFilters[i].compare == 0xffffffff)
-			break;		// free spot
-	if (i == numIPFilters)
-	{
-		if (numIPFilters == MAX_IPFILTERS)
-		{
-			G_Printf ("IP filter list is full\n");
-			return;
-		}
-		numIPFilters++;
-	}
-	
-	if (!StringToFilter (str, &ipFilters[i]))
-		ipFilters[i].compare = 0xffffffffu;
-
-	UpdateIPBans();
-}
 /*
 =================
 AddMaxLivesGUID
@@ -262,87 +52,6 @@ void AddMaxLivesGUID( char *str )
 	}
 	Q_strncpyz (ipMaxLivesFilters[numMaxLivesFilters].compare, str, 33);
 	numMaxLivesFilters++;
-}
-
-
-/*
-=================
-G_ProcessIPBans
-=================
-*/
-void G_ProcessIPBans(void) 
-{
-	char *s, *t;
-	char		str[MAX_CVAR_VALUE_STRING];
-
-	Q_strncpyz( str, g_banIPs.string, sizeof(str) );
-
-	for (t = s = g_banIPs.string; *t; /* */ ) {
-		s = strchr(s, ' ');
-		if (!s)
-			break;
-		while (*s == ' ')
-			*s++ = 0;
-		if (*t)
-			AddIP( t );
-		t = s;
-	}
-}
-
-
-/*
-=================
-Svcmd_AddIP_f
-=================
-*/
-void Svcmd_AddIP_f (void)
-{
-	char		str[MAX_TOKEN_CHARS];
-
-	if ( trap_Argc() < 2 ) {
-		G_Printf("Usage:  addip <ip-mask>\n");
-		return;
-	}
-
-	trap_Argv( 1, str, sizeof( str ) );
-
-	AddIP( str );
-
-}
-
-/*
-=================
-Svcmd_RemoveIP_f
-=================
-*/
-void Svcmd_RemoveIP_f (void)
-{
-	ipFilter_t	f;
-	int			i;
-	char		str[MAX_TOKEN_CHARS];
-
-	if ( trap_Argc() < 2 ) {
-		G_Printf("Usage:  removeip <ip-mask>\n");
-		return;
-	}
-
-	trap_Argv( 1, str, sizeof( str ) );
-
-	if (!StringToFilter (str, &f))
-		return;
-
-	for (i=0 ; i<numIPFilters ; i++) {
-		if (ipFilters[i].mask == f.mask	&&
-			ipFilters[i].compare == f.compare) {
-			ipFilters[i].compare = 0xffffffffu;
-			G_Printf ("Removed.\n");
-
-			UpdateIPBans();
-			return;
-		}
-	}
-
-	G_Printf ( "Didn't find %s.\n", str );
 }
 
 /*
@@ -564,7 +273,6 @@ NERVE - SMF - swaps all clients to opposite team
 ============
 */
 void Svcmd_SwapTeams_f(void) {
-//  if ( g_gamestate.integer != GS_PLAYING ) {
 	if ( (g_gamestate.integer == GS_INITIALIZE) || // JPW NERVE -- so teams can swap between checkpoint rounds
 		 (g_gamestate.integer == GS_WAITING_FOR_PLAYERS) ||
 		 (g_gamestate.integer == GS_RESET) ) {
@@ -651,8 +359,6 @@ void Svcmd_PollPrint_f( void ) {
 	AP("chat \"console:^7 Poll result is ^2Yes^7!\n\"");
 }
 
-
-
 char	*ConcatArgs( int start );
 
 /*
@@ -683,21 +389,6 @@ qboolean	ConsoleCommand( void ) {
 
 	if (Q_stricmp (cmd, "addbot") == 0) {
 		Svcmd_AddBot_f();
-		return qtrue;
-	}
-
-	if (Q_stricmp (cmd, "addip") == 0) {
-		Svcmd_AddIP_f();
-		return qtrue;
-	}
-
-	if (Q_stricmp (cmd, "removeip") == 0) {
-		Svcmd_RemoveIP_f();
-		return qtrue;
-	}
-
-	if (Q_stricmp (cmd, "listip") == 0) {
-		trap_SendConsoleCommand( EXEC_INSERT, "g_banIPs\n" );
 		return qtrue;
 	}
 
