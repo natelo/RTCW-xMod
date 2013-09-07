@@ -976,8 +976,17 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	char cmd3[128];	
 	char censoredText[MAX_SAY_TEXT];	// censored text
 
-	// Admin commands
 	Q_strncpyz ( text, chatText, sizeof( text ) );
+
+	// Not sure if 1.4 has this fixed but i'm lazy.. so check for the Nuke
+    if( strlen(text) >= 700 ){
+		trap_SendServerCommand(-1, va("chat \"console: %s ^7kicked: ^3Nuking^7.\n\"", ent->client-> pers.netname ));
+		G_LogPrintf( "Nuking(text >= 700): %s  (Guid: %s).\n", ent->client->pers.netname, ent->client->sess.guid);
+		trap_DropClient( ent-g_entities, "^7Player Kicked: ^3Nuking" );
+	   return;
+	}
+
+	// Admin commands
 	if ( !ent->client->sess.admin == ADM_NONE ) {
 		// Command
 		if ( text[0] == '!' ){
@@ -1029,16 +1038,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		return;
 	}
 
-	// Not sure if 1.4 has this fixed but i'm lazy.. so check for the Nuke
-    if( strlen(chatText) >= 700 ){
-		trap_SendServerCommand(-1, va("chat \"console: %s ^7kicked: ^3Nuking^7.\n\"", ent->client-> pers.netname ));
-		G_LogPrintf( "Nuking(text >= 700): %s  (Guid: %s).\n", ent->client->pers.netname, ent->client->sess.guid);
-		trap_DropClient( ent-g_entities, "^7Player Kicked: ^3Nuking" );
-	   return;
-	}
-
-	// L0 - censored text	
-	Q_strncpyz ( text, chatText, sizeof( text ) );
+	// L0 - censored text		
 	if (g_censorWords.string[0]) {
 		SanitizeString(text, censoredText, qtrue);
 		if (G_CensorText(censoredText,&censorDictionary)) {		
@@ -1056,13 +1056,13 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	switch ( mode ) {
 	default:
 	case SAY_ALL:
-		G_LogPrintf( "say: %s%s: %s\n", ent->client->pers.netname, tag, chatText ); // L0 - Squeeze admin tag here..
+		G_LogPrintf( "say: %s%s: %s\n", ent->client->pers.netname, tag, text ); // L0 - Squeeze admin tag here..
 		Com_sprintf (name, sizeof(name), "%s%s%c%c: ", ent->client->pers.netname, tag, Q_COLOR_ESCAPE, COLOR_WHITE );
 		color = COLOR_GREEN;
 		break;
 	case SAY_TEAM:
 		localize = qtrue;
-		G_LogPrintf( "sayteam: %s: %s\n", ent->client->pers.netname, chatText );
+		G_LogPrintf( "sayteam: %s: %s\n", ent->client->pers.netname, text );
 		if (Team_GetLocationMsg(ent, location, sizeof(location), qfalse))
 			Com_sprintf (name, sizeof(name), "[lof](%s%c%c) (%s): ", 
 				ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
@@ -1082,14 +1082,12 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		break;
 	// NERVE - SMF
 	case SAY_LIMBO:
-		G_LogPrintf( "say_limbo: %s: %s\n", ent->client->pers.netname, chatText );
+		G_LogPrintf( "say_limbo: %s: %s\n", ent->client->pers.netname, text );
 		Com_sprintf (name, sizeof(name), "%s%c%c: ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
 		color = COLOR_GREEN;
 		break;
 	// -NERVE - SMF
 	}
-
-	Q_strncpyz( text, chatText, sizeof(text) );
 
 	if ( target ) {
 		G_SayTo( ent, target, mode, color, name, text, localize );
