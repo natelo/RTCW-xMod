@@ -167,6 +167,7 @@ vmCvar_t bannedMSG;				// Message that will be printed to banned users.
 vmCvar_t g_censorWords;			// Censored words
 vmCvar_t g_disallowedNames;		// Disallowed names
 vmCvar_t g_noHardcodedCensor;	// Don't use hardcoded censor..
+vmCvar_t g_shortcuts;			// Enable shortcuts
 
 // Server Bot
 vmCvar_t sb_system;			// Controls all SB functionality
@@ -343,6 +344,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_censorWords, "g_censorWords", "fuuck", 0 },
 	{ &g_disallowedNames, "g_disallowedNames", "nazi, admin, console", 0 },
 	{ &g_noHardcodedCensor, "g_noHardcodedCensor", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_shortcuts, "g_shortcuts", "0", 0 },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 

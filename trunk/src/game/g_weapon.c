@@ -336,7 +336,9 @@ void Weapon_Syringe(gentity_t *ent) {
 					traceEnt->client->ps.pm_flags |= PMF_TIME_LOCKPLAYER;
 					traceEnt->client->ps.pm_time = 2100;
 				}
-
+				// L0 - Shortcuts
+				traceEnt->client->pers.lastrevive_client = ent->s.clientNum;
+				// End
 
 				AddScore(ent, WOLF_MEDIC_BONUS); // JPW NERVE props to the medic for the swift and dexterous bit o healitude
 			}

@@ -521,6 +521,13 @@ typedef struct {
 	int sb_ignored;
 	int	sb_teamKills;
 
+	// Shortcuts
+	int lastkilled_client;
+	int	lastrevive_client;
+	int	lastkiller_client;
+	int	lastammo_client;
+	int	lasthealth_client;
+
 	// L0 - End
 } clientPersistant_t;
 
@@ -1264,6 +1271,7 @@ extern vmCvar_t bannedMSG;
 extern vmCvar_t	g_censorWords;
 extern vmCvar_t g_disallowedNames;
 extern vmCvar_t g_noHardcodedCensor;
+extern vmCvar_t g_shortcuts;
 
 // Server Bot
 extern vmCvar_t sb_system;

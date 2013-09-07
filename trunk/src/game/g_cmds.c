@@ -906,6 +906,182 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	// leave it where it was
 }
 
+/*
+==================
+L0 
+
+Shortcuts from EtPUB
+==================
+*/
+char *G_ShortcutSanitize(char *text)
+{
+	// pheno: increased 'n' for [command] command line
+	static char n[MAX_STRING_CHARS] = {""};
+
+	if(!text || !*text)
+		return n;
+
+	Q_strncpyz(n, text, sizeof(n));
+
+	Q_strncpyz(n, Q_StrReplace(n, "[a]", "(a)"), sizeof(n));
+	Q_strncpyz(n, Q_StrReplace(n, "[d]", "(d)"), sizeof(n));
+	Q_strncpyz(n, Q_StrReplace(n, "[h]", "(h)"), sizeof(n));
+	Q_strncpyz(n, Q_StrReplace(n, "[k]", "(k)"), sizeof(n));
+	Q_strncpyz(n, Q_StrReplace(n, "[l]", "(l)"), sizeof(n));
+	Q_strncpyz(n, Q_StrReplace(n, "[n]", "(n)"), sizeof(n));
+	Q_strncpyz(n, Q_StrReplace(n, "[r]", "(r)"), sizeof(n));
+	Q_strncpyz(n, Q_StrReplace(n, "[p]", "(p)"), sizeof(n));
+	Q_strncpyz(n, Q_StrReplace(n, "[s]", "(s)"), sizeof(n));
+	Q_strncpyz(n, Q_StrReplace(n, "[w]", "(w)"), sizeof(n));
+	Q_strncpyz(n, Q_StrReplace(n, "[t]", "(t)"), sizeof(n));
+	return n;
+}
+
+char *G_Shortcuts(gentity_t *ent, char *text)
+{
+	// pheno: increased 'out' for [command] command line
+	static char out[MAX_STRING_CHARS];
+	char a[MAX_NAME_LENGTH] = {"*unknown*"};
+	char d[MAX_NAME_LENGTH] = {"*unknown*"};
+	char h[MAX_NAME_LENGTH] = {"*unknown*"};
+	char k[MAX_NAME_LENGTH] = {"*unknown*"};
+	char l[32] = {"*unknown*"};
+	char n[MAX_NAME_LENGTH] = {"*unknown*"};
+	char r[MAX_NAME_LENGTH] = {"*unknown*"};
+	char p[MAX_NAME_LENGTH] = {"*unknown*"};
+	char s[32] = {"*unknown*"};
+	char w[32] = {"*unknown*"};
+	char t[32] = {"*unknown*"};
+	gclient_t *client = NULL;
+	gentity_t *crosshairEnt;
+	char *rep;
+	gitem_t *weapon;
+	int clip;
+	int ammo;
+
+	out[0] = '\0';
+
+	if (ent) {
+		if(ent->client->pers.lastammo_client != -1) {
+			client = &level.clients[ent->client->pers.lastammo_client];
+			if(client) {
+				Q_strncpyz(a,
+					G_ShortcutSanitize(client->pers.netname),
+					sizeof(a));
+			}
+		}
+	}
+
+	if (ent) {
+		if(ent->client->pers.lastkiller_client != -1) {
+			client = &level.clients[ent->client->pers.lastkiller_client];
+			if(client) {
+				Q_strncpyz(d,
+					G_ShortcutSanitize(client->pers.netname),
+					sizeof(d));
+			}
+		}
+	}
+
+	if (ent) {
+		if(ent->client->pers.lasthealth_client != -1) {
+			client = &level.clients[ent->client->pers.lasthealth_client];
+			if(client) {
+				Q_strncpyz(h,
+					G_ShortcutSanitize(client->pers.netname),
+					sizeof(h));
+			}
+		}
+	}
+
+	if (ent) {
+		if(ent->client->pers.lastkilled_client != -1) {
+			client = &level.clients[ent->client->pers.lastkilled_client];
+			if(client) {
+				Q_strncpyz(k,
+					G_ShortcutSanitize(client->pers.netname),
+					sizeof(k));
+			}
+		}
+	}
+
+	if (ent) {
+		char location[64];	
+
+		Team_GetLocationMsg( ent, location, sizeof( location ), qtrue );
+		Q_strncpyz(l, 
+			location,
+			sizeof(l));
+	}
+
+	if (ent) {
+		Q_strncpyz(n,
+			G_ShortcutSanitize(ent->client->pers.netname),
+			sizeof(n));
+	}
+
+	if (ent) {
+		if(ent->client->pers.lastrevive_client != -1) {
+			client = &level.clients[ent->client->pers.lastrevive_client];
+			if(client) {
+				Q_strncpyz(r,
+					G_ShortcutSanitize(client->pers.netname),
+					sizeof(r));
+			}
+		}
+	}
+
+	if (ent) {
+		crosshairEnt = &g_entities[ent->client->ps.identifyClient];
+		// Dens: only give the name of the other client, if the player should be able to see it
+		if(crosshairEnt && crosshairEnt->client && crosshairEnt->inuse && 
+			(ent->client->sess.sessionTeam == crosshairEnt->client->sess.sessionTeam ||			
+			ent->client->sess.sessionTeam == TEAM_SPECTATOR)) {
+			client = crosshairEnt->client;
+			if(client) {			
+				Q_strncpyz(p, G_ShortcutSanitize(client->pers.netname),	sizeof(p));
+			}
+		}
+	}
+
+	if (ent) {
+		int health;
+		health = ent->health;
+		if ( health < 0 ) {
+			health = 0;
+		}
+		Com_sprintf( s, sizeof( s ), "%i", health );
+	}
+
+	if (ent && ent->client->ps.weapon) {
+		weapon = BG_FindItemForWeapon(ent->client->ps.weapon);
+		Q_strncpyz(w, weapon->pickup_name, sizeof(w));
+	}
+
+	if (ent && ent->client->ps.weapon) {
+		clip = BG_FindClipForWeapon(ent->client->ps.weapon);
+		ammo = BG_FindAmmoForWeapon(ent->client->ps.weapon);
+		Com_sprintf(t, sizeof(t), "%i",
+			(ent->client->ps.ammoclip[clip] +
+			((ent->client->ps.weapon == WP_KNIFE) ? 0 : ent->client->ps.ammo[ammo])));
+	}
+
+	rep = Q_StrReplace(text, "[a]", a);
+	rep = Q_StrReplace(rep, "[d]", d);
+	rep = Q_StrReplace(rep, "[h]", h);
+	rep = Q_StrReplace(rep, "[k]", k);
+	rep = Q_StrReplace(rep, "[l]", l);
+	rep = Q_StrReplace(rep, "[n]", n);
+	rep = Q_StrReplace(rep, "[r]", r);
+	rep = Q_StrReplace(rep, "[p]", p);
+	rep = Q_StrReplace(rep, "[s]", s);
+	rep = Q_StrReplace(rep, "[w]", w);
+	rep = Q_StrReplace(rep, "[t]", t);
+
+	Q_strncpyz(out, rep, sizeof(out));
+
+	return out;
+}
 
 /*
 ==================
@@ -959,6 +1135,7 @@ void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, const char 
 	}
 }
 
+
 void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) {
 	int			j;
 	gentity_t	*other;
@@ -974,7 +1151,8 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	char cmd1[128];
 	char cmd2[128];
 	char cmd3[128];	
-	char censoredText[MAX_SAY_TEXT];	// censored text
+	char censoredText[MAX_SAY_TEXT];	// Censored text
+	char *shortcuts;					// Shortcuts
 
 	Q_strncpyz ( text, chatText, sizeof( text ) );
 
@@ -1046,6 +1224,12 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 			SB_chatWarn(ent);
 		}
 	} 
+
+	// L0 - Shortcuts
+	if(g_shortcuts.integer) {
+		shortcuts = G_Shortcuts(ent, text);
+		Q_strncpyz(text, shortcuts, sizeof(text));
+	} // End
 
 // L0 - End
 
