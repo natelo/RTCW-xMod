@@ -1158,6 +1158,7 @@ typedef enum {
 
 // L0 - Hacks basically
 	MOD_ADMKILL,
+	MOD_SELFKILL,
 // End
 
 	MOD_BAT

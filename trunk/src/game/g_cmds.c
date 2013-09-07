@@ -473,8 +473,24 @@ Cmd_Kill_f
 void Cmd_Kill_f( gentity_t *ent ) {
 	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		return;
+	}	
+	if ( g_gametype.integer >= GT_WOLF && ent->client->ps.pm_flags & PMF_LIMBO ) {
+		return;
 	}
-	if ( g_gamestate.integer != GS_PLAYING ) {
+
+	ent->flags &= ~FL_GODMODE;
+	ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
+	ent->client->ps.persistant[PERS_HWEAPON_USE] = 0; // TTimo - if using /kill while at MG42
+	player_die (ent, ent, ent, 100000, MOD_SUICIDE);
+}
+
+/*
+=================
+Cmd_Kill_f
+=================
+*/
+void Cmd_softKill_f( gentity_t *ent ) {
+	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		return;
 	}
 	if ( g_gametype.integer >= GT_WOLF && ent->client->ps.pm_flags & PMF_LIMBO ) {
@@ -484,7 +500,7 @@ void Cmd_Kill_f( gentity_t *ent ) {
 	ent->flags &= ~FL_GODMODE;
 	ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
 	ent->client->ps.persistant[PERS_HWEAPON_USE] = 0; // TTimo - if using /kill while at MG42
-	player_die (ent, ent, ent, 100000, MOD_SUICIDE);
+	player_die (ent, ent, ent, 100000, MOD_SELFKILL);   // L0 - Kill but not gib...
 }
 
 
@@ -2535,6 +2551,10 @@ void ClientCommand( int clientNum ) {
 		Cmd_Noclip_f (ent);
 	else if (Q_stricmp (cmd, "kill") == 0)
 		Cmd_Kill_f (ent);
+// L0 - New stuff
+	else if (Q_stricmp (cmd, "sui") == 0)
+		Cmd_softKill_f (ent);
+// End
 	else if (Q_stricmp (cmd, "levelshot") == 0)
 		Cmd_LevelShot_f (ent);
 	else if (Q_stricmp (cmd, "follow") == 0)

@@ -238,6 +238,7 @@ char	*modNames[] = {
 // jpw
 // L0 - Hacks for MODs
 	"MOD_ADMKILL",		// Slapped to death || killed by admin
+	"MOD_SELFKILL",		// Suicide (not gib!)
 // End
 	"MOD_BAT"
 };
@@ -291,8 +292,17 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
 
 	// L0 - custom MOD's
-	if(meansOfDeath == MOD_ADMKILL) {
+	if( meansOfDeath == MOD_ADMKILL ) {
 		AP(va("print \"%s ^7was killed by Admin.\n\"", self->client->pers.netname));
+	}
+
+	if (meansOfDeath == MOD_SELFKILL ) {
+		int r = rand() %2; // randomize messages
+			
+		if (r == 0)			
+			AP(va("print \"%s ^7slit his throat.\n\"", self->client->pers.netname));
+		else if (r == 1)
+			AP(va("print \"%s ^7commited suicide.\n\"", self->client->pers.netname));
 	}
 
 	if ( meansOfDeath < 0 || meansOfDeath >= sizeof( modNames ) / sizeof( modNames[0] ) ) {
@@ -306,13 +316,17 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		self->client->pers.netname, obit );
 
 	// L0 - Don't send this if there's a custom MOD
-	if (meansOfDeath != MOD_ADMKILL) {
-		// broadcast the death event to everyone
-		ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY );
-		ent->s.eventParm = meansOfDeath;
-		ent->s.otherEntityNum = self->s.number;
-		ent->s.otherEntityNum2 = killer;
-		ent->r.svFlags = SVF_BROADCAST;	// send to everyone
+	if (meansOfDeath != MOD_ADMKILL) { 
+		if (meansOfDeath != MOD_SELFKILL ) {
+
+			// broadcast the death event to everyone
+			ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY );
+			ent->s.eventParm = meansOfDeath;
+			ent->s.otherEntityNum = self->s.number;
+			ent->s.otherEntityNum2 = killer;
+			ent->r.svFlags = SVF_BROADCAST;	// send to everyone
+
+		}
 	}
 
 	self->enemy = attacker;
