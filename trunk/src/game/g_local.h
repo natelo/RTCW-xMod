@@ -1272,6 +1272,9 @@ extern vmCvar_t g_disallowedNames;
 extern vmCvar_t g_noHardcodedCensor;
 extern vmCvar_t g_shortcuts;
 
+// Game
+extern vmCvar_t g_unlockWeapons;
+
 // Server Bot
 extern vmCvar_t sb_system;
 extern vmCvar_t sb_maxTKs;

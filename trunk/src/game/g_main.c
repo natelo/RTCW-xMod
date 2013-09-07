@@ -169,6 +169,9 @@ vmCvar_t g_disallowedNames;		// Disallowed names
 vmCvar_t g_noHardcodedCensor;	// Don't use hardcoded censor..
 vmCvar_t g_shortcuts;			// Enable shortcuts
 
+// Game
+vmCvar_t g_unlockWeapons;	// Gives ability to drop weapon to all classes..
+
 // Server Bot
 vmCvar_t sb_system;			// Controls all SB functionality
 vmCvar_t sb_maxTKs;			// Max TK's before client gets kicked
@@ -345,6 +348,9 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_disallowedNames, "g_disallowedNames", "nazi, admin, console", 0 },
 	{ &g_noHardcodedCensor, "g_noHardcodedCensor", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_shortcuts, "g_shortcuts", "0", 0 },
+
+	// Game
+	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 

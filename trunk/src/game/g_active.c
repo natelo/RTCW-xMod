@@ -887,7 +887,10 @@ void ClientThink_real( gentity_t *ent ) {
 		if (ucmd->wbuttons & WBUTTON_DROP) {
 			if (!client->dropWeaponTime) {
 				client->dropWeaponTime = 1; // just latch it for now
-				if ((client->ps.stats[STAT_PLAYER_CLASS] == PC_SOLDIER) || (client->ps.stats[STAT_PLAYER_CLASS] == PC_LT))
+				// L0 - Patched it for g_unlockWeapons..
+				if ( ( client->ps.stats[STAT_PLAYER_CLASS] == PC_SOLDIER ) || ( client->ps.stats[STAT_PLAYER_CLASS] == PC_LT ) || 
+					  ( g_unlockWeapons.integer && client->ps.stats[STAT_PLAYER_CLASS] == PC_MEDIC ) || 
+					  ( g_unlockWeapons.integer && client->ps.stats[STAT_PLAYER_CLASS] == PC_ENGINEER )) 	
 					for (i=0;i<MAX_WEAPS_IN_BANK_MP;i++) {
 						weapon = weapBanksMultiPlayer[3][i];
 							if (COM_BitCheck(client->ps.weapons,weapon)) {

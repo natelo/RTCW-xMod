@@ -84,7 +84,7 @@ ammotable_t ammoTable[] = {
 	{	5,				1,		1,		1000,	750	,			2000,	0,		0,		MOD_PANZERFAUST			},	//	WP_PANZERFAUST			// 7	// DHM - Nerve :: updated delay so prediction is correct
 //	{	MAX_AMMO_VENOM,	1,		500,	3000,	750,			30,		5000,	200,	MOD_VENOM				},	//	WP_VENOM				// -
 	{	MAX_AMMO_VENOM,	1,		500,	3000,	750,			45,		5000,	200,	MOD_VENOM				},	//	WP_VENOM				// 8	// JPW NOTE: changed next_shot 50->45 to genlock firing to every server frame (fire rate shouldn't be framerate dependent now)
-	{	200,			1,		200,	1000,	DELAY_LOW,		50,		0,		0,		MOD_FLAMETHROWER		},	//	WP_FLAMETHROWER			// 9 // JPW NOTE: changed maxclip for MP 500->150
+	{	200,			1,		200,	1000,	DELAY_LOW,		50,		0,		0,		MOD_FLAMETHROWER		},	//	WP_FLAMETHROWER			// 9	// JPW NOTE: changed maxclip for MP 500->150
 	{	300,			1,		300,	1000,	DELAY_LOW,		0,		0,		0,		MOD_TESLA				},	//	WP_TESLA				// 10
 	{	50,				1,		50,		1000,	DELAY_LOW,		1200,	0,		0,		MOD_SPEARGUN			},	//	WP_SPEARGUN				// 11
 
@@ -3305,7 +3305,13 @@ This needs to be the same for client side prediction and server use.
 qboolean	BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps ) {
 	gitem_t	*item;
 	int		ammoweap,weapbank; // JPW NERVE
-
+// L0 - unlockWeapons
+#if defined( GAMEDLL )
+		extern vmCvar_t g_unlockWeapons;	
+		int unlockWeapons = g_unlockWeapons.integer;		
+#else
+		int unlockWeapons = 0;
+#endif
 
 	if ( ent->modelindex < 1 || ent->modelindex >= bg_numItems ) {
 		Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: index out of range" );
@@ -3320,7 +3326,14 @@ qboolean	BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps 
 			return qtrue;
 		if ((ps->stats[STAT_PLAYER_CLASS] == PC_MEDIC) || (ps->stats[STAT_PLAYER_CLASS] == PC_ENGINEER)) {
 			if (!COM_BitCheck( ps->weapons, item->giTag)) {
-				return qfalse;
+// L0 - unlockWeapons
+				// if this cvar is disabled, then behave like normal	
+				if (unlockWeapons == 0)				
+					return qfalse;					
+				// If it's 1, meds and engs can pickup smg's
+				else if ((unlockWeapons == 1) && ((item->giTag != WP_MP40) && (item->giTag != WP_THOMPSON) && (item->giTag != WP_STEN)))
+					return qfalse;	
+// L0 - end
 			}
 			else {
 				return qtrue;
@@ -3329,7 +3342,10 @@ qboolean	BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps 
 
 		if ( ps->stats[STAT_PLAYER_CLASS] == PC_LT ) {
 			if ( (item->giTag != WP_MP40) && (item->giTag != WP_THOMPSON) && (item->giTag != WP_STEN) ) {
-				return qfalse;
+				// L0 - allow picking any weapons for all classes if it's set to 2.. includes -> snipers, panzer, flamer..
+				if (unlockWeapons < 2) 
+					return qfalse;					
+				// End
 			}
 		}
 

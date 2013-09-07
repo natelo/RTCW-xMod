@@ -312,6 +312,3 @@ void G_HistoricalTrace( gentity_t* ent, trace_t *results, const vec3_t start, co
 	G_DettachBodyParts();
 	return;
 }
-
-
-
