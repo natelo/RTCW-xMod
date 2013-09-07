@@ -1570,6 +1570,7 @@ void Fire_Lead(gentity_t *ent, gentity_t *activator, float spread, int damage) {
 	VectorMA (end, r, right, end);
 	VectorMA (end, u, up, end);
 
+	// L0 - Antilag (Restored it back in to cope with mg42 bug)
 	G_HistoricalTrace(ent, &tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT);
 
 	if (g_gametype.integer == GT_SINGLE_PLAYER)

@@ -2694,7 +2694,8 @@ void G_RunFrame( int levelTime ) {
 		return;
 	}
 
-	level.frameTime = trap_Milliseconds();
+	// L0 - antilag port - Just renamed
+	level.frameStartTime = trap_Milliseconds();
 
 	level.framenum++;
 	level.previousTime = level.time;

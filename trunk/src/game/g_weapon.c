@@ -1561,6 +1561,12 @@ Bullet_Fire
 void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 	vec3_t		end;
 
+	// L0 - Antilag
+	if ( g_antilag.integer && ent->client &&
+        !(ent->r.svFlags & SVF_BOT) ) {
+        G_TimeShiftAllClients( ent->client->pers.cmd.serverTime, ent );
+    } // End
+
 	Bullet_Endpos(ent, spread, &end);
 	Bullet_Fire_Extended(ent, ent, muzzleTrace, end, spread, damage);
 }
@@ -1582,7 +1588,13 @@ void Bullet_Fire_Extended(gentity_t *source, gentity_t *attacker, vec3_t start, 
 
 	damage *= s_quadFactor;
 
-	G_HistoricalTrace(source, &tr, start, NULL, NULL, end, source->s.number, MASK_SHOT);
+	// L0 - Doh..
+	trap_Trace (&tr, start, NULL, NULL, end, source->s.number, MASK_SHOT);
+
+	 // L0 - antilag	
+	if ( tr.surfaceFlags & SURF_NOIMPACT ) {
+		goto untimeshift;
+    } // End
 
 	// DHM - Nerve :: only in single player
 	if ( g_gametype.integer == GT_SINGLE_PLAYER )
@@ -1734,6 +1746,13 @@ void Bullet_Fire_Extended(gentity_t *source, gentity_t *attacker, vec3_t start, 
 
 		}
 	}
+
+	// L0 - antilag
+	untimeshift:
+    if ( g_antilag.integer && attacker->client &&
+        !(attacker->r.svFlags & SVF_BOT) ) {
+        G_UnTimeShiftAllClients( attacker );
+    } // L0 - end
 }
 
 
@@ -1906,6 +1925,12 @@ void VenomPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *ent ) {
 	PerpendicularVector( right, forward );
 	CrossProduct( forward, right, up );
 
+	// L0 Antilag
+    if ( g_antilag.integer && ent->client &&
+        !(ent->r.svFlags & SVF_BOT) ) {
+        G_TimeShiftAllClients( ent->client->pers.cmd.serverTime, ent );
+    } // end
+
 	oldScore = ent->client->ps.persistant[PERS_SCORE];
 
 	// generate the "random" spread pattern
@@ -1920,6 +1945,12 @@ void VenomPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *ent ) {
 			ent->client->ps.persistant[PERS_ACCURACY_HITS]++;
 		}
 	}
+
+	// L0 - Antilag
+    if ( g_antilag.integer && ent->client &&
+        !(ent->r.svFlags & SVF_BOT) ) {
+        G_UnTimeShiftAllClients( ent );
+    } // end
 }
 
 /*

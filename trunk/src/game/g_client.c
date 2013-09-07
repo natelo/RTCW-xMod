@@ -575,6 +575,11 @@ void respawn( gentity_t *ent ) {
 
 	ClientSpawn(ent, qfalse);
 
+	// L0 - antilag
+	G_ResetTrail( ent );
+    ent->client->saved.leveltime = 0;
+	// L0 - end
+
 	// DHM - Nerve :: Add back if we decide to have a spawn effect
 	// add a teleportation effect
 	//tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
@@ -1856,6 +1861,11 @@ void ClientBegin( int clientNum ) {
 	// locate ent at a spawn point
 	ClientSpawn( ent, qfalse );
 
+	// L0 - antilag
+	G_ResetTrail( ent );
+    ent->client->saved.leveltime = 0;
+	// L0 - end
+
 	// Xian -- Changed below for team independant maxlives
 
 	if ( g_maxlives.integer > 0 )
@@ -2192,9 +2202,6 @@ void ClientSpawn(gentity_t *ent, qboolean revived) {
 
 	// clear entity state values
 	BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
-
-  // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=569
-  G_ResetMarkers( ent );
 }
 
 

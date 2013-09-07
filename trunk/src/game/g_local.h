@@ -531,17 +531,14 @@ typedef struct {
 	// L0 - End
 } clientPersistant_t;
 
+// L0 - antilag port
+#define NUM_CLIENT_TRAILS 10
 typedef struct {
-	vec3_t mins;
-	vec3_t maxs;
-
-	vec3_t origin;
-
-	int time;
-	int servertime;
-} clientMarker_t;
-
-#define MAX_CLIENT_MARKERS 10
+    vec3_t    mins, maxs;
+    vec3_t    currentOrigin;
+    int       time, leveltime;
+} clientTrail_t;
+// End
 
 #define LT_SPECIAL_PICKUP_MOD	3		// JPW NERVE # of times (minus one for modulo) LT must drop ammo before scoring a point
 #define MEDIC_SPECIAL_PICKUP_MOD	4	// JPW NERVE same thing for medic
@@ -637,9 +634,11 @@ struct gclient_s {
 	int			saved_persistant[MAX_PERSISTANT];	// DHM - Nerve :: Save ps->persistant here during Limbo
 
 	// g_antilag.c
-	int				topMarker;
-	clientMarker_t	clientMarkers[MAX_CLIENT_MARKERS];
-	clientMarker_t	backupMarker;
+	// L0 - antilag port
+    int              trailHead;
+    clientTrail_t    trail[NUM_CLIENT_TRAILS];
+    clientTrail_t    saved;    // used to restore after time shift
+	// end
 
 	gentity_t		*tempHead;	// Gordon: storing a temporary head for bullet head shot detection
 
@@ -670,7 +669,7 @@ typedef struct {
 	int			framenum;
 	int			time;					// in msec
 	int			previousTime;			// so movers can back up when blocked
-	int			frameTime;				// Gordon: time the frame started, for antilag stuff
+	int frameStartTime;					// L0 - antilag port - actual time frame started
 
 	int			startTime;				// level.time the map was started
 
@@ -1512,11 +1511,6 @@ typedef enum
 	shard_rubble
 } shards_t;
 
-// g_antilag.c
-void G_StoreClientPosition( gentity_t* ent );
-void G_HistoricalTrace( gentity_t* ent, trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
-void G_ResetMarkers( gentity_t* ent );
-
 /*========================== L0-new stuff bellow ===============================*/
 
 // Macros
@@ -1575,3 +1569,14 @@ extern wordDictionary censorNamesDictionary;
 qboolean G_CensorName(char *testname, char *userinfo, int clientNum);
 qboolean G_CensorText(char *text, wordDictionary *dictionary);
 qboolean G_ReservedName(char *testname, char *userinfo, int clientNum);
+
+//
+// g_antilag.c
+//
+void G_ResetTrail( gentity_t *ent );
+void G_StoreTrail( gentity_t *ent );
+void G_TimeShiftClient( gentity_t *ent, int time );
+void G_TimeShiftAllClients( int time, gentity_t *skip );
+void G_UnTimeShiftClient( gentity_t *ent );
+void G_UnTimeShiftAllClients( gentity_t *skip );
+void G_HistoricalTrace( gentity_t* ent, trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
