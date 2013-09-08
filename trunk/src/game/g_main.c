@@ -181,6 +181,7 @@ vmCvar_t sb_minLowScore;	// Minimum score allowed before client gets kicked for 
 vmCvar_t sb_maxPingFlux;	// Top limit ping can hit before client gets kicked
 vmCvar_t sb_maxPingHits;	// How many seconds or times (1 time = 1 sec) can it peak above limit
 vmCvar_t sb_censorPenalty;	// Auto ignores (1) or kicks (2) client after 4th warning for cursing..
+vmCvar_t sb_autoIgnore;		// Auto ignores players (for the round) that reach spam check more than 3 times.
 
 // MOTD's
 vmCvar_t g_serverMessage;	// Shows a center print each time when player switches teams.
@@ -380,6 +381,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &sb_maxPingFlux, "sb_maxPingFlux", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
 	{ &sb_maxPingHits, "sb_maxPingHits", "30", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
 	{ &sb_censorPenalty, "sb_censorPenalty", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
+	{ &sb_autoIgnore, "sb_autoIgnore", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// MOTDs
 	{ &g_showMOTD, "g_showMOTD", "0", 0, 0, qfalse },

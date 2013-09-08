@@ -1427,6 +1427,13 @@ void G_Voice( gentity_t *ent, gentity_t *target, int mode, const char *id, qbool
 		return;
 	}
 
+	// L0 - Auto ignored
+	if (ent->client->pers.sb_ignored >= 3) {
+		CP( "print \"You are ^3auto ignored ^7until the next round!\n\"" );
+		return;
+	}
+	// End
+
 	// Not sure if 1.4 has this fixed but i'm lazy.. so check for the Nuke
     if( strlen(id) >= 700 ){
 		trap_SendServerCommand(-1, va("chat \"console: %s ^7kicked: ^3Nuking^7.\n\"", ent->client-> pers.netname ));
@@ -1444,6 +1451,15 @@ void G_Voice( gentity_t *ent, gentity_t *target, int mode, const char *id, qbool
 
 	if ( ent->voiceChatSquelch >= 30000 ) {
 		trap_SendServerCommand( ent-g_entities, "print \"^1Spam Protection^7: VoiceChat ignored\n\"" );
+
+		// L0 - Sab auto ignored..
+		if (sb_autoIgnore.integer && ent->client->pers.sb_ignored == 2)
+			CPx(ent-g_entities, "print \"^3Warning^7! Next time You will get ^3auto ignored ^7until the next round!\n\"2");	
+
+		if (sb_system.integer && sb_autoIgnore.integer)
+			ent->client->pers.sb_ignored++;
+		// End
+
 		return;
 	}
 

@@ -1288,6 +1288,7 @@ extern vmCvar_t sb_minLowScore;
 extern vmCvar_t sb_maxPingFlux;
 extern vmCvar_t sb_maxPingHits;	
 extern vmCvar_t sb_censorPenalty;
+extern vmCvar_t sb_autoIgnore;
 
 // Static
 extern vmCvar_t	sv_hostname;
