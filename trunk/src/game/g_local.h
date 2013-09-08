@@ -776,6 +776,10 @@ typedef struct {
 	int			numOidTriggers;			// DHM - Nerve
 
 	qboolean	latchGametype;			// DHM - Nerve
+
+	// L0 - New stuff
+	int			motdTime;				// MOTDs
+	// end
 } level_locals_t;
 
 extern 	qboolean	reloading;				// loading up a savegame
