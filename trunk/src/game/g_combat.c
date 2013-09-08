@@ -880,7 +880,7 @@ void Hitsounds( gentity_t *targ, gentity_t *attacker, qboolean body ) {
 		if (targ->client && attacker->client && onSameTeam && targ->client == attacker->client) {
 
 			te = G_TempEntity( attacker->s.pos.trBase, EV_GLOBAL_CLIENT_SOUND );			
-			te->s.eventParm = G_SoundIndex("xMod/sound/game/hitTeam.wav");			
+			te->s.eventParm = G_SoundIndex("xmod/sound/game/hitTeam.wav");			
 			te->s.teamNum = attacker->s.clientNum;
 		}
 
@@ -897,9 +897,9 @@ void Hitsounds( gentity_t *targ, gentity_t *attacker, qboolean body ) {
 		{   
 			te = G_TempEntity( attacker->s.pos.trBase, EV_GLOBAL_CLIENT_SOUND );
 			if (body)
-				te->s.eventParm = G_SoundIndex("xMod/sound/game/hit.wav");
+				te->s.eventParm = G_SoundIndex("xmod/sound/game/hit.wav");
 			else
-				te->s.eventParm = G_SoundIndex("xMod/sound/game/hitH.wav");
+				te->s.eventParm = G_SoundIndex("xmod/sound/game/hitH.wav");
 			te->s.teamNum = attacker->s.clientNum;
 		}
 	}
