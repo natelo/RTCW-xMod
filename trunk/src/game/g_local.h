@@ -906,6 +906,7 @@ qboolean G_RadiusDamage (vec3_t origin, gentity_t *attacker, float damage, float
 void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath );
 void TossClientItems( gentity_t *self );
 gentity_t* G_BuildHead(gentity_t *ent);
+void MagicSink(gentity_t *self); // L0 - Need this for dropping stuff ..
 
 // damage flags
 #define DAMAGE_RADIUS			0x00000001	// damage was indirect
@@ -1320,6 +1321,9 @@ extern vmCvar_t g_balancePF;
 extern vmCvar_t g_balanceSniper;
 extern vmCvar_t g_balanceVenom;
 extern vmCvar_t g_balanceFlamer;
+extern vmCvar_t	g_dropHealth;
+extern vmCvar_t	g_dropNades;
+extern vmCvar_t	g_dropAmmo;
 
 // Server Bot
 extern vmCvar_t sb_system;

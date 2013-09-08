@@ -202,6 +202,9 @@ vmCvar_t g_balancePF;			// Some basic weapon balancing
 vmCvar_t g_balanceSniper;		// Some basic weapon balancing
 vmCvar_t g_balanceVenom;		// Some basic weapon balancing
 vmCvar_t g_balanceFlamer;		// Some basic weapon balancing
+vmCvar_t g_dropHealth;			// The number od medpacks medic will drop when going to limbo
+vmCvar_t g_dropNades;			// The number of grenades eng will drop when going to limbo
+vmCvar_t g_dropAmmo;			// The number of ammo packs leut drops when going to limbo
 
 // Server Bot
 vmCvar_t sb_system;			// Controls all SB functionality
@@ -433,6 +436,9 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_balanceSniper, "g_balanceSniper", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_balanceVenom, "g_balanceVenom", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_balanceFlamer, "g_balanceFlamer", "0", CVAR_ARCHIVE, 0, qtrue },	
+	{ &g_dropHealth, "g_dropHealth", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },
+	{ &g_dropNades, "g_dropNades", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },
+	{ &g_dropAmmo, "g_dropAmmo", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 

@@ -87,6 +87,60 @@ void TossClientItems( gentity_t *self ) {
 			// jpw
 		}
 	}
+
+	// L0 - dropping stuff when going to limbo
+		
+	// drop medpacks
+	if (g_dropHealth.integer) {
+		if (self->client->ps.stats[STAT_PLAYER_CLASS] == PC_MEDIC)
+		{
+			int i;
+			item = BG_FindItem("Med Health");
+			
+			for (i = 0; i < g_dropHealth.integer; i++)
+			{
+				drop = Drop_Item(self, item, 0, qfalse);
+				drop->think = MagicSink;
+				drop->timestamp = level.time + 31200;
+				drop->parent = NULL;
+			}
+		}
+	}
+
+	// drop ammopacks
+	if (g_dropAmmo.integer)	{
+		if (self->client->ps.stats[STAT_PLAYER_CLASS] == PC_LT)
+		{
+			int i;
+			item = BG_FindItem("Ammo Pack");
+			
+			for (i = 0; i < g_dropAmmo.integer; i++)
+			{
+				drop = Drop_Item(self, item, 0, qfalse);
+				drop->think = MagicSink;
+				drop->timestamp = level.time + 31200;
+				drop->parent = NULL;
+			}
+		}
+	}	
+
+	// drop nades
+	if (g_dropNades.integer) {
+		if (self->client->ps.stats[STAT_PLAYER_CLASS] == PC_ENGINEER){
+			int i;
+			if (self->client->sess.sessionTeam == TEAM_RED)
+				item = BG_FindItem("Grenades");
+			else
+				item = BG_FindItem("Pineapples");
+
+			for (i = 0; i < g_dropNades.integer; i++){
+				drop = Drop_Item(self, item, 0, qfalse);
+				drop->think = MagicSink;
+				drop->timestamp = level.time + 31200;
+				drop->parent = NULL;
+			}
+		}
+	}  // L0 - end
 }
 
 
