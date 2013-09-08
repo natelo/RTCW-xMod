@@ -420,6 +420,12 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 			weapon = WP_LUGER;
 		else
 			weapon = WP_COLT;
+
+		// L0 - Throw knives
+		if ( ( other->client->pers.throwingKnives < (g_throwKnives.integer + 5) ) || ( g_throwKnives.integer == 0 ) ) {			
+				other->client->pers.throwingKnives++;			
+		} // End
+
 //		G_Printf("filling magazine for weapon %d colt/luger (%d rounds)\n", weapon, ammoTable[weapon].maxclip);
 		other->client->ps.ammo[BG_FindAmmoForWeapon(weapon)] += ammoTable[weapon].maxclip;
 		if (other->client->ps.ammo[BG_FindAmmoForWeapon(weapon)] > ammoTable[weapon].maxclip*4)

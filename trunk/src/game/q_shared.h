@@ -1201,6 +1201,9 @@ typedef struct playerState_s {
 	aistateEnum_t	aiState;
 
 	int			identifyClient;			// NERVE - SMF
+
+	// L0 - New stuff
+	qboolean	selectedSmoke;			// Smoke
 } playerState_t;
 
 

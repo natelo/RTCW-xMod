@@ -374,6 +374,11 @@ struct gentity_s {
 	int			voiceChatSquelch;			// DHM - Nerve
 	int			voiceChatPreviousTime;		// DHM - Nerve
 	int			lastBurnedFrameNumber;		// JPW - Nerve   : to fix FT instant-kill exploit
+
+	// L0 - New stuff
+	int			thrownKnifeTime;			// Knife throwing
+	int			thrownSmoke;				// Smoke
+	int			selectedSmoke;				// Smoke
 };
 
 // Ridah
@@ -531,6 +536,9 @@ typedef struct {
 
 	// Weapon restrictions
 	int restrictedWeapon;
+
+	// Throwing knives
+	int throwingKnives;
 
 	// L0 - End
 } clientPersistant_t;
@@ -1324,6 +1332,9 @@ extern vmCvar_t g_balanceFlamer;
 extern vmCvar_t	g_dropHealth;
 extern vmCvar_t	g_dropNades;
 extern vmCvar_t	g_dropAmmo;
+extern vmCvar_t g_throwKnives;
+extern vmCvar_t g_smokeGrenades;
+extern vmCvar_t g_smokeGrenadesLmt;
 
 // Server Bot
 extern vmCvar_t sb_system;
@@ -1644,3 +1655,8 @@ int isWeaponLimited( gclient_t *client, int weap );
 qboolean isWeaponBalanced( int weapon );
 void setDefaultWeapon(gclient_t *client, qboolean isSold);
 void setCustomMG( gentity_t* ent, int type );
+
+//
+// g_players.c
+//
+void weapon_smokeGrenade(gentity_t *ent);
