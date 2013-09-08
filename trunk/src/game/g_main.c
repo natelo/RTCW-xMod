@@ -176,7 +176,9 @@ vmCvar_t g_inactivityToSpecs;	// Puts inactive players in spectators instead of 
 vmCvar_t g_ignoreSpecs;			// Ignores spectators - Admins can still bypass the ignore..
 
 // Game
-vmCvar_t g_unlockWeapons;	// Gives ability to drop weapon to all classes..
+vmCvar_t g_unlockWeapons;		// Gives ability to drop weapon to all classes..
+vmCvar_t g_flagRetake;			// How many times flag can be retaken
+vmCvar_t g_balanceFlagRetake;	// Checks if flag can be taken..it always allows team with less to claim it last and then locks till even.
 
 // Server Bot
 vmCvar_t sb_system;			// Controls all SB functionality
@@ -382,7 +384,9 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_ignoreSpecs, "g_ignoreSpecs", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// Game
-	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 	
+	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
+	{ &g_flagRetake, "g_flagRetake" ,"-1", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_balanceFlagRetake, "g_balanceFlagRetake", "0", CVAR_ARCHIVE, 0, qtrue },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
@@ -2842,6 +2846,28 @@ void G_RunThink (gentity_t *ent) {
 
 /*
 ================
+L0 - sortedActivePlayers
+
+Sort players per teams so I can re-use this call where need it..
+================
+*/
+void sortedActivePlayers( void ) {
+	int i;
+	level.axisPlayers = 0;
+	level.alliedPlayers = 0;
+
+	for(i = 0; i < level.maxclients; i++){
+		if (level.clients[i].pers.connected != CON_CONNECTED)
+			continue;
+		if (level.clients[i].sess.sessionTeam == TEAM_RED)
+			level.axisPlayers++;
+		if (level.clients[i].sess.sessionTeam == TEAM_BLUE)
+			level.alliedPlayers++;
+	}
+}
+
+/*
+================
 G_RunFrame
 
 Advances the non-player objects in the world
@@ -3056,4 +3082,7 @@ void G_RunFrame( int levelTime ) {
 
 	// Ridah, check if we are reloading, and times have expired
 	CheckReloadStatus();
+
+	// L0 - Count active players..
+	sortedActivePlayers();
 }

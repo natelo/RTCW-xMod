@@ -778,7 +778,10 @@ typedef struct {
 	qboolean	latchGametype;			// DHM - Nerve
 
 	// L0 - New stuff
-	int			motdTime;				// MOTDs
+	int			motdTime;			// MOTDs
+	int			flagTaken;			// Flag retaking
+	int			axisPlayers;		// For auto lock and auto team balance
+	int			alliedPlayers;		// For auto lock and auto team balance
 	// end
 } level_locals_t;
 
@@ -1038,6 +1041,7 @@ void QDECL G_Printf( const char *fmt, ... );
 void QDECL G_DPrintf( const char *fmt, ... );
 void QDECL G_Error( const char *fmt, ... );
 void CheckVote( void );
+void sortedActivePlayers( void );
 
 //
 // g_client.c
@@ -1284,6 +1288,8 @@ extern vmCvar_t g_ignoreSpecs;
 
 // Game
 extern vmCvar_t g_unlockWeapons;
+extern vmCvar_t g_flagRetake;
+extern vmCvar_t g_balanceFlagRetake;
 
 // Server Bot
 extern vmCvar_t sb_system;
@@ -1595,3 +1601,8 @@ void G_TimeShiftAllClients( int time, gentity_t *skip );
 void G_UnTimeShiftClient( gentity_t *ent );
 void G_UnTimeShiftAllClients( gentity_t *skip );
 void G_HistoricalTrace( gentity_t* ent, trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
+
+//
+// g_match.c
+//
+int FlagBalance( void );

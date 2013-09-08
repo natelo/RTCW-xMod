@@ -1321,12 +1321,48 @@ void checkpoint_touch (gentity_t *self, gentity_t *other, trace_t *trace) {
 	if ( self->count == other->client->sess.sessionTeam )
 		return;
 
-// JPW NERVE
-	if (self->s.frame == WCP_ANIM_NOFLAG)
-		AddScore(other, WOLF_CP_CAPTURE);
-	else
-		AddScore(other, WOLF_CP_RECOVER);
-// jpw
+// L0 - flag retaking
+	// We don't want to lock it on CheckPoint no matter the setting..
+	if (g_gametype.integer != GT_WOLF_CP) {
+		if (g_flagRetake.integer == 0) {			
+			CPx(other->client->ps.clientNum, "cp \"Flag Capturing is disabled on this server^1!\n\"1");
+			return;
+		} else {
+			// First we check if flagRetake is disabled..if it isn't
+			// balance check comes first.
+			if (FlagBalance() != 0) {
+				// Axis
+				if (FlagBalance() == 1 && other->client->sess.sessionTeam != TEAM_RED ) {
+					CPx(other->client->ps.clientNum, va("cp \"Uneven teams! Your team currently cannot claim the flag.\n\"2"));
+				return;
+				// Allied
+				} else if (FlagBalance() == 2 && other->client->sess.sessionTeam != TEAM_BLUE ) { 
+					CPx(other->client->ps.clientNum, va("cp \"Uneven teams! Your team currently cannot claim the flag.\n\"2"));
+				return;
+				}
+			}
+
+			if (self->s.frame == WCP_ANIM_NOFLAG) {
+				AddScore(other, WOLF_SP_CAPTURE);				
+			} else {
+				// If limit was reached deny retake..
+				if ( level.flagTaken >= g_flagRetake.integer && g_flagRetake.integer != -1){ 					
+					CPx(other->client->ps.clientNum, va("cp \"Flag Retake limit ^1%d ^7has been reached^1!\n\"2", g_flagRetake.integer));
+				return;
+				}				
+					AddScore(other, WOLF_SP_RECOVER);
+					level.flagTaken++; // mark that flag was taken				
+				}
+			}
+	} else {
+		// Act as default in CP mode.
+		if ( self->s.frame == WCP_ANIM_NOFLAG ) {
+			AddScore( other, WOLF_SP_CAPTURE );
+		} else {
+			AddScore( other, WOLF_SP_RECOVER );
+		}
+	} 
+// L0 - End
 
 	// Set controlling team
 	self->count = other->client->sess.sessionTeam;

@@ -184,6 +184,7 @@
     <ClCompile Include="..\..\src\game\g_combat.c" />
     <ClCompile Include="..\..\src\game\g_items.c" />
     <ClCompile Include="..\..\src\game\g_main.c" />
+    <ClCompile Include="..\..\src\game\g_match.c" />
     <ClCompile Include="..\..\src\game\g_mem.c" />
     <ClCompile Include="..\..\src\game\g_misc.c" />
     <ClCompile Include="..\..\src\game\g_missile.c" />
