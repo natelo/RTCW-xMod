@@ -464,7 +464,8 @@ typedef struct {
 	unsigned char ip[4];			// IPs
 	char		guid[PB_GUID_LENGTH + 1];
 	int			ignored;			// Ignored clients
-	
+	int			selectedWeapon;		// If enabled allows mp40, sten, thompson..
+	// End
 } clientSession_t;
 
 //
@@ -527,6 +528,9 @@ typedef struct {
 	int	lastkiller_client;
 	int	lastammo_client;
 	int	lasthealth_client;
+
+	// Weapon restrictions
+	int restrictedWeapon;
 
 	// L0 - End
 } clientPersistant_t;
@@ -782,6 +786,11 @@ typedef struct {
 	int			flagTaken;			// Flag retaking
 	int			axisPlayers;		// For auto lock and auto team balance
 	int			alliedPlayers;		// For auto lock and auto team balance
+	// Weapons restrictions
+	int axisSniper, alliedSniper;
+	int axisPF, alliedPF;
+	int axisVenom, alliedVenom;
+	int axisFlamer, alliedFlamer;
 	// end
 } level_locals_t;
 
@@ -1293,6 +1302,24 @@ extern vmCvar_t g_balanceFlagRetake;
 extern vmCvar_t g_warmupDamage;
 extern vmCvar_t g_easyASBlock;
 extern vmCvar_t g_hitsounds;
+extern vmCvar_t g_customMGs;
+extern vmCvar_t	g_ltNades;
+extern vmCvar_t	g_medicNades;
+extern vmCvar_t	g_soldNades;
+extern vmCvar_t	g_engNades;
+extern vmCvar_t	g_medicClips;
+extern vmCvar_t	g_engineerClips;
+extern vmCvar_t	g_soldierClips;
+extern vmCvar_t	g_leutClips;
+extern vmCvar_t g_pistolClips;
+extern vmCvar_t g_maxTeamPF;
+extern vmCvar_t g_maxTeamSniper;
+extern vmCvar_t g_maxTeamVenom;
+extern vmCvar_t g_maxTeamFlamer;
+extern vmCvar_t g_balancePF;
+extern vmCvar_t g_balanceSniper;
+extern vmCvar_t g_balanceVenom;
+extern vmCvar_t g_balanceFlamer;
 
 // Server Bot
 extern vmCvar_t sb_system;
@@ -1609,3 +1636,7 @@ void G_HistoricalTrace( gentity_t* ent, trace_t *results, const vec3_t start, co
 // g_match.c
 //
 int FlagBalance( void );
+int isWeaponLimited( gclient_t *client, int weap );
+qboolean isWeaponBalanced( int weapon );
+void setDefaultWeapon(gclient_t *client, qboolean isSold);
+void setCustomMG( gentity_t* ent, int type );
