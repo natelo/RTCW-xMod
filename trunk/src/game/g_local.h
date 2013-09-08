@@ -1292,6 +1292,7 @@ extern vmCvar_t g_flagRetake;
 extern vmCvar_t g_balanceFlagRetake;
 extern vmCvar_t g_warmupDamage;
 extern vmCvar_t g_easyASBlock;
+extern vmCvar_t g_hitsounds;
 
 // Server Bot
 extern vmCvar_t sb_system;

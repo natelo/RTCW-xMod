@@ -183,6 +183,7 @@ vmCvar_t g_warmupDamage;		// Allows damage in warmup
 vmCvar_t g_staminaBoost;		// If enabled it recharges stamina faster when player is crouching..
 vmCvar_t g_bunnyJump;			// Enable bunny jumps...
 vmCvar_t g_easyASBlock;			// If enabled it prints when AirStrike is blocked
+vmCvar_t g_hitsounds;			// Hitsounds - Requires soundpack
 
 // Server Bot
 vmCvar_t sb_system;			// Controls all SB functionality
@@ -395,6 +396,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_staminaBoost, "g_staminaBoost", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_bunnyJump, "g_bunnyJump", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_easyASBlock, "g_easyASBlock", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_hitsounds, "g_hitsounds", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
