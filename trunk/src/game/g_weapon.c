@@ -642,18 +642,30 @@ void weapon_callAirStrike(gentity_t *ent) {
 
 	// cancel the airstrike if FF off and player joined spec
 	if (!g_friendlyFire.integer && ent->parent->client && ent->parent->client->sess.sessionTeam == TEAM_SPECTATOR)
-  {
-    ent->splashDamage = 0; // no damage
-	  ent->think = G_ExplodeMissile;
-    ent->nextthink = level.time + crandom()*50;
-    return; // do nothing, don't hurt anyone
-  }
+	{
+		ent->splashDamage = 0; // no damage
+		ent->think = G_ExplodeMissile;
+		ent->nextthink = level.time + crandom()*50;
+		return; // do nothing, don't hurt anyone
+	}
 
 	// turn off smoke grenade
 	ent->think = G_ExplodeMissile;
 	ent->nextthink = level.time + 950 + NUMBOMBS*100 + crandom()*50; // 3000 offset is for aircraft flyby
+	trap_Trace( &tr, ent->s.pos.trBase, NULL, NULL, bomboffset, ent->s.number, MASK_SHOT );
 
-	trap_Trace(&tr, ent->s.pos.trBase, NULL, NULL, bomboffset, ent->s.number, MASK_SHOT);
+// L0 - air strike block (If memory serves me right this bit is from FritzBot mod)
+	if (tr.startsolid && tr.fraction == 1.0 && g_easyASBlock.integer) //starts inside the player
+	{
+		//if the can is on level ground, it appears that it registers as higher than it actually is
+		//so perform a trace from one unit lower than before - seems to work, but really a HACK way to do things
+		vec3_t v;
+		VectorCopy(ent->s.pos.trBase, v);
+		v[2] -= 1.0f;
+		trap_Trace(&tr, v, NULL, NULL, bomboffset, ent->s.number, MASK_SHOT);
+	} 
+// end
+	
 	if ((tr.fraction < 1.0) && (!(tr.surfaceFlags & SURF_NOIMPACT)) ) { //SURF_SKY)) ) { // JPW NERVE changed for trenchtoast foggie prollem
 		G_SayTo( ent->parent, ent->parent, 2, COLOR_YELLOW, "Pilot: ", "Aborting, can't see target.", qtrue );
 
@@ -667,6 +679,14 @@ void weapon_callAirStrike(gentity_t *ent) {
 			te->s.eventParm = G_SoundIndex("sound/multiplayer/axis/g-aborting.wav");
 			te->s.teamNum = ent->parent->s.clientNum;
 		}
+
+// L0 - air strike block 
+		// If it was blocked by an active client, announce who blocked it to everyone
+		if ((tr.entityNum > 0) && (tr.entityNum < MAX_CLIENTS) && (g_entities[tr.entityNum].inuse) && g_easyASBlock.integer) {			
+			AP(va("print \"%s ^3blocked an airstrike^7!\n\"", g_entities[tr.entityNum].client->pers.netname));
+			CPx(ent->parent-g_entities, va("cp \"Your AirStrike was blocked by %s\n\"1", g_entities[tr.entityNum].client->pers.netname));			
+		} 
+// end
 
 		return;
 	}

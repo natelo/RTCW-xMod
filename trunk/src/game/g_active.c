@@ -1312,14 +1312,32 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 
 		if (ent->client->sess.sessionTeam == TEAM_RED) {
 			testtime = level.time%g_redlimbotime.integer;
+
+			// L0 - If warmup damage is on, respawn instantly
+			if ( g_warmupDamage.integer ) {
+				if ( g_gamestate.integer != GS_PLAYING ) {
+					do_respawn = 1;
+				}
+			} // End
+
 			if (testtime < ent->client->pers.lastReinforceTime)
 				do_respawn=1;
+
 			ent->client->pers.lastReinforceTime = testtime;
 		}
 		else if (ent->client->sess.sessionTeam == TEAM_BLUE) {
 			testtime = level.time%g_bluelimbotime.integer;
+
+			// L0 - If warmup damage is on, respawn instantly
+			if ( g_warmupDamage.integer ) {
+				if ( g_gamestate.integer != GS_PLAYING ) {
+					do_respawn = 1;
+				}
+			} // End
+
 			if (testtime < ent->client->pers.lastReinforceTime)
 				do_respawn=1;
+
 			ent->client->pers.lastReinforceTime = testtime;
 		}
 

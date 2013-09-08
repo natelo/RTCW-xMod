@@ -428,7 +428,6 @@ limbo
 */
 void limbo( gentity_t *ent, qboolean makeCorpse ) {
 	int i,contents;
-	//int startclient = ent->client->sess.spectatorClient;
 	int startclient = ent->client->ps.clientNum;
 
 	if (g_gametype.integer == GT_SINGLE_PLAYER) {
@@ -472,7 +471,6 @@ void limbo( gentity_t *ent, qboolean makeCorpse ) {
 		else
 			ent->client->sess.spectatorState = SPECTATOR_FOLLOW;
 
-//		ClientUserinfoChanged( ent->client - level.clients );		// NERVE - SMF - don't do this
 		if (ent->client->sess.sessionTeam == TEAM_RED) {
 			ent->client->deployQueueNumber = level.redNumWaiting;
 			level.redNumWaiting++;

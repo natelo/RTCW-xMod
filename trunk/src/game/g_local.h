@@ -1290,6 +1290,8 @@ extern vmCvar_t g_ignoreSpecs;
 extern vmCvar_t g_unlockWeapons;
 extern vmCvar_t g_flagRetake;
 extern vmCvar_t g_balanceFlagRetake;
+extern vmCvar_t g_warmupDamage;
+extern vmCvar_t g_easyASBlock;
 
 // Server Bot
 extern vmCvar_t sb_system;
