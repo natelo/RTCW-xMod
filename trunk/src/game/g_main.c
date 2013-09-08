@@ -168,10 +168,15 @@ vmCvar_t g_censorWords;			// Censored words
 vmCvar_t g_disallowedNames;		// Disallowed names
 vmCvar_t g_noHardcodedCensor;	// Don't use hardcoded censor..
 vmCvar_t g_shortcuts;			// Enable shortcuts
+vmCvar_t g_fixedphysics;		// Tries to keep things more fair..
+vmCvar_t g_autoSwap;			// Auto swaps teams 
+vmCvar_t g_autoSwapRounds;		// How many rounds until it auto swaps
+vmCvar_t g_mapConfigs;			// Essentials for custom map configs...
+vmCvar_t g_inactivityToSpecs;	// Puts inactive players in spectators instead of dropping them.
+vmCvar_t g_ignoreSpecs;			// Ignores spectators - Admins can still bypass the ignore..
 
 // Game
 vmCvar_t g_unlockWeapons;	// Gives ability to drop weapon to all classes..
-vmCvar_t g_fixedphysics;	// Tries to keep things more fair..
 
 // Server Bot
 vmCvar_t sb_system;			// Controls all SB functionality
@@ -202,7 +207,8 @@ vmCvar_t g_motd12;			// MESSAGE 12
 vmCvar_t g_motdTime;		// Time between each message
 
 // Static
-vmCvar_t sv_hostname;	// So it's more accesible
+vmCvar_t sv_hostname;		// So it's more accesible
+vmCvar_t g_swapCounter;		// Count times so it auto swaps once it reaches it..
 
 // General
 vmCvar_t g_screenShake;	// Screenshaking on explosions (4 = default, 2 = half.. etc)
@@ -368,10 +374,15 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_disallowedNames, "g_disallowedNames", "nazi, admin, console", 0 },
 	{ &g_noHardcodedCensor, "g_noHardcodedCensor", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_shortcuts, "g_shortcuts", "0", 0 },
+	{ &g_fixedphysics, "g_fixedphysics", "1", CVAR_ARCHIVE|CVAR_SERVERINFO },
+	{ &g_autoSwap, "g_autoSwap", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_autoSwapRounds, "g_autoSwapRounds", "1", CVAR_ARCHIVE, 0, qtrue },	
+	{ &g_mapConfigs, "g_mapConfigs", "0", CVAR_LATCH, 0, qfalse },
+	{ &g_inactivityToSpecs, "g_inactivityToSpecs", "1", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_ignoreSpecs, "g_ignoreSpecs", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// Game
-	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
-	{ &g_fixedphysics, "g_fixedphysics", "1", CVAR_ARCHIVE|CVAR_SERVERINFO },
+	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 	
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
@@ -402,6 +413,7 @@ cvarTable_t		gameCvarTable[] = {
 
 	// Static
 	{ &sv_hostname, "sv_hostname", "", CVAR_SERVERINFO, 0, qfalse },
+	{ &g_swapCounter, "g_swapCounter", "1", 0, 0, qfalse }, 
 
 	// General
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
@@ -1346,6 +1358,14 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	SaveRegisteredItems();
 
+	// L0 - auto cfg for each map
+	if (g_mapConfigs.integer){	
+		char mapName[64];	
+
+		trap_Cvar_VariableStringBuffer( "mapname", mapName, sizeof(mapName) );
+		trap_SendConsoleCommand(EXEC_APPEND, va("exec mapConfigs/%s.cfg \n", mapName));
+	} // L0 - end	
+
 	if (trap_Cvar_VariableIntegerValue("g_gametype") != GT_SINGLE_PLAYER) {
 		G_Printf ("-----------------------------------\n");
 	}
@@ -1959,6 +1979,19 @@ void ExitLevel (void) {
 		if ( level.clients[i].pers.connected == CON_CONNECTED ) {
 			level.clients[i].pers.connected = CON_CONNECTING;
 		}
+	}
+
+	// L0 - Swap teams if enabled and we're not in SW mode as SW deals with that on it's own..
+	if (g_autoSwap.integer && g_gametype.integer != GT_WOLF_STOPWATCH)  {		
+
+		// See  if swap is due..
+		if (g_swapCounter.integer >= g_autoSwapRounds.integer) {
+			trap_Cvar_Set( "g_swapteams", "1");
+			trap_Cvar_Set( "g_swapCounter", "1");
+		} else {		
+			trap_Cvar_Set( "g_swapCounter", va( "%i", g_swapCounter.integer + 1 ));
+		}
+
 	}
 
 	G_LogPrintf( "ExitLevel: executed\n" );

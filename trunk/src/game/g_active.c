@@ -425,12 +425,26 @@ qboolean ClientInactivityTimer( gclient_t *client ) {
 		client->inactivityWarning = qfalse;
 	} else if ( !client->pers.localClient ) {
 		if ( level.time > client->inactivityTime ) {
-			trap_DropClient( client - level.clients, "Dropped due to inactivity" );
-			return qfalse;
+			// L0 - if enabled move the to spec..
+			if (g_inactivityToSpecs.integer) {				
+				client->sess.sessionTeam = TEAM_SPECTATOR;
+				client->sess.spectatorState = SPECTATOR_FREE;
+				ClientUserinfoChanged( client - level.clients);	
+				ClientBegin( client - level.clients );				
+				AP(va("chat \"console: %s ^7was moved to Specators due inactivity.\n\"", client->pers.netname));
+			  return qfalse;
+			} else { 
+				trap_DropClient( client - level.clients, "Dropped due to inactivity" );
+				return qfalse;
+			}
+			// L0 - end 		
 		}
 		if ( level.time > client->inactivityTime - 10000 && !client->inactivityWarning ) {
 			client->inactivityWarning = qtrue;
-			trap_SendServerCommand( client - level.clients, "cp \"Ten seconds until inactivity drop!\n\"" );
+			if (g_inactivityToSpecs.integer) // L0 - patched
+				trap_SendServerCommand( client - level.clients, "cp \"Ten seconds until forcing you to spectators^1!\n\"2" );
+			else
+				trap_SendServerCommand( client - level.clients, "cp \"Ten seconds until inactivity drop^1!\n\"" );		
 		}
 	}
 	return qtrue;

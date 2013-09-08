@@ -1275,10 +1275,15 @@ extern vmCvar_t	g_censorWords;
 extern vmCvar_t g_disallowedNames;
 extern vmCvar_t g_noHardcodedCensor;
 extern vmCvar_t g_shortcuts;
+extern vmCvar_t g_fixedphysics;
+extern vmCvar_t g_autoSwap;
+extern vmCvar_t	g_autoSwapRounds;
+extern vmCvar_t	g_mapConfigs;
+extern vmCvar_t g_inactivityToSpecs;
+extern vmCvar_t g_ignoreSpecs;
 
 // Game
 extern vmCvar_t g_unlockWeapons;
-extern vmCvar_t g_fixedphysics;
 
 // Server Bot
 extern vmCvar_t sb_system;
@@ -1292,6 +1297,7 @@ extern vmCvar_t sb_autoIgnore;
 
 // Static
 extern vmCvar_t	sv_hostname;
+extern vmCvar_t	g_swapCounter;
 
 // General
 extern vmCvar_t		g_screenShake;
