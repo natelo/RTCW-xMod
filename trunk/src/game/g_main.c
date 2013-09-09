@@ -225,6 +225,7 @@ vmCvar_t sb_autoIgnore;		// Auto ignores players (for the round) that reach spam
 
 // MOTD's
 vmCvar_t g_serverMessage;	// Shows a center print each time when player switches teams.
+vmCvar_t g_serverMessage;	// Shows a center print each time when player switches teams.
 vmCvar_t g_showMOTD;		// Enable MOTD's (message of the day)
 vmCvar_t motdNum;			// To track motds..
 vmCvar_t g_motd1;			// MESSAGE 1
@@ -414,7 +415,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_autoSwapRounds, "g_autoSwapRounds", "1", CVAR_ARCHIVE, 0, qtrue },	
 	{ &g_mapConfigs, "g_mapConfigs", "0", CVAR_LATCH, 0, qfalse },
 	{ &g_inactivityToSpecs, "g_inactivityToSpecs", "1", CVAR_ARCHIVE, 0, qfalse },
-	{ &g_ignoreSpecs, "g_ignoreSpecs", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_ignoreSpecs, "g_ignoreSpecs", "0", CVAR_ARCHIVE, 0, qfalse },	
 
 	// Game
 	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
@@ -465,6 +466,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &sb_autoIgnore, "sb_autoIgnore", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// MOTDs
+	{ &g_serverMessage, "g_serverMessage", "", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_showMOTD, "g_showMOTD", "0", 0, 0, qfalse },
 	{ &g_motd1, "g_motd1", "", 0, 0, qfalse},
 	{ &g_motd2, "g_motd2", "", 0, 0, qfalse},

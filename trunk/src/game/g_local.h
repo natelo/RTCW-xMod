@@ -1358,6 +1358,9 @@ extern vmCvar_t		g_swapCounter;
 // General
 extern vmCvar_t		g_screenShake;
 
+// MOTDs
+extern vmCvar_t		g_serverMessage;
+
 // L0 - End
 
 void	trap_Printf( const char *fmt );
