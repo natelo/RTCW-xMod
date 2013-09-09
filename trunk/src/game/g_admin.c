@@ -196,7 +196,7 @@ return;
 Get client number from name
 ===========
 */
-int ClientNumberFromNameMatch(char *name, int *matches){
+int ClientNumberFromNameMatch( char *name, int *matches ) {
 	int i, textLen;
 	char nm[32];
 	char c;

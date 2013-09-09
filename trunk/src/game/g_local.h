@@ -1304,6 +1304,7 @@ extern vmCvar_t		g_autoSwapRounds;
 extern vmCvar_t		g_mapConfigs;
 extern vmCvar_t		g_inactivityToSpecs;
 extern vmCvar_t		g_ignoreSpecs;
+extern vmCvar_t		g_allowPMs;
 
 // Game
 extern vmCvar_t		g_unlockWeapons;
@@ -1593,6 +1594,7 @@ typedef enum
 void logEntry (char *filename, char *info);
 qboolean cmds_admin(char cmd[MAX_TOKEN_CHARS], gentity_t *ent);
 void ParseAdmStr(const char *strInput, char *strCmd, char *strArgs);
+int ClientNumberFromNameMatch( char *name, int *matches );
 void cmd_incognito(gentity_t *ent);
 void cmd_do_logout(gentity_t *ent);
 void cmd_do_login (gentity_t *ent, qboolean silent);
@@ -1661,7 +1663,9 @@ void APRSound(gentity_t *ent, char *sound);
 //
 // g_players.c
 //
+void Cmd_Smoke_f( gentity_t *ent );
 void weapon_smokeGrenade(gentity_t *ent);
+void cmd_pmsg( gentity_t *ent );
 
 //
 // Logs

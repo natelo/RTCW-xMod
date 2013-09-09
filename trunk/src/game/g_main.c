@@ -174,6 +174,7 @@ vmCvar_t	g_autoSwapRounds;		// How many rounds until it auto swaps
 vmCvar_t	g_mapConfigs;			// Essentials for custom map configs...
 vmCvar_t	g_inactivityToSpecs;	// Puts inactive players in spectators instead of dropping them.
 vmCvar_t	g_ignoreSpecs;			// Ignores spectators - Admins can still bypass the ignore..
+vmCvar_t	g_allowPMs;				// Allow private messages
 
 // Game
 vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
@@ -416,6 +417,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_mapConfigs, "g_mapConfigs", "0", CVAR_LATCH, 0, qfalse },
 	{ &g_inactivityToSpecs, "g_inactivityToSpecs", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_ignoreSpecs, "g_ignoreSpecs", "0", CVAR_ARCHIVE, 0, qfalse },	
+	{ &g_allowPMs, "g_allowPMs", "1", CVAR_ARCHIVE, 0, qfalse },
 
 	// Game
 	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },

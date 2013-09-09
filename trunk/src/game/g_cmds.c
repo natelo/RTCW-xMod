@@ -468,7 +468,6 @@ void Cmd_LevelShot_f( gentity_t *ent ) {
 	trap_SendServerCommand( ent-g_entities, "clientLevelShot" );
 }
 
-
 /*
 =================
 Cmd_Kill_f
@@ -2055,9 +2054,6 @@ qboolean G_canPickupMelee(gentity_t *ent) {
 	return qfalse;
 }
 
-
-
-
 /*
 =================
 Cmd_SetViewpos_f
@@ -2897,6 +2893,10 @@ void ClientCommand( int clientNum ) {
 		setCustomMG(ent, 2);
 	else if (Q_stricmp (cmd, "sten") == 0)
 		setCustomMG(ent, 3);
+	else if ((Q_stricmp (cmd, "msg") == 0) || (Q_stricmp (cmd, "pm") == 0))
+		cmd_pmsg(ent);
+	else if ((Q_stricmp (cmd, "sg") == 0) || (Q_stricmp (cmd, "smoke") == 0))
+		Cmd_Smoke_f(ent);
 // End
 	else if (Q_stricmp (cmd, "levelshot") == 0)
 		Cmd_LevelShot_f (ent);

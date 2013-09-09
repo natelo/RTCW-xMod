@@ -144,7 +144,7 @@ void cmd_throwKnives( gentity_t *ent ) {
 Smoke
 ================
 */
-void Cmd_Smoke_f(gentity_t *ent)
+void Cmd_Smoke_f( gentity_t *ent )
 {
 	gclient_t *client = ent->client;
 	char message[64] = "Smoke grenade ";
@@ -157,14 +157,14 @@ void Cmd_Smoke_f(gentity_t *ent)
 
 	if ((g_smokeGrenadesLmt.integer) && (ent->thrownSmoke >= g_smokeGrenadesLmt.integer))
 	{
-		trap_SendServerCommand(ent-g_entities, va("cp \"^3You have used all the Smoke supplies\n\" 1"));
+		trap_SendServerCommand(ent-g_entities, va("cp \"You have used all the Smoke supplies^3!\n\" 1"));
 		return;
 	}
 
 	client->ps.selectedSmoke = !client->ps.selectedSmoke;
 	strcat(message, va("%s", (client->ps.selectedSmoke ? "^2enabled" : "^1disabled")));
 
-	trap_SendServerCommand(ent-g_entities, va("cp \"%s\n\" 1", message));
+	trap_SendServerCommand(ent-g_entities, va("cp \"%s^7!\n\" 1", message));
 }
 
 // think function
@@ -175,4 +175,76 @@ void weapon_smokeGrenade(gentity_t *ent)
 	ent->s.loopSound = G_SoundIndex("sound/world/steam.wav");
 	ent->nextthink = level.time + ((g_smokeGrenades.integer - 1) * 1000);	
 	ent->think = G_ExplodeMissile;	
+}
+
+/*
+================
+Private messages
+================
+*/
+void cmd_pmsg( gentity_t *ent )
+{
+	char cmd[MAX_TOKEN_CHARS];	
+	char name[MAX_STRING_CHARS];
+	char nameList[MAX_STRING_CHARS];
+	char *msg;
+	int matchList[MAX_CLIENTS];
+	int count, i;
+
+	if (!g_allowPMs.integer)	{	
+		CP("print \"Private messages are Disabled^1!\n\"");
+		return;
+	}
+
+	if (trap_Argc() < 3) {
+		trap_Argv(0, cmd, sizeof(cmd));			
+		CP(va("print \"^3Usage:^7  %s <match> <message>\n\"", cmd));
+	return;
+	}
+
+	if (ent->client->sess.ignored) {
+		if (ent->client->sess.ignored == 1)
+			CP( "cp \"You are ignored^1!\n\"2" );
+		else
+			CP( "print \"You are ^3permanently ^7ignored^1!\n\"" );
+	return;
+	}
+
+	trap_Argv(1, name, sizeof(name));
+	if (strlen(name) < 2) {		
+		CP("print \"You must match at least ^32 ^7characters of the name^3!\n\"");
+	return;
+	}
+
+	count = ClientNumberFromNameMatch(name, matchList);
+	if (count == 0) {		
+		CP("print \"No matching clients found^3!\n\"");
+	return;
+	}
+
+	msg = ConcatArgs(2);	   
+    if( strlen(msg) >= 700 ){
+		G_LogPrintf( "NUKER(pmsg >= 700): %s IP: %i.%i.%i.%i\n", ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], ent->client->sess.ip[3] );
+	    trap_DropClient( ent-g_entities, "^7Player Kicked: ^3Nuking" );
+	return;
+    }
+
+	Q_strncpyz ( nameList, "", sizeof( nameList ) );
+	for (i = 0; i < count; i++)	{
+		strcat(nameList, g_entities[matchList[i]].client->pers.netname);
+		if (i != (count-1))
+			strcat(nameList, "^7, ");	
+			
+		// Notify user in chat 
+		CPx(matchList[i], va("chat \"^3Private Message from ^7%s^7!\n\"", ent->client->pers.netname));
+
+		// Print full message in console..
+		CPx(matchList[i], va("print \"^3Private Message from ^7%s^7: \n^3Message: ^7%.99s\n\"", ent->client->pers.netname, msg));		
+
+		// Send sound to them  as well (keep an eye on this!)
+		CPS( g_entities-matchList[i], "xmod/sound/client/pm.wav");
+	}
+
+	//let the sender know his message went to
+	CP(va("print \"^3Message was sent to: ^7%s \n^3Message: ^7%.99s\n\"", nameList, msg));
 }
