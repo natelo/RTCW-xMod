@@ -1493,7 +1493,7 @@ void cmd_banGuid(gentity_t *ent) {
 		if (count == 0){			
 			CP("print \"Client not on server^3!\n\"");
 		return;
-		}else if (count > 1){			
+		} else if (count > 1) {			
 			CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 		} 
@@ -1825,9 +1825,8 @@ void cmd_getstatus(gentity_t *ent) {
 	CP( va("print \"^7Uptime: ^3%d ^7day%s ^3%d ^7hours ^3%d ^7minutes\n\"", days, (days != 1 ? "s" : ""), hours, mins));
 	CP("print \"\n\"");	
 	
-return;
+	return;
 }
-
 
 /*********************************** INTERACTIONS ************************************/
 /*
@@ -1864,7 +1863,7 @@ void cmd_listCmds(gentity_t *ent) {
 	else if (ent->client->sess.admin == 5 && a5_allowAll.integer)
 		CP( va("print \"^3Available commands are:^7\n%s\n^3Additinal server commands:^7\n%s\n^3Use ? for help with command. E.g. ?incognito.\n\"", cmds, a5_cmds.string ));		
 
-return;
+	return;
 }
 
 /*
