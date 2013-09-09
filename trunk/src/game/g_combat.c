@@ -479,7 +479,8 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 				AddScore(attacker, WOLF_FRAG_BONUS);
 
 				// L0 - Stats
-				stats_DoubleKill( attacker, meansOfDeath );	// Double kills
+				stats_DoubleKill( attacker, meansOfDeath );		// Double kills
+				stats_KillingSprees(attacker, 0);				// Overall killing sprees
 			}
 			else
 			{
@@ -487,7 +488,8 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 				AddScore( attacker, 1 );
 
 				// L0 - Stats
-				stats_DoubleKill( attacker, meansOfDeath );	// Double kills
+				stats_DoubleKill( attacker, meansOfDeath );		// Double kills
+				stats_KillingSprees(attacker, 0);				// Overall killing sprees
 			}
 
 			attacker->client->lastKillTime = level.time;

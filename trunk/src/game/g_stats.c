@@ -10,9 +10,7 @@ Updated:
 ===========================================================================
 */
 #include "g_local.h"
-
-static qboolean firstheadshot;						
-static qboolean firstblood;	
+#include "g_stats.h"
 
 /*
 ===========
@@ -110,7 +108,7 @@ void stats_FirstHeadshot (gentity_t *attacker, gentity_t *targ) {
 			!onSameTeam )
 		{
 			AP(va("chat \"%s ^7blew out %s^7's brains with the ^3FIRST HEAD SHOT^7!\"", attacker->client->pers.netname, targ->client->pers.netname));
-			APS("xmod/sound/scenaric/headshot.wav");				
+			APS("xmod/sound/game/events/headshot.wav");				
 			firstheadshot = qtrue;
 		}
 	} 
@@ -142,8 +140,45 @@ void stats_FirstBlood (gentity_t *self, gentity_t *attacker) {
 			!onSameTeam)
 		{	
 			AP(va("chat \"%s ^7drew ^1FIRST BLOOD ^7from ^7%s^1!\"", attacker->client->pers.netname, self->client->pers.netname));
-			APS("xmod/sound/scenaric/firstblood.wav");
+			APS("xmod/sound/game/events/firstblood.wav");
 			firstblood = qtrue;
 		}
 	}
+}
+
+/*
+===========
+Killing sprees
+===========
+*/
+void stats_KillingSprees ( gentity_t *ent, int score ) {
+	int killRatio = ent->client->pers.kills; 	
+	int snd_idx;
+	
+	if (!g_killingSprees.integer) 
+		return;
+	
+	// if killer ratio is bellow 100 kills spam every 5th kill
+	if (killRatio <= 100 && killRatio >= 5 && (killRatio % 5) == 0 ) 	{	
+		snd_idx = (killRatio / 5) - 1;
+
+		AP(va("chat \"^4%s ^4(^7%dK %dhs^4): ^7%s\n\"", 
+			killingSprees[snd_idx <= 20 ? snd_idx : 19].msg, killRatio, ent->client->pers.headshots, ent->client->pers.netname));
+
+		APS(va("xmod/sound/game/sprees/Sprees/%s", killingSprees[snd_idx < 20 ? snd_idx : 19].snd));
+	}	
+	// Anything above 100 gets spammed each 10th time..
+	else if ( killRatio > 100 && killRatio >= 10 && (killRatio % 10) == 0 ) {
+		snd_idx = (killRatio / 10) - 1;
+
+		AP(va("chat \"^4HOLY SHIT ^4(^7%dK %dhs^4): ^7%s\n\"", killRatio, ent->client->pers.headshots, ent->client->pers.netname));		
+		APS("xmod/sound/game/sprees/Sprees/holyshit_alt.wav");
+	}
+
+	// could be done some other way but anyway...do the count... :)
+	ent->client->ps.persistant[PERS_SCORE] += score;
+	if (g_gametype.integer >= GT_TEAM)			
+		level.teamScores[ ent->client->ps.persistant[PERS_TEAM] ] += score;
+
+	CalculateRanks(); 
 }

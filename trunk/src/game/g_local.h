@@ -546,6 +546,20 @@ typedef struct {
 	// Throwing knives
 	int throwingKnives;
 
+	// Stats
+	// FIXME - All of it has to be hooked..
+	int			kills;
+	int			teamKills;
+	int			revives;
+	int			acc_shots;
+	int			acc_hits;
+	int			headshots;
+	int			deaths;
+	int			poisons;
+	int			medPacks;
+	int			ammoPacks;
+	int			dmgGiven;		
+	int			dmgReceived;	
 	// L0 - End
 } clientPersistant_t;
 
@@ -1704,6 +1718,7 @@ void Cmd_Push(gentity_t* ent);
 void stats_DoubleKill (gentity_t *ent, int meansOfDeath );
 void stats_FirstHeadshot (gentity_t *attacker, gentity_t *targ);
 void stats_FirstBlood (gentity_t *self, gentity_t *attacker);
+void stats_KillingSprees ( gentity_t *ent, int score );
 
 //
 // Logs
