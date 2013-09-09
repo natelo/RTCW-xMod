@@ -2146,7 +2146,9 @@ void ClientSpawn(gentity_t *ent, qboolean revived) {
 	ent->flags = 0;
 
 	// L0 - New stuff
-	ent->thrownSmoke = 0;	// Smoke
+	ent->thrownSmoke = 0;		// Smoke
+	ent->poisoned = qfalse;		// Poison
+	ent->lastPoisonTime = 0;	// Poison
 	// End
 	
 	VectorCopy (playerMins, ent->r.mins);

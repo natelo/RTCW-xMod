@@ -378,7 +378,13 @@ struct gentity_s {
 	// L0 - New stuff
 	int			thrownKnifeTime;			// Knife throwing
 	int			thrownSmoke;				// Smoke
-	int			selectedSmoke;				// Smoke
+	int			selectedSmoke;				// Smoke	
+	int			lastPushTime;				// Shove	
+	int			lastDragTime;				// Drag bodies	
+	qboolean	poisoned;					// Poison
+	int			poisonEnt;					// Poison
+	int			lastPoisonTime;				// Poison
+	// End
 };
 
 // Ridah
@@ -1341,6 +1347,9 @@ extern vmCvar_t		g_axisSpawnProtectionTime;
 extern vmCvar_t		g_alliedSpawnProtectionTime;
 extern vmCvar_t		g_disableInv;
 extern vmCvar_t		g_chicken;
+extern vmCvar_t		g_dragBodies;
+extern vmCvar_t		g_shove;
+extern vmCvar_t		g_poison;
 
 // Server Bot
 extern vmCvar_t		sb_system;
@@ -1668,6 +1677,8 @@ void Cmd_Smoke_f( gentity_t *ent );
 void weapon_smokeGrenade(gentity_t *ent);
 void Cmd_Pmsg( gentity_t *ent );
 void Cmd_Time_f( gentity_t *ent );
+void Cmd_Drag( gentity_t *ent);
+void Cmd_Push(gentity_t* ent);
 
 //
 // Logs

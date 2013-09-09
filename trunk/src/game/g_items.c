@@ -531,7 +531,8 @@ int Pickup_Health (gentity_t *ent, gentity_t *other) {
 
 // jpw
 
-	
+	// L0 - reset poison
+	other->poisoned = qfalse;
 	
 	// small and mega healths will go over the max
 	if ( ent->item->quantity != 5 && ent->item->quantity != 100  ) {

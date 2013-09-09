@@ -295,6 +295,7 @@ char	*modNames[] = {
 	"MOD_SELFKILL",		// Suicide (not gib!)
 	"MOD_THROWKNIFE",	// Killed by knife throw
 	"MOD_CHICKEN",		// Funny print when player self kills to avoid being killed
+	"MOD_POISONDMED",	// Killed by poison
 // End
 	"MOD_BAT"
 };
@@ -377,10 +378,19 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	// If person gets stabbed use custom sound from soundpack
 	// it's broadcasted to victim and heard only if standing near victim...
-	if(meansOfDeath == MOD_KNIFE_STEALTH && !OnSameTeam(self, attacker) ) {
+	if ( meansOfDeath == MOD_KNIFE_STEALTH && !OnSameTeam(self, attacker) ) {
 		APRS(self, "xmod/sound/game/events/stab.wav");
 	}  
-// L0 - End
+
+	if ( meansOfDeath == MOD_POISONDMED )  {
+		int r = rand() %2; // randomize messages
+		
+		if (r == 0)
+			AP(va( "print \"%s ^7was poisoned by %s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname)); 
+		else if (r == 1)
+			AP(va( "print \"%s ^7tasted %s^7's poison.\n\"", self->client->pers.netname, attacker->client->pers.netname)); 
+	}
+// Mod hacks ends here
 
 	if ( meansOfDeath < 0 || meansOfDeath >= sizeof( modNames ) / sizeof( modNames[0] ) ) {
 		obit = "<bad obituary>";
@@ -411,6 +421,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if (meansOfDeath != MOD_SELFKILL ) {
 	if (meansOfDeath != MOD_THROWKNIFE) {
 	if (meansOfDeath != MOD_CHICKEN) {
+	if (meansOfDeath != MOD_POISONDMED) {
 
 		// broadcast the death event to everyone
 		ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY );
@@ -419,7 +430,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		ent->s.otherEntityNum2 = killer;
 		ent->r.svFlags = SVF_BROADCAST;	// send to everyone
 
-	}}}}
+	}}}}}
 
 	self->enemy = attacker;
 

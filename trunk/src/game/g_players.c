@@ -268,3 +268,102 @@ void Cmd_Time_f( gentity_t *ent ) {
 		ent->client->pers.netname , ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, aMonths[ct.tm_mon], 1900+ct.tm_year ) );
 	CPS(ent, "sound/multiplayer/dynamite_01.wav");
 }
+
+/*
+===================
+Drag players 
+
+Came from BOTW/S4NDMoD 
+===================
+*/
+void Cmd_Drag( gentity_t *ent) {
+	gentity_t *target;
+	vec3_t start,dir,end;
+	trace_t tr;
+	target = NULL;
+
+	if (!g_dragBodies.integer)
+		return;
+
+	if (level.time < (ent->lastDragTime + 20))		
+		return;
+
+	if (ent->client->ps.stats[STAT_HEALTH] <= 0)	
+		return;
+
+	AngleVectors(ent->client->ps.viewangles, dir, NULL, NULL);
+
+	VectorCopy(ent->s.pos.trBase, start);	
+	start[2] += ent->client->ps.viewheight;
+	VectorMA (start, 100, dir, end);
+
+
+	trap_Trace (&tr, start, NULL, NULL, end, ent->s.number, CONTENTS_CORPSE);
+
+	if (tr.entityNum >= MAX_CLIENTS)
+		return;
+
+	target = &(g_entities[tr.entityNum]);
+
+       	if ((!target->inuse) || (!target->client))
+		return;		
+
+		VectorCopy(target->r.currentOrigin, start); 
+		VectorCopy(ent->r.currentOrigin, end); 
+		VectorSubtract(end, start, dir); 
+		VectorNormalize(dir); 
+		VectorScale(dir,100, target->client->ps.velocity);
+		VectorCopy(dir, target->movedir); 
+       
+		ent->lastDragTime = level.time;		
+}
+
+/*
+=================
+L0 - Shove players away
+
+Ported from BOTW source.
+=================
+*/
+void Cmd_Push(gentity_t* ent)
+{
+	gentity_t *target;
+	trace_t tr;
+	vec3_t start, end, forward;
+	float shoveAmount;
+
+	if (!g_shove.integer)	
+		return;
+
+	if (ent->client->ps.stats[STAT_HEALTH] <= 0)	
+		return;
+
+	if (level.time < (ent->lastPushTime + 600))		
+		return;
+
+	AngleVectors(ent->client->ps.viewangles, forward, NULL, NULL);
+
+	VectorCopy(ent->s.pos.trBase, start);
+	start[2] += ent->client->ps.viewheight;
+	VectorMA (start, 128, forward, end);	
+
+	trap_Trace (&tr, start, NULL, NULL, end, ent->s.number, CONTENTS_BODY);
+
+	if (tr.entityNum >= MAX_CLIENTS)
+		return;
+
+	target = &(g_entities[tr.entityNum]);
+
+	if ((!target->inuse) || (!target->client))	
+		return;
+
+	if (target->client->ps.stats[STAT_HEALTH] <= 0)	
+		return;
+
+	shoveAmount = 512 * .8;
+	VectorMA(target->client->ps.velocity, shoveAmount, forward, target->client->ps.velocity);
+
+	APRS(target, "sound/multiplayer/vo_revive.wav");
+
+	ent->lastPushTime = level.time;	
+}

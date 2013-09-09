@@ -213,6 +213,9 @@ vmCvar_t	g_axisSpawnProtectionTime;		// How long Axis player is invulrable when 
 vmCvar_t	g_alliedSpawnProtectionTime;	// How long Allied player is invulrable when (s)he spawns.
 vmCvar_t	g_disableInv;			// Disables (re)spawn/revive protection crap when one starts to shot..
 vmCvar_t	g_chicken;				// Check if player is 'laming' out of combat with self kill..
+vmCvar_t	g_dragBodies;			// If enabled player can drag bodies using salute or activate command
+vmCvar_t	g_shove;				// Enables or disables shove..(pushing of players..)
+vmCvar_t	g_poison;				// Poison... anything above 0 is value that will be used
 
 // Server Bot
 vmCvar_t	sb_system;			// Controls all SB functionality
@@ -456,6 +459,9 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_alliedSpawnProtectionTime, "g_alliedSpawnProtectionTime", "3000", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_disableInv, "g_disableInv", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &g_chicken, "g_chicken", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_dragBodies, "g_dragBodies", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_shove, "g_shove", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_poison, "g_poison", "0", CVAR_ARCHIVE, 0, qtrue },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
