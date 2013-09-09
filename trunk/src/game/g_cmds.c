@@ -594,12 +594,12 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 			// We allow a spread of one
 			if ( team == TEAM_RED && counts[TEAM_RED] - counts[TEAM_BLUE] >= 1 ) {
 				trap_SendServerCommand( clientNum, 
-					"cp \"The Axis has too many players.\n\"" );
+					"cp \"The ^1Axis ^7has too many players.\n\"" );
 				return; // ignore the request
 			}
 			if ( team == TEAM_BLUE && counts[TEAM_BLUE] - counts[TEAM_RED] >= 1 ) {
 				trap_SendServerCommand( clientNum, 
-					"cp \"The Allies have too many players.\n\"" );
+					"cp \"The ^4Allies ^7have too many players.\n\"" );
 				return; // ignore the request
 			}
 
@@ -636,18 +636,18 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 		return;	// ignore the request
 	}
 
-	// L0 - in warmup wait 2 sec before you allow team switch to fix the team switch nuke
+	// L0 - in warmup wait 1.2 sec before you allow team switch to fix the team switch nuke
 	// After warmup we have teamswitch cvar that will handle it..
-	if ( g_gametype.integer >= GT_WOLF && team != oldTeam && !level.warmupTime == 0 && (level.time - client->pers.enterTime) < 2000 && !forced ) {
+	if ( g_gametype.integer >= GT_WOLF && team != oldTeam && !level.warmupTime == 0 && (level.time - client->pers.enterTime) < 1200 && !forced ) {
 		trap_SendServerCommand( clientNum, 
-			"cp \"Wait ^32 ^7sec before team switch^3!\n\" 3" );
+			"cp \"Wait ^31 ^7sec before team switch^3!\n\" 3" );
 		return;
 	}
 	// L0 - end
 
-	// DHM - Nerve :: Force players to wait 30 seconds before they can join a new team.
+	// DHM - Nerve :: Force players to wait 5 seconds before they can join a new team.
 	if ( g_gametype.integer >= GT_WOLF && team != oldTeam && level.warmupTime == 0 && !client->pers.initialSpawn
-		&& ( (level.time - client->pers.connectTime) > 10000 ) && ( (level.time - client->pers.enterTime) < 30000 ) ) {
+		&& ( (level.time - client->pers.connectTime) > 10000 ) && ( (level.time - client->pers.enterTime) < 5000 ) ) {
 		trap_SendServerCommand( ent-g_entities, 
 			va( "cp \"^3You must wait %i seconds before joining ^3a new team.\n\" 3", (int)(30 - ((level.time - client->pers.enterTime)/1000))) );
 		return;
@@ -681,18 +681,15 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 	client->sess.spectatorState = specState;
 	client->sess.spectatorClient = specClient;
 
-	if ( team == TEAM_RED ) {
-		trap_SendServerCommand( -1, va("cp \"[lof]%s" S_COLOR_WHITE " [lon]joined the Axis team.\n\"",
-			client->pers.netname) );
+	// L0 - redone this and changed to prints..
+	if ( team == TEAM_RED ) {		
+		AP(va("print \"%s ^7joined the ^1Axis ^7team.\n\"", client->pers.netname));
 	} else if ( team == TEAM_BLUE ) {
-		trap_SendServerCommand( -1, va("cp \"[lof]%s" S_COLOR_WHITE " [lon]joined the Allied team.\n\"",
-		client->pers.netname));
+		AP(va("print \"%s ^7joined the ^4Allied ^7team.\n\"", client->pers.netname));
 	} else if ( team == TEAM_SPECTATOR && oldTeam != TEAM_SPECTATOR ) {
-		trap_SendServerCommand( -1, va("cp \"[lof]%s" S_COLOR_WHITE " [lon]joined the spectators.\n\"",
-		client->pers.netname));
+		AP(va("print \"%s ^7joined the ^3Spectators^7.\n\"", client->pers.netname));
 	} else if ( team == TEAM_FREE ) {
-		trap_SendServerCommand( -1, va("cp \"[lof]%s" S_COLOR_WHITE " [lon]joined the battle.\n\"",
-		client->pers.netname));
+		AP(va("print \"%s ^7joined the ^3Battle^7.\n\"", client->pers.netname));
 	}
 
 	// get and distribute relevent paramters
