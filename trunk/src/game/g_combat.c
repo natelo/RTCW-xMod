@@ -641,6 +641,9 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	trap_LinkEntity (self);
 
+	// L0 - show First Blood
+	stats_FirstBlood (self, attacker);
+
 	if ( g_gametype.integer >= GT_WOLF && meansOfDeath == MOD_SUICIDE ) {
 		limbo( self, qtrue );
 	}
@@ -1259,6 +1262,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 		// L0 - Hitsounds (head)
 		Hitsounds( targ, attacker, qfalse);
+
+		// L0 - check for First Headshot
+		stats_FirstHeadshot (attacker, targ); 
 	}
 	
 	if ( g_debugDamage.integer ) {

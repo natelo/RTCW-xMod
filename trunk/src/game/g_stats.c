@@ -86,4 +86,64 @@ void stats_DoubleKill (gentity_t *ent, int meansOfDeath ) {
 	}
 }
 
+/*
+===========
+First headshots 
 
+Prints who done first headshots when round starts.
+===========
+*/
+void stats_FirstHeadshot (gentity_t *attacker, gentity_t *targ) {
+	qboolean 	onSameTeam = OnSameTeam( targ, attacker);
+
+	if (g_showFirstHeadshot.integer) {
+
+		if ( !firstheadshot &&
+			targ &&
+			targ->client &&
+			attacker &&
+			attacker->client &&
+			attacker->s.number != ENTITYNUM_NONE &&
+			attacker->s.number != ENTITYNUM_WORLD &&
+			attacker != targ &&
+			g_gamestate.integer == GS_PLAYING &&
+			!onSameTeam )
+		{
+			AP(va("chat \"%s ^7blew out %s^7's brains with the ^3FIRST HEAD SHOT^7!\"", attacker->client->pers.netname, targ->client->pers.netname));
+			APS("xmod/sound/scenaric/headshot.wav");				
+			firstheadshot = qtrue;
+		}
+	} 
+}
+
+/*
+===========
+First blood 
+
+Prints who draw first blood when round starts.
+NOTE: Atm it's only a print..once I'm not lazy I'll set it in a way it can decide winner once timelimit hits on 
+	  specific maps (like depot, destuction) - so first blood decides who won.
+===========
+*/
+void stats_FirstBlood (gentity_t *self, gentity_t *attacker) {
+	qboolean 	onSameTeam = OnSameTeam( self, attacker); 
+
+	if (g_showFirstBlood.integer) {
+
+		if (! firstblood &&
+			self &&
+			self->client &&
+			attacker &&
+			attacker->client &&
+			attacker->s.number != ENTITYNUM_NONE &&
+			attacker->s.number != ENTITYNUM_WORLD &&
+			attacker != self &&
+			g_gamestate.integer == GS_PLAYING &&
+			!onSameTeam)
+		{	
+			AP(va("chat \"%s ^7drew ^1FIRST BLOOD ^7from ^7%s^1!\"", attacker->client->pers.netname, self->client->pers.netname));
+			APS("xmod/sound/scenaric/firstblood.wav");
+			firstblood = qtrue;
+		}
+	}
+}

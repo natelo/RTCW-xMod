@@ -1702,6 +1702,8 @@ void Cmd_Push(gentity_t* ent);
 // g_stats.c
 //
 void stats_DoubleKill (gentity_t *ent, int meansOfDeath );
+void stats_FirstHeadshot (gentity_t *attacker, gentity_t *targ);
+void stats_FirstBlood (gentity_t *self, gentity_t *attacker);
 
 //
 // Logs
