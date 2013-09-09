@@ -374,6 +374,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if ( meansOfDeath == MOD_CHICKEN ) {
 		AP(va("print \"%s ^6was scared to death by ^7%s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname));
 	}
+
+	// If person gets stabbed use custom sound from soundpack
+	// it's broadcasted to victim and heard only if standing near victim...
+	if(meansOfDeath == MOD_KNIFE_STEALTH && !OnSameTeam(self, attacker) ) {
+		APRS(self, "xmod/sound/game/events/stab.wav");
+	}  
 // L0 - End
 
 	if ( meansOfDeath < 0 || meansOfDeath >= sizeof( modNames ) / sizeof( modNames[0] ) ) {
