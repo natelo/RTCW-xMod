@@ -140,114 +140,114 @@ vmCvar_t	g_dbgRevive;
 // L0 - New stuff
 
 // Admins
-vmCvar_t a1_pass;		// Level 1 admin
-vmCvar_t a2_pass;		// Level 2 admin
-vmCvar_t a3_pass;		// Level 3 admin
-vmCvar_t a4_pass;		// Level 4 admin
-vmCvar_t a5_pass;		// Level 4 admin
-vmCvar_t a1_tag;		// Level 1 admin tag
-vmCvar_t a2_tag;		// Level 2 admin tag
-vmCvar_t a3_tag;		// Level 3 admin tag
-vmCvar_t a4_tag;		// Level 3 admin tag
-vmCvar_t a5_tag;		// Level 5 admin tag
-vmCvar_t a1_cmds;		// Level 1 admin commands
-vmCvar_t a2_cmds;		// Level 2 admin commands
-vmCvar_t a3_cmds;		// Level 3 admin commands
-vmCvar_t a4_cmds;		// Level 4 admin commands
-vmCvar_t a5_cmds;		// Level 5 admin commands
-vmCvar_t a5_allowAll;	// Allows level 5 to execute all admin commands + any other that's set in a5_cmds ->
-						// In this case, use a5_cmds for server specific cvars like g_allowVote that would otherwise require rcon etc..
-vmCvar_t adm_help;		// If enabled users can use !list_cmds to get list of commands for their level..
+vmCvar_t	a1_pass;		// Level 1 admin
+vmCvar_t	a2_pass;		// Level 2 admin
+vmCvar_t	a3_pass;		// Level 3 admin
+vmCvar_t	a4_pass;		// Level 4 admin
+vmCvar_t	a5_pass;		// Level 4 admin
+vmCvar_t	a1_tag;			// Level 1 admin tag
+vmCvar_t	a2_tag;			// Level 2 admin tag
+vmCvar_t	a3_tag;			// Level 3 admin tag
+vmCvar_t	a4_tag;			// Level 3 admin tag
+vmCvar_t	a5_tag;			// Level 5 admin tag
+vmCvar_t	a1_cmds;		// Level 1 admin commands
+vmCvar_t	a2_cmds;		// Level 2 admin commands
+vmCvar_t	a3_cmds;		// Level 3 admin commands
+vmCvar_t	a4_cmds;		// Level 4 admin commands
+vmCvar_t	a5_cmds;		// Level 5 admin commands
+vmCvar_t	a5_allowAll;	// Allows level 5 to execute all admin commands + any other that's set in a5_cmds ->
+							// In this case, use a5_cmds for server specific cvars like g_allowVote that would otherwise require rcon etc..
+vmCvar_t	adm_help;		// If enabled users can use !list_cmds to get list of commands for their level..
 
 // System
-vmCvar_t g_extendedLog;			// Logs admin actions (1 = essentials, 2 = all).
-vmCvar_t g_maxVotes;			// Max votes user can call per round
-vmCvar_t IP_handling;			// If enabled it checks for IP bans and tempbans..
-vmCvar_t bannedMSG;				// Message that will be printed to banned users.
-vmCvar_t g_censorWords;			// Censored words
-vmCvar_t g_disallowedNames;		// Disallowed names
-vmCvar_t g_noHardcodedCensor;	// Don't use hardcoded censor..
-vmCvar_t g_shortcuts;			// Enable shortcuts
-vmCvar_t g_fixedphysics;		// Tries to keep things more fair..
-vmCvar_t g_autoSwap;			// Auto swaps teams 
-vmCvar_t g_autoSwapRounds;		// How many rounds until it auto swaps
-vmCvar_t g_mapConfigs;			// Essentials for custom map configs...
-vmCvar_t g_inactivityToSpecs;	// Puts inactive players in spectators instead of dropping them.
-vmCvar_t g_ignoreSpecs;			// Ignores spectators - Admins can still bypass the ignore..
+vmCvar_t	g_extendedLog;			// Logs admin actions (1 = essentials, 2 = all).
+vmCvar_t	g_maxVotes;				// Max votes user can call per round
+vmCvar_t	IP_handling;			// If enabled it checks for IP bans and tempbans..
+vmCvar_t	bannedMSG;				// Message that will be printed to banned users.
+vmCvar_t	g_censorWords;			// Censored words
+vmCvar_t	g_disallowedNames;		// Disallowed names
+vmCvar_t	g_noHardcodedCensor;	// Don't use hardcoded censor..
+vmCvar_t	g_shortcuts;			// Enable shortcuts
+vmCvar_t	g_fixedphysics;			// Tries to keep things more fair..
+vmCvar_t	g_autoSwap;				// Auto swaps teams 
+vmCvar_t	g_autoSwapRounds;		// How many rounds until it auto swaps
+vmCvar_t	g_mapConfigs;			// Essentials for custom map configs...
+vmCvar_t	g_inactivityToSpecs;	// Puts inactive players in spectators instead of dropping them.
+vmCvar_t	g_ignoreSpecs;			// Ignores spectators - Admins can still bypass the ignore..
 
 // Game
-vmCvar_t g_unlockWeapons;		// Gives ability to drop weapon to all classes..
-vmCvar_t g_flagRetake;			// How many times flag can be retaken
-vmCvar_t g_balanceFlagRetake;	// Checks if flag can be taken..it always allows team with less to claim it last and then locks till even.
-vmCvar_t g_warmupDamage;		// Allows damage in warmup
-vmCvar_t g_staminaBoost;		// If enabled it recharges stamina faster when player is crouching..
-vmCvar_t g_bunnyJump;			// Enable bunny jumps...
-vmCvar_t g_easyASBlock;			// If enabled it prints when AirStrike is blocked
-vmCvar_t g_hitsounds;			// Hitsounds - Requires soundpack
-vmCvar_t g_customMGs;			// Allow custom mg's so player can chose with what weapon to spawn with.
-vmCvar_t g_ltNades;				// Number of nades a lt starts with 
-vmCvar_t g_medicNades;			// Number of nades a med starts with 
-vmCvar_t g_soldNades;			// Number of nades sold starts with
-vmCvar_t g_engNades;			// Number of nades eng starts with
-vmCvar_t g_medicClips;			// Number of clips in weapon med starts with 
-vmCvar_t g_engineerClips;		// Number of clips in weapon eng starts with
-vmCvar_t g_soldierClips;		// Number of clips in weapon sold starts with
-vmCvar_t g_leutClips;			// Number of clips in weapon leut starts with
-vmCvar_t g_pistolClips;			// How many clips pistol gets
-vmCvar_t g_maxTeamPF;			// Max Pf's per team
-vmCvar_t g_maxTeamSniper;		// Max snipers per team
-vmCvar_t g_maxTeamVenom;		// Max venoms per team
-vmCvar_t g_maxTeamFlamer;		// Max flamers per team
-vmCvar_t g_balancePF;			// Some basic weapon balancing
-vmCvar_t g_balanceSniper;		// Some basic weapon balancing
-vmCvar_t g_balanceVenom;		// Some basic weapon balancing
-vmCvar_t g_balanceFlamer;		// Some basic weapon balancing
-vmCvar_t g_dropHealth;			// The number od medpacks medic will drop when going to limbo
-vmCvar_t g_dropNades;			// The number of grenades eng will drop when going to limbo
-vmCvar_t g_dropAmmo;			// The number of ammo packs leut drops when going to limbo
-vmCvar_t g_throwKnives;			// 0 = disabled, anything else is the value of knives player gets, alt -1 = unlimited.
-vmCvar_t g_smokeGrenades;		// Smoke Grenades for Leut
-vmCvar_t g_smokeGrenadesLmt;	// Smoke Grenades limit per life
-vmCvar_t g_axisSpawnProtectionTime;		// How long Axis player is invulrable when (s)he spawns.
-vmCvar_t g_alliedSpawnProtectionTime;	// How long Allied player is invulrable when (s)he spawns.
-vmCvar_t g_disableInv;			// Disables (re)spawn/revive protection crap when one starts to shot..
-vmCvar_t g_chicken;				// Check if player is 'laming' out of combat with self kill..
+vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
+vmCvar_t	g_flagRetake;			// How many times flag can be retaken
+vmCvar_t	g_balanceFlagRetake;	// Checks if flag can be taken..it always allows team with less to claim it last and then locks till even.
+vmCvar_t	g_warmupDamage;			// Allows damage in warmup
+vmCvar_t	g_staminaBoost;			// If enabled it recharges stamina faster when player is crouching..
+vmCvar_t	g_bunnyJump;			// Enable bunny jumps...
+vmCvar_t	g_easyASBlock;			// If enabled it prints when AirStrike is blocked
+vmCvar_t	g_hitsounds;			// Hitsounds - Requires soundpack
+vmCvar_t	g_customMGs;			// Allow custom mg's so player can chose with what weapon to spawn with.
+vmCvar_t	g_ltNades;				// Number of nades a lt starts with 
+vmCvar_t	g_medicNades;			// Number of nades a med starts with 
+vmCvar_t	g_soldNades;			// Number of nades sold starts with
+vmCvar_t	g_engNades;				// Number of nades eng starts with
+vmCvar_t	g_medicClips;			// Number of clips in weapon med starts with 
+vmCvar_t	g_engineerClips;		// Number of clips in weapon eng starts with
+vmCvar_t	g_soldierClips;			// Number of clips in weapon sold starts with
+vmCvar_t	g_leutClips;			// Number of clips in weapon leut starts with
+vmCvar_t	g_pistolClips;			// How many clips pistol gets
+vmCvar_t	g_maxTeamPF;			// Max Pf's per team
+vmCvar_t	g_maxTeamSniper;		// Max snipers per team
+vmCvar_t	g_maxTeamVenom;			// Max venoms per team
+vmCvar_t	g_maxTeamFlamer;		// Max flamers per team
+vmCvar_t	g_balancePF;			// Some basic weapon balancing
+vmCvar_t	g_balanceSniper;		// Some basic weapon balancing
+vmCvar_t	g_balanceVenom;			// Some basic weapon balancing
+vmCvar_t	g_balanceFlamer;		// Some basic weapon balancing
+vmCvar_t	g_dropHealth;			// The number od medpacks medic will drop when going to limbo
+vmCvar_t	g_dropNades;			// The number of grenades eng will drop when going to limbo
+vmCvar_t	g_dropAmmo;				// The number of ammo packs leut drops when going to limbo
+vmCvar_t	g_throwKnives;			// 0 = disabled, anything else is the value of knives player gets, alt -1 = unlimited.
+vmCvar_t	g_smokeGrenades;		// Smoke Grenades for Leut
+vmCvar_t	g_smokeGrenadesLmt;		// Smoke Grenades limit per life
+vmCvar_t	g_axisSpawnProtectionTime;		// How long Axis player is invulrable when (s)he spawns.
+vmCvar_t	g_alliedSpawnProtectionTime;	// How long Allied player is invulrable when (s)he spawns.
+vmCvar_t	g_disableInv;			// Disables (re)spawn/revive protection crap when one starts to shot..
+vmCvar_t	g_chicken;				// Check if player is 'laming' out of combat with self kill..
 
 // Server Bot
-vmCvar_t sb_system;			// Controls all SB functionality
-vmCvar_t sb_maxTKs;			// Max TK's before client gets kicked
-vmCvar_t sb_maxTeamBleed;	// Max bleeding pts before client gets kicked (1 hit = 1 point)
-vmCvar_t sb_minLowScore;	// Minimum score allowed before client gets kicked for low score
-vmCvar_t sb_maxPingFlux;	// Top limit ping can hit before client gets kicked
-vmCvar_t sb_maxPingHits;	// How many seconds or times (1 time = 1 sec) can it peak above limit
-vmCvar_t sb_censorPenalty;	// Auto ignores (1) or kicks (2) client after 4th warning for cursing..
-vmCvar_t sb_autoIgnore;		// Auto ignores players (for the round) that reach spam check more than 3 times.
+vmCvar_t	sb_system;			// Controls all SB functionality
+vmCvar_t	sb_maxTKs;			// Max TK's before client gets kicked
+vmCvar_t	sb_maxTeamBleed;	// Max bleeding pts before client gets kicked (1 hit = 1 point)
+vmCvar_t	sb_minLowScore;		// Minimum score allowed before client gets kicked for low score
+vmCvar_t	sb_maxPingFlux;		// Top limit ping can hit before client gets kicked
+vmCvar_t	sb_maxPingHits;		// How many seconds or times (1 time = 1 sec) can it peak above limit
+vmCvar_t	sb_censorPenalty;	// Auto ignores (1) or kicks (2) client after 4th warning for cursing..
+vmCvar_t	sb_autoIgnore;		// Auto ignores players (for the round) that reach spam check more than 3 times.
 
 // MOTD's
-vmCvar_t g_serverMessage;	// Shows a center print each time when player switches teams.
-vmCvar_t g_serverMessage;	// Shows a center print each time when player switches teams.
-vmCvar_t g_showMOTD;		// Enable MOTD's (message of the day)
-vmCvar_t motdNum;			// To track motds..
-vmCvar_t g_motd1;			// MESSAGE 1
-vmCvar_t g_motd2;			// MESSAGE 2
-vmCvar_t g_motd3;			// MESSAGE 3
-vmCvar_t g_motd4;			// MESSAGE 4
-vmCvar_t g_motd5;			// MESSAGE 5
-vmCvar_t g_motd6;			// MESSAGE 6
-vmCvar_t g_motd7;			// MESSAGE 7
-vmCvar_t g_motd8;			// MESSAGE 8
-vmCvar_t g_motd9;			// MESSAGE 9
-vmCvar_t g_motd10;			// MESSAGE 10
-vmCvar_t g_motd11;			// MESSAGE 11
-vmCvar_t g_motd12;			// MESSAGE 12
-vmCvar_t g_motdTime;		// Time between each message
+vmCvar_t	g_serverMessage;	// Shows a center print each time when player switches teams.
+vmCvar_t	g_serverMessage;	// Shows a center print each time when player switches teams.
+vmCvar_t	g_showMOTD;			// Enable MOTD's (message of the day)
+vmCvar_t	g_motd1;			// MESSAGE 1
+vmCvar_t	g_motd2;			// MESSAGE 2
+vmCvar_t	g_motd3;			// MESSAGE 3
+vmCvar_t	g_motd4;			// MESSAGE 4
+vmCvar_t	g_motd5;			// MESSAGE 5
+vmCvar_t	g_motd6;			// MESSAGE 6
+vmCvar_t	g_motd7;			// MESSAGE 7
+vmCvar_t	g_motd8;			// MESSAGE 8
+vmCvar_t	g_motd9;			// MESSAGE 9
+vmCvar_t	g_motd10;			// MESSAGE 10
+vmCvar_t	g_motd11;			// MESSAGE 11
+vmCvar_t	g_motd12;			// MESSAGE 12
+vmCvar_t	g_motdTime;			// Time between each message
 
 // Static
-vmCvar_t sv_hostname;		// So it's more accesible
-vmCvar_t g_swapCounter;		// Count times so it auto swaps once it reaches it..
+vmCvar_t	sv_hostname;		// So it's more accesible
+vmCvar_t	motdNum;			// To track motds..
+vmCvar_t	g_swapCounter;		// Count times so it auto swaps once it reaches it..
 
 // General
-vmCvar_t g_screenShake;	// Screenshaking on explosions (4 = default, 2 = half.. etc)
+vmCvar_t	g_screenShake;		// Screenshaking on explosions (4 = default, 2 = half.. etc)
 
 // L0 - End
 
