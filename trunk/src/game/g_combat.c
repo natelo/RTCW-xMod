@@ -294,6 +294,7 @@ char	*modNames[] = {
 	"MOD_ADMKILL",		// Slapped to death || killed by admin
 	"MOD_SELFKILL",		// Suicide (not gib!)
 	"MOD_THROWKNIFE",	// Killed by knife throw
+	"MOD_CHICKEN",		// Funny print when player self kills to avoid being killed
 // End
 	"MOD_BAT"
 };
@@ -369,6 +370,10 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if ( meansOfDeath == MOD_THROWKNIFE ) {
 		AP(va("print \"%s ^7was impaled by %s^7s throwing knife.\n\"", self->client->pers.netname, attacker->client->pers.netname));
 	}
+
+	if ( meansOfDeath == MOD_CHICKEN ) {
+		AP(va("print \"%s ^6was scared to death by ^7%s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname));
+	}
 // L0 - End
 
 	if ( meansOfDeath < 0 || meansOfDeath >= sizeof( modNames ) / sizeof( modNames[0] ) ) {
@@ -395,10 +400,11 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		}
 	} 
 
-	// L0 - Don't send this if there's a custom MOD
+	// L0 - (a nasty hack) Don't send this if there's a custom MOD
 	if (meansOfDeath != MOD_ADMKILL) { 
 	if (meansOfDeath != MOD_SELFKILL ) {
 	if (meansOfDeath != MOD_THROWKNIFE) {
+	if (meansOfDeath != MOD_CHICKEN) {
 
 		// broadcast the death event to everyone
 		ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY );
@@ -407,7 +413,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		ent->s.otherEntityNum2 = killer;
 		ent->r.svFlags = SVF_BROADCAST;	// send to everyone
 
-	}}}
+	}}}}
 
 	self->enemy = attacker;
 
@@ -611,6 +617,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if ( g_gametype.integer >= GT_WOLF && meansOfDeath == MOD_SUICIDE ) {
 		limbo( self, qtrue );
 	}
+
+	// L0 - reset chicken test so it doesn't spam when not need it
+	self->client->lasthurt_time=0;
+	self->client->lasthurt_client=ENTITYNUM_NONE;
+	self->client->lasthurt_mod=0;
+	// End
 }
 
 
@@ -1256,6 +1268,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		// set the last client who damaged the target
 		targ->client->lasthurt_client = attacker->s.number;
 		targ->client->lasthurt_mod = mod;
+		targ->client->lasthurt_time = level.time;	// L0 - chicken test
 	}
 
 	// do the damage

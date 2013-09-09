@@ -598,6 +598,7 @@ struct gclient_s {
 	int			lastkilled_client;	// last client that this client killed
 	int			lasthurt_client;	// last client that damaged this client
 	int			lasthurt_mod;		// type of damage the client did
+	int			lasthurt_time;		// L0 - Chicken check
 
 	// timers
 	int			respawnTime;		// can respawn when time > this, force after g_forcerespwan
@@ -1338,6 +1339,7 @@ extern vmCvar_t		g_smokeGrenadesLmt;
 extern vmCvar_t		g_axisSpawnProtectionTime;
 extern vmCvar_t		g_alliedSpawnProtectionTime;
 extern vmCvar_t		g_disableInv;
+extern vmCvar_t		g_chicken;
 
 // Server Bot
 extern vmCvar_t		sb_system;
@@ -1582,18 +1584,6 @@ typedef enum
 
 /*========================== L0-new stuff bellow ===============================*/
 
-// Macros
-#define AP(x) trap_SendServerCommand(-1, x)					// Print to all
-#define CP(x) trap_SendServerCommand(ent-g_entities, x)		// Print to an ent
-#define CPx(x, y) trap_SendServerCommand(x, y)				// Print to id = x
-
-// Logs
-#define ADMLOG "./logs/adminLogins.log"
-#define PASSLOG "./logs/adminLoginAttempts.log"
-#define ADMACT "./logs/adminActions.log"
-#define BYPASSLOG "./logs/banBypass.log"
-#define STSPTH "./logs/stats/"
-
 //
 // g_admin.c
 //
@@ -1658,8 +1648,34 @@ int isWeaponLimited( gclient_t *client, int weap );
 qboolean isWeaponBalanced( int weapon );
 void setDefaultWeapon(gclient_t *client, qboolean isSold);
 void setCustomMG( gentity_t* ent, int type );
+gentity_t *G_FearCheck( gentity_t *ent );
+// Sounds - so it's simplified
+void CPSound(gentity_t *ent, char *sound);
+void APSound(char *sound);
+void APRSound(gentity_t *ent, char *sound);
+
 
 //
 // g_players.c
 //
 void weapon_smokeGrenade(gentity_t *ent);
+
+//
+// Logs
+//
+#define ADMLOG "./logs/adminLogins.log"
+#define PASSLOG "./logs/adminLoginAttempts.log"
+#define ADMACT "./logs/adminActions.log"
+#define BYPASSLOG "./logs/banBypass.log"
+#define STSPTH "./logs/stats/"
+
+//
+// Macros
+//
+#define AP(x) trap_SendServerCommand(-1, x)					// Print to all
+#define CP(x) trap_SendServerCommand(ent-g_entities, x)		// Print to an ent
+#define CPx(x, y) trap_SendServerCommand(x, y)				// Print to id = x
+#define APS(x) APSound(x)									// Global sound 
+#define APRS(x, y) APRSound(x, y)							// Global sound with limited (radius) range
+#define CPS(x, y) CPSound(x, y)								// Client sound only
+

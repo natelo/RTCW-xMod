@@ -482,6 +482,18 @@ void Cmd_Kill_f( gentity_t *ent ) {
 		return;
 	}
 
+	// L0 - Chicken
+	if (G_FearCheck(ent)) {	
+		ent->flags &= ~FL_GODMODE;
+		ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
+		ent->client->ps.persistant[PERS_HWEAPON_USE] = 0;
+		
+		APRS(ent, "sound/game/events/comeback.wav");
+		player_die(ent, ent, ent, (ent->health + 100000), MOD_CHICKEN);
+
+		return;
+	} 
+
 	ent->flags &= ~FL_GODMODE;
 	ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
 	ent->client->ps.persistant[PERS_HWEAPON_USE] = 0; // TTimo - if using /kill while at MG42
@@ -500,6 +512,17 @@ void Cmd_softKill_f( gentity_t *ent ) {
 	if ( g_gametype.integer >= GT_WOLF && ent->client->ps.pm_flags & PMF_LIMBO ) {
 		return;
 	}
+
+	// L0 - Chicken
+	if (G_FearCheck(ent)) {	
+		ent->flags &= ~FL_GODMODE;
+		ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
+		ent->client->ps.persistant[PERS_HWEAPON_USE] = 0;
+		
+		APRS(ent, "sound/game/events/comeback.wav");
+		player_die(ent, ent, ent, ent->health, MOD_CHICKEN);
+	return;
+	} 
 
 	ent->flags &= ~FL_GODMODE;
 	ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;

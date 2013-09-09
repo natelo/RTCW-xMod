@@ -270,3 +270,68 @@ void setDefaultWeapon(gclient_t *client, qboolean isSold) {
 	}	
 }
 
+/*
+=================
+Chicken Run
+
+Originally from etPUB (i think)
+
+TODO: Once stats are ported make sure it counts as kill for attacker.
+=================
+*/
+gentity_t *G_FearCheck( gentity_t *ent ) {
+	qboolean fear = qfalse;
+	gentity_t *attacker = &level.gentities[ent->client->lasthurt_client];
+
+	if(g_chicken.integer && attacker && attacker->client &&
+		(level.time - ent->client->lasthurt_time) < g_chicken.integer &&
+		attacker->client->sess.sessionTeam != ent->client->sess.sessionTeam &&
+		attacker->health > 0) {
+
+		fear = qtrue;
+	}
+
+	return (fear ? attacker : NULL);
+}
+
+/*
+===========
+Global sound
+===========
+*/
+void APSound(char *sound){
+	gentity_t *ent;
+	gentity_t *te;
+
+	ent = g_entities;
+
+	te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_SOUND );
+	te->s.eventParm = G_SoundIndex(sound);  
+	te->r.svFlags |= SVF_BROADCAST;
+}
+
+/*
+===========
+Client sound
+===========
+*/
+void CPSound(gentity_t *ent, char *sound){
+	gentity_t *te;	
+
+	te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_CLIENT_SOUND );
+	te->s.eventParm = G_SoundIndex(sound);
+	te->s.teamNum = ent->s.clientNum;
+}
+
+/*
+===========
+Global sound with limited range
+===========
+*/
+void APRSound(gentity_t *ent, char *sound){
+	gentity_t   *te;
+
+	te = G_TempEntity( ent->r.currentOrigin, EV_GENERAL_SOUND );
+	te->s.eventParm = G_SoundIndex(sound);
+}
+

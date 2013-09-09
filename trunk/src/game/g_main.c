@@ -211,6 +211,7 @@ vmCvar_t g_smokeGrenadesLmt;	// Smoke Grenades limit per life
 vmCvar_t g_axisSpawnProtectionTime;		// How long Axis player is invulrable when (s)he spawns.
 vmCvar_t g_alliedSpawnProtectionTime;	// How long Allied player is invulrable when (s)he spawns.
 vmCvar_t g_disableInv;			// Disables (re)spawn/revive protection crap when one starts to shot..
+vmCvar_t g_chicken;				// Check if player is 'laming' out of combat with self kill..
 
 // Server Bot
 vmCvar_t sb_system;			// Controls all SB functionality
@@ -451,6 +452,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_axisSpawnProtectionTime, "g_axisSpawnProtectionTime", "3000", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_alliedSpawnProtectionTime, "g_alliedSpawnProtectionTime", "3000", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_disableInv, "g_disableInv", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
+	{ &g_chicken, "g_chicken", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
