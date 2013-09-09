@@ -217,6 +217,8 @@ vmCvar_t	g_chicken;				// Check if player is 'laming' out of combat with self ki
 vmCvar_t	g_dragBodies;			// If enabled player can drag bodies using salute or activate command
 vmCvar_t	g_shove;				// Enables or disables shove..(pushing of players..)
 vmCvar_t	g_poison;				// Poison... anything above 0 is value that will be used
+vmCvar_t	g_gibReports;			// Show gib print
+vmCvar_t	g_tapReports;			// Show tap print when player taps out - 0 = off, 1 = shows to all, 2 = shows to team only
 
 // Server Bot
 vmCvar_t	sb_system;			// Controls all SB functionality
@@ -465,6 +467,8 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_dragBodies, "g_dragBodies", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_shove, "g_shove", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_poison, "g_poison", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_gibReports, "g_gibReports", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_tapReports, "g_tapReports", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 

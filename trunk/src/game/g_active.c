@@ -1305,10 +1305,31 @@ void ClientThink_real( gentity_t *ent ) {
 			else if (( ucmd->upmove > 0 ) &&
 				(!(ent->client->ps.pm_flags & PMF_LIMBO)) ) { // JPW NERVE
 				// JPW NERVE
-				if (g_gametype.integer >= GT_WOLF)
+				if (g_gametype.integer >= GT_WOLF) 
+				{
 					limbo(ent, qtrue);
+
+					// L0 - Tap reports
+					// 1 = Prints to team only
+					if (g_tapReports.integer == 1)
+					{						
+						G_TeamCommand( 
+							( (ent->client->sess.sessionTeam == TEAM_RED) ? TEAM_RED : TEAM_BLUE ),
+							va("print \"%s ^7tapped out.\n\"", ent->client->pers.netname) 
+						);
+					} 
+					// 2 = Prints to everyone..
+					else if (g_tapReports.integer > 1) 
+					{						
+						AP(va("print \"%s ^7tapped out.\n\"", ent->client->pers.netname));
+					} // End
+
+				}
 				else
+				{
+					// L0 - unlazy & Fixme ..
 					respawn(ent);
+				}
 				// jpw
 			}
 			// dhm - Nerve :: end

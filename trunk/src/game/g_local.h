@@ -1352,6 +1352,8 @@ extern vmCvar_t		g_chicken;
 extern vmCvar_t		g_dragBodies;
 extern vmCvar_t		g_shove;
 extern vmCvar_t		g_poison;
+extern vmCvar_t		g_gibReports;
+extern vmCvar_t		g_tapReports;
 
 // Server Bot
 extern vmCvar_t		sb_system;

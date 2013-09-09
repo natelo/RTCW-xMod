@@ -1309,7 +1309,20 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 // JPW NERVE -- repeated shooting sends to limbo
 					if (g_gametype.integer >= GT_WOLF)
 						if ((targ->health < FORCE_LIMBO_HEALTH) && (targ->health > GIB_HEALTH) && (!(targ->client->ps.pm_flags & PMF_LIMBO)))
+						{
+							// L0 - Gib reports
+							if (!attacker->client && g_gibReports.integer) 							
+								AP(va("print \"%s ^7was gibbed.\n\"", targ->client->pers.netname));
+							else if (!OnSameTeam(attacker, targ) && g_gibReports.integer)							 
+								AP(va("print \"%s ^7was gibbed by %s^7.\n\"", targ->client->pers.netname, attacker->client->pers.netname));
+							 else if (OnSameTeam(attacker, targ) && (attacker != targ) && g_gibReports.integer)
+								 AP(va("print \"%s ^7was gibbed by ^3teammate ^7%s^7.\n\"", targ->client->pers.netname, attacker->client->pers.netname));							
+							 else if (OnSameTeam(attacker, targ) && (attacker == targ) && g_gibReports.integer)
+								 AP(va("print \"%s ^7has gibbed himself.\n\"", targ->client->pers.netname));							 
+							// End
+
 							limbo(targ, qtrue);
+						}
 // jpw
 			}
 
