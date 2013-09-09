@@ -801,11 +801,12 @@ typedef struct {
 	int			flagTaken;			// Flag retaking
 	int			axisPlayers;		// For auto lock and auto team balance
 	int			alliedPlayers;		// For auto lock and auto team balance
+	int			balanceTimer;		// Auto balance teams timer
 	// Weapons restrictions
-	int axisSniper, alliedSniper;
-	int axisPF, alliedPF;
-	int axisVenom, alliedVenom;
-	int axisFlamer, alliedFlamer;
+	int			axisSniper, alliedSniper;
+	int			axisPF, alliedPF;
+	int			axisVenom, alliedVenom;
+	int			axisFlamer, alliedFlamer;
 	// end
 } level_locals_t;
 
@@ -1311,6 +1312,7 @@ extern vmCvar_t		g_mapConfigs;
 extern vmCvar_t		g_inactivityToSpecs;
 extern vmCvar_t		g_ignoreSpecs;
 extern vmCvar_t		g_allowPMs;
+extern vmCvar_t		g_teamAutoBalance;
 
 // Game
 extern vmCvar_t		g_unlockWeapons;
@@ -1364,6 +1366,7 @@ extern vmCvar_t		sb_autoIgnore;
 // Static
 extern vmCvar_t		sv_hostname;
 extern vmCvar_t		g_swapCounter;
+extern vmCvar_t		g_needBalance;
 
 // General
 extern vmCvar_t		g_screenShake;
@@ -1667,7 +1670,8 @@ gentity_t *G_FearCheck( gentity_t *ent );
 void CPSound(gentity_t *ent, char *sound);
 void APSound(char *sound);
 void APRSound(gentity_t *ent, char *sound);
-
+void checkEvenTeams( void );
+void balanceTeams( void );
 
 //
 // g_players.c

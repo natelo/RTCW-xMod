@@ -2425,11 +2425,15 @@ void ClientDisconnect( int clientNum ) {
 	ent->client->ps.persistant[PERS_TEAM] = TEAM_FREE;
 	ent->client->sess.sessionTeam = TEAM_FREE;
 // JPW NERVE -- mg42 additions
-	ent->active = 0;
+	ent->active = qfalse;
 // jpw
 	trap_SetConfigstring( CS_PLAYERS + clientNum, "");
 
 	CalculateRanks();
+
+	// L0 - sync teams
+	if (g_teamAutoBalance.integer )
+		checkEvenTeams();	
 
 	if ( ent->r.svFlags & SVF_BOT ) {
 		BotAIShutdownClient( clientNum );

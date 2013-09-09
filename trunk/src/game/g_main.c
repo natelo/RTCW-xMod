@@ -175,6 +175,7 @@ vmCvar_t	g_mapConfigs;			// Essentials for custom map configs...
 vmCvar_t	g_inactivityToSpecs;	// Puts inactive players in spectators instead of dropping them.
 vmCvar_t	g_ignoreSpecs;			// Ignores spectators - Admins can still bypass the ignore..
 vmCvar_t	g_allowPMs;				// Allow private messages
+vmCvar_t	g_teamAutoBalance;		// If enabled it will auto sort teams when there's more then 1 player more in any team
 
 // Game
 vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
@@ -249,6 +250,7 @@ vmCvar_t	g_motdTime;			// Time between each message
 vmCvar_t	sv_hostname;		// So it's more accesible
 vmCvar_t	motdNum;			// To track motds..
 vmCvar_t	g_swapCounter;		// Count times so it auto swaps once it reaches it..
+vmCvar_t	g_needBalance;		// Flag for auto balance check
 
 // General
 vmCvar_t	g_screenShake;		// Screenshaking on explosions (4 = default, 2 = half.. etc)
@@ -421,6 +423,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_inactivityToSpecs, "g_inactivityToSpecs", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_ignoreSpecs, "g_ignoreSpecs", "0", CVAR_ARCHIVE, 0, qfalse },	
 	{ &g_allowPMs, "g_allowPMs", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_teamAutoBalance, "g_teamAutoBalance", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// Game
 	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
@@ -476,24 +479,25 @@ cvarTable_t		gameCvarTable[] = {
 	// MOTDs
 	{ &g_serverMessage, "g_serverMessage", "", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_showMOTD, "g_showMOTD", "0", 0, 0, qfalse },
-	{ &g_motd1, "g_motd1", "", 0, 0, qfalse},
-	{ &g_motd2, "g_motd2", "", 0, 0, qfalse},
-	{ &g_motd3, "g_motd3", "", 0, 0, qfalse},
-	{ &g_motd4, "g_motd4", "", 0, 0, qfalse},
-	{ &g_motd5, "g_motd5", "", 0, 0, qfalse},
-	{ &g_motd6, "g_motd6", "", 0, 0, qfalse},
-	{ &g_motd7, "g_motd7", "", 0, 0, qfalse},
-	{ &g_motd8, "g_motd8", "", 0, 0, qfalse},
-	{ &g_motd9, "g_motd9", "", 0, 0, qfalse},
-	{ &g_motd10, "g_motd10", "", 0, 0, qfalse},
-	{ &g_motd11, "g_motd11", "", 0, 0, qfalse},
-	{ &g_motd12, "g_motd12", "", 0, 0, qfalse},
-	{ &g_motdTime, "g_motdTime", "80", 0, 0, qtrue},
-	{ &motdNum, "motdNum", "1", 0, 0, qfalse},
+	{ &g_motd1, "g_motd1", "", 0, 0, qfalse },
+	{ &g_motd2, "g_motd2", "", 0, 0, qfalse },
+	{ &g_motd3, "g_motd3", "", 0, 0, qfalse },
+	{ &g_motd4, "g_motd4", "", 0, 0, qfalse },
+	{ &g_motd5, "g_motd5", "", 0, 0, qfalse },
+	{ &g_motd6, "g_motd6", "", 0, 0, qfalse },
+	{ &g_motd7, "g_motd7", "", 0, 0, qfalse },
+	{ &g_motd8, "g_motd8", "", 0, 0, qfalse },
+	{ &g_motd9, "g_motd9", "", 0, 0, qfalse },
+	{ &g_motd10, "g_motd10", "", 0, 0, qfalse },
+	{ &g_motd11, "g_motd11", "", 0, 0, qfalse },
+	{ &g_motd12, "g_motd12", "", 0, 0, qfalse },
+	{ &g_motdTime, "g_motdTime", "80", 0, 0, qtrue },	
 
 	// Static
 	{ &sv_hostname, "sv_hostname", "", CVAR_SERVERINFO, 0, qfalse },
+	{ &motdNum, "motdNum", "1", 0, 0, qfalse },
 	{ &g_swapCounter, "g_swapCounter", "1", 0, 0, qfalse }, 
+	{ &g_needBalance, "g_needBalance", "0", CVAR_CHEAT, qfalse },
 
 	// General
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
@@ -3137,9 +3141,11 @@ void G_RunFrame( int levelTime ) {
 			MOTD();
 	} // end
 
-	// check team votes
-//	CheckTeamVote( TEAM_RED );
-//	CheckTeamVote( TEAM_BLUE );
+	// L0 - Team Balance
+	if (g_needBalance.integer){
+		if (level.time >= level.balanceTimer)
+			balanceTeams();
+	}	
 
 	// for tracking changes
 	CheckCvars();
