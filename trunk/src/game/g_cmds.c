@@ -504,7 +504,7 @@ void Cmd_Kill_f( gentity_t *ent ) {
 Cmd_Kill_f
 =================
 */
-void Cmd_softKill_f( gentity_t *ent ) {
+void Cmd_SoftKill_f( gentity_t *ent ) {
 	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		return;
 	}
@@ -2886,7 +2886,7 @@ void ClientCommand( int clientNum ) {
 		Cmd_Kill_f (ent);
 // L0 - New stuff
 	else if (Q_stricmp (cmd, "sui") == 0)
-		Cmd_softKill_f (ent);
+		Cmd_SoftKill_f (ent);
 	else if (Q_stricmp (cmd, "mp40") == 0)
 		setCustomMG(ent, 1);
 	else if (Q_stricmp (cmd, "thompson") == 0)
@@ -2894,9 +2894,11 @@ void ClientCommand( int clientNum ) {
 	else if (Q_stricmp (cmd, "sten") == 0)
 		setCustomMG(ent, 3);
 	else if ((Q_stricmp (cmd, "msg") == 0) || (Q_stricmp (cmd, "pm") == 0))
-		cmd_pmsg(ent);
+		Cmd_Pmsg(ent);
 	else if ((Q_stricmp (cmd, "sg") == 0) || (Q_stricmp (cmd, "smoke") == 0))
 		Cmd_Smoke_f(ent);
+	else if (Q_stricmp (cmd, "time") == 0)
+		Cmd_Time_f(ent);
 // End
 	else if (Q_stricmp (cmd, "levelshot") == 0)
 		Cmd_LevelShot_f (ent);

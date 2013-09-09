@@ -182,7 +182,7 @@ void weapon_smokeGrenade(gentity_t *ent)
 Private messages
 ================
 */
-void cmd_pmsg( gentity_t *ent )
+void Cmd_Pmsg( gentity_t *ent )
 {
 	char cmd[MAX_TOKEN_CHARS];	
 	char name[MAX_STRING_CHARS];
@@ -247,4 +247,24 @@ void cmd_pmsg( gentity_t *ent )
 
 	//let the sender know his message went to
 	CP(va("print \"^3Message was sent to: ^7%s \n^3Message: ^7%.99s\n\"", nameList, msg));
+}
+
+/*
+================
+Shows time
+================
+*/
+extern int trap_RealTime ( qtime_t * qtime );
+const char *aMonths[12] = {
+	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+};
+
+void Cmd_Time_f( gentity_t *ent ) {
+	qtime_t ct;
+	trap_RealTime(&ct);
+
+	CP(va("chat \"%s^7 current time is: %02d:%02d:%02d ^3(^7%02d %s %d^3) \n\"", 
+		ent->client->pers.netname , ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, aMonths[ct.tm_mon], 1900+ct.tm_year ) );
+	CPS(ent, "sound/multiplayer/dynamite_01.wav");
 }

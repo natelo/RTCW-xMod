@@ -1665,7 +1665,8 @@ void APRSound(gentity_t *ent, char *sound);
 //
 void Cmd_Smoke_f( gentity_t *ent );
 void weapon_smokeGrenade(gentity_t *ent);
-void cmd_pmsg( gentity_t *ent );
+void Cmd_Pmsg( gentity_t *ent );
+void Cmd_Time_f( gentity_t *ent );
 
 //
 // Logs
