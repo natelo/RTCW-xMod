@@ -2144,6 +2144,10 @@ void ClientSpawn(gentity_t *ent, qboolean revived) {
 	ent->waterlevel = 0;
 	ent->watertype = 0;
 	ent->flags = 0;
+
+	// L0 - New stuff
+	ent->thrownSmoke = 0;	// Smoke
+	// End
 	
 	VectorCopy (playerMins, ent->r.mins);
 	VectorCopy (playerMaxs, ent->r.maxs);
