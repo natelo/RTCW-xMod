@@ -2923,9 +2923,12 @@ void ClientCommand( int clientNum ) {
 		setCustomMG(ent, 2);
 	else if (Q_stricmp (cmd, "sten") == 0)
 		setCustomMG(ent, 3);
-	else if ((Q_stricmp (cmd, "msg") == 0) || (Q_stricmp (cmd, "pm") == 0))
+	else if ((Q_stricmp (cmd, "msg") == 0) || 
+			 (Q_stricmp (cmd, "pm") == 0) ||
+			 (Q_stricmp (cmd, "m") == 0))
 		Cmd_Pmsg(ent);
-	else if ((Q_stricmp (cmd, "sg") == 0) || (Q_stricmp (cmd, "smoke") == 0))
+	else if ((Q_stricmp (cmd, "sg") == 0) || 
+		    (Q_stricmp (cmd, "smoke") == 0))
 		Cmd_Smoke_f(ent);
 	else if (Q_stricmp (cmd, "time") == 0)
 		Cmd_Time_f(ent);
