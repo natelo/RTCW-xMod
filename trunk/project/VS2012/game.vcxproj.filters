@@ -189,6 +189,9 @@
     <ClCompile Include="..\..\src\game\g_players.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\game\g_stats.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\game\surfaceflags.h">

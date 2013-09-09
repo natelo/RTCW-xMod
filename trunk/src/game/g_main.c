@@ -257,6 +257,14 @@ vmCvar_t	g_needBalance;		// Flag for auto balance check
 // General
 vmCvar_t	g_screenShake;		// Screenshaking on explosions (4 = default, 2 = half.. etc)
 
+// Stats
+vmCvar_t	g_doubleKills;			// Double, tripple & quad kills
+vmCvar_t	g_killingSprees;		// Killing sprees for each 5/10 kill..
+vmCvar_t	g_deathSprees;			// Death spress
+vmCvar_t	g_killerSpree;			// Killer sprees - per life.
+vmCvar_t	g_showFirstHeadshot;	// Show who done it
+vmCvar_t	g_showFirstBlood;		// Show who done it
+
 // L0 - End
 
 cvarTable_t		gameCvarTable[] = {
@@ -505,6 +513,14 @@ cvarTable_t		gameCvarTable[] = {
 
 	// General
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
+
+	// Stats
+	{ &g_doubleKills, "g_doubleKills", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_killingSprees, "g_killingSprees", "0", CVAR_ARCHIVE|CVAR_LATCH, 0, qfalse },
+	{ &g_deathSprees, "g_deathSprees", "0", CVAR_ARCHIVE|CVAR_LATCH, 0, qfalse },
+	{ &g_killerSpree, "g_killerSpree", "0", CVAR_ARCHIVE|CVAR_LATCH, 0, qfalse },
+	{ &g_showFirstHeadshot, "g_showFirstHeadshot", "0", CVAR_ARCHIVE | CVAR_LATCH, qfalse },
+	{ &g_showFirstBlood, "g_showFirstBlood", "1", CVAR_ARCHIVE | CVAR_LATCH, qfalse },
 
 	// End
 

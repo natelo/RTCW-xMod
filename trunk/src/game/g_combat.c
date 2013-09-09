@@ -475,10 +475,20 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		} else {
 			// JPW NERVE -- mostly added as conveneience so we can tweak from the #defines all in one place
 			if (g_gametype.integer >= GT_WOLF)
+			{
 				AddScore(attacker, WOLF_FRAG_BONUS);
+
+				// L0 - Stats
+				stats_DoubleKill( attacker, meansOfDeath );	// Double kills
+			}
 			else
+			{
 			// jpw
 				AddScore( attacker, 1 );
+
+				// L0 - Stats
+				stats_DoubleKill( attacker, meansOfDeath );	// Double kills
+			}
 
 			attacker->client->lastKillTime = level.time;
 		}

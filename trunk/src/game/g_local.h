@@ -662,6 +662,10 @@ struct gclient_s {
 	gentity_t		*tempHead;	// Gordon: storing a temporary head for bullet head shot detection
 
 	pmoveExt_t	pmext;
+
+	// L0 - New stuff
+	int			doublekill;		// (stats) Double+ Kills
+	// 
 };
 
 
@@ -1365,6 +1369,9 @@ extern vmCvar_t		sb_maxPingHits;
 extern vmCvar_t		sb_censorPenalty;
 extern vmCvar_t		sb_autoIgnore;
 
+// MOTDs
+extern vmCvar_t		g_serverMessage;
+
 // Static
 extern vmCvar_t		sv_hostname;
 extern vmCvar_t		g_swapCounter;
@@ -1373,8 +1380,13 @@ extern vmCvar_t		g_needBalance;
 // General
 extern vmCvar_t		g_screenShake;
 
-// MOTDs
-extern vmCvar_t		g_serverMessage;
+// Stats
+extern vmCvar_t		g_doubleKills;
+extern vmCvar_t		g_killingSprees;
+extern vmCvar_t		g_deathSprees;
+extern vmCvar_t		g_killerSpree;
+extern vmCvar_t		g_showFirstHeadshot;
+extern vmCvar_t		g_showFirstBlood;
 
 // L0 - End
 
@@ -1685,6 +1697,11 @@ void Cmd_Pmsg( gentity_t *ent );
 void Cmd_Time_f( gentity_t *ent );
 void Cmd_Drag( gentity_t *ent);
 void Cmd_Push(gentity_t* ent);
+
+//
+// g_stats.c
+//
+void stats_DoubleKill (gentity_t *ent, int meansOfDeath );
 
 //
 // Logs
