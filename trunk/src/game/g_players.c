@@ -88,7 +88,7 @@ void Touch_Knife( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	ent->think = 0;
 }
 // Actual command
-void cmd_throwKnives( gentity_t *ent ) {
+void Cmd_ThrowKnives( gentity_t *ent ) {
 	vec3_t velocity, angles, offset, org, mins, maxs;
 	trace_t tr;
 	gentity_t *ent2;
