@@ -727,9 +727,8 @@ void SB_chatWarn(gentity_t *ent) {
 	}
 
 	// Count it..
-	ent->client->pers.sb_chatWarned++;
-	// TODO :  Add a sound
-	//CPS(ent, "sound/game/admin/warn.wav");
+	ent->client->pers.sb_chatWarned++;	
+	CPS(ent, "xmod/sound/client/warn.wav");
 return;
 }
 

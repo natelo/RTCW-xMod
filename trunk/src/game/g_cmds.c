@@ -488,7 +488,7 @@ void Cmd_Kill_f( gentity_t *ent ) {
 		ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
 		ent->client->ps.persistant[PERS_HWEAPON_USE] = 0;
 		
-		APRS(ent, "sound/game/events/comeback.wav");
+		APRS(ent, "xmod/sound/game/events/comeback.wav");
 		player_die(ent, ent, ent, (ent->health + 100000), MOD_CHICKEN);
 
 		return;
@@ -519,7 +519,7 @@ void Cmd_softKill_f( gentity_t *ent ) {
 		ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
 		ent->client->ps.persistant[PERS_HWEAPON_USE] = 0;
 		
-		APRS(ent, "sound/game/events/comeback.wav");
+		APRS(ent, "xmod/sound/game/events/comeback.wav");
 		player_die(ent, ent, ent, ent->health, MOD_CHICKEN);
 	return;
 	} 
