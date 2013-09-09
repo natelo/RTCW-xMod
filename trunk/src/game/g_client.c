@@ -2222,10 +2222,19 @@ void ClientSpawn(gentity_t *ent, qboolean revived) {
 		if ( client->sess.sessionTeam != TEAM_SPECTATOR )
 		{
 			// Xian - Moved the invul. stuff out of SetWolfSpawnWeapons and put it here for clarity
-			if ( g_fastres.integer == 1 && revived )
+			if ( g_fastres.integer == 1 && revived ) {
 				client->ps.powerups[PW_INVULNERABLE] = level.time + g_fastResMsec.integer;
-			else
-				client->ps.powerups[PW_INVULNERABLE] = level.time + 3000; 
+			} else {
+				// L0 - Spawn protection
+				if (client->sess.sessionTeam == TEAM_RED)
+					client->ps.powerups[PW_INVULNERABLE] = level.time + g_axisSpawnProtectionTime.integer; 
+				else if (client->sess.sessionTeam == TEAM_BLUE)
+					client->ps.powerups[PW_INVULNERABLE] = level.time + g_alliedSpawnProtectionTime.integer; 
+				// We don't know what team player is...default it
+				else
+					client->ps.powerups[PW_INVULNERABLE] = level.time + 3000; 
+				// End
+			}
 		}
 		
 		// End Xian

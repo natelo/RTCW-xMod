@@ -629,12 +629,24 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			break;
 // jpw
 		case EV_FIRE_WEAPON_MG42:
+			// L0 - disable invincible time when player spawns and starts shooting
+			if (g_disableInv.integer)
+				ent->client->ps.powerups[PW_INVULNERABLE] = 0;
+			// end
 			mg42_fire( ent );
 			break;
 
 		case EV_FIRE_WEAPON:
+			// L0 - disable invincible time when player spawns and starts shooting
+			if (g_disableInv.integer)
+				ent->client->ps.powerups[PW_INVULNERABLE] = 0;
+			// end
 		case EV_FIRE_WEAPONB:
 		case EV_FIRE_WEAPON_LASTSHOT:
+			// L0 - disable invincible time when player spawns and starts shooting
+			if (g_disableInv.integer)
+				ent->client->ps.powerups[PW_INVULNERABLE] = 0;
+			// end
 			FireWeapon( ent );
 			break;
 

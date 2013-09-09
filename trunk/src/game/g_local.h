@@ -1335,6 +1335,9 @@ extern vmCvar_t	g_dropAmmo;
 extern vmCvar_t g_throwKnives;
 extern vmCvar_t g_smokeGrenades;
 extern vmCvar_t g_smokeGrenadesLmt;
+extern vmCvar_t g_axisSpawnProtectionTime;
+extern vmCvar_t g_alliedSpawnProtectionTime;
+extern vmCvar_t g_disableInv;
 
 // Server Bot
 extern vmCvar_t sb_system;
