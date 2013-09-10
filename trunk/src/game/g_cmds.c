@@ -490,6 +490,9 @@ void Cmd_Kill_f( gentity_t *ent ) {
 		APRS(ent, "xmod/sound/game/events/comeback.wav");
 		player_die(ent, ent, ent, (ent->health + 100000), MOD_CHICKEN);
 
+		// Stats
+		ent->client->pers.suicides++;
+
 		return;
 	} 
 
@@ -497,6 +500,9 @@ void Cmd_Kill_f( gentity_t *ent ) {
 	ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
 	ent->client->ps.persistant[PERS_HWEAPON_USE] = 0; // TTimo - if using /kill while at MG42
 	player_die (ent, ent, ent, 100000, MOD_SUICIDE);
+
+	// L0 - Stats
+	ent->client->pers.suicides++;
 }
 
 /*
@@ -520,15 +526,21 @@ void Cmd_SoftKill_f( gentity_t *ent ) {
 		
 		APRS(ent, "xmod/sound/game/events/comeback.wav");
 		player_die(ent, ent, ent, ent->health, MOD_CHICKEN);
-	return;
+
+		// Stats
+		ent->client->pers.suicides++;
+
+		return;
 	} 
 
 	ent->flags &= ~FL_GODMODE;
 	ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
 	ent->client->ps.persistant[PERS_HWEAPON_USE] = 0; // TTimo - if using /kill while at MG42
 	player_die (ent, ent, ent, 100000, MOD_SELFKILL);   // L0 - Kill but not gib...
-}
 
+	// L0 - Stats
+	ent->client->pers.suicides++;
+}
 
 /*
 =================

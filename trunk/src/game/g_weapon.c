@@ -341,6 +341,10 @@ void Weapon_Syringe(gentity_t *ent) {
 				// End
 
 				AddScore(ent, WOLF_MEDIC_BONUS); // JPW NERVE props to the medic for the swift and dexterous bit o healitude
+
+				// L0 - Stats
+				ent->client->pers.revives++;
+				ent->client->pers.lifeRevives++;
 			} 
 
 			// L0 - Poison
@@ -1601,6 +1605,9 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 
 	Bullet_Endpos(ent, spread, &end);
 	Bullet_Fire_Extended(ent, ent, muzzleTrace, end, spread, damage);
+
+	// L0 - Stats
+	ent->client->pers.acc_shots++;
 }
 
 
@@ -1671,6 +1678,8 @@ void Bullet_Fire_Extended(gentity_t *source, gentity_t *attacker, vec3_t start, 
 		tent->s.eventParm = traceEnt->s.number;
 		if( LogAccuracyHit( traceEnt, attacker ) ) {
 			attacker->client->ps.persistant[PERS_ACCURACY_HITS]++;
+			// L0 - Stats
+			attacker->client->pers.acc_hits++;
 		}
 
 //----(SA)	added

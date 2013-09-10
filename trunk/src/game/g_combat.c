@@ -374,6 +374,10 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	if ( meansOfDeath == MOD_CHICKEN ) {
 		AP(va("print \"%s ^6was scared to death by ^7%s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname));
+
+		// Stats
+		attacker->client->pers.kills++;
+		attacker->client->pers.lifeKills++; 
 	}
 
 	// If person gets stabbed use custom sound from soundpack
@@ -389,6 +393,10 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			AP(va( "print \"%s ^7was poisoned by %s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname)); 
 		else if (r == 1)
 			AP(va( "print \"%s ^7tasted %s^7's poison.\n\"", self->client->pers.netname, attacker->client->pers.netname)); 
+
+		// Stats 
+		attacker->client->pers.kills++; 
+		attacker->client->pers.lifeKills++; 
 	}
 // Mod hacks ends here
 
@@ -406,15 +414,31 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if (attacker && attacker->client){
 		// Life kills & death spress
 		if (!OnSameTeam(attacker, self)) {		
-			
-				
+			attacker->client->pers.kills++;	
+			attacker->client->pers.lifeKills++; 
+
 		// Count teamkill
 		} else {
 			// Admin bot - teamKills
-			if (attacker != self) 	
+			if (attacker != self) 
+			{
 				SB_maxTeamKill(attacker);
+				// Stats
+				attacker->client->pers.teamKills++;
+				attacker->client->pers.lifeTeamKills++;
+			}
 		}
 	} 
+
+	// L0 - Stats
+	if (attacker && attacker->client)
+	{
+		if (!OnSameTeam(attacker, self) && (attacker->client->pers.spreeDeaths > attacker->client->pers.lifeDeathsPeak) && g_mapStats.integer == 4)
+			attacker->client->pers.lifeDeathsPeak = attacker->client->pers.spreeDeaths;
+
+		if (!OnSameTeam(attacker, self))
+			attacker->client->pers.spreeDeaths = 0;
+	}
 
 	// L0 - (a nasty hack) Don't send this if there's a custom MOD
 	if (meansOfDeath != MOD_ADMKILL) { 
@@ -435,6 +459,10 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	self->enemy = attacker;
 
 	self->client->ps.persistant[PERS_KILLED]++;
+
+	// L0 - Stats
+	self->client->pers.deaths++;
+	self->client->pers.spreeDeaths++;
 
 // JPW NERVE -- if player is holding ticking grenade, drop it
 	if (g_gametype.integer != GT_SINGLE_PLAYER)
@@ -1267,6 +1295,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 		// L0 - check for First Headshot
 		stats_FirstHeadshot (attacker, targ); 
+
+		// L0 - Stats
+		if (!OnSameTeam(attacker, targ))
+			attacker->client->pers.headshots++;
 	}
 	
 	if ( g_debugDamage.integer ) {
@@ -1306,6 +1338,15 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		targ->client->lasthurt_time = level.time;	// L0 - chicken test
 	}
 
+	// L0 - Stats..
+	if ( (attacker && attacker->client) && (targ && targ->client) ){
+		if ( !OnSameTeam( attacker, targ ) && targ->client->ps.stats[STAT_HEALTH] > 0){
+			attacker->client->pers.dmgGiven += take;
+			targ->client->pers.dmgReceived += take;
+		}
+	}
+	// End
+
 	// do the damage
 	if (take) {
 		targ->health = targ->health - take;
@@ -1328,6 +1369,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 					if (g_gametype.integer >= GT_WOLF)
 						if ((targ->health < FORCE_LIMBO_HEALTH) && (targ->health > GIB_HEALTH) && (!(targ->client->ps.pm_flags & PMF_LIMBO)))
 						{
+							// L0 - Stats
+							if (!OnSameTeam(attacker, targ) && attacker->client)
+								attacker->client->pers.gibs++;
+
 							// L0 - Gib reports
 							if (!attacker->client && g_gibReports.integer) 							
 								AP(va("print \"%s ^7was gibbed.\n\"", targ->client->pers.netname));

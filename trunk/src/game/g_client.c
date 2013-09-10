@@ -1903,10 +1903,6 @@ void ClientBegin( int clientNum ) {
 	client->ps.eFlags = flags;
 	client->ps.persistant[PERS_SPAWN_COUNT] = spawn_count;
 
-	// MrE: use capsule for collision
-	//client->ps.eFlags |= EF_CAPSULE;
-	//ent->r.svFlags |= SVF_CAPSULE;
-
 	client->pers.complaintClient = -1;
 	client->pers.complaintEndTime = -1;
 	// L0 - Shortcuts
@@ -1915,6 +1911,10 @@ void ClientBegin( int clientNum ) {
 	client->pers.lasthealth_client = -1;
 	client->pers.lastrevive_client = -1;
 	client->pers.lastkiller_client = -1;
+	// L0 - Stats
+	client->pers.dmgGiven = 0;
+	client->pers.dmgReceived = 0;
+	client->pers.spreeDeaths = 0;
 	// End
 
 	// locate ent at a spawn point
@@ -2149,6 +2149,13 @@ void ClientSpawn(gentity_t *ent, qboolean revived) {
 	ent->thrownSmoke = 0;		// Smoke
 	ent->poisoned = qfalse;		// Poison
 	ent->lastPoisonTime = 0;	// Poison
+	// L0 - mapstats / Store Life kills Peak for map stats if enabled
+	if (ent->client->pers.lifeKills > ent->client->pers.lifeKillsPeak && g_mapStats.integer == 3)
+		ent->client->pers.lifeKillsPeak = ent->client->pers.lifeKills;
+	// Life Stats
+	ent->client->pers.lifeKills = 0;
+	ent->client->pers.lifeRevives = 0;
+	ent->client->pers.lifeTeamKills = 0;
 	// End
 	
 	VectorCopy (playerMins, ent->r.mins);

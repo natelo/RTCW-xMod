@@ -514,7 +514,7 @@ typedef struct {
 
 	int			lastReinforceTime;		// DHM - Nerve :: last reinforcement
 
-	qboolean	teamInfo;			// send team overlay updates?
+	qboolean teamInfo;		 // send team overlay updates?
 	
 	qboolean bAutoReloadAux; // TTimo - auxiliary storage for pmoveExt_t::bAutoReload, to achieve persistance
 
@@ -522,7 +522,7 @@ typedef struct {
 
 	// Admins
 	char	cmd1[128];	// !command
-	char	cmd2[128]; // !command attribute
+	char	cmd2[128];	// !command attribute
 	char	cmd3[128];	// !command attribute extra	
 
 	// Server Bot
@@ -531,7 +531,6 @@ typedef struct {
 	int		sb_maxPing;
 	int		sb_chatWarned;
 	int		sb_ignored;
-	int		sb_teamKills;
 
 	// Shortcuts
 	int		lastkilled_client;
@@ -541,25 +540,38 @@ typedef struct {
 	int		lasthealth_client;
 
 	// Weapon restrictions
-	int restrictedWeapon;
+	int		restrictedWeapon;
 
 	// Throwing knives
-	int throwingKnives;
+	int		throwingKnives;
 
-	// Stats
-	// FIXME - All of it has to be hooked..
-	int			kills;
-	int			teamKills;
-	int			revives;
-	int			acc_shots;
-	int			acc_hits;
-	int			headshots;
-	int			deaths;
-	int			poisons;
-	int			medPacks;
-	int			ammoPacks;
-	int			dmgGiven;		
-	int			dmgReceived;	
+	// Stats	
+	int		kills;
+	int		deaths;
+	int		teamKills;	// Note that SB uses it as well!
+	int		headshots;
+	int		revives;
+	int		medPacks;
+	int		ammoPacks;
+	int		acc_shots;
+	int		acc_hits;
+	int		dmgGiven;
+	int		dmgReceived;
+	int		gibs;
+	int		suicides;
+
+	// Death Spree
+	int		spreeDeaths;
+
+	// Life Stats
+	int		lifeKills;
+	int		lifeRevives;
+	int		lifeTeamKills;
+
+	// Map Stats
+	int		lifeKillsPeak;
+	int		lifeDeathsPeak;
+
 	// L0 - End
 } clientPersistant_t;
 
@@ -1401,6 +1413,7 @@ extern vmCvar_t		g_deathSprees;
 extern vmCvar_t		g_killerSpree;
 extern vmCvar_t		g_showFirstHeadshot;
 extern vmCvar_t		g_showFirstBlood;
+extern vmCvar_t		g_mapStats;
 
 // L0 - End
 

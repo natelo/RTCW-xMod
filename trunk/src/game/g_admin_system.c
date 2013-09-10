@@ -586,21 +586,27 @@ Kicks for teamkills
 ===========
 */
 void SB_maxTeamKill( gentity_t *ent ) {	
-	int count = ent->client->pers.sb_teamKills;
+	int count = ent->client->pers.teamKills;
 
 	if (level.warmupTime || !sb_system.integer || sb_maxTKs.integer == (-1))
-		return;
+	{
+		// Just count it for stats
+		if (!level.warmupTime)
+			ent->client->pers.teamKills++;
 
-	if ( sb_maxTKs.integer - ent->client->pers.sb_teamKills == 1 ) 		
+		return;
+	}
+
+	if ( sb_maxTKs.integer - ent->client->pers.teamKills == 1 ) 		
 		AP(va("chat \"^3[WARNING]: ^7%s ^7gets kicked on next ^3Team Kill^7!\n\"", ent->client->pers.netname));
 
-	if ((count >= sb_maxTKs.integer) && (ent->client->pers.sb_teamKills)) {	
+	if ((count >= sb_maxTKs.integer) && (ent->client->pers.teamKills)) {	
 		trap_DropClient( ent-g_entities, "Kicked \n^3For Team Killing." );		
 		AP(va("chat \"^3SB^7: %s ^7got kicked for ^3Team Killing^7.\n\"", ent->client->pers.netname));
 	return;
 	}	
 
-	ent->client->pers.sb_teamKills++;	
+	ent->client->pers.teamKills++;
 	return;
 }
 
@@ -729,6 +735,7 @@ void SB_chatWarn(gentity_t *ent) {
 	// Count it..
 	ent->client->pers.sb_chatWarned++;	
 	CPS(ent, "xmod/sound/client/warn.wav");
-return;
+
+	return;
 }
 

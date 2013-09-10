@@ -264,6 +264,7 @@ vmCvar_t	g_deathSprees;			// Death spress
 vmCvar_t	g_killerSpree;			// Killer sprees - per life.
 vmCvar_t	g_showFirstHeadshot;	// Show who done it
 vmCvar_t	g_showFirstBlood;		// Show who done it
+vmCvar_t	g_mapStats;				// Top records for each map.
 
 // L0 - End
 
@@ -521,6 +522,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_killerSpree, "g_killerSpree", "0", CVAR_ARCHIVE|CVAR_LATCH, 0, qfalse },
 	{ &g_showFirstHeadshot, "g_showFirstHeadshot", "0", CVAR_ARCHIVE | CVAR_LATCH, qfalse },
 	{ &g_showFirstBlood, "g_showFirstBlood", "1", CVAR_ARCHIVE | CVAR_LATCH, qfalse },
+	{ &g_mapStats, "g_mapStats", "1", CVAR_ARCHIVE|CVAR_LATCH, 0, qfalse },
 
 	// End
 

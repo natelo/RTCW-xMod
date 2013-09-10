@@ -382,6 +382,10 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 							AddScore(ent->parent, WOLF_AMMO_UP);
 						ent->parent->client->PCSpecialPickedUpCount++;
 					}
+
+		// L0 - Stats
+		if ((ent->parent) && (ent->parent != other) && (OnSameTeam(ent->parent, other)))
+			ent->parent->client->pers.ammoPacks++;	
 					
 		// everybody likes grenades -- abuse weapon var as grenade type and i as max # grenades class can carry
 		switch (other->client->ps.stats[STAT_PLAYER_CLASS]) {
@@ -530,6 +534,10 @@ int Pickup_Health (gentity_t *ent, gentity_t *other) {
 				}
 
 // jpw
+
+	// L0 - Stats
+	if ((ent->parent) && (ent->parent != other) && (OnSameTeam(ent->parent, other)))
+		ent->parent->client->pers.medPacks++;
 
 	// L0 - reset poison
 	other->poisoned = qfalse;
