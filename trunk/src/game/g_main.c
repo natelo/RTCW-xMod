@@ -2028,6 +2028,8 @@ void BeginIntermission( void ) {
 	// send the current scoring to all clients
 	SendScoreboardMessageToAllClients();
 
+	// L0 - End stats	
+	stats_MatchInfo();
 }
 
 

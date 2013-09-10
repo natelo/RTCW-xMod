@@ -1373,9 +1373,12 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// L0 - Stats..
 	if ( (attacker && attacker->client) && (targ && targ->client) ){
-		if ( !OnSameTeam( attacker, targ ) && targ->client->ps.stats[STAT_HEALTH] > 0){
+		if ( !OnSameTeam( attacker, targ ) && targ->client->ps.stats[STAT_HEALTH] > 0) {
 			attacker->client->pers.dmgGiven += take;
 			targ->client->pers.dmgReceived += take;
+		// Count team damage but only if victim is alive..
+		} else if (OnSameTeam( attacker, targ ) && targ->client->ps.stats[STAT_HEALTH] > 0) {
+			attacker->client->pers.dmgTeam += take;
 		}
 	}
 	// End

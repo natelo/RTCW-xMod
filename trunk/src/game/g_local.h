@@ -557,6 +557,7 @@ typedef struct {
 	int		acc_hits;
 	int		dmgGiven;
 	int		dmgReceived;
+	int		dmgTeam;
 	int		gibs;
 	int		suicides;
 	int		poison;
@@ -1739,6 +1740,7 @@ void stats_FirstBlood (gentity_t *self, gentity_t *attacker);
 void stats_KillingSprees ( gentity_t *ent, int score );
 void stats_DeathSpree ( gentity_t *ent );
 void stats_KillerSpree(gentity_t *ent, int score);
+void stats_MatchInfo( void );
 
 //
 // Logs
