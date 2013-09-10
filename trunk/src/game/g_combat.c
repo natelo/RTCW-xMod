@@ -7,7 +7,6 @@
 
 #include "g_local.h"
 
-
 /*
 ============
 AddScore
@@ -410,6 +409,9 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		killer, self->s.number, meansOfDeath, killerName, 
 		self->client->pers.netname, obit );
 
+	// L0 - Death Sprees
+	stats_DeathSpree( self ); 
+
 	// L0 - Stats (TODO)
 	if (attacker && attacker->client){
 		// Life kills & death spress
@@ -518,6 +520,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 				// L0 - Stats
 				stats_DoubleKill( attacker, meansOfDeath );		// Double kills
 				stats_KillingSprees(attacker, 0);				// Overall killing sprees
+				stats_KillerSpree(attacker, 0);					// Most Kills per life
 			}
 			else
 			{
@@ -527,6 +530,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 				// L0 - Stats
 				stats_DoubleKill( attacker, meansOfDeath );		// Double kills
 				stats_KillingSprees(attacker, 0);				// Overall killing sprees
+				stats_KillerSpree(attacker, 0);					// Most Kills per life
 			}
 
 			attacker->client->lastKillTime = level.time;

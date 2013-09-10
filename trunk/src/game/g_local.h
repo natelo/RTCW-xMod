@@ -1735,6 +1735,8 @@ void stats_DoubleKill (gentity_t *ent, int meansOfDeath );
 void stats_FirstHeadshot (gentity_t *attacker, gentity_t *targ);
 void stats_FirstBlood (gentity_t *self, gentity_t *attacker);
 void stats_KillingSprees ( gentity_t *ent, int score );
+void stats_DeathSpree ( gentity_t *ent );
+void stats_KillerSpree(gentity_t *ent, int score);
 
 //
 // Logs

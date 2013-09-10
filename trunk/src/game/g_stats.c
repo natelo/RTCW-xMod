@@ -182,3 +182,83 @@ void stats_KillingSprees ( gentity_t *ent, int score ) {
 
 	CalculateRanks(); 
 }
+
+/*
+===========
+Death spree
+===========
+*/
+void stats_DeathSpree ( gentity_t *ent ) {	
+	int deaths = ent->client->pers.spreeDeaths; 
+	int n = rand() % 2; 
+	char *snd="", *spree="";	
+
+	if (!g_deathSprees.integer || deaths <= 0)
+		return;
+
+	if( deaths == 9 ) { 
+		if (n == 0) { spree=va("(^710 Dth^0)"); snd = "dSpree1.wav"; }
+		else { spree=va("(^710 Dth^0)"); snd = "dSpree1_alt.wav"; }		
+	} else if( deaths == 14 ) { 
+		if (n == 0) { spree=va("(^715 Dth^0)"); snd = "dSpree2.wav"; }
+		else { spree=va("(^715 Dth^0)"); snd = "dSpree2_alt.wav"; }		
+	} else if( deaths == 19 ) { 
+		if (n == 0) { spree=va("(^720 Dth^0)"); snd = "dSpree3.wav"; }
+		else { spree=va("(^720 Dth^0)"); snd = "dSpree3_alt.wav";  }		
+	} else if( deaths == 24 ) { 
+		if (n == 0) { spree=va("(^725 Dth^0)"); snd = "dSpree4.wav"; }
+		else { spree=va("(^725 Dth^0)"); snd = "dSpree4_alt.wav"; }		
+	}
+
+	// Has to be offset by 1 as count comes late..
+	if (deaths == 9 || deaths == 14 || deaths == 19 || deaths == 24) {
+		AP(va("chat \"^0DEATHSPREE! %s: ^7%s\n\"", spree, ent->client->pers.netname));
+		
+		APS(va("xmod/sound/game/sprees/deathSpree/%s", snd));
+	}
+} 
+
+/*
+===========
+Killer spree
+
+Almost identical to Killing sprees, just uses different colors and female sounds.
+===========
+*/
+void stats_KillerSpree(gentity_t *ent, int score) {
+	int killRatio=ent->client->pers.lifeKills;
+	int snd_idx;
+
+	if(!g_killerSpree.integer)
+		return;
+
+	if(!ent || !ent->client) 
+		return;	
+
+	// if killer ratio is bellow 50 kills spam every 5th kill
+	if (killRatio <= 50 && killRatio >= 5 && (killRatio % 5) == 0 ) 	{	
+		snd_idx = (killRatio / 5) - 1;
+
+		AP(va("chat \"^2%s ^2(^7%dk^2): ^7%s\n\"", 
+			killerSprees[snd_idx <= 11 ? snd_idx : 10].msg, killRatio, ent->client->pers.netname));
+				
+		APS(va("xmod/sound/game/sprees/killerSprees/%s", killerSprees[snd_idx < 11 ? snd_idx : 10].snd));
+	}
+
+	// Anything above 50 gets spammed each 10th time..
+	else if ( killRatio > 50 && killRatio >= 10 && (killRatio % 10) == 0 ) {
+		snd_idx = (killRatio / 10) - 1;
+
+		AP(va("chat \"^2%s ^2(^7%dk^2): ^7%s\n\"", 
+			killerSprees[snd_idx <= 11 ? snd_idx : 10].msg, killRatio, ent->client->pers.netname));
+
+		APS(va("xmod/sound/game/sprees/killerSprees/%s", killerSprees[snd_idx < 11 ? snd_idx : 10].snd ));
+	}
+
+	// could be done some other way but anyway...do the count... :)
+	ent->client->ps.persistant[PERS_SCORE] += score;
+	if (g_gametype.integer >= GT_TEAM)			
+		level.teamScores[ ent->client->ps.persistant[PERS_TEAM] ] += score;
+
+	CalculateRanks(); 	
+}
