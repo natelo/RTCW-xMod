@@ -559,6 +559,7 @@ typedef struct {
 	int		dmgReceived;
 	int		gibs;
 	int		suicides;
+	int		poison;
 
 	// Death Spree
 	int		spreeDeaths;

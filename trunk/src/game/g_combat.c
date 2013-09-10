@@ -373,10 +373,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	if ( meansOfDeath == MOD_CHICKEN ) {
 		AP(va("print \"%s ^6was scared to death by ^7%s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname));
-
-		// Stats
-		attacker->client->pers.kills++;
-		attacker->client->pers.lifeKills++; 
 	}
 
 	// If person gets stabbed use custom sound from soundpack
@@ -393,9 +389,8 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		else if (r == 1)
 			AP(va( "print \"%s ^7tasted %s^7's poison.\n\"", self->client->pers.netname, attacker->client->pers.netname)); 
 
-		// Stats 
-		attacker->client->pers.kills++; 
-		attacker->client->pers.lifeKills++; 
+		// Stats
+		attacker->client->pers.poison++; 	
 	}
 // Mod hacks ends here
 
@@ -412,8 +407,8 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	// L0 - Death Sprees
 	stats_DeathSpree( self ); 
 
-	// L0 - Stats (TODO)
-	if (attacker && attacker->client){
+	// L0 - Stats
+	if (attacker && attacker->client) {
 		// Life kills & death spress
 		if (!OnSameTeam(attacker, self)) {		
 			attacker->client->pers.kills++;	
