@@ -1608,6 +1608,7 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 
 	// L0 - Stats
 	ent->client->pers.acc_shots++;
+	ent->client->pers.lifeAcc_shots++;
 }
 
 
@@ -1680,6 +1681,7 @@ void Bullet_Fire_Extended(gentity_t *source, gentity_t *attacker, vec3_t start, 
 			attacker->client->ps.persistant[PERS_ACCURACY_HITS]++;
 			// L0 - Stats
 			attacker->client->pers.acc_hits++;
+			attacker->client->pers.lifeAcc_hits++;
 		}
 
 //----(SA)	added

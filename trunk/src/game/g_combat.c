@@ -423,9 +423,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			if (attacker != self) 
 			{
 				SB_maxTeamKill(attacker);
-				// Stats
-				attacker->client->pers.teamKills++;
-				attacker->client->pers.lifeTeamKills++;
 			}
 		}
 	} 
@@ -500,6 +497,18 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			else
 			// jpw
 				AddScore( attacker, -1 );
+
+			// L0 - Life stats
+			if (g_showLifeStats.integer) {
+				float acc = 0.00f; 
+				
+				acc = (self->client->pers.lifeAcc_shots == 0) ? 
+					0.00 : ((float)self->client->pers.lifeAcc_hits / (float)self->client->pers.lifeAcc_shots ) * 100.00f ;	
+			
+					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7Rev:^3%d ^7Acc:^3%2.2f\n\"",
+						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.lifeRevives, acc));
+			} // End
+
 		} else {
 			// JPW NERVE -- mostly added as conveneience so we can tweak from the #defines all in one place
 			if (g_gametype.integer >= GT_WOLF)
@@ -521,6 +530,19 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			}
 
 			attacker->client->lastKillTime = level.time;
+
+			// L0 - Life stats
+			if (g_showLifeStats.integer) {
+				float acc = 0.00f; 
+				
+				acc = (self->client->pers.lifeAcc_shots == 0) ? 
+					0.00 : ((float)self->client->pers.lifeAcc_hits / (float)self->client->pers.lifeAcc_shots ) * 100.00f ;	
+						
+					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7Rev:^3%d ^7Acc:^3%2.2f ^7Killer: %s^3(%ihp)\n\"",
+						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, 
+						self->client->pers.lifeRevives, acc, 
+						attacker->client->pers.netname, attacker->health ));
+			} // End
 		}
 	} else {
 		AddScore( self, -1 );
@@ -1298,7 +1320,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 		// L0 - Stats
 		if (!OnSameTeam(attacker, targ))
+		{
 			attacker->client->pers.headshots++;
+			attacker->client->pers.lifeHeadshots++;
+		}
 	}
 	
 	if ( g_debugDamage.integer ) {

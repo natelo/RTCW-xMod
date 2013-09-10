@@ -566,7 +566,9 @@ typedef struct {
 	// Life Stats
 	int		lifeKills;
 	int		lifeRevives;
-	int		lifeTeamKills;
+	int		lifeAcc_shots;
+	int		lifeAcc_hits;
+	int		lifeHeadshots;
 
 	// Map Stats
 	int		lifeKillsPeak;
@@ -1384,6 +1386,7 @@ extern vmCvar_t		g_shove;
 extern vmCvar_t		g_poison;
 extern vmCvar_t		g_gibReports;
 extern vmCvar_t		g_tapReports;
+extern vmCvar_t		g_showLifeStats;
 
 // Server Bot
 extern vmCvar_t		sb_system;

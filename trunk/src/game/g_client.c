@@ -2155,7 +2155,9 @@ void ClientSpawn(gentity_t *ent, qboolean revived) {
 	// Life Stats
 	ent->client->pers.lifeKills = 0;
 	ent->client->pers.lifeRevives = 0;
-	ent->client->pers.lifeTeamKills = 0;
+	ent->client->pers.lifeAcc_hits = 0;
+	ent->client->pers.lifeAcc_shots = 0;
+	ent->client->pers.lifeHeadshots = 0;
 	// End
 	
 	VectorCopy (playerMins, ent->r.mins);
