@@ -436,7 +436,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	// L0 - Stats
 	if (attacker && attacker->client)
 	{
-		if (!OnSameTeam(attacker, self) && (attacker->client->pers.spreeDeaths > attacker->client->pers.lifeDeathsPeak) && g_mapStats.integer == 4)
+		if (!OnSameTeam(attacker, self) && (attacker->client->pers.spreeDeaths > attacker->client->pers.lifeDeathsPeak))
 			attacker->client->pers.lifeDeathsPeak = attacker->client->pers.spreeDeaths;
 
 		if (!OnSameTeam(attacker, self))

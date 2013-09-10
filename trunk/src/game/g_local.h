@@ -1730,6 +1730,7 @@ void Cmd_Pmsg( gentity_t *ent );
 void Cmd_Time_f( gentity_t *ent );
 void Cmd_Drag( gentity_t *ent);
 void Cmd_Push(gentity_t* ent);
+void Cmd_Stats_f(gentity_t *ent);
 
 //
 // g_stats.c

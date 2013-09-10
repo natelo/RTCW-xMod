@@ -276,9 +276,8 @@ void stats_MatchInfo( void ) {
 	char *ref;
 	char n1[MAX_NETNAME];
 	char n2[MAX_NETNAME];
-	
-
 	qtime_t ct;
+
 	trap_RealTime(&ct);
 	AP(va("print \"\nMod: %s \n^7Server: %s  \n^7Time: ^7%02d:%02d:%02d ^3(^7%02d %s %d^3)\n\n\"", 
 			GAMEVERSION, sv_hostname.string, ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, dMonths[ct.tm_mon], 1900+ct.tm_year));

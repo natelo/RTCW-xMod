@@ -367,3 +367,64 @@ void Cmd_Push(gentity_t* ent)
 
 	ent->lastPushTime = level.time;	
 }
+
+/*
+=================
+Stats command
+
+TODO: Unlazy my self and add targeted stats (victim, killer, <client number>)
+=================
+*/
+void Cmd_Stats_f(gentity_t *ent) {
+	gclient_t *client = ent->client;
+	qtime_t ct;
+	int eff;
+	int deaths = client->pers.deaths;	
+	float killRatio = client->pers.kills;
+	int shots = client->pers.acc_shots;
+	float acc = 0.0f;
+
+	if (deaths > 0)
+		killRatio = (float)client->pers.kills / (float)deaths;
+	
+	if (shots > 0)
+		acc = ((float)client->pers.acc_hits / (float)shots) * 100.0f;
+
+	eff = ( client->pers.deaths + client->pers.kills == 0 ) ? 0 : 100 * client->pers.kills / ( client->pers.deaths + client->pers.kills );
+	if ( eff < 0 ) {
+		eff = 0;
+	}	
+
+	trap_RealTime(&ct);
+
+	CP(va("print \"\n"
+			"^7Mod: %s \n"
+			"^7Server: %s \n"
+			"^7Time: ^7%02d:%02d:%02d ^3(^7%02d %s %d^3) \n\n"
+			"^7Stats for %s ^7this round: \n"
+			"^7-------------------------------------------\n"			
+			"^3Kills: ^7%d | ^3TKs: ^7%d | ^3Poisoned: ^7%d\n"			
+			"^3Deaths: ^7%d | ^3Suicides: ^7%d\n"			
+			"^3Headshots: ^7%d | ^3Gibs: ^7%d | ^3Revived: ^7%d\n"			
+			"^3Packs Given: ^7%d ^3Health ^7| %d ^3Ammo \n"
+			"^3Accuracy: ^7%2.2f (%d/%d)\n"
+			"^3DmgGiv: ^7%d ^| ^3DmgRec: ^7%d | ^3dmgTeam: ^7%d \n"			
+			"^3Kill Ratio: ^7%2.2f | ^3Efficency: ^7%d\n"
+			"^3Peak: ^7%d ^3Life Kills ^7| %d ^3Death Spree \n"
+			"^7-------------------------------------------\n"
+			"\n\"",
+		GAMEVERSION,
+		sv_hostname.string,
+		ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, aMonths[ct.tm_mon], 1900+ct.tm_year,
+		client->pers.netname,
+		client->pers.kills, client->pers.teamKills,	client->pers.poison,
+		deaths,	client->pers.suicides,
+		client->pers.headshots,	client->pers.gibs, client->pers.revives,
+		client->pers.medPacks, client->pers.ammoPacks,
+		acc, client->pers.acc_hits, shots,
+		client->pers.dmgGiven, client->pers.dmgReceived, client->pers.dmgTeam,
+		killRatio, eff,
+		client->pers.lifeKillsPeak, client->pers.lifeDeathsPeak
+	));
+}
+
