@@ -1847,7 +1847,7 @@ void cmd_listCmds(gentity_t *ent) {
 		   "slap kill specs axis allied exec nextmap map vstr cpa "
 		   "cp warn chat cancelvote passvote restart reset swap shuffle "
 		   "@shuffle specs999 whereis rename ignore unignore clientignore clientunignore permignore "	
-		   "permunignore permclientignore permclientunignore ban banclient tempban banip tempbanip addip "
+		   "permunignore permclientignore permclientunignore ban banclient tempban banip tempbanip addip *"
 		;
 
 	if (ent->client->sess.admin == ADM_1)
@@ -1994,6 +1994,7 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("banip", "Bans player by IP.", "!banip <unique part of name>")
 	_HELP("tempbanip", "Temporarily Bans player by IP.", "!tempbanip <unique part of name> <mins>")
 	_HELP("addip", "Adds IP to banned file. You can use wildcards for subrange bans.", "example - !addip 100.*.*.*")
+	_HELP("*", "Any default command that's allowed per Admin level can be executed accordingly. Note that adding @ at the end will execute it silently otherwise it will be printed to all.", "!g_allowVote 1 or !g_allowVote 1 @ for silent change")
 	// --> Add new ones after this line..
 
 	{NULL, NULL, NULL}

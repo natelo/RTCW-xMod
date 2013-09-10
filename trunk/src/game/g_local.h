@@ -521,24 +521,24 @@ typedef struct {
 	// L0 
 
 	// Admins
-	char cmd1[128];	// !command
-	char cmd2[128]; // !command attribute
-	char cmd3[128];	// !command attribute extra	
+	char	cmd1[128];	// !command
+	char	cmd2[128]; // !command attribute
+	char	cmd3[128];	// !command attribute extra	
 
 	// Server Bot
-	int sb_teamBleed;
-	int sb_ping;
-	int sb_maxPing;
-	int sb_chatWarned;
-	int sb_ignored;
-	int	sb_teamKills;
+	int		sb_teamBleed;
+	int		sb_ping;
+	int		sb_maxPing;
+	int		sb_chatWarned;
+	int		sb_ignored;
+	int		sb_teamKills;
 
 	// Shortcuts
-	int lastkilled_client;
-	int	lastrevive_client;
-	int	lastkiller_client;
-	int	lastammo_client;
-	int	lasthealth_client;
+	int		lastkilled_client;
+	int		lastrevive_client;
+	int		lastkiller_client;
+	int		lastammo_client;
+	int		lasthealth_client;
 
 	// Weapon restrictions
 	int restrictedWeapon;

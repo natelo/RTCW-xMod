@@ -218,7 +218,7 @@ vmCvar_t	g_dragBodies;			// If enabled player can drag bodies using salute or ac
 vmCvar_t	g_shove;				// Enables or disables shove..(pushing of players..)
 vmCvar_t	g_poison;				// Poison... anything above 0 is value that will be used
 vmCvar_t	g_gibReports;			// Show gib print
-vmCvar_t	g_tapReports;			// Show tap print when player taps out - 0 = off, 1 = shows to all, 2 = shows to team only
+vmCvar_t	g_tapReports;			// Show tap print when player taps out - 0 = off, 2 = shows to all, 1 = shows to team only
 
 // Server Bot
 vmCvar_t	sb_system;			// Controls all SB functionality

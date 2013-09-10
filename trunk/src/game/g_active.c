@@ -1311,7 +1311,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 					// L0 - Tap reports
 					// 1 = Prints to team only
-					if (g_tapReports.integer == 1)
+					if (g_tapReports.integer > 1)
 					{						
 						G_TeamCommand( 
 							( (ent->client->sess.sessionTeam == TEAM_RED) ? TEAM_RED : TEAM_BLUE ),
@@ -1319,7 +1319,7 @@ void ClientThink_real( gentity_t *ent ) {
 						);
 					} 
 					// 2 = Prints to everyone..
-					else if (g_tapReports.integer > 1) 
+					else if (g_tapReports.integer == 1) 
 					{						
 						AP(va("print \"%s ^7tapped out.\n\"", ent->client->pers.netname));
 					} // End
