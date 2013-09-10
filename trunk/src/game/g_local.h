@@ -1387,6 +1387,7 @@ extern vmCvar_t		g_poison;
 extern vmCvar_t		g_gibReports;
 extern vmCvar_t		g_tapReports;
 extern vmCvar_t		g_showLifeStats;
+extern vmCvar_t		g_fastStabSound;
 
 // Server Bot
 extern vmCvar_t		sb_system;

@@ -381,8 +381,8 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	// If person gets stabbed use custom sound from soundpack
 	// it's broadcasted to victim and heard only if standing near victim...
-	if ( meansOfDeath == MOD_KNIFE_STEALTH && !OnSameTeam(self, attacker) ) {
-		APRS(self, "xmod/sound/game/events/stab.wav");
+	if ( meansOfDeath == MOD_KNIFE_STEALTH && !OnSameTeam(self, attacker) && g_fastStabSound.integer) {
+		APRS(self, va("xmod/sound/game/events/%s", ((g_fastStabSound.integer == 1) ? "stab.wav" : "stab_alt.wav")));
 	}  
 
 	if ( meansOfDeath == MOD_POISONDMED )  {

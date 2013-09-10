@@ -220,6 +220,7 @@ vmCvar_t	g_poison;				// Poison... anything above 0 is value that will be used
 vmCvar_t	g_gibReports;			// Show gib print
 vmCvar_t	g_tapReports;			// Show tap print when player taps out - 0 = off, 1 = shows to all, 2 = shows to team only
 vmCvar_t	g_showLifeStats;		// If enabled it prints some life info when to player (when (s)he dies)
+vmCvar_t	g_fastStabSound;		// 0 = off, 1 = (OSP's) goat sound, 2 = humiliation sound
 
 // Server Bot
 vmCvar_t	sb_system;			// Controls all SB functionality
@@ -480,6 +481,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_gibReports, "g_gibReports", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_tapReports, "g_tapReports", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_showLifeStats, "g_showLifeStats", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_fastStabSound, "g_fastStabSound", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
