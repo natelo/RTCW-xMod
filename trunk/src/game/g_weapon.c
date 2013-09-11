@@ -345,6 +345,10 @@ void Weapon_Syringe(gentity_t *ent) {
 				// L0 - Stats
 				ent->client->pers.revives++;
 				ent->client->pers.lifeRevives++;
+
+				if (g_mapStats.integer == 5)
+					write_MapStats(ent, ent->client->pers.revives, MAP_REVIVES);
+				// End
 			} 
 
 			// L0 - Poison

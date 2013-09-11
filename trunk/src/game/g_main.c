@@ -255,6 +255,7 @@ vmCvar_t	sv_hostname;		// So it's more accesible
 vmCvar_t	motdNum;			// To track motds..
 vmCvar_t	g_swapCounter;		// Count times so it auto swaps once it reaches it..
 vmCvar_t	g_needBalance;		// Flag for auto balance check
+vmCvar_t	mapAchiever;		// A static cvar for map achiever..
 
 // General
 vmCvar_t	g_screenShake;		// Screenshaking on explosions (4 = default, 2 = half.. etc)
@@ -267,6 +268,8 @@ vmCvar_t	g_killerSpree;			// Killer sprees - per life.
 vmCvar_t	g_showFirstHeadshot;	// Show who done it
 vmCvar_t	g_showFirstBlood;		// Show who done it
 vmCvar_t	g_mapStats;				// Top records for each map.
+vmCvar_t	g_mapStatsNotify;		// Notifies when record gets broken (during intermission)
+vmCvar_t	g_mapStatsWarmupOnly;	// Shows only in warmup, otherwise every time game init's
 
 // L0 - End
 
@@ -515,6 +518,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &motdNum, "motdNum", "1", 0, 0, qfalse },
 	{ &g_swapCounter, "g_swapCounter", "1", 0, 0, qfalse }, 
 	{ &g_needBalance, "g_needBalance", "0", CVAR_CHEAT, qfalse },
+	{ &mapAchiever, "mapAchiever", "", 0, 0, qfalse },
 
 	// General
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
@@ -525,8 +529,10 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_deathSprees, "g_deathSprees", "0", CVAR_ARCHIVE|CVAR_LATCH, 0, qfalse },
 	{ &g_killerSpree, "g_killerSpree", "0", CVAR_ARCHIVE|CVAR_LATCH, 0, qfalse },
 	{ &g_showFirstHeadshot, "g_showFirstHeadshot", "0", CVAR_ARCHIVE | CVAR_LATCH, qfalse },
-	{ &g_showFirstBlood, "g_showFirstBlood", "1", CVAR_ARCHIVE | CVAR_LATCH, qfalse },
-	{ &g_mapStats, "g_mapStats", "1", CVAR_ARCHIVE|CVAR_LATCH, 0, qfalse },
+	{ &g_showFirstBlood, "g_showFirstBlood", "0", CVAR_ARCHIVE | CVAR_LATCH, qfalse },
+	{ &g_mapStats, "g_mapStats", "0", CVAR_ARCHIVE|CVAR_LATCH, 0, qfalse },
+	{ &g_mapStatsNotify, "g_mapStatsNotify", "1", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_mapStatsWarmupOnly, "g_mapStatsWarmupOnly", "1", CVAR_ARCHIVE, 0, qfalse },
 
 	// End
 
@@ -1487,6 +1493,13 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	}
 
 	G_RemapTeamShaders();
+
+	// L0 - Map Stats
+	if (g_mapStats.integer && !g_mapStatsWarmupOnly.integer)
+	{
+		if (mapAchiever.string)
+			AP(va("chat \"%s \n\"", mapAchiever.string));
+	} 
 }
 
 
@@ -2030,6 +2043,10 @@ void BeginIntermission( void ) {
 
 	// L0 - End stats	
 	stats_MatchInfo();
+
+	// Map Stats
+	if (g_mapStats.integer)
+		stats_MapStats();
 }
 
 
@@ -2083,6 +2100,14 @@ void ExitLevel (void) {
 	
 	// L0 - Clean up the (GUID) tempbans
 	clean_tempbans_guids();
+
+	// L0 - Map Stats
+	if (g_mapStats.integer)
+	{
+		// Show only if warmup setting is enabled otherwise it prints twice (when enabled).
+		if (mapAchiever.string && g_mapStatsWarmupOnly.integer)
+			AP(va("chat \"%s \n\"", mapAchiever.string));
+	} 
 
 	// change all client states to connecting, so the early players into the
 	// next level will know the others aren't done reconnecting
@@ -2790,8 +2815,6 @@ void InitCensorNamesStructure( void )
 	}
 	if ( g_disallowedNames.string[0] != '\0' )
 		censorNamesDictionary.num_nulled_words++;
-
-
 }
 
 /*

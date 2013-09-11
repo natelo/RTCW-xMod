@@ -423,6 +423,11 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			attacker->client->pers.kills++;	
 			attacker->client->pers.lifeKills++; 
 
+			if (g_mapStats.integer == 1)
+				write_MapStats(attacker, attacker->client->pers.kills, MAP_KILLER);
+			else if (g_mapStats.integer == 2)
+				write_MapStats(attacker, attacker->client->pers.kills, MAP_KILLING_SPREE);
+
 		// Count teamkill
 		} else {
 			// Admin bot - teamKills
@@ -467,6 +472,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	self->client->pers.deaths++;
 	self->client->pers.spreeDeaths++;
 
+	if (g_mapStats.integer == 3)
+		write_MapStats(self, self->client->pers.deaths, MAP_VICTIM);
+	else if (g_mapStats.integer == 4)
+		write_MapStats(self, self->client->pers.deaths, MAP_DEATH_SPREE);
+	// End
+
 // JPW NERVE -- if player is holding ticking grenade, drop it
 	if (g_gametype.integer != GT_SINGLE_PLAYER)
 		if ((self->client->ps.grenadeTimeLeft) && (self->s.weapon != WP_DYNAMITE)) {
@@ -477,7 +488,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			VectorCopy(self->r.currentOrigin, launchspot);
 			launchspot[2] += 40;
 			fire_grenade(self, launchspot, launchvel, self->s.weapon);
-
 		}
 // jpw
 
@@ -1331,6 +1341,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		{
 			attacker->client->pers.headshots++;
 			attacker->client->pers.lifeHeadshots++;
+
+			if (g_mapStats.integer == 6)
+				write_MapStats(attacker, attacker->client->pers.deaths, MAP_HEADSHOTS);
 		}
 	}
 	

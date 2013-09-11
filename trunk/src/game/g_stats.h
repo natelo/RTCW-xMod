@@ -5,7 +5,7 @@ L0 - g_stats.h
 Stats stuff
 
 Created: 9. Sept / 2013
-Last Updated: 
+Last Updated: 10. Sept / 2013
 ===========================================================================
 */
 
@@ -61,4 +61,25 @@ static const killer_sprees_t killerSprees[] = {
 	{"WICKED SICK!" , "wickedsick.wav"},
 	{"HOLY SHIT!!" , "holyshit.wav"},
 	{NULL, NULL}
+};
+
+/**** Map Stats ****/
+#define MAP_KILLER			1
+#define MAP_KILLING_SPREE   2
+#define MAP_VICTIM			3
+#define MAP_DEATH_SPREE		4
+#define MAP_REVIVES			5
+#define MAP_HEADSHOTS		6
+
+/**** Map Stats & WMS (Warmup Match Stats) ****/
+static char * stats_chars[]={
+	"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k",
+	"l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
+	"w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", 
+	"H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", 
+	"S", "T", "U", "V", "W", "X", "Y", "Z", "1", "2", "3",
+	"4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$",
+	"%", "^", "&", "*", "(", ")", "[", "]", "|", "'", ";", 
+	":", ",", ".", "?", "/", ">", "<", "-", " ", "+", "=", 
+	"-", "_", "~" 
 };

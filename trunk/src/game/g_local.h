@@ -842,7 +842,7 @@ typedef struct {
 	int			axisVenom, alliedVenom;
 	int			axisFlamer, alliedFlamer;
 	// Map Stats
-	int			topScore;
+	unsigned int		topScore;
 	char		topOwner[MAX_NETNAME+1];
 	// end
 } level_locals_t;
@@ -1424,6 +1424,7 @@ extern vmCvar_t		g_killerSpree;
 extern vmCvar_t		g_showFirstHeadshot;
 extern vmCvar_t		g_showFirstBlood;
 extern vmCvar_t		g_mapStats;
+extern vmCvar_t		g_mapStatsNotify;
 
 // L0 - End
 
