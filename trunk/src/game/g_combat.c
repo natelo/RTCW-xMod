@@ -354,11 +354,11 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
 
 // L0 - Hacks for custom MOD's
-	if ( meansOfDeath == MOD_ADMKILL ) {
+	if ( meansOfDeath == MOD_ADMKILL && g_gamestate.integer == GS_PLAYING) {
 		AP(va("print \"%s ^7was killed by Admin.\n\"", self->client->pers.netname));
 	}
 
-	if ( meansOfDeath == MOD_SELFKILL ) {
+	if ( meansOfDeath == MOD_SELFKILL && g_gamestate.integer == GS_PLAYING) {
 		int r = rand() %2; // randomize messages
 			
 		if (r == 0)			
@@ -367,11 +367,11 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			AP(va("print \"%s ^7commited suicide.\n\"", self->client->pers.netname));
 	}
 
-	if ( meansOfDeath == MOD_THROWKNIFE ) {
+	if ( meansOfDeath == MOD_THROWKNIFE && g_gamestate.integer == GS_PLAYING) {
 		AP(va("print \"%s ^7was impaled by %s^7s throwing knife.\n\"", self->client->pers.netname, attacker->client->pers.netname));
 	}
 
-	if ( meansOfDeath == MOD_CHICKEN ) {
+	if ( meansOfDeath == MOD_CHICKEN && g_gamestate.integer == GS_PLAYING) {
 		AP(va("print \"%s ^6was scared to death by ^7%s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname));
 	}
 
@@ -390,7 +390,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			((g_fastStabSound.integer == 2) ? "stab_alt.wav" : snd)	)));
 	}  
 
-	if ( meansOfDeath == MOD_POISONDMED )  {
+	if ( meansOfDeath == MOD_POISONDMED && g_gamestate.integer == GS_PLAYING)  {
 		int r = rand() %2; 
 		
 		if (r == 0)
@@ -409,15 +409,19 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		obit = modNames[ meansOfDeath ];
 	}
 
-	G_LogPrintf("Kill: %i %i %i: %s killed %s by %s\n", 
-		killer, self->s.number, meansOfDeath, killerName, 
-		self->client->pers.netname, obit );
+	// L0 - Don't bother in warmup etc..
+	if (g_gamestate.integer == GS_PLAYING)
+	{
+		G_LogPrintf("Kill: %i %i %i: %s killed %s by %s\n", 
+			killer, self->s.number, meansOfDeath, killerName, 
+			self->client->pers.netname, obit );
+	}
 
 	// L0 - Death Sprees
 	stats_DeathSpree( self ); 
 
 	// L0 - Stats
-	if (attacker && attacker->client) {
+	if (attacker && attacker->client && g_gamestate.integer == GS_PLAYING) {
 		// Life kills & death spress
 		if (!OnSameTeam(attacker, self)) {		
 			attacker->client->pers.kills++;	
@@ -456,11 +460,15 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if (meansOfDeath != MOD_POISONDMED) {
 
 		// broadcast the death event to everyone
-		ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY );
-		ent->s.eventParm = meansOfDeath;
-		ent->s.otherEntityNum = self->s.number;
-		ent->s.otherEntityNum2 = killer;
-		ent->r.svFlags = SVF_BROADCAST;	// send to everyone
+		// L0 - Don't bother in warmup..
+		if (g_gamestate.integer == GS_PLAYING)
+		{
+			ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY );
+			ent->s.eventParm = meansOfDeath;
+			ent->s.otherEntityNum = self->s.number;
+			ent->s.otherEntityNum2 = killer;
+			ent->r.svFlags = SVF_BROADCAST;	// send to everyone
+		}
 
 	}}}}}
 

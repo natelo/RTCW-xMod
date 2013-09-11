@@ -561,8 +561,8 @@ void respawn( gentity_t *ent ) {
 
 	ent->client->ps.pm_flags &= ~PMF_LIMBO; // JPW NERVE turns off limbo
 
-	// DHM - Nerve :: Decrease the number of respawns left
-	if ( g_maxlives.integer > 0 && ent->client->ps.persistant[PERS_RESPAWNS_LEFT] > 0 )
+	// DHM - Nerve :: Decrease the number of respawns left							(L0 - Not in warmup..)
+	if ( g_maxlives.integer > 0 && ent->client->ps.persistant[PERS_RESPAWNS_LEFT] > 0 && g_gamestate.integer == GS_PLAYING)
 		ent->client->ps.persistant[PERS_RESPAWNS_LEFT]--;
 
 	G_DPrintf( "Respawning %s, %i lives left\n", ent->client->pers.netname, ent->client->ps.persistant[PERS_RESPAWNS_LEFT]);
