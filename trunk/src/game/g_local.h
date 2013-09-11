@@ -822,7 +822,7 @@ typedef struct {
 	// NERVE - SMF - debugging/profiling info
 	int			totalHeadshots;
 	int			missedHeadshots;
-	qboolean	lastRestartTime;
+	int			lastRestartTime;
 	// -NERVE - SMF
 
 	int			numFinalDead[2];		// DHM - Nerve :: unable to respawn and in limbo (per team)
