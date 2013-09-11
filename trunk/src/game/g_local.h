@@ -841,6 +841,9 @@ typedef struct {
 	int			axisPF, alliedPF;
 	int			axisVenom, alliedVenom;
 	int			axisFlamer, alliedFlamer;
+	// Map Stats
+	int			topScore;
+	char		topOwner[MAX_NETNAME+1];
 	// end
 } level_locals_t;
 
@@ -1408,6 +1411,7 @@ extern vmCvar_t		g_serverMessage;
 extern vmCvar_t		sv_hostname;
 extern vmCvar_t		g_swapCounter;
 extern vmCvar_t		g_needBalance;
+extern vmCvar_t		mapAchiever;
 
 // General
 extern vmCvar_t		g_screenShake;
@@ -1742,6 +1746,17 @@ void stats_KillingSprees ( gentity_t *ent, int score );
 void stats_DeathSpree ( gentity_t *ent );
 void stats_KillerSpree(gentity_t *ent, int score);
 void stats_MatchInfo( void );
+void stats_MapStats( void );
+void write_MapStats( gentity_t *ent, unsigned int score, int type );
+
+//
+// q_shared.c
+//
+void DecolorString( char *in, char *out);
+int is_numeric(const char *p);
+char *Q_StrReplace(char *haystack, char *needle, char *newVal);
+void stripChars( char *input, char *output, int cutSize );
+void Q_Tokenize(char *str, char **splitstr, char *delim);
 
 //
 // Logs
@@ -1750,11 +1765,12 @@ void stats_MatchInfo( void );
 #define PASSLOG "./logs/adminLoginAttempts.log"
 #define ADMACT "./logs/adminActions.log"
 #define BYPASSLOG "./logs/banBypass.log"
-#define STSPTH "./logs/stats/"
+#define STSPTH "./stats/"
 
 //
 // Macros
 //
+#define ARRAY_LEN(x)	(sizeof(x) / sizeof(*(x)))
 #define AP(x) trap_SendServerCommand(-1, x)					// Print to all
 #define CP(x) trap_SendServerCommand(ent-g_entities, x)		// Print to an ent
 #define CPx(x, y) trap_SendServerCommand(x, y)				// Print to id = x
@@ -1762,3 +1778,7 @@ void stats_MatchInfo( void );
 #define APRS(x, y) APRSound(x, y)							// Global sound with limited (radius) range
 #define CPS(x, y) CPSound(x, y)								// Client sound only
 
+//
+// Stats Header
+//
+#include "g_stats.h"

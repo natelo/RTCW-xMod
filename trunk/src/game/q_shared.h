@@ -1523,11 +1523,4 @@ typedef enum {
 #define VOTEFLAGS_SHUFFLE		(1<<8)	
 #define VOTEFLAGS_POLL			(1<<9)
 
-// L0 - New stuff bellow
-#define ARRAY_LEN(x)	(sizeof(x) / sizeof(*(x)))
-void DecolorString( char *in, char *out);
-int is_numeric(const char *p);
-char *Q_StrReplace(char *haystack, char *needle, char *newVal);
-void stripChars( char *input, char *output, int cutSize );
-
 #endif	// __Q_SHARED_H

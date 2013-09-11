@@ -195,6 +195,7 @@
     <ClCompile Include="..\..\src\game\g_script.c" />
     <ClCompile Include="..\..\src\game\g_script_actions.c" />
     <ClCompile Include="..\..\src\game\g_session.c" />
+    <ClCompile Include="..\..\src\game\g_shared.c" />
     <ClCompile Include="..\..\src\game\g_spawn.c" />
     <ClCompile Include="..\..\src\game\g_stats.c" />
     <ClCompile Include="..\..\src\game\g_svcmds.c" />
