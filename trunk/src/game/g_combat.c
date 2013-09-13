@@ -549,9 +549,20 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 				
 				acc = (self->client->pers.lifeAcc_shots == 0) ? 
 					0.00 : ((float)self->client->pers.lifeAcc_hits / (float)self->client->pers.lifeAcc_shots ) * 100.00f ;	
-			
+					
+				// Class based..
+				if (self->client->ps.stats[PC_MEDIC])
 					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7Rev:^3%d ^7Acc:^3%2.2f\n\"",
 						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.lifeRevives, acc));
+				else if (self->client->ps.stats[PC_LT])
+					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7AmmoGiv:^3%d ^7Acc:^3%2.2f\n\"",
+					self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.ammoPacks, acc));
+				else if (self->client->ps.stats[PC_ENGINEER])
+					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7Gibs: ^3%d ^7Acc:^3%2.2f\n\"",
+						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.gibs, acc));
+				else
+					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7Gibs: ^3%d ^7Acc:^3%2.2f\n\"",
+						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.gibs, acc));
 			} // End
 
 		} else {
@@ -584,11 +595,20 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 				
 				acc = (self->client->pers.lifeAcc_shots == 0) ? 
 					0.00 : ((float)self->client->pers.lifeAcc_hits / (float)self->client->pers.lifeAcc_shots ) * 100.00f ;	
-						
+
+				// Class based..
+				if (self->client->ps.stats[PC_MEDIC])
 					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7Rev:^3%d ^7Acc:^3%2.2f ^7Killer: %s^3(%ihp)\n\"",
-						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, 
-						self->client->pers.lifeRevives, acc, 
-						attacker->client->pers.netname, attacker->health ));
+						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.lifeRevives, acc, attacker->health));
+				else if (self->client->ps.stats[PC_LT])
+					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7AmmoGiv:^3%d ^7Acc:^3%2.2f ^7Killer: %s^3(%ihp)\n\"",
+					self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.ammoPacks, acc, attacker->health));
+				else if (self->client->ps.stats[PC_ENGINEER])
+					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7Gibs: ^3%d ^7Acc:^3%2.2f ^7Killer: %s^3(%ihp)\n\"",
+						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.gibs, acc, attacker->health));
+				else
+					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7Gibs: ^3%d ^7Acc:^3%2.2f ^7Killer: %s^3(%ihp)\n\"",
+						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.gibs, acc, attacker->health));
 			} // End
 		}
 	} else {
