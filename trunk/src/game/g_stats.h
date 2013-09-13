@@ -71,7 +71,7 @@ static const killer_sprees_t killerSprees[] = {
 #define MAP_REVIVES			5
 #define MAP_HEADSHOTS		6
 
-/**** Map Stats & WMS (Warmup Match Stats) ****/
+/**** Map Stats & RMS (Round (Warmup) Match Stats) ****/
 static char * stats_chars[]={
 	"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k",
 	"l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
@@ -83,3 +83,60 @@ static char * stats_chars[]={
 	":", ",", ".", "?", "/", ">", "<", "-", " ", "+", "=", 
 	"-", "_", "~" 
 };
+
+/**** Round Stats ****/
+typedef struct {
+	char *type;
+	char *label;
+	char *snd;		
+} round_stats_t;
+
+static const round_stats_t roundStatsMSGs[] = {
+	{"Results from last Match are", "", "0.wav"},
+	{"Most Kills", "", "1.wav"},
+	{"Born to Die" , "deaths", "2.wav"},
+	{"Most Revives", "", "3.wav"},
+	{"Most Team Kills",  "", "4.wav"},
+	{"Most Headshots",  "", "5.wav"},
+	{"Most Poison Kills", "", "6.wav"},
+	{"Most Ammo Given", "", "7.wav"},
+	{"Most Med Given", "", "8.wav"},
+	{"Top Stealth Killer", "knife stabs", "9.wav"},
+	{"Knife Juggling Expert", "", "10.wav"},
+	{"Most Depressed Player",  "suicides", "11.wav"},
+	{"Chicken Shit", "bail outs", "12.wav"},
+	{"Corpse Expert",  "gibs", "13.wav"},
+	{"Highest Killer Ratio", "", "14.wav"},
+	{"Top Accuracy", "%", "15.wav"},
+	{"Most Efficient", "%", "16.wav"},
+	{NULL, NULL}
+};
+
+#define ROUND_MOSTKILLS		1
+#define ROUND_BORNTODIE		2
+#define ROUND_REVIVES		3
+#define ROUND_TEAMKILLS		4
+#define ROUND_HEADSHOTS		5
+#define ROUND_POISONKILLS	6
+#define ROUND_AMMOGIVEN		7
+#define ROUND_MEDGIVEN		8
+#define ROUND_FASTSTABS		9
+#define ROUND_KNIFETHROW	10
+#define ROUND_SUICIDES		11
+#define ROUND_CHICKEN		12
+#define ROUND_GIBS			13
+#define ROUND_KILLERRATIO	14
+#define ROUND_ACCURACY		15
+#define ROUND_EFFICIENCY	16
+#define ROUND_LIMIT			17	// If adding more, increase this (it should always be last!)
+
+struct round_stats_structure_s {
+	unsigned int stats;				// Label (see defines above)
+	unsigned int score;				// Most of stats
+	float score2;					// Accuracy, killer ratio..
+	char out[32];					// For output
+	char player[MAX_STRING_CHARS];	// Players that made the list
+};
+
+typedef struct round_stats_structure_s roundStruct;
+extern roundStruct roundStats[];

@@ -234,7 +234,6 @@ vmCvar_t	sb_autoIgnore;		// Auto ignores players (for the round) that reach spam
 
 // MOTD's
 vmCvar_t	g_serverMessage;	// Shows a center print each time when player switches teams.
-vmCvar_t	g_serverMessage;	// Shows a center print each time when player switches teams.
 vmCvar_t	g_showMOTD;			// Enable MOTD's (message of the day)
 vmCvar_t	g_motd1;			// MESSAGE 1
 vmCvar_t	g_motd2;			// MESSAGE 2
@@ -270,6 +269,8 @@ vmCvar_t	g_showFirstBlood;		// Show who done it
 vmCvar_t	g_mapStats;				// Top records for each map.
 vmCvar_t	g_mapStatsNotify;		// Notifies when record gets broken (during intermission)
 vmCvar_t	g_mapStatsWarmupOnly;	// Shows only in warmup, otherwise every time game init's
+vmCvar_t	g_roundStats;			// Prints high achievers each round
+vmCvar_t	g_excludedRoundStats;	// List of excluded stats (not tracked and not printed)
 
 // L0 - End
 
@@ -533,6 +534,8 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_mapStats, "g_mapStats", "0", CVAR_ARCHIVE|CVAR_LATCH, 0, qfalse },
 	{ &g_mapStatsNotify, "g_mapStatsNotify", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_mapStatsWarmupOnly, "g_mapStatsWarmupOnly", "1", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_roundStats, "g_roundStats", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
+	{ &g_excludedRoundStats, "g_excludedRoundStats", "", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 
 	// End
 
@@ -2109,6 +2112,12 @@ void ExitLevel (void) {
 			AP(va("chat \"%s \n\"", mapAchiever.string));
 	} 
 
+	// L0 - Round Stats
+	if (g_roundStats.integer)
+	{
+		add_RoundStats();
+	}
+
 	// change all client states to connecting, so the early players into the
 	// next level will know the others aren't done reconnecting
 	for (i=0 ; i< g_maxclients.integer ; i++) {
@@ -3200,6 +3209,14 @@ void G_RunFrame( int levelTime ) {
 
 	// for tracking changes
 	CheckCvars();
+
+	// L0 - Round Stats
+	if ((level.time > level.statsPrint) && 
+		(g_gamestate.integer == GS_WARMUP_COUNTDOWN) && 
+		g_roundStats.integer) 
+	{
+		stats_RoundStats();
+	} 
 
 	if (g_listEntity.integer) {
 		for (i = 0; i < MAX_GENTITIES; i++) {

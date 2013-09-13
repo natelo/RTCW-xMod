@@ -561,6 +561,9 @@ typedef struct {
 	int		gibs;
 	int		suicides;
 	int		poison;
+	int		chicken;
+	int		knifeKills;
+	int		fastStabs;
 
 	// Death Spree
 	int		spreeDeaths;
@@ -844,6 +847,10 @@ typedef struct {
 	// Map Stats
 	unsigned int		topScore;
 	char		topOwner[MAX_NETNAME+1];
+	// Round stats
+	int			statsNum;
+	int			statsPrint;
+	qboolean	statsStarted;
 	// end
 } level_locals_t;
 
@@ -1425,6 +1432,8 @@ extern vmCvar_t		g_showFirstHeadshot;
 extern vmCvar_t		g_showFirstBlood;
 extern vmCvar_t		g_mapStats;
 extern vmCvar_t		g_mapStatsNotify;
+extern vmCvar_t		g_roundStats;
+extern vmCvar_t		g_excludedRoundStats;
 
 // L0 - End
 
@@ -1722,6 +1731,7 @@ gentity_t *G_FearCheck( gentity_t *ent );
 void CPSound(gentity_t *ent, char *sound);
 void APSound(char *sound);
 void APRSound(gentity_t *ent, char *sound);
+// End Sounds
 void checkEvenTeams( void );
 void balanceTeams( void );
 
@@ -1749,6 +1759,9 @@ void stats_KillerSpree(gentity_t *ent, int score);
 void stats_MatchInfo( void );
 void stats_MapStats( void );
 void write_MapStats( gentity_t *ent, unsigned int score, int type );
+void stats_RoundStats( void );
+void add_RoundStats( void );
+void write_RoundStats(char *player, unsigned int score, unsigned int stats);
 
 //
 // q_shared.c
@@ -1757,7 +1770,10 @@ void DecolorString( char *in, char *out);
 int is_numeric(const char *p);
 char *Q_StrReplace(char *haystack, char *needle, char *newVal);
 void stripChars( char *input, char *output, int cutSize );
+char *parseNames( char *name );
 void Q_Tokenize(char *str, char **splitstr, char *delim);
+void ParseStr(const char *strInput, char *strCmd, char *strArgs);
+qboolean Q_FindToken(char *haystack, char *needle);
 
 //
 // Logs

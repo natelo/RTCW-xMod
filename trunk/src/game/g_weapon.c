@@ -348,6 +348,8 @@ void Weapon_Syringe(gentity_t *ent) {
 
 				if (g_mapStats.integer == 5)
 					write_MapStats(ent, ent->client->pers.revives, MAP_REVIVES);
+
+				write_RoundStats(ent->client->pers.netname, ent->client->pers.revives, ROUND_REVIVES);
 				// End
 			} 
 
