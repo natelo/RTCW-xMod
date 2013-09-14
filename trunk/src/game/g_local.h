@@ -1362,6 +1362,7 @@ extern vmCvar_t		g_inactivityToSpecs;
 extern vmCvar_t		g_ignoreSpecs;
 extern vmCvar_t		g_allowPMs;
 extern vmCvar_t		g_teamAutoBalance;
+extern vmCvar_t		g_disallowedVotes;
 
 // Game
 extern vmCvar_t		g_unlockWeapons;

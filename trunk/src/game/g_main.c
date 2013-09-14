@@ -176,6 +176,7 @@ vmCvar_t	g_inactivityToSpecs;	// Puts inactive players in spectators instead of 
 vmCvar_t	g_ignoreSpecs;			// Ignores spectators - Admins can still bypass the ignore..
 vmCvar_t	g_allowPMs;				// Allow private messages
 vmCvar_t	g_teamAutoBalance;		// If enabled it will auto sort teams when there's more then 1 player more in any team
+vmCvar_t	g_disallowedVotes;		// Disallowed votes separated by space
 
 // Game
 vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
@@ -441,6 +442,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_ignoreSpecs, "g_ignoreSpecs", "0", CVAR_ARCHIVE, 0, qfalse },	
 	{ &g_allowPMs, "g_allowPMs", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_teamAutoBalance, "g_teamAutoBalance", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_disallowedVotes, "g_disallowedVotes", "", CVAR_ARCHIVE, 0, qfalse },
 
 	// Game
 	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },

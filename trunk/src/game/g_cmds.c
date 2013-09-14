@@ -1861,9 +1861,11 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		return;
 	}
 	
-	if (!(g_voteFlags.integer & mask))
+
+	// L0 voteflags blows...use g_disallowedVotes that makes more sense..
+	if (Q_FindToken(g_disallowedVotes.string, arg1))
 	{
-		trap_SendServerCommand( ent-g_entities, va("print \"Voting for %s disabled on this server\n\"", arg1));
+		CP(va("print \"Voting for ^3%s ^7is disabled on this server^3!\n\"", arg1));
 		return;
 	}
 

@@ -1003,8 +1003,7 @@ void ClientThink_real( gentity_t *ent ) {
 								// Clear out empty weapon, change to next best weapon
 								G_AddEvent( ent, EV_NOAMMO, 0 );
 	
-								i=MAX_WEAPS_IN_BANK_MP;
-								// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=568
+								i=MAX_WEAPS_IN_BANK_MP;								
 								if(client->ps.weapon == weapon) client->ps.weapon = 0;
 								ent2->count = client->ps.ammoclip[BG_FindClipForWeapon(weapon)];					
 								ent2->item->quantity = client->ps.ammoclip[BG_FindClipForWeapon(weapon)];					
