@@ -601,13 +601,7 @@ void SB_maxTeamKill( gentity_t *ent ) {
 		AP(va("chat \"^3[WARNING]: ^7%s ^7gets kicked on next ^3Team Kill^7!\n\"", ent->client->pers.netname));
 		ent->client->pers.sb_TKwarned = qtrue;
 	}
-/*
-	if (count >= sb_maxTKs.integer) {	
-		trap_DropClient( ent-g_entities, "Kicked \n^3For Team Killing." );		
-		AP(va("chat \"^3SB^7: %s ^7got kicked for ^3Team Killing^7.\n\"", ent->client->pers.netname));
-		return;
-	}	
-*/
+
 	// Give them some time to make it up.. (ie tk-revive)
 	ent->client->pers.sb_TKkillTime = level.time + 10000;
 	ent->client->pers.teamKills++;

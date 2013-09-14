@@ -301,9 +301,9 @@ void stats_MatchInfo( void ) {
 		tot_acc = 0;
 
 		AP( va("print \"%s ^7Team\n"
-			     "^7----------------------------------------------------------------------"
-				 "\nPlayer          ^3Kll ^7Dth Sui TK ^5Eff ^7Accrcy   ^2HS    DG    DR   TD  ^7Score\n"
-				 "^7----------------------------------------------------------------------\n\"", (i == TEAM_RED) ? "^1Axis" : "^4Allied"  ));
+			     "^7-----------------------------------------------------------------------"
+				 "\nPlayer          ^3Kll ^7Dth Sui TK ^5Eff Accrcy   ^2HS    DG    DR    TD  ^7Score\n"
+				 "^7-----------------------------------------------------------------------\n\"", (i == TEAM_RED) ? "^1Axis" : "^4Allied"  ));
 
 		for ( j = 0; j < level.numPlayingClients; j++ ) {
 			cl = level.clients + level.sortedClients[j];			
@@ -337,7 +337,7 @@ void stats_MatchInfo( void ) {
 			}	
 
 			cnt++;
-			AP( va( "print \"%s%-15s^3%4d^7%4d%4d%3d%s^5%4d ^7%6.2f^2%5d%6d%6d%5d^7%7d\n\"",					
+			AP( va( "print \"%s%-15s^3%4d^7%4d%4d%3d%s^5%4d %6.2f^2%5d%6d%6d%6d^7%7d\n\"",					
 					ref,
 					n2,
 					cl->pers.kills,
@@ -360,8 +360,8 @@ void stats_MatchInfo( void ) {
 		}
 		tot_acc = ( (tot_shots == 0) ? 0.00 : ((float)tot_hits / (float)tot_shots ) * 100.00f );
 
-		AP( va( "print \"^7----------------------------------------------------------------------\n"
-				"%-19s^3%4d^7%4d%4d%3d^5%4d ^7%6.2f^2%5d%6d%6d%5d^7%7d\n\n\"",				
+		AP( va( "print \"^7-----------------------------------------------------------------------\n"
+				"%-19s^3%4d^7%4d%4d%3d^5%4d %6.2f^2%5d%6d%6d%6d^7%7d\n\n\"",				
 				"^3Totals^7",
 				tot_kills,
 				tot_deaths,				

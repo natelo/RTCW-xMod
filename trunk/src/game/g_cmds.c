@@ -660,7 +660,7 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 	if ( g_gametype.integer >= GT_WOLF && team != oldTeam && level.warmupTime == 0 && !client->pers.initialSpawn
 		&& ( (level.time - client->pers.connectTime) > 10000 ) && ( (level.time - client->pers.enterTime) < 5000 ) ) {
 		trap_SendServerCommand( ent-g_entities, 
-			va( "cp \"^3You must wait %i seconds before joining ^3a new team.\n\" 3", (int)(30 - ((level.time - client->pers.enterTime)/1000))) );
+			va( "cp \"You must wait ^3%i ^7seconds before joining ^7a new team.\n\" 3", (int)(5 - ((level.time - client->pers.enterTime)/1000))) );
 		return;
 	}
 	// dhm
