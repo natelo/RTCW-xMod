@@ -586,26 +586,30 @@ Kicks for teamkills
 ===========
 */
 void SB_maxTeamKill( gentity_t *ent ) {	
-	int count = ent->client->pers.teamKills;
+	int count = ent->client->pers.teamKills+1 - ent->client->pers.sb_TKforgiven;
 
 	if (level.warmupTime || !sb_system.integer || sb_maxTKs.integer == (-1))
 	{
 		// Just count it for stats
 		if (!level.warmupTime)
 			ent->client->pers.teamKills++;
-
 		return;
 	}
 
-	if ( sb_maxTKs.integer - ent->client->pers.teamKills == 1 ) 		
+	if ( sb_maxTKs.integer - count == 1 && !ent->client->pers.sb_TKwarned) 		
+	{
 		AP(va("chat \"^3[WARNING]: ^7%s ^7gets kicked on next ^3Team Kill^7!\n\"", ent->client->pers.netname));
-
-	if ((count >= sb_maxTKs.integer) && (ent->client->pers.teamKills)) {	
+		ent->client->pers.sb_TKwarned = qtrue;
+	}
+/*
+	if (count >= sb_maxTKs.integer) {	
 		trap_DropClient( ent-g_entities, "Kicked \n^3For Team Killing." );		
 		AP(va("chat \"^3SB^7: %s ^7got kicked for ^3Team Killing^7.\n\"", ent->client->pers.netname));
-	return;
+		return;
 	}	
-
+*/
+	// Give them some time to make it up.. (ie tk-revive)
+	ent->client->pers.sb_TKkillTime = level.time + 10000;
 	ent->client->pers.teamKills++;
 	return;
 }

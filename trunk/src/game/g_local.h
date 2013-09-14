@@ -531,6 +531,9 @@ typedef struct {
 	int		sb_maxPing;
 	int		sb_chatWarned;
 	int		sb_ignored;
+	int		sb_TKforgiven;
+	int		sb_TKkillTime;
+	qboolean sb_TKwarned;
 
 	// Shortcuts
 	int		lastkilled_client;

@@ -316,7 +316,9 @@ void Weapon_Syringe(gentity_t *ent) {
 				trap_LinkEntity( ent );
 
 				// DHM - Nerve :: Let the person being revived know about it
-				trap_SendServerCommand( traceEnt-g_entities, va("cp \"You have been revived by [lof]%s!\n\"", ent->client->pers.netname) );
+				// L0 - Let them know..
+				CPx( traceEnt-g_entities, va("print \"You have been revived by: %s^7^1!\n\"", ent->client->pers.netname) );
+				CP( va("print \"You have revived player: %s^7^2!\n\"", traceEnt->client->pers.netname) ); 
 				traceEnt->props_frame_state = ent->s.number;
 
 				// DHM - Nerve :: Mark that the medicine was indeed dispensed
@@ -350,6 +352,14 @@ void Weapon_Syringe(gentity_t *ent) {
 					write_MapStats(ent, ent->client->pers.revives, MAP_REVIVES);
 
 				write_RoundStats(ent->client->pers.netname, ent->client->pers.revives, ROUND_REVIVES);
+
+				// Admin bot
+				if (ent->client->pers.sb_TKkillTime > level.time && sb_system.integer && sb_maxTKs.integer)
+				{			
+					CP(va("chat \"^3SB: ^7%s, ^7Your ^3TK ^7was forgiven^3!\n\"", ent->client->pers.netname));
+					ent->client->pers.sb_TKforgiven++;
+				}
+
 				// End
 			} 
 

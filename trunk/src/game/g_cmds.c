@@ -790,16 +790,16 @@ void Cmd_Team_f( gentity_t *ent ) {
 		oldTeam = ent->client->sess.sessionTeam;
 		switch ( oldTeam ) {
 		case TEAM_BLUE:
-			trap_SendServerCommand( ent-g_entities, "print \"Blue team\n\"" );
+			trap_SendServerCommand( ent-g_entities, "print \"^4Allied ^7team\n\"" );
 			break;
 		case TEAM_RED:
-			trap_SendServerCommand( ent-g_entities, "print \"Red team\n\"" );
+			trap_SendServerCommand( ent-g_entities, "print \"^1Axis ^7team\n\"" );
 			break;
 		case TEAM_FREE:
 			trap_SendServerCommand( ent-g_entities, "print \"Free team\n\"" );
 			break;
 		case TEAM_SPECTATOR:
-			trap_SendServerCommand( ent-g_entities, "print \"Spectator team\n\"" );
+			trap_SendServerCommand( ent-g_entities, "print \"^3Spectator ^7team\n\"" );
 			break;
 		}
 		return;
@@ -2025,6 +2025,12 @@ void Cmd_Vote_f( gentity_t *ent ) {
 		}
 		else
 			trap_SendServerCommand( ent-g_entities, "complaint -2" );
+
+			// L0 - Inform about dismissed complain :)
+			if ( msg[0] == 'n' || msg[1] == 'N' || msg[1] == '1' ) 
+			{
+				trap_SendServerCommand( cl->ps.clientNum, va("print \"Complain dismissed^3!\n\"" ) );
+			}
 
 		return;
 	}
