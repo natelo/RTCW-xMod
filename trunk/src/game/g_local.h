@@ -728,9 +728,11 @@ typedef struct {
 	int			framenum;
 	int			time;					// in msec
 	int			previousTime;			// so movers can back up when blocked
-	int frameStartTime;					// L0 - antilag port - actual time frame started
+	int			frameStartTime;			// L0 - antilag port - actual time frame started
 
 	int			startTime;				// level.time the map was started
+	int			timeCurrent;			// L0 - Real game clock
+	int			timeDelta;				// L0 - Pause, match info..
 
 	int			teamScores[TEAM_NUM_TEAMS];
 	int			lastTeamLocationTime;		// last time of client team location update
@@ -1738,6 +1740,7 @@ void APRSound(gentity_t *ent, char *sound);
 void checkEvenTeams( void );
 void balanceTeams( void );
 void CountDown( void );
+void matchInfo( void );
 
 //
 // g_players.c

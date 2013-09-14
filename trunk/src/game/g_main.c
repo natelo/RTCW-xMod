@@ -2044,12 +2044,17 @@ void BeginIntermission( void ) {
 	// send the current scoring to all clients
 	SendScoreboardMessageToAllClients();
 
-	// L0 - End stats	
+// L0
+	// End stats	
 	stats_MatchInfo();
+
+	// Prints & stuff
+	matchInfo();
 
 	// Map Stats
 	if (g_mapStats.integer)
 		stats_MapStats();
+// End
 }
 
 
@@ -2248,7 +2253,7 @@ void LogExit( const char *string ) {
 			}
 			else {
 				// use remaining time as next timer
-				trap_Cvar_Set( "g_nextTimeLimit", va( "%f", (level.time - level.startTime) / 60000.f ) );
+				trap_Cvar_Set( "g_nextTimeLimit", va( "%f", (level.timeCurrent - level.startTime) / 60000.f ) );
 			}
 		}
 		else {
@@ -2426,7 +2431,7 @@ void CheckExitRules( void ) {
 	}
 
 	if ( g_timelimit.value && !level.warmupTime ) {
-		if ( level.time - level.startTime >= g_timelimit.value*60000 ) {
+		if ( level.timeCurrent - level.startTime >= g_timelimit.value*60000 ) {
 
 			// check for sudden death 
 			if ( g_gametype.integer != GT_CTF && ScoreIsTied() ) {
@@ -3006,7 +3011,6 @@ Advances the non-player objects in the world
 void G_RunFrame( int levelTime ) {
 	int			i;
 	gentity_t	*ent;
-	int			msec;
 	int			worldspawnflags, gt;
 
 	// if we are waiting for the level to restart, do nothing
@@ -3014,13 +3018,15 @@ void G_RunFrame( int levelTime ) {
 		return;
 	}
 
+	// L0 - Match Info (& later maybe pause ^^)	
+	level.timeCurrent = levelTime - level.timeDelta;
+
 	// L0 - antilag port - Just renamed
 	level.frameStartTime = trap_Milliseconds();
 
 	level.framenum++;
 	level.previousTime = level.time;
 	level.time = levelTime;
-	msec = level.time - level.previousTime;
 
 	// check if current gametype is supported
 	worldspawnflags = g_entities[ENTITYNUM_WORLD].spawnflags;

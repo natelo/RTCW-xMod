@@ -481,3 +481,36 @@ void CountDown( void ) {
 
 	level.cnNum++; 
 }
+
+/*
+=================
+Match Info
+
+Basically just some info prints..
+=================
+*/
+void matchInfo( void ) {
+
+	if ( g_gametype.integer == GT_WOLF_STOPWATCH ) {
+		if ( g_currentRound.integer == 1 ) {  
+			AP( va( "print \">>> ^3Clock set to: ^7%d:%02d\n\"",
+					g_nextTimeLimit.integer,
+					(int)( 60.0 * (float)( g_nextTimeLimit.value - g_nextTimeLimit.integer ) ) ) );
+		} else {
+			float val = (float)( ( level.timeCurrent - ( level.startTime + level.time - level.intermissiontime ) ) / 60000.0 );
+			if ( val < g_timelimit.value ) 
+			{
+				AP( va( "print \">>> ^3Objective reached at ^7%d:%02d ^3(original: ^7%d:%02d^3)\n\"",
+					(int)val,
+					(int)( 60.0 * ( val - (int)val ) ),
+					g_timelimit.integer,
+					(int)( 60.0 * (float)( g_timelimit.value - g_timelimit.integer ) ) ) );
+			} else {
+				AP( va( "print \">>> ^3Objective NOT reached in time (^7%d:%02d^3)\n\"",
+					g_timelimit.integer,
+					(int)( 60.0 * (float)( g_timelimit.value - g_timelimit.integer ) ) ) );
+			}
+		}
+	}
+}
+
