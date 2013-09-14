@@ -2112,12 +2112,6 @@ void ExitLevel (void) {
 			AP(va("chat \"%s \n\"", mapAchiever.string));
 	} 
 
-	// L0 - Round Stats
-	if (g_roundStats.integer)
-	{
-		add_RoundStats();
-	}
-
 	// change all client states to connecting, so the early players into the
 	// next level will know the others aren't done reconnecting
 	for (i=0 ; i< g_maxclients.integer ; i++) {
@@ -2673,8 +2667,6 @@ NERVE - SMF - Once a frame, check for changes in wolf MP player state
 =============
 */
 void CheckWolfMP(void) {
-  // TTimo unused
-//	static qboolean latch = qfalse;
 
 	// check because we run 3 game frames before calling Connect and/or ClientBegin
 	// for clients on a map_restart
@@ -2689,14 +2681,12 @@ void CheckWolfMP(void) {
 		return;
 	}
 
-	// if the warmup time has counted down, restart
-	if ( level.time > level.warmupTime ) {
-		level.warmupTime += 10000;
-		trap_Cvar_Set( "g_restarted", "1" );
-		trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
-		level.restarted = qtrue;
+	// L0 - Countdown
+	if ( level.time > level.warmupTime - 7100 && !level.cnStarted ) { 
+		level.cnStarted = qtrue; 
+		CountDown(); 
 		return;
-	}
+	} 
 }
 // -NERVE - SMF
 
@@ -3210,13 +3200,11 @@ void G_RunFrame( int levelTime ) {
 	// for tracking changes
 	CheckCvars();
 
-	// L0 - Round Stats
-	if ((level.time > level.statsPrint) && 
-		(g_gamestate.integer == GS_WARMUP_COUNTDOWN) && 
-		g_roundStats.integer) 
-	{
-		stats_RoundStats();
-	} 
+	// L0 - Countdown
+	if ((level.time > level.cnPush) && 
+		(g_gamestate.integer == GS_WARMUP_COUNTDOWN)) {
+		CountDown(); 
+	}
 
 	if (g_listEntity.integer) {
 		for (i = 0; i < MAX_GENTITIES; i++) {

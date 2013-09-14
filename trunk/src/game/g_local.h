@@ -850,10 +850,10 @@ typedef struct {
 	// Map Stats
 	unsigned int		topScore;
 	char		topOwner[MAX_NETNAME+1];
-	// Round stats
-	int			statsNum;
-	int			statsPrint;
-	qboolean	statsStarted;
+	// Countdown	
+	qboolean	cnStarted;
+	int			cnPush;	
+	int			cnNum;
 	// end
 } level_locals_t;
 
@@ -1737,6 +1737,7 @@ void APRSound(gentity_t *ent, char *sound);
 // End Sounds
 void checkEvenTeams( void );
 void balanceTeams( void );
+void CountDown( void );
 
 //
 // g_players.c
@@ -1762,9 +1763,6 @@ void stats_KillerSpree(gentity_t *ent, int score);
 void stats_MatchInfo( void );
 void stats_MapStats( void );
 void write_MapStats( gentity_t *ent, unsigned int score, int type );
-void stats_RoundStats( void );
-void add_RoundStats( void );
-void write_RoundStats(char *player, unsigned int score, unsigned int stats);
 
 //
 // q_shared.c

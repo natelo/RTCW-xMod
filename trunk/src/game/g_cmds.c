@@ -529,7 +529,6 @@ void Cmd_SoftKill_f( gentity_t *ent ) {
 
 		// Stats
 		ent->client->pers.suicides++;
-
 		return;
 	} 
 

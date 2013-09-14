@@ -365,20 +365,16 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			AP(va("print \"%s ^7slit his throat.\n\"", self->client->pers.netname));
 		else if (r == 1)
 			AP(va("print \"%s ^7commited suicide.\n\"", self->client->pers.netname));
-
-		write_RoundStats(self->client->pers.netname, self->client->pers.suicides, ROUND_SUICIDES);
 	}
 
 	if ( meansOfDeath == MOD_THROWKNIFE && g_gamestate.integer == GS_PLAYING) {
 		AP(va("print \"%s ^7was impaled by %s^7s throwing knife.\n\"", self->client->pers.netname, attacker->client->pers.netname));
-		attacker->client->pers.knifeKills++;
-		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.knifeKills, ROUND_KNIFETHROW);
+		attacker->client->pers.knifeKills++;		
 	}
 
 	if ( meansOfDeath == MOD_CHICKEN && g_gamestate.integer == GS_PLAYING) {
 		AP(va("print \"%s ^6was scared to death by ^7%s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname));
 		self->client->pers.chicken++;
-		write_RoundStats(self->client->pers.netname, self->client->pers.chicken, ROUND_CHICKEN);
 
 		// Give props to attacker
 		attacker->client->pers.kills++;
@@ -400,7 +396,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			((g_fastStabSound.integer == 2) ? "stab_alt.wav" : snd)	)));
 
 		self->client->pers.fastStabs++;
-		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.fastStabs, ROUND_FASTSTABS);
 	}  
 
 	if ( meansOfDeath == MOD_POISONDMED && g_gamestate.integer == GS_PLAYING)  {
@@ -412,9 +407,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			AP(va( "print \"%s ^7tasted %s^7's poison.\n\"", self->client->pers.netname, attacker->client->pers.netname)); 
 
 		// Stats
-		attacker->client->pers.poison++; 	
-
-		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.poison, ROUND_POISONKILLS);
+		attacker->client->pers.poison++; 
 	}
 // Mod hacks ends here
 
@@ -446,9 +439,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 				write_MapStats(attacker, attacker->client->pers.kills, MAP_KILLER);
 			else if (g_mapStats.integer == 2)
 				write_MapStats(attacker, attacker->client->pers.kills, MAP_KILLING_SPREE);
-			
-			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.kills, ROUND_MOSTKILLS);
-			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.lifeKills, ROUND_KILLERRATIO);
 
 		// Count teamkill
 		} else {
@@ -456,7 +446,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			if (attacker != self) 
 			{
 				SB_maxTeamKill(attacker);
-				write_RoundStats(attacker->client->pers.netname, attacker->client->pers.teamKills, ROUND_TEAMKILLS);
 			}
 		}
 	} 
@@ -503,8 +492,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		write_MapStats(self, self->client->pers.deaths, MAP_VICTIM);
 	else if (g_mapStats.integer == 4)
 		write_MapStats(self, self->client->pers.deaths, MAP_DEATH_SPREE);
-
-	write_RoundStats(self->client->pers.netname, self->client->pers.deaths, ROUND_BORNTODIE);
 	// End
 
 // JPW NERVE -- if player is holding ticking grenade, drop it
@@ -1393,8 +1380,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 			if (g_mapStats.integer == 6)
 				write_MapStats(attacker, attacker->client->pers.deaths, MAP_HEADSHOTS);
-
-			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.headshots, ROUND_HEADSHOTS);
 		}
 	}
 	
@@ -1473,7 +1458,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 							if (!OnSameTeam(attacker, targ) && attacker->client)
 							{
 								attacker->client->pers.gibs++;
-								write_RoundStats(attacker->client->pers.netname, attacker->client->pers.gibs, ROUND_GIBS);
 							}
 
 							// L0 - Gib reports
