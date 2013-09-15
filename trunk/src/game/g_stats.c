@@ -34,6 +34,9 @@ void stats_DoubleKill (gentity_t *ent, int meansOfDeath ) {
 	if (!g_doubleKills.integer) {
 		return;
 	}
+	if (g_gamestate.integer == GS_WARMUP_COUNTDOWN) {
+		return;
+	}
 	if(!ent || !ent->client) {
 		return;
 	}
@@ -93,7 +96,7 @@ Prints who done first headshots when round starts.
 void stats_FirstHeadshot (gentity_t *attacker, gentity_t *targ) {
 	qboolean 	onSameTeam = OnSameTeam( targ, attacker);
 
-	if (g_showFirstHeadshot.integer) {
+	if (g_showFirstHeadshot.integer && g_gamestate.integer == GS_PLAYING) {
 
 		if ( !firstheadshot &&
 			targ &&
@@ -125,7 +128,7 @@ NOTE: Atm it's only a print..once I'm not lazy I'll set it in a way it can decid
 void stats_FirstBlood (gentity_t *self, gentity_t *attacker) {
 	qboolean 	onSameTeam = OnSameTeam( self, attacker); 
 
-	if (g_showFirstBlood.integer) {
+	if (g_showFirstBlood.integer && g_gamestate.integer == GS_PLAYING) {
 
 		if (! firstblood &&
 			self &&
@@ -154,7 +157,7 @@ void stats_KillingSprees ( gentity_t *ent, int score ) {
 	int killRatio = ent->client->pers.kills; 	
 	int snd_idx;
 	
-	if (!g_killingSprees.integer) 
+	if (!g_killingSprees.integer || g_gamestate.integer != GS_PLAYING) 
 		return;
 	
 	// if killer ratio is bellow 100 kills spam every 5th kill
@@ -192,7 +195,7 @@ void stats_DeathSpree ( gentity_t *ent ) {
 	int n = rand() % 2; 
 	char *snd="", *spree="";	
 
-	if (!g_deathSprees.integer || deaths <= 0)
+	if (!g_deathSprees.integer || deaths <= 0 || g_gamestate.integer != GS_PLAYING)
 		return;
 
 	if( deaths == 9 ) { 
@@ -228,7 +231,7 @@ void stats_KillerSpree(gentity_t *ent, int score) {
 	int killRatio=ent->client->pers.lifeKills;
 	int snd_idx;
 
-	if(!g_killerSpree.integer)
+	if(!g_killerSpree.integer || g_gamestate.integer != GS_PLAYING)
 		return;
 
 	if(!ent || !ent->client) 

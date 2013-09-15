@@ -1860,7 +1860,6 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, start_match, swap_teams, reset_match, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, ? (poll), shuffle\n\"" );
 		return;
 	}
-	
 
 	// L0 voteflags blows...use g_disallowedVotes that makes more sense..
 	if (Q_FindToken(g_disallowedVotes.string, arg1))

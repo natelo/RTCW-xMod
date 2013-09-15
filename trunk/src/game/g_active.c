@@ -483,7 +483,7 @@ qboolean ClientInactivityTimer( gclient_t *client ) {
 			if (g_inactivityToSpecs.integer) // L0 - patched
 				trap_SendServerCommand( client - level.clients, "cp \"Ten seconds until forcing you to spectators^1!\n\"2" );
 			else
-				trap_SendServerCommand( client - level.clients, "cp \"Ten seconds until inactivity drop^1!\n\"" );		
+				trap_SendServerCommand( client - level.clients, "cp \"Ten seconds until inactivity drop^1!\n\"2" );		
 		}
 	}
 	return qtrue;

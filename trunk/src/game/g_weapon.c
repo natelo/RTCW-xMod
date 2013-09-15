@@ -317,7 +317,7 @@ void Weapon_Syringe(gentity_t *ent) {
 
 				// DHM - Nerve :: Let the person being revived know about it
 				// L0 - Let them know..
-				CPx( traceEnt-g_entities, va("print \"You have been revived by: %s^7^1!\n\"", ent->client->pers.netname) );
+				CPx( traceEnt-g_entities, va("print \"You have been revived by: %s^7^3!\n\"", ent->client->pers.netname) );
 				CP( va("print \"You have revived player: %s^7^2!\n\"", traceEnt->client->pers.netname) ); 
 				traceEnt->props_frame_state = ent->s.number;
 
