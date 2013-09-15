@@ -222,6 +222,7 @@ vmCvar_t	g_gibReports;			// Show gib print
 vmCvar_t	g_tapReports;			// Show tap print when player taps out - 0 = off, 1 = shows to all, 2 = shows to team only
 vmCvar_t	g_showLifeStats;		// If enabled it prints some life info when to player (when (s)he dies)
 vmCvar_t	g_fastStabSound;		// 0 = off, 1 = (OSP's) goat sound, 2 = humiliation sound, 3 = random between 1 or 2
+vmCvar_t	g_autoShuffle;			// Auto shuffles teams after rounds set here
 
 // Server Bot
 vmCvar_t	sb_system;			// Controls all SB functionality
@@ -256,6 +257,7 @@ vmCvar_t	motdNum;			// To track motds..
 vmCvar_t	g_swapCounter;		// Count times so it auto swaps once it reaches it..
 vmCvar_t	g_needBalance;		// Flag for auto balance check
 vmCvar_t	mapAchiever;		// A static cvar for map achiever..
+vmCvar_t	shuffleTracking;	// Tracks rounds for (auto) shuffle
 
 // General
 vmCvar_t	g_screenShake;		// Screenshaking on explosions (4 = default, 2 = half.. etc)
@@ -443,6 +445,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_allowPMs, "g_allowPMs", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_teamAutoBalance, "g_teamAutoBalance", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_disallowedVotes, "g_disallowedVotes", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_autoShuffle, "g_autoShuffle", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 
 	// Game
 	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
@@ -522,6 +525,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_swapCounter, "g_swapCounter", "1", 0, 0, qfalse }, 
 	{ &g_needBalance, "g_needBalance", "0", CVAR_CHEAT, qfalse },
 	{ &mapAchiever, "mapAchiever", "", 0, 0, qfalse },
+	{ &shuffleTracking, "shuffleTracking", "0", 0, 0, qfalse },
 
 	// General
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
@@ -1494,7 +1498,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	if ( trap_Cvar_VariableIntegerValue( "bot_enable" ) ) {
 		BotAISetup( restart );
 		BotAILoadMap( restart );
-		G_InitBots( restart );
+		G_InitBots( (restart ? qtrue : qfalse) );
 	}
 
 	G_RemapTeamShaders();
@@ -1506,8 +1510,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 			AP(va("chat \"%s \n\"", mapAchiever.string));
 	} 
 }
-
-
 
 /*
 =================
@@ -2056,6 +2058,10 @@ void BeginIntermission( void ) {
 	// Map Stats
 	if (g_mapStats.integer)
 		stats_MapStats();
+
+	// autoShuffle
+	if (g_autoShuffle.integer)
+		trap_Cvar_Set("shuffleTracking", va("%i", shuffleTracking.integer + 1));	
 // End
 }
 

@@ -393,6 +393,9 @@ void Svcmd_Shuffle_f( void )
 {
 	int count=0, tmpCount, i;
 	int players[MAX_CLIENTS];
+	char	cmd[MAX_TOKEN_CHARS];
+
+	trap_Argv( 1, cmd, sizeof( cmd ) );
 
 	memset(players, -1, sizeof(players));
 	
@@ -439,10 +442,11 @@ void Svcmd_Shuffle_f( void )
 		tmpCount--;
 	}
 
-	// Reset match if there's a shuffle!
-	Svcmd_ResetMatch_f();
-
-	AP("chat \"console: Teams were shuffled^3!\n\"");
+	if (Q_stricmp (cmd, "@") != 0 && Q_stricmp (cmd, "@print") != 0)
+		Svcmd_ResetMatch_f();
+	
+	if (Q_stricmp (cmd, "@print") != 0)
+		AP("chat \"console: Teams were shuffled^3!\n\"");
 }
 
 /*

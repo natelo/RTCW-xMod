@@ -1363,6 +1363,7 @@ extern vmCvar_t		g_ignoreSpecs;
 extern vmCvar_t		g_allowPMs;
 extern vmCvar_t		g_teamAutoBalance;
 extern vmCvar_t		g_disallowedVotes;
+extern vmCvar_t		g_autoShuffle;
 
 // Game
 extern vmCvar_t		g_unlockWeapons;
@@ -1425,6 +1426,7 @@ extern vmCvar_t		sv_hostname;
 extern vmCvar_t		g_swapCounter;
 extern vmCvar_t		g_needBalance;
 extern vmCvar_t		mapAchiever;
+extern vmCvar_t		shuffleTracking;
 
 // General
 extern vmCvar_t		g_screenShake;

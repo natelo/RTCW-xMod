@@ -442,21 +442,39 @@ void CountDown( void ) {
 	if (level.cnNum == 0) 
 		{ index = "prepare.wav"; AP( "cp \"Prepare to fight^2!\n\"2" );}	
 	if (level.cnNum == 1) 
-		{ index = "cn_5.wav"; AP( "cp \"Match starts in: ^25\n\"2" );}
+		{ index = "cn_5.wav"; /*AP( "cp \"Match starts in: ^25\n\"2" );*/}
 	if (level.cnNum == 2) 
-		{ index = "cn_4.wav"; AP( "cp \"Match starts in: ^24\n\"2" );}	
+		{ index = "cn_4.wav"; /*AP( "cp \"Match starts in: ^24\n\"2" );*/}	
 	if (level.cnNum == 3) 
-		{ index = "cn_3.wav"; AP( "cp \"Match starts in: ^23\n\"2" );}	
+		{ index = "cn_3.wav"; /*AP( "cp \"Match starts in: ^23\n\"2" );*/}	
 	if (level.cnNum == 4)
-		{ index = "cn_2.wav"; AP( "cp \"Match starts in: ^22\n\"2" );}
+		{ index = "cn_2.wav"; /*AP( "cp \"Match starts in: ^22\n\"2" );*/}
 	if (level.cnNum == 5) 
-		{ index = "cn_1.wav"; AP( "cp \"Match starts in: ^21\n\"2" );}
+		{ index = "cn_1.wav"; /*AP( "cp \"Match starts in: ^21\n\"2" );*/}
 	if (level.cnNum == 6 ) 
 		{ index = "fight.wav"; AP( "print \"^2Fight!\n\""); }	
 
 	// Prepare to fight takes 2 seconds..
 	if(level.cnNum == 0){
 		level.cnPush = level.time+2000;
+
+		// Auto shuffle if enabled and treshhold is reached
+		if (g_autoShuffle.integer)
+		{
+			if (shuffleTracking.integer >= g_autoShuffle.integer)
+			{
+				trap_SendConsoleCommand( EXEC_APPEND, "shuffle @print\n" );
+				trap_Cvar_Set("shuffleTracking", 0);
+				AP("chat \"console: Teams were ^3Auto shuffled^7!\n\"");
+			}
+			// Notify that shuffle will occur next round..
+			else if ((g_autoShuffle.integer > 2 ) &&
+				(shuffleTracking.integer == (g_autoShuffle.integer - 1)) )
+			{
+				AP(("chat \"^3Notice: ^7Teams will be ^3Auto Shuffled ^7next round^3!\n\""));
+			}
+		}
+
 	// Just enough to fix the bug and skip to action..
 	} else if (level.cnNum == 6) {
 		level.cnPush = level.time+200;
