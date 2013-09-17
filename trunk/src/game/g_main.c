@@ -3227,6 +3227,20 @@ void G_RunFrame( int levelTime ) {
 			balanceTeams();
 	}	
 
+	// L0 - Playerst left
+	if ((g_gamestate.integer == GS_PLAYING) && 
+		g_maxlives.integer &&
+		level.time >= ( level.leftCheck + 30000) ) 
+	{
+		int axisLeft      = level.numteamVotingClients[0] - level.numFinalDead[0];
+		int alliedLeft    = level.numteamVotingClients[1] - level.numFinalDead[1];		
+
+		matchInfo(MT_ME, va( "Allies left: %i Axis left: %i", alliedLeft, axisLeft )); 
+		trap_SendServerCommand( -1, va( "cp \"Allies Left: %i Axis Left: %i\n\"", alliedLeft, axisLeft ) );
+
+		level.leftCheck = level.time;
+	}
+
 	// for tracking changes
 	CheckCvars();
 

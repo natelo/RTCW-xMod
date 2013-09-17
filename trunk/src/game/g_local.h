@@ -845,6 +845,7 @@ typedef struct {
 	int			axisPlayers;		// For auto lock and auto team balance
 	int			alliedPlayers;		// For auto lock and auto team balance
 	int			balanceTimer;		// Auto balance teams timer
+	int			leftCheck;			// When it was checked the last time..
 	// Weapons restrictions
 	int			axisSniper, alliedSniper;
 	int			axisPF, alliedPF;
