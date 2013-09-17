@@ -1410,6 +1410,7 @@ extern vmCvar_t		g_tapReports;
 extern vmCvar_t		g_showLifeStats;
 extern vmCvar_t		g_fastStabSound;
 extern vmCvar_t		g_dropObj;
+extern vmCvar_t		g_panzerArc;
 
 // Server Bot
 extern vmCvar_t		sb_system;
