@@ -178,6 +178,7 @@ vmCvar_t	g_allowPMs;				// Allow private messages
 vmCvar_t	g_teamAutoBalance;		// If enabled it will auto sort teams when there's more then 1 player more in any team
 vmCvar_t	g_disallowedVotes;		// Disallowed votes separated by space
 vmCvar_t	g_autoShuffle;			// Auto shuffles teams after rounds set here
+vmCvar_t	g_printMatchInfo;		// Prints events when they happen (retake, obj planted..)
 
 // Game
 vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
@@ -447,6 +448,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_teamAutoBalance, "g_teamAutoBalance", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_disallowedVotes, "g_disallowedVotes", "", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_autoShuffle, "g_autoShuffle", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
+	{ &g_printMatchInfo, "g_printMatchInfo", "1", CVAR_ARCHIVE, 0, qfalse },
 
 	// Game
 	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
@@ -2055,7 +2057,7 @@ void BeginIntermission( void ) {
 	stats_MatchInfo();
 
 	// Prints & stuff
-	matchInfo();
+	matchInfo( MT_EI, NULL );
 
 	// Map Stats
 	if (g_mapStats.integer)

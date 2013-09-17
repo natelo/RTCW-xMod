@@ -1365,6 +1365,7 @@ extern vmCvar_t		g_allowPMs;
 extern vmCvar_t		g_teamAutoBalance;
 extern vmCvar_t		g_disallowedVotes;
 extern vmCvar_t		g_autoShuffle;
+extern vmCvar_t		g_printMatchInfo;
 
 // Game
 extern vmCvar_t		g_unlockWeapons;
@@ -1731,6 +1732,9 @@ void G_HistoricalTrace( gentity_t* ent, trace_t *results, const vec3_t start, co
 //
 // g_match.c
 //
+#define MT_EI	0		// Match Times - End info
+#define MT_ME	1		// Match Times - Match Event(s)
+
 int FlagBalance( void );
 int isWeaponLimited( gclient_t *client, int weap );
 qboolean isWeaponBalanced( int weapon );
@@ -1745,7 +1749,7 @@ void APRSound(gentity_t *ent, char *sound);
 void checkEvenTeams( void );
 void balanceTeams( void );
 void CountDown( void );
-void matchInfo( void );
+void matchInfo( unsigned int type, char *msg );
 
 //
 // g_players.c

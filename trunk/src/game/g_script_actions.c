@@ -1472,7 +1472,8 @@ qboolean G_ScriptAction_Announce( gentity_t *ent, char *params )
 		G_Error( "G_ScriptAction_Announce: statement parameter required\n" );
 	}
 
-	trap_SendServerCommand( -1, va("cp \"%s\" 2", token ));
+	//trap_SendServerCommand( -1, va("cp \"%s\" 2", token ));
+	matchInfo(MT_ME, va("%s", token)); // L0 - Some info
 
 	return qtrue;
 }
