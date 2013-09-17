@@ -227,14 +227,19 @@ vmCvar_t	g_fastStabSound;		// 0 = off, 1 = (OSP's) goat sound, 2 = humiliation s
 vmCvar_t	g_dropObj;				// Drop Objective
 
 // Server Bot
-vmCvar_t	sb_system;			// Controls all SB functionality
-vmCvar_t	sb_maxTKs;			// Max TK's before client gets kicked
-vmCvar_t	sb_maxTeamBleed;	// Max bleeding pts before client gets kicked (1 hit = 1 point)
-vmCvar_t	sb_minLowScore;		// Minimum score allowed before client gets kicked for low score
-vmCvar_t	sb_maxPingFlux;		// Top limit ping can hit before client gets kicked
-vmCvar_t	sb_maxPingHits;		// How many seconds or times (1 time = 1 sec) can it peak above limit
-vmCvar_t	sb_censorPenalty;	// Auto ignores (1) or kicks (2) client after 4th warning for cursing..
-vmCvar_t	sb_autoIgnore;		// Auto ignores players (for the round) that reach spam check more than 3 times.
+vmCvar_t	sb_system;						// Controls all SB functionality
+vmCvar_t	sb_tempbanIP;					// Tempbans by IP or if disabled, by Guid
+vmCvar_t	sb_maxTKs;						// Max TK's before client gets kicked
+vmCvar_t	sb_makTKsTempbanMins;			// Minutes it bans for TK (0 = disabled)
+vmCvar_t	sb_maxTeamBleed;				// Max bleeding pts before client gets kicked (1 hit = 1 point)
+vmCvar_t	sb_maxTeamBleedTempbanMins;		// Minutes it bans for team bleeding (0 = disabled)
+vmCvar_t	sb_minLowScore;					// Minimum score allowed before client gets kicked for low score
+vmCvar_t	sb_minLowScoreTempbanMins;		// Minutes it bans for low score (0 = disabled)
+vmCvar_t	sb_maxPingFlux;					// Top limit ping can hit before client gets kicked
+vmCvar_t	sb_maxPingHits;					// How many seconds or times (1 time = 1 sec) can it peak above limit
+vmCvar_t	sb_censorPenalty;				// Auto ignores (1) or kicks (2) client after 4th warning for cursing..
+vmCvar_t	sb_censorPentalityTempbanMin;	// Minutes it bans for censory kick (sb_censorPenality has to be 2), 0 = disabled.
+vmCvar_t	sb_autoIgnore;					// Auto ignores players (for the round) that reach spam check more than 3 times.
 
 // MOTD's
 vmCvar_t	g_serverMessage;	// Shows a center print each time when player switches teams.
@@ -498,12 +503,17 @@ cvarTable_t		gameCvarTable[] = {
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_tempbanIP, "sb_tempbanIP", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &sb_maxTKs, "sb_maxTKs", "-1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_makTKsTempbanMins, "sb_makTKsTempbanMins", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &sb_maxTeamBleed, "sb_maxTeamBleed", "-1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_maxTeamBleedTempbanMins, "sb_maxTeamBleedTempbanMins", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &sb_minLowScore, "sb_minLowScore", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_minLowScoreTempbanMins, "sb_minLowScoreTempbanMins", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &sb_maxPingFlux, "sb_maxPingFlux", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
 	{ &sb_maxPingHits, "sb_maxPingHits", "30", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
 	{ &sb_censorPenalty, "sb_censorPenalty", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
+	{ &sb_censorPentalityTempbanMin, "sb_censorPentalityTempbanMin", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &sb_autoIgnore, "sb_autoIgnore", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// MOTDs

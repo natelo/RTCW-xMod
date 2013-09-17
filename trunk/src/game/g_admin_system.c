@@ -623,6 +623,16 @@ void SB_maxTeamBleed( gentity_t *ent ) {
 		AP(va("chat \"^3[WARNING]: ^7%s ^7is getting close to being kicked for ^3Bleeding^7!\n\"", ent->client->pers.netname));
 
 	if ((count >= sb_maxTeamBleed.integer) && (ent->client->pers.sb_teamBleed)) {
+
+		// Tempban
+		if (sb_maxTeamBleedTempbanMins.integer)
+		{
+			if (sb_tempbanIP.integer && IP_handling.integer)
+				trap_SendConsoleCommand(EXEC_APPEND, va("tempban %i %i", ent->client->ps.clientNum, sb_maxTeamBleedTempbanMins.integer ));
+			else
+				trap_SendConsoleCommand(EXEC_APPEND, va("tempbanguid %s %i", ent->client->sess.guid, sb_maxTeamBleedTempbanMins.integer));	
+		}
+
 		trap_DropClient( ent-g_entities, "Kicked \n^3For Team Wounding." );	
 		AP(va("chat \"^3SB^7: %s ^7got kicked for ^3Team Wounding^7.\n\"", ent->client->pers.netname));
 	}
@@ -640,6 +650,16 @@ void SB_minLowScore( gentity_t *ent ) {
 		return;
 
 	if (ent->client->ps.persistant[PERS_SCORE] < sb_minLowScore.integer){ 	
+
+		// Tempban
+		if (sb_minLowScoreTempbanMins.integer)
+		{
+			if (sb_tempbanIP.integer && IP_handling.integer)
+				trap_SendConsoleCommand(EXEC_APPEND, va("tempban %i %i", ent->client->ps.clientNum, sb_minLowScoreTempbanMins.integer ));
+			else
+				trap_SendConsoleCommand(EXEC_APPEND, va("tempbanguid %s %i", ent->client->sess.guid, sb_minLowScoreTempbanMins.integer));	
+		}
+
 		AP(va("chat \"^3SB^7: %s ^7got kicked for ^3Low Score^7.\n\"", ent->client->pers.netname));
 		trap_DropClient(ent->client->ps.clientNum, "Kicked \n^3For Low Score.");
 	}
@@ -724,6 +744,16 @@ void SB_chatWarn(gentity_t *ent) {
 			ent->client->sess.ignored = 1;
 			AP(va("chat \"^3SB^7: %s ^7has been ignored due foul language^3!\n\"", ent->client->pers.netname));
 		} else {
+
+			// Tempban
+			if (sb_censorPentalityTempbanMin.integer)
+			{
+				if (sb_tempbanIP.integer && IP_handling.integer)
+					trap_SendConsoleCommand(EXEC_APPEND, va("tempban %i %i", ent->client->ps.clientNum, sb_censorPentalityTempbanMin.integer ));
+				else
+					trap_SendConsoleCommand(EXEC_APPEND, va("tempbanguid %s %i", ent->client->sess.guid, sb_censorPentalityTempbanMin.integer));	
+			}
+
 			AP(va("chat \"^3SB^7: %s ^7got kicked for foul language^3!\n\"", ent->client->pers.netname));
 			trap_DropClient(ent-g_entities,va("^3kicked for ^3Foul ^3Language!"));
 		}		

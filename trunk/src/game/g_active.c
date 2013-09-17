@@ -1355,6 +1355,15 @@ void ClientThink_real( gentity_t *ent ) {
 		{
 			if (ent->client->pers.sb_TKkillTime < level.time)
 			{
+				// Tempban
+				if (sb_makTKsTempbanMins.integer)
+				{
+					if (sb_tempbanIP.integer && IP_handling.integer)
+						trap_SendConsoleCommand(EXEC_APPEND, va("tempban %i %i", ent->client->ps.clientNum, sb_makTKsTempbanMins ));
+					else
+						trap_SendConsoleCommand(EXEC_APPEND, va("tempbanguid %s %i", ent->client->sess.guid, sb_makTKsTempbanMins));	
+				}
+
 				trap_DropClient( ent-g_entities, "Kicked \n^3For Team Killing." );		
 				AP(va("chat \"^3SB^7: %s ^7got kicked for ^3Team Killing^7.\n\"", ent->client->pers.netname));
 			}

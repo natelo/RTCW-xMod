@@ -1413,12 +1413,17 @@ extern vmCvar_t		g_dropObj;
 
 // Server Bot
 extern vmCvar_t		sb_system;
+extern vmCvar_t		sb_tempbanIP;
 extern vmCvar_t		sb_maxTKs;
+extern vmCvar_t		sb_makTKsTempbanMins;
 extern vmCvar_t		sb_maxTeamBleed;
+extern vmCvar_t		sb_maxTeamBleedTempbanMins;
 extern vmCvar_t		sb_minLowScore;
+extern vmCvar_t		sb_minLowScoreTempbanMins;
 extern vmCvar_t		sb_maxPingFlux;
 extern vmCvar_t		sb_maxPingHits;	
 extern vmCvar_t		sb_censorPenalty;
+extern vmCvar_t		sb_censorPentalityTempbanMin;
 extern vmCvar_t		sb_autoIgnore;
 
 // MOTDs
