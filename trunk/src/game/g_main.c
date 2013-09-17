@@ -177,6 +177,7 @@ vmCvar_t	g_ignoreSpecs;			// Ignores spectators - Admins can still bypass the ig
 vmCvar_t	g_allowPMs;				// Allow private messages
 vmCvar_t	g_teamAutoBalance;		// If enabled it will auto sort teams when there's more then 1 player more in any team
 vmCvar_t	g_disallowedVotes;		// Disallowed votes separated by space
+vmCvar_t	g_autoShuffle;			// Auto shuffles teams after rounds set here
 
 // Game
 vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
@@ -222,7 +223,7 @@ vmCvar_t	g_gibReports;			// Show gib print
 vmCvar_t	g_tapReports;			// Show tap print when player taps out - 0 = off, 1 = shows to all, 2 = shows to team only
 vmCvar_t	g_showLifeStats;		// If enabled it prints some life info when to player (when (s)he dies)
 vmCvar_t	g_fastStabSound;		// 0 = off, 1 = (OSP's) goat sound, 2 = humiliation sound, 3 = random between 1 or 2
-vmCvar_t	g_autoShuffle;			// Auto shuffles teams after rounds set here
+vmCvar_t	g_dropObj;				// Drop Objective
 
 // Server Bot
 vmCvar_t	sb_system;			// Controls all SB functionality
@@ -491,6 +492,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_tapReports, "g_tapReports", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_showLifeStats, "g_showLifeStats", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_fastStabSound, "g_fastStabSound", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_dropObj, "g_dropObj", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 

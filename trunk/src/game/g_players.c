@@ -370,6 +370,69 @@ void Cmd_Push(gentity_t* ent)
 
 /*
 =================
+Drop objective
+
+Port from NQ
+=================
+*/
+void Cmd_DropObj(gentity_t *self)
+{
+	gitem_t *item= NULL;
+
+	// drop flag regardless
+	if (self->client->ps.powerups[PW_REDFLAG]) {
+		item = BG_FindItem("Red Flag");
+		if (!item)
+			item = BG_FindItem("Objective");
+
+		self->client->ps.powerups[PW_REDFLAG] = 0;
+	}
+	if (self->client->ps.powerups[PW_BLUEFLAG]) {
+		item = BG_FindItem("Blue Flag");
+		if (!item)
+			item = BG_FindItem("Objective");
+
+		self->client->ps.powerups[PW_BLUEFLAG] = 0;
+	}
+
+	if (item) {
+		vec3_t launchvel = { 0, 0, 0 };
+		vec3_t forward;
+		vec3_t origin;
+		vec3_t angles;
+		gentity_t *flag;
+
+		VectorCopy(self->client->ps.origin, origin);
+		// tjw: if the player hasn't died, then assume he's
+		//      throwing objective per g_dropObj
+		if(self->health > 0) {
+			VectorCopy(self->client->ps.viewangles, angles);
+			if(angles[PITCH] > 0)
+				angles[PITCH] = 0;
+			AngleVectors(angles, forward, NULL, NULL);
+			VectorMA(self->client->ps.velocity,
+				96, forward, launchvel);
+			VectorMA(origin, 36, forward, origin);
+			origin[2] += self->client->ps.viewheight;
+		}
+
+		flag = LaunchItem(item, origin, launchvel, self->s.number);
+
+		flag->s.modelindex2 = self->s.otherEntityNum2;// JPW NERVE FIXME set player->otherentitynum2 with old modelindex2 from flag and restore here
+		flag->message = self->message;	// DHM - Nerve :: also restore item name
+		// Clear out player's temp copies
+		self->s.otherEntityNum2 = 0;
+		self->message = NULL;
+		self->droppedObj = qtrue;
+	} 
+	else
+	{
+		Cmd_ThrowKnives( self );
+	}
+}
+
+/*
+=================
 Stats command
 
 TODO: Unlazy my self and add targeted stats (victim, killer, <client number>)

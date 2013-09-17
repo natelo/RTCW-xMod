@@ -2158,6 +2158,8 @@ void ClientSpawn(gentity_t *ent, qboolean revived) {
 	ent->client->pers.lifeAcc_hits = 0;
 	ent->client->pers.lifeAcc_shots = 0;
 	ent->client->pers.lifeHeadshots = 0;
+	// Dropped objective
+	ent->droppedObj = qfalse;	
 	// End
 	
 	VectorCopy (playerMins, ent->r.mins);

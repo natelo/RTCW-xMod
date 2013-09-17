@@ -953,15 +953,17 @@ void ClientThink_real( gentity_t *ent ) {
 			if (!client->dropWeaponTime) {
 				client->dropWeaponTime = 1; // just latch it for now
 
-				// L0 - Throw Knives
+				// L0 - Throw knife & Drop Obj
 				if ( client->ps.weapon == WP_KNIFE ) {
-					if ( client->ps.stats[STAT_HEALTH] > 0 ) {						
-						if ( g_throwKnives.integer != 0 ) {
-							Cmd_ThrowKnives( ent );						
-						}					
-						return;
+					if ( client->ps.stats[STAT_HEALTH] > 0 ) {
+						if ( g_dropObj.integer > 0 ) 
+							Cmd_DropObj( ent );
+						else
+							Cmd_ThrowKnives( ent );		
 					}
-				} // End
+
+					return;
+				}// End
 
 				// L0 - Patched it for g_unlockWeapons..
 				if ( ( client->ps.stats[STAT_PLAYER_CLASS] == PC_SOLDIER ) || ( client->ps.stats[STAT_PLAYER_CLASS] == PC_LT ) || 

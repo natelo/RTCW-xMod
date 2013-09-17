@@ -384,6 +384,7 @@ struct gentity_s {
 	qboolean	poisoned;					// Poison
 	int			poisonEnt;					// Poison
 	int			lastPoisonTime;				// Poison
+	qboolean	droppedObj;					// Objective dropping
 	// End
 };
 
@@ -1407,6 +1408,7 @@ extern vmCvar_t		g_gibReports;
 extern vmCvar_t		g_tapReports;
 extern vmCvar_t		g_showLifeStats;
 extern vmCvar_t		g_fastStabSound;
+extern vmCvar_t		g_dropObj;
 
 // Server Bot
 extern vmCvar_t		sb_system;
@@ -1755,6 +1757,7 @@ void Cmd_Pmsg( gentity_t *ent );
 void Cmd_Time_f( gentity_t *ent );
 void Cmd_Drag( gentity_t *ent);
 void Cmd_Push(gentity_t* ent);
+void Cmd_DropObj(gentity_t *self);
 void Cmd_Stats_f(gentity_t *ent);
 
 //
