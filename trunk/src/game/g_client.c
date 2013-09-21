@@ -563,7 +563,12 @@ void respawn( gentity_t *ent ) {
 
 	// DHM - Nerve :: Decrease the number of respawns left							(L0 - Not in warmup..)
 	if ( g_maxlives.integer > 0 && ent->client->ps.persistant[PERS_RESPAWNS_LEFT] > 0 && g_gamestate.integer == GS_PLAYING)
+	{
 		ent->client->ps.persistant[PERS_RESPAWNS_LEFT]--;
+
+		// L0 - Track lives for Max Lives..
+		TrackMaxLivesGUID( ent->client->sess.guid, ent->client->ps.persistant[PERS_RESPAWNS_LEFT], ent->client->sess.sessionTeam );
+	}
 
 	G_DPrintf( "Respawning %s, %i lives left\n", ent->client->pers.netname, ent->client->ps.persistant[PERS_RESPAWNS_LEFT]);
 
@@ -1703,7 +1708,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	char		userinfo[MAX_INFO_STRING];
 	gentity_t	*ent;
 	char		guid[PB_GUID_LENGTH + 1];
-	qboolean	ignored=qfalse;
+	qboolean	ignored = qfalse;
 
 	ent = &g_entities[ clientNum ];
 
@@ -1745,15 +1750,6 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 			ignored = qtrue;
 			
 	} // End
-	
-	// Xian - check for max lives enforcement ban
-	if (g_enforcemaxlives.integer && (g_maxlives.integer > 0 || g_axismaxlives.integer > 0 || g_alliedmaxlives.integer > 0))
-	{
-		value = Info_ValueForKey ( userinfo, "cl_guid" );
-		if ( G_FilterMaxLivesPacket ( value ) )
-			return "Max Lives Enforcement Temp Ban";
-	}
-	// End Xian
 
 	// we don't check password for bots and local client
 	// NOTE: local client <-> "ip" "localhost"
@@ -1842,6 +1838,12 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		// L0 - Ignore client if they're suppose to be..
 		if (ignored)
 			ent->client->sess.ignored = 2;
+
+		// L0 - Max Lives
+		if (( g_maxlives.integer > 0 || g_alliedmaxlives.integer > 0 || g_axismaxlives.integer > 0 ) && g_enforcemaxlives.integer )
+		{
+			CheckMaxLivesGUID( Info_ValueForKey (userinfo, "cl_guid") );
+		}
 	}
 
 	// count current clients and rank for scoreboard
@@ -1975,17 +1977,12 @@ void ClientBegin( int clientNum ) {
 		}
 	}
 	G_LogPrintf( "ClientBegin: %i\n", clientNum );
-	
-	// Xian - Check for maxlives enforcement
-	if ( g_enforcemaxlives.integer == 1 && (g_maxlives.integer > 0 || g_axismaxlives.integer > 0 || g_alliedmaxlives.integer > 0)) {
-		char *value;
-		char userinfo[MAX_INFO_STRING];
-		trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
-		value = Info_ValueForKey ( userinfo, "cl_guid" );
-		G_LogPrintf( "EnforceMaxLives-GUID: %s\n", value );
-		AddMaxLivesGUID( value );		
+
+	// L0 - Max Lives
+	if (( g_maxlives.integer > 0 || g_alliedmaxlives.integer > 0 || g_axismaxlives.integer > 0 ) && g_enforcemaxlives.integer )
+	{
+		CheckMaxLivesGUID( client->sess.guid );
 	}
-	// End Xian
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();

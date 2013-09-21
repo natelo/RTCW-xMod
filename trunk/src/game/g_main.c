@@ -1388,7 +1388,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	
 	// just for verbosity
 	if (g_enforcemaxlives.integer && (g_maxlives.integer > 0 || g_axismaxlives.integer > 0 || g_alliedmaxlives.integer > 0)) { 
-		G_Printf ( "EnforceMaxLives-Cleared GUID List\n" );
+		G_Printf ("[MaxLives] List was cleared.\n");
 	}
 
 	G_InitMemory();

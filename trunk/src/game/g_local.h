@@ -549,6 +549,9 @@ typedef struct {
 	// Throwing knives
 	int		throwingKnives;
 
+	// Bypassing Max Lives
+	qboolean evadingMaxLives;
+
 	// Stats	
 	int		kills;
 	int		deaths;
@@ -1079,10 +1082,7 @@ qboolean SpotWouldTelefrag( gentity_t *spot );
 //
 // g_svcmds.c
 //
-qboolean	ConsoleCommand( void );
-qboolean G_FilterMaxLivesPacket (char *from);
-void AddMaxLivesGUID( char *str );
-void ClearMaxLivesGUID ( void );
+qboolean ConsoleCommand( void );
 
 //
 // g_weapon.c
@@ -1101,11 +1101,6 @@ void DeathmatchScoreboardMessage (gentity_t *client);
 // g_cmds.c
 //
 void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, const char *name, const char *message, qboolean localize ); // JPW NERVE removed static declaration so it would link
-
-//
-// g_pweapon.c
-//
-
 
 //
 // g_main.c
@@ -1193,13 +1188,6 @@ void BotTestAAS(vec3_t origin);
 void Cmd_Activate_f (gentity_t *ent);
 int Cmd_WolfKick_f (gentity_t *ent);
 // Ridah
-
-// g_save.c
-/*qboolean G_SaveGame(char *username);
-void G_LoadGame(char *username);
-qboolean G_SavePersistant(char *nextmap);
-void G_LoadPersistant(void);
-void G_UpdatePlayTime ( void );*/
 
 // g_script.c
 void G_Script_ScriptParse( gentity_t *ent );
@@ -1757,6 +1745,11 @@ void checkEvenTeams( void );
 void balanceTeams( void );
 void CountDown( void );
 void matchInfo( unsigned int type, char *msg );
+// Max Lives
+void CheckMaxLivesGUID( char *guid );
+int SortMaxLivesGUID( char *guid, int team );
+void TrackMaxLivesGUID( char *guid, int lives, int team );
+void ClearMaxLivesGUID ( void );
 
 //
 // g_players.c

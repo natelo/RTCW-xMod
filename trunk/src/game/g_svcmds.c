@@ -2,77 +2,10 @@
 ===========================================================================
 L0 
 
-Removed bunch of useless stuff for old way of IP banning as it's severly outdated.
+- Removed bunch of useless stuff for old way of IP banning as it's severly outdated.
 ===========================================================================
 */
 #include "g_local.h"
-
-typedef struct ipGUID_s
-{
-	char		compare[33];
-} ipGUID_t;
-
-#define	MAX_GUIDFILTERS	1024
-
-static ipGUID_t		ipMaxLivesFilters[MAX_GUIDFILTERS];
-static int			numMaxLivesFilters = 0;
-
-void PrintMaxLivesGUID (void)
-{
-	int		i;
-
-	for (i = 0 ; i < numMaxLivesFilters ; i++)
-	{
-		G_LogPrintf( "%i. %s\n", i, ipMaxLivesFilters[i].compare );
-	}
-	G_LogPrintf ( "--- End of list\n");
-}
-
-/*
- Check to see if the user is trying to sneak back in with g_enforcemaxlives enabled
-*/
-qboolean G_FilterMaxLivesPacket (char *from)
-{
-	int		i;
-
-	for (i=0 ; i<numMaxLivesFilters ; i++)
-	{
-		if ( !Q_stricmp (ipMaxLivesFilters[i].compare, from ) )
-			return qtrue;
-	}
-	return qfalse;
-}
-
-/*
-=================
-AddMaxLivesGUID
-Xian - with g_enforcemaxlives enabled, this adds a client GUID to a list
-that prevents them from quitting a disconnecting
-=================
-*/
-void AddMaxLivesGUID( char *str )
-{
-	if (numMaxLivesFilters == MAX_GUIDFILTERS)
-	{
-		G_Printf ("MaxLives GUID filter list is full\n");
-		return;
-	}
-	Q_strncpyz (ipMaxLivesFilters[numMaxLivesFilters].compare, str, 33);
-	numMaxLivesFilters++;
-}
-
-/*
- Xian - Clears out the entire list maxlives enforcement banlist
-*/
-void ClearMaxLivesGUID ( void )
-{
-	int			i;
-	
-	for (i=0 ; i<numMaxLivesFilters ; i++ ) {
-		ipMaxLivesFilters[i].compare[0] = '\0';
-	}
-	numMaxLivesFilters = 0;
-}
 
 /*
 =================
@@ -95,7 +28,6 @@ void Svcmd_AddIP_f( void ) {
     
 	fclose(bannedfile);
 }
-
 
 /*
 =================
@@ -488,11 +420,6 @@ qboolean	ConsoleCommand( void ) {
 
 	if (Q_stricmp (cmd, "addbot") == 0) {
 		Svcmd_AddBot_f();
-		return qtrue;
-	}
-
-	if (Q_stricmp (cmd, "listmaxlivesip") == 0) {
-		PrintMaxLivesGUID();
 		return qtrue;
 	}
 

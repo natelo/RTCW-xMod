@@ -663,6 +663,13 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 		return;
 	}
 	// dhm
+
+	if ( ent->client->pers.evadingMaxLives && !forced && oldTeam != TEAM_SPECTATOR)
+	{	
+		CP("cp \"You can't join the battle because you are out of lives!\n\"2");
+		G_LogPrintf( "[MaxLives] Joining prevented for %s (GUID %s)\n", ent->client->pers.netname, ent->client->sess.guid );
+		return;
+	}
   
 	//
 	// execute the team change

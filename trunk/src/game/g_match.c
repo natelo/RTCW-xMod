@@ -567,3 +567,124 @@ void matchInfo( unsigned int type, char *msg ) {
 	}
 }
 
+/*
+=================
+L0 - Max lives
+
+Basically it's an enhanced version of Xian's code.
+
+Now it tracks lives, it accounts for a fact that client
+may drop during game so in that case upon reconnection
+they get same amount of lives they got when they left.
+
+If they try to evade max lives check by reconnecting they 
+will be able to enter the game but wont be able to join any team
+until round ends. 
+
+NOTE 1:
+	Clients can still be forced to team by admin..they'll just end up with 1 life.
+NOTE 2:
+	
+=================
+*/
+typedef struct GUID_s
+{
+	char	guid[PB_GUID_LENGTH + 1];
+	int		axisLives;
+	int		alliedLives;
+} GUID_t;
+
+#define MAX_GUIDS 1024
+static GUID_t	lifeGUIDs[MAX_GUIDS];
+static int		lifeEntries = 0;
+
+// Adds guid to the list
+void AddMaxLivesGUID( char *guid )
+{
+	if (lifeEntries == MAX_GUIDS)
+	{
+		G_Printf ("[MaxLives] Structure is full!\n");
+		return;
+	}
+	Q_strncpyz (lifeGUIDs[lifeEntries].guid, guid, PB_GUID_LENGTH + 1);	
+	lifeGUIDs[lifeEntries].axisLives = -2;
+	lifeGUIDs[lifeEntries].alliedLives = -2;
+	lifeEntries++;
+}
+
+// Checks if entry exists
+void CheckMaxLivesGUID( char *guid )
+{
+	int		i;
+	for (i=0 ; i < lifeEntries ; i++)
+	{	
+		if ( !Q_stricmp (lifeGUIDs[i].guid, guid ) )
+		{				
+			return;
+		}
+	}
+	AddMaxLivesGUID( guid );
+	return;
+}
+
+// Guid was found on the list...sort lives
+int SortMaxLivesGUID( char *guid, int team )
+{
+	int		i;
+	for (i=0 ; i < lifeEntries ; i++)
+	{		
+		if ( !Q_stricmp (lifeGUIDs[i].guid, guid ) )
+		{	
+			int axis = lifeGUIDs[i].axisLives; 
+			int allied = lifeGUIDs[i].alliedLives;
+
+			// Make sure player didn't wasted all lifes on one team and tries to join other
+			if ((axis == 0) || (allied == 0))
+				return 0;				
+
+			// Check teams now
+			// It always favours less lives (if client bounces from team to team..)
+			if (team == TEAM_RED)
+			{
+				if( axis != -2 )
+					return (axis > allied ? allied : axis);
+			}
+			else if (team == TEAM_BLUE)
+			{
+				if( allied != -2 )				
+					return (allied > axis ? axis : allied);
+			}
+		}
+	}
+	return -2;
+}
+
+// Track lives
+void TrackMaxLivesGUID( char *guid, int lives, int team )
+{
+	int		i;
+	for (i=0 ; i < lifeEntries ; i++)
+	{
+		if ( !Q_stricmp (lifeGUIDs[i].guid, guid ) )
+		{
+			if (team == TEAM_RED )
+				lifeGUIDs[i].axisLives = lives;
+			else
+				lifeGUIDs[i].alliedLives = lives;
+		}
+	}
+	return;
+}
+
+// Clean the list
+void ClearMaxLivesGUID ( void )
+{
+	int	i;	
+	for (i=0 ; i < lifeEntries ; i++ ) {
+		lifeGUIDs[i].guid[0] = '\0';		
+		lifeGUIDs[i].axisLives = -2;
+		lifeGUIDs[i].alliedLives = -2;
+	}
+	lifeEntries = 0;
+}
+
