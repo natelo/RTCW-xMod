@@ -3229,7 +3229,12 @@ void G_RunFrame( int levelTime ) {
 
 	// L0 - Playerst left
 	if ((g_gamestate.integer == GS_PLAYING) && 
-		g_maxlives.integer &&
+		( 
+			g_maxlives.integer ||
+			g_alliedmaxlives.integer ||
+			g_axismaxlives.integer 
+		)
+		&&
 		level.time >= ( level.leftCheck + 30000) ) 
 	{
 		int axisLeft      = level.numteamVotingClients[0] - level.numFinalDead[0];
