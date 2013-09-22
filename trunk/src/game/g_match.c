@@ -654,7 +654,7 @@ int SortMaxLivesGUID( gentity_t *ent )
 			if (team == TEAM_RED)
 			{
 				if (axis != -2) // Prefer lower
-					return ( (g_allowLateJoiners.integer && (calculate > axis)) ? axis : calculate );
+					return ( g_allowLateJoiners.integer ? ((calculate > axis) ? axis : calculate) : axis );
 				else if (g_allowLateJoiners.integer)
 					return calculate;
 				// Nothing..go to bottom (gives all lives..)
@@ -662,7 +662,7 @@ int SortMaxLivesGUID( gentity_t *ent )
 			else if (team == TEAM_BLUE)
 			{
 				if (allied != -2) // Prefer lower
-					return ( (g_allowLateJoiners.integer && (calculate > allied)) ? allied : calculate );
+					return ( g_allowLateJoiners.integer ? ((calculate > allied) ? allied : calculate) : allied );
 				else if (g_allowLateJoiners.integer)
 					return calculate;
 				// Nothing..go to bottom (gives all lives..)
