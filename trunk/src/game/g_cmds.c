@@ -1979,6 +1979,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			Com_sprintf( level.voteString, sizeof( level.voteString ), "\"poll\""); 
 		} 
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Poll: %s", s ); 
+	// Ignore
 	} else if ( !Q_stricmp( arg1, "ignore" ) ) {
 		int i, num = MAX_CLIENTS;
 		for ( i = 0; i < MAX_CLIENTS; i++ )
@@ -1999,6 +2000,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			CPx( ent - g_entities, "print \"Client not on server.\n\"" );
 			return;
 		}
+	// Unignore
 	} else if ( !Q_stricmp( arg1, "unignore" ) ) {	
 		int i, num = MAX_CLIENTS;
 		for ( i = 0; i < MAX_CLIENTS; i++ )
@@ -2093,12 +2095,7 @@ void Cmd_Vote_f( gentity_t *ent ) {
 		}
 		else
 			trap_SendServerCommand( ent-g_entities, "complaint -2" );
-
-			// L0 - Inform about dismissed complain :)
-			if ( msg[0] == 'n' || msg[1] == 'N' || msg[1] == '1' ) 
-			{
-				trap_SendServerCommand( cl->ps.clientNum, va("print \"Complain dismissed^3!\n\"" ) );
-			}
+			CPx( cl->ps.clientNum, va("print \"Complain dismissed^3!\n\"" ) );
 
 		return;
 	}
