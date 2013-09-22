@@ -1327,8 +1327,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 				}
 				else
-				{
-					// L0 - unlazy & Fixme ..
+				{	
 					respawn(ent);
 				}
 				// jpw

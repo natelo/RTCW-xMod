@@ -1870,10 +1870,10 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	} else if ( !Q_stricmp( arg1, "swap_teams" ) ) {		// NERVE - SMF
 		mask = VOTEFLAGS_SWAP;
 // L0 - New votes
-	} else if ( !Q_stricmp( arg1, "shuffle" ) ) {  
-		mask = VOTEFLAGS_SHUFFLE;
+	} else if ( !Q_stricmp( arg1, "shuffle" ) ) {  	
 	} else if ( !Q_stricmp( arg1, "?" )) {
-		mask = VOTEFLAGS_POLL;
+	} else if ( !Q_stricmp( arg1, "ignore" )) {
+	} else if ( !Q_stricmp( arg1, "unignore" )) {
 // End
 
 // JPW NERVE
@@ -1885,7 +1885,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 // jpw
 	} else {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, start_match, swap_teams, reset_match, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, ? (poll), shuffle\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, start_match, swap_teams, reset_match, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, ? (poll), shuffle, ignore, unignore\n\"" );
 		return;
 	}
 
@@ -1979,6 +1979,46 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			Com_sprintf( level.voteString, sizeof( level.voteString ), "\"poll\""); 
 		} 
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "Poll: %s", s ); 
+	} else if ( !Q_stricmp( arg1, "ignore" ) ) {
+		int i, num = MAX_CLIENTS;
+		for ( i = 0; i < MAX_CLIENTS; i++ )
+		{
+			if ( level.clients[i].pers.connected != CON_CONNECTED ) {
+				continue;
+			}
+			Q_strncpyz( cleanName, level.clients[i].pers.netname, sizeof( cleanName ) );
+			Q_CleanStr( cleanName );
+			if ( !Q_stricmp( cleanName, arg2 ) ) {
+				num = i;
+			}
+		}
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "ignore %s", level.clients[num].pers.netname );
+		if ( num != MAX_CLIENTS ) {
+			Com_sprintf( level.voteString, sizeof( level.voteString ), "ignore \"%d\"", num );
+		} else {
+			CPx( ent - g_entities, "print \"Client not on server.\n\"" );
+			return;
+		}
+	} else if ( !Q_stricmp( arg1, "unignore" ) ) {	
+		int i, num = MAX_CLIENTS;
+		for ( i = 0; i < MAX_CLIENTS; i++ )
+		{
+			if ( level.clients[i].pers.connected != CON_CONNECTED ) {
+				continue;
+			}
+			Q_strncpyz( cleanName, level.clients[i].pers.netname, sizeof( cleanName ) );
+			Q_CleanStr( cleanName );
+			if ( !Q_stricmp( cleanName, arg2 ) ) {
+				num = i;
+			}
+		}
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "unignore %s", level.clients[num].pers.netname );
+		if ( num != MAX_CLIENTS ) {
+			Com_sprintf( level.voteString, sizeof( level.voteString ), "unignore \"%d\"", num );
+		} else {
+			CPx( ent - g_entities, "print \"Client not on server.\n\"" );
+			return;
+		}
 // End
 	} else {
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );

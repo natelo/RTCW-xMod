@@ -1519,8 +1519,5 @@ typedef enum {
 #define VOTEFLAGS_TYPE			(1<<5)
 #define VOTEFLAGS_KICK			(1<<6)
 #define VOTEFLAGS_MAP			(1<<7)
-// L0 - New ones
-#define VOTEFLAGS_SHUFFLE		(1<<8)	
-#define VOTEFLAGS_POLL			(1<<9)
 
 #endif	// __Q_SHARED_H

@@ -390,7 +390,48 @@ void Svcmd_PollPrint_f( void ) {
 	AP("chat \"console:^7 Poll result is ^2Yes^7!\n\"");
 }
 
-char	*ConcatArgs( int start );
+/*
+=================
+(Un)Ignores player
+
+Called by vote or by admin directly (console)
+=================
+*/
+void Svcmd_handleIgnore_f( qboolean unignore ) {
+	int clientNum;
+	char buf[5];
+
+	if ( trap_Argc() != 2 ) {
+		G_Printf( "Usage: ignore <clientnum>\n" );
+		return;
+	}
+
+	trap_Argv( 1, buf, sizeof( buf ) );
+	clientNum = atoi( buf );
+
+	if ( ( clientNum < 0 ) || ( clientNum >= MAX_CLIENTS ) ) {
+		G_Printf( "Invalid client number.\n" );
+		return;
+	}
+
+	if ( ( !g_entities[clientNum].client ) || ( level.clients[clientNum].pers.connected != CON_CONNECTED ) ) {
+		G_Printf( "Client not on server.\n" );
+		return;
+	}
+
+	if (unignore)
+	{
+		g_entities[clientNum].client->sess.ignored = 0;    
+		CPx( clientNum, "cp \"You are now ^3Unignored^7!\n\"" ); 
+		AP(va( "print \"console: ^7%s ^7has been Unignored.\n\"",g_entities[clientNum].client->pers.netname ) );
+	}
+	else
+	{
+		g_entities[clientNum].client->sess.ignored = 1;    
+		CPx( clientNum, "cp \"You are now ^1ignored^7!\n\"" ); 
+		AP(va( "print \"console: ^7%s ^7has been ignored.\n\"",g_entities[clientNum].client->pers.netname ) );
+	}
+}
 
 /*
 =================
@@ -398,6 +439,8 @@ ConsoleCommand
 
 =================
 */
+char	*ConcatArgs( int start );
+
 qboolean	ConsoleCommand( void ) {
 	char	cmd[MAX_TOKEN_CHARS];
 
@@ -425,41 +468,52 @@ qboolean	ConsoleCommand( void ) {
 
 // L0 - New stuff
 	// Shuffle
-	if ( Q_stricmp( cmd, "shuffle" ) == 0 ) {
+	if (Q_stricmp( cmd, "shuffle" ) == 0) {
 		Svcmd_Shuffle_f();
 		return qtrue;
 	} 
 	
 	// Poll
-	if (Q_stricmp(cmd, "poll") == 0){
+	if (Q_stricmp(cmd, "poll") == 0) {
 		Svcmd_PollPrint_f();
 		return qtrue;
 	}
 
 	// Modifed AddIP command
-	if ( Q_stricmp( cmd, "addip" ) == 0 ) {
+	if (Q_stricmp( cmd, "addip" ) == 0) {
 		Svcmd_AddIP_f();
 		return qtrue;
 	}
 
 	// AddGuid
-	if ( Q_stricmp( cmd, "addguid" ) == 0 ) {
+	if (Q_stricmp( cmd, "addguid" ) == 0) {
 		Svcmd_AddGUID_f();
 		return qtrue;
 	}
 
 	// Tempban (IP)
-	if (Q_stricmp(cmd, "tempban") == 0){
+	if (Q_stricmp(cmd, "tempban") == 0) {
         Svcmd_tempban_f();
   		return qtrue;
 	}
 
 	// TempbanGuid
-	if (Q_stricmp(cmd, "tempbanguid") == 0){
+	if (Q_stricmp(cmd, "tempbanguid") == 0) {
         Svcmd_tempban_guid_f();
   		return qtrue;
 	}	
-	// End
+
+	// Ignore
+	if (Q_stricmp(cmd, "ignore") == 0) {
+        Svcmd_handleIgnore_f(qfalse);
+  		return qtrue;
+	}	
+
+	// Unignore
+	if (Q_stricmp(cmd, "unignore") == 0) {
+        Svcmd_handleIgnore_f(qtrue);
+  		return qtrue;
+	}
 // End
 
 	// NERVE - SMF
