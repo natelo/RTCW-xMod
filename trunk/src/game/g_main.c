@@ -86,7 +86,6 @@ vmCvar_t	g_axismaxlives;			// Xian
 vmCvar_t	g_fastres;				// Xian
 vmCvar_t	g_fastResMsec;
 vmCvar_t	g_knifeonly;			// Xian
-vmCvar_t	g_enforcemaxlives;		// Xian
 
 vmCvar_t	g_needpass;
 vmCvar_t	g_weaponTeamRespawn;
@@ -180,6 +179,7 @@ vmCvar_t	g_disallowedVotes;		// Disallowed votes separated by space
 vmCvar_t	g_autoShuffle;			// Auto shuffles teams after rounds set here
 vmCvar_t	g_printMatchInfo;		// Prints events when they happen (retake, obj planted..)
 vmCvar_t	g_allowLateJoiners;		// If enabled it will calculate lives based upon when client joins during game (max lives or equal has to be enabled..)
+vmCvar_t	g_handleLateJoiners;	// Tracks lives and deals with reconnecting clients that try to increase lives by reconnecting/team switching
 
 // Game
 vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
@@ -388,7 +388,6 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_fastres, "g_fastres", "0", CVAR_ARCHIVE, 0, qtrue},									// Xian - Fast Medic Resing
 	{ &g_fastResMsec, "g_fastResMsec", "1000", CVAR_ARCHIVE, 0, qtrue},									// Xian - Fast Medic Resing
 	{ &g_knifeonly, "g_knifeonly", "0", 0, 0, qtrue},											// Xian - Fast Medic Resing
-	{ &g_enforcemaxlives, "g_enforcemaxlives", "1", CVAR_ARCHIVE, 0, qtrue},								// Xian - Gestapo enforce maxlives stuff by temp banning
 
 	{ &g_enableBreath, "g_enableBreath", "1", CVAR_SERVERINFO, 0, qtrue},
 	{ &g_testPain, "g_testPain", "0", CVAR_CHEAT, 0, qfalse },
@@ -457,6 +456,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_autoShuffle, "g_autoShuffle", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &g_printMatchInfo, "g_printMatchInfo", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_allowLateJoiners, "g_allowLateJoiners", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
+	{ &g_handleLateJoiners, "g_handleLateJoiners", "1", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue},
 
 	// Game
 	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
@@ -1389,7 +1389,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	ClearMaxLivesGUID();
 	
 	// just for verbosity
-	if (g_enforcemaxlives.integer && (g_maxlives.integer > 0 || g_axismaxlives.integer > 0 || g_alliedmaxlives.integer > 0)) { 
+	if (g_handleLateJoiners.integer && (g_maxlives.integer > 0 || g_axismaxlives.integer > 0 || g_alliedmaxlives.integer > 0)) { 
 		G_Printf ("[MaxLives] List was cleared.\n");
 	}
 

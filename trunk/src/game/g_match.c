@@ -628,35 +628,58 @@ void CheckMaxLivesGUID( char *guid )
 }
 
 // Guid was found on the list...sort lives
-int SortMaxLivesGUID( char *guid, int team )
+int SortMaxLivesGUID( gentity_t *ent )
 {
 	int		i;
+	char	*guid = ent->client->sess.guid;
+	int		team = ent->client->sess.sessionTeam;
+	int		calculate = CalculateLives( ent );
+	int		bounce = 0;
+
 	for (i=0 ; i < lifeEntries ; i++)
 	{		
 		if ( !Q_stricmp (lifeGUIDs[i].guid, guid ) )
 		{	
 			int axis = lifeGUIDs[i].axisLives; 
-			int allied = lifeGUIDs[i].alliedLives;
+			int allied = lifeGUIDs[i].alliedLives;			
+			int lives = 0;
 
 			// Make sure player didn't wasted all lifes on one team and tries to join other
 			if ((axis == 0) || (allied == 0))
+			{
+				ent->client->pers.evadingMaxLives = qtrue;
 				return 0;				
+			}
 
-			// Check teams now
-			// It always favours less lives (if client bounces from team to team..)
 			if (team == TEAM_RED)
 			{
-				if( axis != -2 )
-					return (axis > allied ? allied : axis);
+				if (axis != -2) // Prefer lower
+					return ( (g_allowLateJoiners.integer && (calculate > axis)) ? axis : calculate );
+				else if (g_allowLateJoiners.integer)
+					return calculate;
+				// Nothing..go to bottom (gives all lives..)
 			}
 			else if (team == TEAM_BLUE)
 			{
-				if( allied != -2 )				
-					return (allied > axis ? axis : allied);
+				if (allied != -2) // Prefer lower
+					return ( (g_allowLateJoiners.integer && (calculate > allied)) ? allied : calculate );
+				else if (g_allowLateJoiners.integer)
+					return calculate;
+				// Nothing..go to bottom (gives all lives..)
 			}
 		}
 	}
-	return -2;
+
+	// We came so far...assume it's start of the round or whatever.
+	if (g_maxlives.integer)
+		bounce = (g_allowLateJoiners.integer ? calculate : g_maxlives.integer-1);
+	
+	if (ent->client->sess.sessionTeam == TEAM_RED && g_axismaxlives.integer)	
+		bounce = (g_allowLateJoiners.integer ? calculate : g_axismaxlives.integer-1);
+	else if (ent->client->sess.sessionTeam == TEAM_BLUE && g_alliedmaxlives.integer)
+		bounce = (g_allowLateJoiners.integer ? calculate : g_alliedmaxlives.integer-1);
+
+	return bounce;
 }
 
 // Track lives
@@ -686,6 +709,26 @@ void ClearMaxLivesGUID ( void )
 		lifeGUIDs[i].alliedLives = -2;
 	}
 	lifeEntries = 0;
+}
+
+// checks if player can join
+qboolean canJoinMaxLives( gentity_t *ent )
+{
+	int check = -1;
+
+	if (g_allowLateJoiners.integer)
+	{	
+		check = ( !g_handleLateJoiners.integer ? CalculateLives( ent ) : SortMaxLivesGUID( ent ));
+	}
+	else
+	{
+		if (g_handleLateJoiners.integer)
+		{
+			check = SortMaxLivesGUID( ent );
+		}
+	}
+
+	return ( (check == 0) ? qfalse : qtrue);
 }
 
 /*
@@ -724,5 +767,5 @@ int CalculateLives(gentity_t *ent)
 	// Open a beer
 
 	// No specific reason but just to be sure..
-	return ((result >= 0) ? result : 0);	
+	return ((result >= 0) ? (result-1) : 0);	
 }

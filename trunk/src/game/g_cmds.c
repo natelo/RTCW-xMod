@@ -664,12 +664,33 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 	}
 	// dhm
 
+	// L0 - Max lives evading check
 	if ( ent->client->pers.evadingMaxLives && !forced && oldTeam != TEAM_SPECTATOR)
 	{	
 		CP("cp \"You can't join the battle because you are out of lives!\n\"2");
 		G_LogPrintf( "[MaxLives] Joining prevented for %s (GUID %s)\n", ent->client->pers.netname, ent->client->sess.guid );
 		return;
 	}
+
+	if ((g_maxlives.integer || g_axismaxlives.integer || g_alliedmaxlives.integer))
+	{
+		if (!canJoinMaxLives( ent ))
+		{
+			if (!forced)
+			{
+				ent->client->pers.evadingMaxLives = qtrue;
+				CP("cp \"You can't join the battle because you are out of lives!\n\"2");
+				G_LogPrintf( "[MaxLives] Joining prevented for %s (GUID %s)\n", ent->client->pers.netname, ent->client->sess.guid );
+				return;
+			}
+			else
+			{
+				AP(va("print \"%s ^7was ^3granted an extra life^7!\n\"", ent->client->pers.netname ));
+				G_LogPrintf( "[MaxLives] Life granted for %s (GUID %s)\n", ent->client->pers.netname, ent->client->sess.guid );
+				ent->client->ps.persistant[PERS_RESPAWNS_LEFT] = 1;
+			}
+		}
+	} // End
   
 	//
 	// execute the team change

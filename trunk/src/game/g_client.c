@@ -1840,7 +1840,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 			ent->client->sess.ignored = 2;
 
 		// L0 - Max Lives
-		if (( g_maxlives.integer > 0 || g_alliedmaxlives.integer > 0 || g_axismaxlives.integer > 0 ) && g_enforcemaxlives.integer )
+		if (( g_maxlives.integer > 0 || g_alliedmaxlives.integer > 0 || g_axismaxlives.integer > 0 ) && g_handleLateJoiners.integer )
 		{
 			CheckMaxLivesGUID( Info_ValueForKey (userinfo, "cl_guid") );
 		}
@@ -1943,6 +1943,22 @@ void ClientBegin( int clientNum ) {
 			ent->client->ps.persistant[PERS_RESPAWNS_LEFT] = -1;
 	}
 
+// L0 - Max Lives & Late Joiners
+	if ( (g_maxlives.integer || g_axismaxlives.integer || g_alliedmaxlives.integer)) 
+	{
+		if (g_allowLateJoiners.integer)
+		{	
+			ent->client->ps.persistant[PERS_RESPAWNS_LEFT] = 
+				( !g_handleLateJoiners.integer ? CalculateLives( ent ) : SortMaxLivesGUID( ent ));
+		}
+		else
+		{
+			if (g_handleLateJoiners.integer)
+				ent->client->ps.persistant[PERS_RESPAWNS_LEFT] = SortMaxLivesGUID( ent );
+		}
+	}
+// End
+
 	// DHM - Nerve :: Start players in limbo mode if they change teams during the match
 	if ( g_gametype.integer >= GT_WOLF && client->sess.sessionTeam != TEAM_SPECTATOR 
 		&& (level.time - client->pers.connectTime) > 60000 ) {
@@ -1979,7 +1995,7 @@ void ClientBegin( int clientNum ) {
 	G_LogPrintf( "ClientBegin: %i\n", clientNum );
 
 	// L0 - Max Lives
-	if (( g_maxlives.integer > 0 || g_alliedmaxlives.integer > 0 || g_axismaxlives.integer > 0 ) && g_enforcemaxlives.integer )
+	if (( g_maxlives.integer > 0 || g_alliedmaxlives.integer > 0 || g_axismaxlives.integer > 0 ) && g_handleLateJoiners.integer )
 	{
 		CheckMaxLivesGUID( client->sess.guid );
 	}

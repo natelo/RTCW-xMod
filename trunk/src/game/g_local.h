@@ -1254,7 +1254,6 @@ extern	vmCvar_t	g_axismaxlives;			// Xian
 extern	vmCvar_t	g_fastres;				// Xian - Fast medic res'ing
 extern	vmCvar_t	g_fastResMsec;
 extern	vmCvar_t	g_knifeonly;			// Xian - Wacky Knife-Only rounds
-extern	vmCvar_t	g_enforcemaxlives;		// Xian - Temp ban with maxlives between rounds
 
 extern	vmCvar_t	g_needpass;
 extern	vmCvar_t	g_weaponTeamRespawn;
@@ -1356,6 +1355,7 @@ extern vmCvar_t		g_disallowedVotes;
 extern vmCvar_t		g_autoShuffle;
 extern vmCvar_t		g_printMatchInfo;
 extern vmCvar_t		g_allowLateJoiners;
+extern	vmCvar_t	g_handleLateJoiners;
 
 // Game
 extern vmCvar_t		g_unlockWeapons;
@@ -1748,10 +1748,11 @@ void CountDown( void );
 void matchInfo( unsigned int type, char *msg );
 // Max Lives
 void CheckMaxLivesGUID( char *guid );
-int SortMaxLivesGUID( char *guid, int team );
+int SortMaxLivesGUID( gentity_t *ent );
 void TrackMaxLivesGUID( char *guid, int lives, int team );
 void ClearMaxLivesGUID ( void );
 int CalculateLives(gentity_t *ent);
+qboolean canJoinMaxLives( gentity_t *ent );
 
 //
 // g_players.c
