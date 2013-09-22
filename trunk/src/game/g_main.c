@@ -179,6 +179,7 @@ vmCvar_t	g_teamAutoBalance;		// If enabled it will auto sort teams when there's 
 vmCvar_t	g_disallowedVotes;		// Disallowed votes separated by space
 vmCvar_t	g_autoShuffle;			// Auto shuffles teams after rounds set here
 vmCvar_t	g_printMatchInfo;		// Prints events when they happen (retake, obj planted..)
+vmCvar_t	g_allowLateJoiners;		// If enabled it will calculate lives based upon when client joins during game (max lives or equal has to be enabled..)
 
 // Game
 vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
@@ -455,6 +456,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_disallowedVotes, "g_disallowedVotes", "", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_autoShuffle, "g_autoShuffle", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &g_printMatchInfo, "g_printMatchInfo", "1", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_allowLateJoiners, "g_allowLateJoiners", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 
 	// Game
 	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },

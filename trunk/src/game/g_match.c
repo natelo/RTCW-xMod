@@ -688,3 +688,41 @@ void ClearMaxLivesGUID ( void )
 	lifeEntries = 0;
 }
 
+/*
+=================
+Calcuate lives
+
+Basically checks how far into a match are we and sets lives for any new 
+player according to it.
+
+'L0 :: I don't get it..for some1 that barely counts without stones I sure do a lot of math lately.
+=================
+*/
+int CalculateLives(gentity_t *ent)
+{
+	int round = (g_timelimit.integer * 60);
+	int passed = ((( g_timelimit.value * 60 * 1000 ) - (( level.time - level.startTime ))) / 1000 );	
+	float perc = 0;	
+	int take = 0;
+	int result = 0;
+	int lives = 0;
+
+	// Sort team and value
+	if (g_maxlives.integer)
+		lives = g_maxlives.integer;
+
+	// Owerwrite maxlives if axis/allied is set
+	if (ent->client->sess.sessionTeam == TEAM_RED && g_axismaxlives.integer)	
+		lives = g_axismaxlives.integer;
+	else if (ent->client->sess.sessionTeam == TEAM_BLUE && g_alliedmaxlives.integer)
+		lives = g_alliedmaxlives.integer;
+
+	// Do the math
+	perc = (100 - (((float)passed/ (float)round) * 100));	
+	take = ((perc / 100) * lives);
+	result = lives - take;
+	// Open a beer
+
+	// No specific reason but just to be sure..
+	return ((result >= 0) ? result : 0);	
+}

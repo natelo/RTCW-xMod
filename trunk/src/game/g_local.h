@@ -1355,6 +1355,7 @@ extern vmCvar_t		g_teamAutoBalance;
 extern vmCvar_t		g_disallowedVotes;
 extern vmCvar_t		g_autoShuffle;
 extern vmCvar_t		g_printMatchInfo;
+extern vmCvar_t		g_allowLateJoiners;
 
 // Game
 extern vmCvar_t		g_unlockWeapons;
@@ -1750,6 +1751,7 @@ void CheckMaxLivesGUID( char *guid );
 int SortMaxLivesGUID( char *guid, int team );
 void TrackMaxLivesGUID( char *guid, int lives, int team );
 void ClearMaxLivesGUID ( void );
+int CalculateLives(gentity_t *ent);
 
 //
 // g_players.c
