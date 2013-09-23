@@ -432,6 +432,140 @@ void Cmd_DropObj(gentity_t *self)
 }
 
 /*
+============
+Cmd_Spy_f
+
+Core idea is from ET but heavily relies on S4NDMoD's version
+to avoid any (infamous) skin errors ..
+============
+*/
+void limbo( gentity_t *ent, qboolean makeCorpse );
+
+void Cmd_Spy( gentity_t *ent ) {
+	int charge;
+	char *label;
+	gentity_t *target;
+	trace_t tr;
+	vec3_t start, end, forward;
+
+	AngleVectors(ent->client->ps.viewangles, forward, NULL, NULL);
+
+	VectorCopy(ent->s.pos.trBase, start);	
+	start[2] += ent->client->ps.viewheight;
+	VectorMA (start, 96, forward, end);	
+	
+	trap_Trace (&tr, start, NULL, NULL, end, ent->s.number, CONTENTS_CORPSE);
+
+	if (tr.entityNum >= MAX_CLIENTS)
+		return;
+
+	target = &(g_entities[tr.entityNum]);
+	if ((!target->inuse) || (!target->client))
+		return;
+
+	if (target->client->ps.stats[STAT_HEALTH] > 0)	
+		return;
+
+	if (OnSameTeam(ent,target))
+		return;
+
+	if(ent->client->ps.stats[STAT_HEALTH] < 1)
+		return;
+
+	if(g_gamestate.integer != GS_PLAYING)
+		return;
+
+	if(ent->client->ps.powerups[PW_REDFLAG] || ent->client->ps.powerups[PW_BLUEFLAG])
+		return;
+
+    if(ent->client->ps.eFlags & EF_ZOOMING)
+        return;
+   
+    if(ent->client->ps.weapon == WP_SNIPERRIFLE)
+        return;
+
+	if (ent->client->ps.stats[STAT_PLAYER_CLASS] == PC_MEDIC)
+		charge = g_medicChargeTime.integer * 0.75;
+	else if (ent->client->ps.stats[STAT_PLAYER_CLASS] == PC_LT)
+	    charge = g_LTChargeTime.integer * 0.75;
+	else if (ent->client->ps.stats[STAT_PLAYER_CLASS] == PC_SOLDIER)
+		charge = g_soldierChargeTime.integer * 0.75;
+	else
+	   charge = g_engineerChargeTime.integer * 0.75;
+
+	if ( level.time - ent->client->ps.classWeaponTime < charge )
+	{
+		CP("cp \"You must have at least 3/4 of a full charge^1!\n\"1");
+		return;
+	}
+
+	label = (target->client->ps.stats[STAT_PLAYER_CLASS] == PC_MEDIC ? "Medic" : 
+		(target->client->ps.stats[STAT_PLAYER_CLASS] == PC_ENGINEER ? "Engineer" :
+			(target->client->ps.stats[STAT_PLAYER_CLASS] == PC_LT ? "Lieutenant" : "Soldier") ) );
+
+	CP(va("cp \"You are now disguised as a %s^3!\n\"2", label));
+
+	ent->client->ps.classWeaponTime = level.time;
+	ent->client->ps.isSpy = qtrue;
+	ent->client->ps.spyType = target->client->ps.stats[STAT_PLAYER_CLASS];
+	ClientUserinfoChanged(ent->client->ps.clientNum);
+
+	limbo(target, qtrue);
+}
+
+/*
+=========
+Report spies
+=========
+*/
+void checkSpies( gentity_t *ent ) {
+	gentity_t *target;
+	trace_t tr;
+	vec3_t start, end, forward;
+
+	if (ent->client->ps.stats[STAT_HEALTH] <= 0)
+		return;
+
+	if(g_gamestate.integer != GS_PLAYING)
+		return;
+
+	AngleVectors(ent->client->ps.viewangles, forward, NULL, NULL);
+
+	VectorCopy(ent->s.pos.trBase, start);
+	start[2] += ent->client->ps.viewheight;
+	VectorMA (start, 512, forward, end);	
+
+	trap_Trace (&tr, start, NULL, NULL, end, ent->s.number, (CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE|CONTENTS_TRIGGER));
+
+	if ( tr.surfaceFlags & SURF_NOIMPACT )
+		return;
+
+	if ( tr.entityNum == ENTITYNUM_WORLD )
+		return;
+
+	if (tr.entityNum >= MAX_CLIENTS)
+		return;
+
+	target = &g_entities[ tr.entityNum ];
+
+	if ((!target->inuse) || (!target->client))
+		return;
+
+	if (target->client->ps.stats[STAT_HEALTH] <= 0)	
+		return;
+
+	if ( !target->client->ps.isSpy )
+		return;
+
+	ent->client->infoTime = level.time;
+
+	if (OnSameTeam(target, ent)) 	
+		CP("cp \"^3YOUR TEAMMATE!\n\"1");
+	else
+		CP("cp \"^3ENEMY SPY!\n\"1");
+}
+
+/*
 =================
 Stats command
 

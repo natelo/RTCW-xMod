@@ -864,7 +864,7 @@ void LTinfoMSG( gentity_t *ent ) {
 	if (target->client->ps.stats[STAT_HEALTH] <= 0)	return;
 	if (!OnSameTeam(target,ent))					return;
 
-	ent->client->LTinfoTime = level.time;
+	ent->client->infoTime = level.time;
 	weapon = target->client->ps.weapon;
 	current += target->client->ps.ammoclip[BG_FindClipForWeapon( weapon )];
 	stock += target->client->ps.ammo[ BG_FindAmmoForWeapon( weapon )];
@@ -937,10 +937,16 @@ void ClientThink_real( gentity_t *ent ) {
 	// L0 - LT info
 	if ( g_LTinfoMsg.integer && 
 		( client->ps.stats[STAT_PLAYER_CLASS] == PC_LT ) && 
-		( level.time >= client->LTinfoTime + 1000 ) ) 
+		( level.time >= client->infoTime + 1000 ) ) 
 	{
 		LTinfoMSG( ent );
-	}
+	} 
+	else if ( g_enableSpies.integer && 
+		g_reportSpies.integer && 
+		( level.time >= ent->client->infoTime + 1000 ) )        
+	{
+		checkSpies( ent );
+	}// End
 
 	// mark the time, so the connection sprite can be removed
 	ucmd = &ent->client->pers.cmd;

@@ -705,10 +705,9 @@ struct gclient_s {
 
 	// L0 - New stuff
 	int			doublekill;		// (stats) Double+ Kills
-	int			LTinfoTime;		// LT Info
-	// 
+	int			infoTime;		// LT/spies Info
+	// End
 };
-
 
 //
 // this structure is cleared as each map is entered
@@ -1403,6 +1402,8 @@ extern vmCvar_t		g_fastStabSound;
 extern vmCvar_t		g_dropObj;
 extern vmCvar_t		g_panzerArc;
 extern vmCvar_t		g_LTinfoMsg;
+extern vmCvar_t		g_enableSpies;
+extern vmCvar_t		g_reportSpies;
 
 // Server Bot
 extern vmCvar_t		sb_system;
@@ -1767,6 +1768,8 @@ void Cmd_Time_f( gentity_t *ent );
 void Cmd_Drag( gentity_t *ent);
 void Cmd_Push(gentity_t* ent);
 void Cmd_DropObj(gentity_t *self);
+void Cmd_Spy( gentity_t *ent );
+void checkSpies( gentity_t *ent );
 void Cmd_Stats_f(gentity_t *ent);
 
 //

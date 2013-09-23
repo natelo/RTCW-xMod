@@ -2351,6 +2351,10 @@ Generates weapon events and modifes the weapon counter
 
 //#define DO_WEAPON_DBG 1
 
+// L0 - for spies
+void trap_SendServerCommand( int clientNum, const char *text );
+void ClientUserinfoChanged ( int clientNum ) ;
+
 static void PM_Weapon( void ) {
 	int			addTime = 0; // TTimo: init
 	int			ammoNeeded;
@@ -2377,6 +2381,21 @@ static void PM_Weapon( void ) {
 		//pm->ps->weapon = WP_NONE;
 		return;
 	}
+
+	// L0 - Spies
+	if((pm->ps->isSpy) && (pm->ps->weapon != WP_KNIFE && pm->ps->weapon != WP_KNIFE2 && pm->ps->weapon != WP_SNIPERRIFLE && pm->ps->weapon != WP_SMOKE_GRENADE && 
+		pm->ps->weapon != WP_STEN )){
+		if(pm->cmd.buttons & BUTTON_ATTACK){
+			if((pm->ps->eFlags & EF_ZOOMING) && (pm->ps->stats[STAT_KEYS] & (1 << INV_BINOCS))){
+			}else{
+				pm->ps->isSpy = qfalse;
+				pm->ps->weaponTime = 500;
+				trap_SendServerCommand(pm->ps->clientNum, "cp \"Yor cover is blown^1!\"1");
+				ClientUserinfoChanged(pm->ps->clientNum);
+				return;
+			}
+		}
+	} 
 
 	// special mounted mg42 handling
 	if (pm->ps->persistant[PERS_HWEAPON_USE]) {

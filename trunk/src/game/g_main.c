@@ -228,6 +228,8 @@ vmCvar_t	g_fastStabSound;		// 0 = off, 1 = (OSP's) goat sound, 2 = humiliation s
 vmCvar_t	g_dropObj;				// Drop Objective
 vmCvar_t	g_panzerArc;			// Account for gravity when shooting with PF
 vmCvar_t	g_LTinfoMsg;			// Shows how much ammo client player is pointing at has
+vmCvar_t	g_enableSpies;			// If enabled, client can become a spy
+vmCvar_t	g_reportSpies;			// Reports (center prints to a player) that player is a spy
 
 // Server Bot
 vmCvar_t	sb_system;						// Controls all SB functionality
@@ -506,6 +508,8 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_dropObj, "g_dropObj", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_panzerArc, "g_panzerArc", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &g_LTinfoMsg, "g_LTinfoMsg", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_enableSpies, "g_enableSpies", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_reportSpies, "g_reportSpies", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 

@@ -716,40 +716,53 @@ SetWolfSkin
 Forces a client's skin (for Wolfenstein teamplay)
 ===========
 */
+// L0 - Spies, sort player's class
+char *spyType( int type ) 
+{
+	if (type == 0)
+		return "soldier";
+	else if (type == 1)
+		return "medic";
+	else if (type == 2)
+		return "engineer";
+	else
+		return "lieutenant";
+}
 
 #define MULTIPLAYER_ALLIEDMODEL	"multi"
 #define MULTIPLAYER_AXISMODEL	"multi_axis"
 
+// L0 - modified for spies
 void SetWolfSkin( gclient_t *client, char *model ) {
 
 	switch( client->sess.sessionTeam ) {
-	case TEAM_RED:
-		Q_strcat( model, MAX_QPATH, "red" );
-		break;
-	case TEAM_BLUE:
-		Q_strcat( model, MAX_QPATH, "blue" );
-		break;
-	default:
-		Q_strcat( model, MAX_QPATH, "red" );
-		break;
+		case TEAM_RED:		
+			Q_strcat( model, MAX_QPATH, (!client->ps.isSpy ? "red" : "blue") );		
+			break;
+		case TEAM_BLUE:		
+			Q_strcat( model, MAX_QPATH, (!client->ps.isSpy ? "blue" : "red") );
+			break;
+		default:
+			Q_strcat( model, MAX_QPATH, "red" );
+			break;
 	}
 
 	switch ( client->sess.playerType ) {
-	case PC_SOLDIER:
-		Q_strcat( model, MAX_QPATH, "soldier" );
-		break;
-	case PC_MEDIC:
-		Q_strcat( model, MAX_QPATH, "medic" );
-		break;
-	case PC_ENGINEER:
-		Q_strcat( model, MAX_QPATH, "engineer" );
-		break;
-	case PC_LT:
-		Q_strcat( model, MAX_QPATH, "lieutenant" );
-		break;
-	default:
-		Q_strcat( model, MAX_QPATH, "soldier" );
-		break;
+		case PC_SOLDIER:
+			Q_strcat( model, MAX_QPATH, (!client->ps.isSpy ? "soldier" : spyType(client->ps.spyType)) );
+			break;
+		case PC_MEDIC:
+			Q_strcat( model, MAX_QPATH, (!client->ps.isSpy ? "medic" : spyType(client->ps.spyType)) );
+			break;
+		case PC_ENGINEER:
+			Q_strcat( model, MAX_QPATH, (!client->ps.isSpy ? "engineer" : spyType(client->ps.spyType)) );
+			break;
+		case PC_LT:
+			Q_strcat( model, MAX_QPATH, (!client->ps.isSpy ? "lieutenant" : spyType(client->ps.spyType)) );
+			break;
+		default:
+			Q_strcat( model, MAX_QPATH, (!client->ps.isSpy ? "soldier" : spyType(client->ps.spyType)));
+			break;
 	}
 
 	// DHM - A skinnum will be in the session data soon...
@@ -1578,10 +1591,11 @@ void ClientUserinfoChanged( int clientNum ) {
 		// To communicate it to cgame
 		client->ps.stats[ STAT_PLAYER_CLASS ] = client->sess.playerType;
 
+		// L0 - Modified for spies
 		if ( client->sess.sessionTeam == TEAM_BLUE )
-			Q_strncpyz( model, MULTIPLAYER_ALLIEDMODEL, MAX_QPATH );
+			Q_strncpyz( model, (!client->ps.isSpy ? MULTIPLAYER_ALLIEDMODEL : MULTIPLAYER_AXISMODEL) , MAX_QPATH );
 		else
-			Q_strncpyz( model, MULTIPLAYER_AXISMODEL, MAX_QPATH );
+			Q_strncpyz( model, (!client->ps.isSpy ? MULTIPLAYER_AXISMODEL : MULTIPLAYER_ALLIEDMODEL), MAX_QPATH );
 
 		Q_strcat(model, MAX_QPATH, "/");
 
@@ -1907,17 +1921,26 @@ void ClientBegin( int clientNum ) {
 
 	client->pers.complaintClient = -1;
 	client->pers.complaintEndTime = -1;
-	// L0 - Shortcuts
+
+// L0 - New stuff
+	// Shortcuts
 	client->pers.lastkilled_client = -1;
 	client->pers.lastammo_client = -1;
 	client->pers.lasthealth_client = -1;
 	client->pers.lastrevive_client = -1;
 	client->pers.lastkiller_client = -1;
-	// L0 - Stats
+	// Stats
 	client->pers.dmgGiven = 0;
 	client->pers.dmgReceived = 0;
 	client->pers.spreeDeaths = 0;
-	// End
+
+	// Spies
+	if ( client->ps.isSpy )
+	{
+		client->ps.isSpy = qfalse;
+		ClientUserinfoChanged(client->ps.clientNum);
+	} 
+// End
 
 	// locate ent at a spawn point
 	ClientSpawn( ent, qfalse );

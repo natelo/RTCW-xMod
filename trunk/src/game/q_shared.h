@@ -1203,7 +1203,9 @@ typedef struct playerState_s {
 	int			identifyClient;			// NERVE - SMF
 
 	// L0 - New stuff
-	qboolean	selectedSmoke;			// Smoke
+	qboolean	selectedSmoke;			// Smoke	
+	qboolean	isSpy;					// Spies
+	int			spyType;				// Spies
 } playerState_t;
 
 

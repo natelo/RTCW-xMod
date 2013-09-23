@@ -581,6 +581,15 @@ int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, int team ) {
 			te->s.teamNum = cl->sess.sessionTeam;
 		}
 
+		// L0 - spies		
+		if ( other->client->ps.isSpy )
+		{
+			other->client->ps.isSpy = qfalse;
+			other->client->ps.weaponTime = 500;
+			CPx( other-g_entities, "cp \"Yor cover is blown^1!\"1");
+			ClientUserinfoChanged( other->client->ps.clientNum );	
+		} // L0 - end
+
 		// DHM - Nerve :: Call trigger function in the 'game_manager' entity script
 		gm = G_Find( NULL, FOFS(scriptName), "game_manager" );
 
@@ -1403,6 +1412,19 @@ void checkpoint_touch (gentity_t *self, gentity_t *other, trace_t *trace) {
 	} 
 // L0 - End
 
+	// L0 - spies
+	if ( other->client->ps.isSpy )
+	{
+		if((other->client->sess.sessionTeam == TEAM_RED && self->count == TEAM_BLUE) ||
+		   (other->client->sess.sessionTeam == TEAM_BLUE && self->count == TEAM_RED))
+		{
+			other->client->ps.isSpy = qfalse;
+			other->client->ps.weaponTime = 500;
+			CPx( other-g_entities, "cp \"Yor cover is blown^1!\"1");
+			ClientUserinfoChanged( other->client->ps.clientNum );
+		}
+	} // L0 - end
+
 	// Set controlling team
 	self->count = other->client->sess.sessionTeam;
 
@@ -1461,6 +1483,18 @@ void checkpoint_spawntouch (gentity_t *self, gentity_t *other, trace_t *trace) {
 
 	if ( self->count < 0 )
 		firsttime = qtrue;
+
+	// L0 - spies
+	if ( other->client->ps.isSpy == qtrue )
+	{
+		if ( self->count != other->client->sess.sessionTeam )
+		{
+			other->client->ps.weaponTime = 500;
+			other->client->ps.isSpy = qfalse;
+			CPx( other-g_entities, "cp \"Yor cover is blown^1!\"1");
+			ClientUserinfoChanged( other->client->ps.clientNum );		
+		}
+	}
 
 	// Set controlling team
 	self->count = other->client->sess.sessionTeam;

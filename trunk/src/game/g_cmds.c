@@ -2294,6 +2294,10 @@ void Cmd_Activate_f (gentity_t *ent)
 		}
 	}
 
+	// L0 - spies	
+	if ( g_enableSpies.integer )
+		Cmd_Spy( ent );
+
 	if(ent->client->pers.cmd.buttons & BUTTON_WALKING)
 		walking = qtrue;
 
