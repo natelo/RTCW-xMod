@@ -2095,7 +2095,12 @@ void Cmd_Vote_f( gentity_t *ent ) {
 		}
 		else
 			trap_SendServerCommand( ent-g_entities, "complaint -2" );
-			CPx( cl->ps.clientNum, va("print \"Complain dismissed^3!\n\"" ) );
+
+			// L0 - Inform about dismissed complain :)
+			if ( msg[0] == 'n' || msg[1] == 'N' || msg[1] == '1' ) 
+			{
+				CPx( cl->ps.clientNum, va("print \"Complain dismissed^3!\n\"" ) );
+			}
 
 		return;
 	}
