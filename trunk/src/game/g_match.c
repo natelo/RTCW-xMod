@@ -584,7 +584,8 @@ until round ends.
 NOTE 1:
 	Clients can still be forced to team by admin..they'll just end up with 1 life.
 NOTE 2:
-	
+	If g_allowLateJoiners is enabled, it will check how much lives would client got
+	by default and how much (s)he had when (s)he left. It will use the lowest value.
 =================
 */
 typedef struct GUID_s
@@ -767,5 +768,5 @@ int CalculateLives(gentity_t *ent)
 	// Open a beer
 
 	// No specific reason but just to be sure..
-	return ((result >= 0) ? (result-1) : 0);	
+	return ((result > 0) ? (result-1) : 1);	// Give 1 life if at the end (XXX: Keep an eye on this).
 }
