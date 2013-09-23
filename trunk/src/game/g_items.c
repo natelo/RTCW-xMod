@@ -708,7 +708,8 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		return;
 	}
 
-	G_LogPrintf( "Item: %i %s\n", other->s.number, ent->item->classname );
+	// L0 - commented out this spam but left it in for just in case if is expected in log by any stats script?
+	//G_LogPrintf( "Item: %i %s\n", other->s.number, ent->item->classname );
 
 	// call the item-specific pickup function
 	switch( ent->item->giType ) {
