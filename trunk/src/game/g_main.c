@@ -227,6 +227,7 @@ vmCvar_t	g_showLifeStats;		// If enabled it prints some life info when to player
 vmCvar_t	g_fastStabSound;		// 0 = off, 1 = (OSP's) goat sound, 2 = humiliation sound, 3 = random between 1 or 2
 vmCvar_t	g_dropObj;				// Drop Objective
 vmCvar_t	g_panzerArc;			// Account for gravity when shooting with PF
+vmCvar_t	g_LTinfoMsg;			// Shows how much ammo client player is pointing at has
 
 // Server Bot
 vmCvar_t	sb_system;						// Controls all SB functionality
@@ -504,6 +505,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_fastStabSound, "g_fastStabSound", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_dropObj, "g_dropObj", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_panzerArc, "g_panzerArc", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
+	{ &g_LTinfoMsg, "g_LTinfoMsg", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 

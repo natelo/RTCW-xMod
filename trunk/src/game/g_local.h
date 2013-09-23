@@ -384,7 +384,7 @@ struct gentity_s {
 	qboolean	poisoned;					// Poison
 	int			poisonEnt;					// Poison
 	int			lastPoisonTime;				// Poison
-	qboolean	droppedObj;					// Objective dropping
+	qboolean	droppedObj;					// Objective dropping	
 	// End
 };
 
@@ -705,6 +705,7 @@ struct gclient_s {
 
 	// L0 - New stuff
 	int			doublekill;		// (stats) Double+ Kills
+	int			LTinfoTime;		// LT Info
 	// 
 };
 
@@ -1401,6 +1402,7 @@ extern vmCvar_t		g_showLifeStats;
 extern vmCvar_t		g_fastStabSound;
 extern vmCvar_t		g_dropObj;
 extern vmCvar_t		g_panzerArc;
+extern vmCvar_t		g_LTinfoMsg;
 
 // Server Bot
 extern vmCvar_t		sb_system;
