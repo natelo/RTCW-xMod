@@ -1361,6 +1361,7 @@ extern	vmCvar_t	g_handleLateJoiners;
 extern vmCvar_t		g_unlockWeapons;
 extern vmCvar_t		g_flagRetake;
 extern vmCvar_t		g_balanceFlagRetake;
+extern vmCvar_t		g_balanceFlagCanClaim;
 extern vmCvar_t		g_warmupDamage;
 extern vmCvar_t		g_easyASBlock;
 extern vmCvar_t		g_hitsounds;

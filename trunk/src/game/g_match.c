@@ -30,14 +30,14 @@ int FlagBalance( void ) {
 	if (level.axisPlayers < 2 && level.alliedPlayers < 2)
 		return 0;
 
-	// Even
+	// Even or difference by 1
 	if (level.axisPlayers == level.alliedPlayers)
 		return 0;
 	// Axis (less)
-	else if (level.axisPlayers < level.alliedPlayers)
+	else if ((level.alliedPlayers - level.axisPlayers) > 1)
 		return 1;
 	// Allied (less)
-	else if (level.axisPlayers > level.alliedPlayers)
+	else if ((level.axisPlayers - level.alliedPlayers) > 1)
 		return 2;
 	// We don't know what happen...
 	else

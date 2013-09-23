@@ -185,6 +185,7 @@ vmCvar_t	g_handleLateJoiners;	// Tracks lives and deals with reconnecting client
 vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
 vmCvar_t	g_flagRetake;			// How many times flag can be retaken
 vmCvar_t	g_balanceFlagRetake;	// Checks if flag can be taken..it always allows team with less to claim it last and then locks till even.
+vmCvar_t	g_balanceFlagCanClaim;	// If enabled team will be able to claim (not reclaim!) the flag regardless if they're the team with more..
 vmCvar_t	g_warmupDamage;			// Allows damage in warmup
 vmCvar_t	g_staminaBoost;			// If enabled it recharges stamina faster when player is crouching..
 vmCvar_t	g_bunnyJump;			// Enable bunny jumps...
@@ -465,6 +466,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &g_flagRetake, "g_flagRetake" ,"-1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_balanceFlagRetake, "g_balanceFlagRetake", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_balanceFlagCanClaim, "g_balanceFlagCanClaim", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_warmupDamage, "g_warmupDamage", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_staminaBoost, "g_staminaBoost", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_bunnyJump, "g_bunnyJump", "0", CVAR_ARCHIVE, 0, qfalse },
