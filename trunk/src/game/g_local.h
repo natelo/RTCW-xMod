@@ -1360,7 +1360,7 @@ extern vmCvar_t		g_disallowedVotes;
 extern vmCvar_t		g_autoShuffle;
 extern vmCvar_t		g_printMatchInfo;
 extern vmCvar_t		g_allowLateJoiners;
-extern	vmCvar_t	g_handleLateJoiners;
+extern vmCvar_t		g_handleLateJoiners;
 
 // Game
 extern vmCvar_t		g_unlockWeapons;
