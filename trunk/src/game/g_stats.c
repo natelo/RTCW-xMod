@@ -150,6 +150,27 @@ void stats_FirstBlood (gentity_t *self, gentity_t *attacker) {
 
 /*
 ===========
+Last Blood
+
+Prints in console at the end of the round
+===========
+*/
+void stats_LastBloodMessage( void )
+{
+	if (g_showLastBlood.integer)
+	{
+		if (Q_stricmp(level.lastKiller, ""))
+		{
+			if (Q_stricmp(level.lastVictim, ""))
+				AP(va("print \"%s ^7drew ^1Last Blood^7 from %s^7!\n\"", level.lastKiller, level.lastVictim));
+			else
+				AP(va("print \"%s ^7drew the ^1Last Blood^7!\n\"", level.lastKiller));
+		}
+	}	
+}
+
+/*
+===========
 Killing sprees
 ===========
 */
@@ -532,7 +553,7 @@ void stats_MapStats( void ) {
 		case 4:
 			suffix = "deathSpree";
 		break;
-		// Top Medic (most revives
+		// Top Medic (most revives)
 		case 5:
 			suffix = "revives";		
 		break;

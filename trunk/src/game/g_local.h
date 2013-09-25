@@ -858,6 +858,9 @@ typedef struct {
 	// Map Stats
 	unsigned int		topScore;
 	char		topOwner[MAX_NETNAME+1];
+	// Last Blood 
+	char		lastKiller[MAX_NETNAME+1];
+	char		lastVictim[MAX_NETNAME+1];
 	// Countdown	
 	qboolean	cnStarted;
 	int			cnPush;	
@@ -1443,6 +1446,7 @@ extern vmCvar_t		g_deathSprees;
 extern vmCvar_t		g_killerSpree;
 extern vmCvar_t		g_showFirstHeadshot;
 extern vmCvar_t		g_showFirstBlood;
+extern vmCvar_t		g_showLastBlood;
 extern vmCvar_t		g_mapStats;
 extern vmCvar_t		g_mapStatsNotify;
 extern vmCvar_t		g_roundStats;
@@ -1781,6 +1785,7 @@ void Cmd_Stats_f(gentity_t *ent);
 void stats_DoubleKill (gentity_t *ent, int meansOfDeath );
 void stats_FirstHeadshot (gentity_t *attacker, gentity_t *targ);
 void stats_FirstBlood (gentity_t *self, gentity_t *attacker);
+void stats_LastBloodMessage( void );
 void stats_KillingSprees ( gentity_t *ent, int score );
 void stats_DeathSpree ( gentity_t *ent );
 void stats_KillerSpree(gentity_t *ent, int score);

@@ -283,6 +283,7 @@ vmCvar_t	g_deathSprees;			// Death spress
 vmCvar_t	g_killerSpree;			// Killer sprees - per life.
 vmCvar_t	g_showFirstHeadshot;	// Show who done it
 vmCvar_t	g_showFirstBlood;		// Show who done it
+vmCvar_t	g_showLastBlood;		// Prints in console at the end of the match
 vmCvar_t	g_mapStats;				// Top records for each map.
 vmCvar_t	g_mapStatsNotify;		// Notifies when record gets broken (during intermission)
 vmCvar_t	g_mapStatsWarmupOnly;	// Shows only in warmup, otherwise every time game init's
@@ -565,6 +566,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_killerSpree, "g_killerSpree", "0", CVAR_ARCHIVE|CVAR_LATCH, 0, qfalse },
 	{ &g_showFirstHeadshot, "g_showFirstHeadshot", "0", CVAR_ARCHIVE | CVAR_LATCH, qfalse },
 	{ &g_showFirstBlood, "g_showFirstBlood", "0", CVAR_ARCHIVE | CVAR_LATCH, qfalse },
+	{ &g_showLastBlood, "g_showLastBlood", "0", CVAR_ARCHIVE, qfalse },
 	{ &g_mapStats, "g_mapStats", "0", CVAR_ARCHIVE|CVAR_LATCH, 0, qfalse },
 	{ &g_mapStatsNotify, "g_mapStatsNotify", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_mapStatsWarmupOnly, "g_mapStatsWarmupOnly", "1", CVAR_ARCHIVE, 0, qfalse },
@@ -2079,9 +2081,12 @@ void BeginIntermission( void ) {
 // L0
 	// End stats	
 	stats_MatchInfo();
-
+	
 	// Prints & stuff
 	matchInfo( MT_EI, NULL );
+
+	// Last killer (match stats/info)
+	stats_LastBloodMessage();
 
 	// Map Stats
 	if (g_mapStats.integer)

@@ -582,6 +582,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			}
 
 			attacker->client->lastKillTime = level.time;
+			// L0 - Last blood
+			if (g_showLastBlood.integer)
+			{
+				Q_strncpyz ( level.lastKiller, attacker->client->pers.netname, sizeof( level.lastKiller ) );
+				Q_strncpyz ( level.lastVictim, self->client->pers.netname, sizeof( level.lastVictim ) );
+			}
 
 			// L0 - Life stats
 			if (g_showLifeStats.integer) {
