@@ -675,7 +675,7 @@ void weapon_callAirStrike(gentity_t *ent) {
 	float traceheight, bottomtraceheight;
 
 	VectorCopy(ent->s.pos.trBase,bomboffset);
-	bomboffset[2] += 4096;
+	bomboffset[2] += 4096.f;
 
 	// cancel the airstrike if FF off and player joined spec
 	if (!g_friendlyFire.integer && ent->parent->client && ent->parent->client->sess.sessionTeam == TEAM_SPECTATOR)
@@ -741,7 +741,7 @@ void weapon_callAirStrike(gentity_t *ent) {
 
 	VectorCopy(tr.endpos, bomboffset);
 	traceheight = bomboffset[2];
-	bottomtraceheight = traceheight-8192;
+	bottomtraceheight = traceheight-8192.f;
 
 	VectorSubtract(ent->s.pos.trBase,ent->parent->client->ps.origin,lookaxis);
 	lookaxis[2] = 0;
@@ -1000,7 +1000,9 @@ void Weapon_Artillery(gentity_t *ent) {
 
 			trap_Trace(&trace, bomboffset, NULL, NULL, fallaxis, ent->s.number, MASK_SHOT);
 			if (trace.fraction != 1.0)
+			{
 				VectorCopy(trace.endpos,bomb->s.pos.trBase);	
+			}
 
 			bomb->s.pos.trDelta[0] = 0; // might need to change this
 			bomb->s.pos.trDelta[1] = 0;
