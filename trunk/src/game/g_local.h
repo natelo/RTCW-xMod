@@ -1364,6 +1364,8 @@ extern vmCvar_t		g_autoShuffle;
 extern vmCvar_t		g_printMatchInfo;
 extern vmCvar_t		g_allowLateJoiners;
 extern vmCvar_t		g_handleLateJoiners;
+extern vmCvar_t		g_spectatorInactivity;
+extern vmCvar_t		g_spectatorAllowDemo;
 
 // Game
 extern vmCvar_t		g_unlockWeapons;

@@ -447,43 +447,107 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 ClientInactivityTimer
 
 Returns qfalse if the client is dropped
+
+L0 - Patched for g_spectatorInactivity and added ability to move
+     clients to spectators rather than kick them..
+NOTE: Dead players aren't accounted any more either..
+NOTE 2: Spec's that spectate don't get kicked as they may be making a demo.
+      - This particular behaviour is controlled by g_spectatorAllowDemo cvar.
 =================
 */
 qboolean ClientInactivityTimer( gclient_t *client ) {
-	if ( ! g_inactivity.integer ) {
+
+	if ((g_inactivity.integer <= 0 &&
+			(client->sess.sessionTeam == TEAM_RED || client->sess.sessionTeam == TEAM_BLUE)) ||
+		(g_spectatorInactivity.integer <= 0 && client->sess.sessionTeam == TEAM_SPECTATOR))
+	{
 		// give everyone some time, so if the operator sets g_inactivity during
 		// gameplay, everyone isn't kicked
 		client->inactivityTime = level.time + 60 * 1000;
 		client->inactivityWarning = qfalse;
-	} else if ( client->pers.cmd.forwardmove || 
+
+		return qtrue;
+	} 
+	else if ( client->pers.cmd.forwardmove || 
 		client->pers.cmd.rightmove || 
 		client->pers.cmd.upmove ||
 		(client->pers.cmd.wbuttons & WBUTTON_ATTACK2) ||
-		(client->pers.cmd.buttons & BUTTON_ATTACK) ) {
-		client->inactivityTime = level.time + g_inactivity.integer * 1000;
+		(client->pers.cmd.buttons & BUTTON_ATTACK) ||
+		(client->pers.cmd.wbuttons & WBUTTON_LEANLEFT) ||
+		(client->pers.cmd.wbuttons & WBUTTON_LEANRIGHT) ||
+		client->ps.pm_type == PM_DEAD) 
+	{
+		client->inactivityTime = level.time +
+			((client->sess.sessionTeam == TEAM_RED || client->sess.sessionTeam == TEAM_BLUE) ?
+				g_inactivity.integer : g_spectatorInactivity.integer) * 1000;
 		client->inactivityWarning = qfalse;
-	} else if ( !client->pers.localClient ) {
-		if ( level.time > client->inactivityTime ) {
-			// L0 - if enabled move the to spec..
-			if (g_inactivityToSpecs.integer) {				
-				client->sess.sessionTeam = TEAM_SPECTATOR;
-				client->sess.spectatorState = SPECTATOR_FREE;
-				ClientUserinfoChanged( client - level.clients);	
-				ClientBegin( client - level.clients );				
-				AP(va("chat \"console: %s ^7was moved to Specators due inactivity.\n\"", client->pers.netname));
-			  return qfalse;
-			} else { 
-				trap_DropClient( client - level.clients, "Dropped due to inactivity" );
-				return qfalse;
+
+		return qtrue;
+	} 
+	else if ( !client->pers.localClient ) 
+	{
+		if ( level.time > client->inactivityTime && client->inactivityWarning) 
+		{	
+			// Playing client
+			if ((client->sess.sessionTeam == TEAM_RED || client->sess.sessionTeam == TEAM_BLUE) 
+				&& client->inactivityWarning)
+			{
+				if (g_inactivityToSpecs.integer ) 
+				{				
+					client->sess.sessionTeam = TEAM_SPECTATOR;
+					client->sess.spectatorState = SPECTATOR_FREE;
+					ClientUserinfoChanged( client - level.clients);	
+					ClientBegin( client - level.clients );				
+					AP(va("chat \"console: %s ^7was moved to Specators due inactivity.\n\"", client->pers.netname));
+					return qfalse;
+				} 
+				else 
+				{ 
+					trap_DropClient( client - level.clients, "^3Dropped due to inactivity" );
+					return qfalse;
+				}
+			} // Spectator && NOT admin
+			else if (client->sess.sessionTeam == TEAM_SPECTATOR && 
+					 client->sess.admin == ADM_NONE	&&				     
+					 client->inactivityWarning)
+			{
+				if (g_spectatorInactivity.integer) 
+				{		
+					if (g_spectatorAllowDemo.integer && !(client->ps.pm_flags & PMF_FOLLOW))
+					{
+						trap_DropClient( client - level.clients, "^3Dropped due to inactivity" );
+						return qfalse;
+					}
+					else if (!g_spectatorAllowDemo.integer)
+					{
+						trap_DropClient( client - level.clients, "^3Dropped due to inactivity" );
+						return qfalse;
+					}
+				} 
 			}
-			// L0 - end 		
+			
 		}
-		if ( level.time > client->inactivityTime - 10000 && !client->inactivityWarning ) {
+		else if ( !client->inactivityWarning && level.time > client->inactivityTime - 10 * 1000 ) 
+		{
+			if (client->sess.sessionTeam != TEAM_SPECTATOR)
+			{
+				if (g_inactivityToSpecs.integer) 
+					trap_SendServerCommand( client - level.clients, "cp \"^3Ten seconds until forcing you to spectators!\n\"2" );
+				else
+					trap_SendServerCommand( client - level.clients, "cp \"^3Ten seconds until inactivity drop!\n\"2" );	
+			}
+			else if (client->sess.admin == ADM_NONE && 
+				g_spectatorInactivity.integer && 
+				client->sess.sessionTeam == TEAM_SPECTATOR ) 
+			{
+				if (g_spectatorAllowDemo.integer && !(client->ps.pm_flags & PMF_FOLLOW))
+					trap_SendServerCommand( client - level.clients, "cp \"^3You have Ten seconds to join before\n^3being dropped due inactivity!\n\"2" );
+				else if (!g_spectatorAllowDemo.integer)
+					trap_SendServerCommand( client - level.clients, "cp \"^3You have Ten seconds to join before\n^3being dropped due inactivity!\n\"2" );
+			}
+
 			client->inactivityWarning = qtrue;
-			if (g_inactivityToSpecs.integer) // L0 - patched
-				trap_SendServerCommand( client - level.clients, "cp \"Ten seconds until forcing you to spectators^1!\n\"2" );
-			else
-				trap_SendServerCommand( client - level.clients, "cp \"Ten seconds until inactivity drop^1!\n\"2" );		
+			client->inactivityTime = level.time + 10 * 1000; // Just for safety
 		}
 	}
 	return qtrue;
@@ -1011,6 +1075,12 @@ void ClientThink_real( gentity_t *ent ) {
 		return;
 	}
 
+	// check for inactivity timer, but never drop the local client of a non-dedicated server
+	// OSP - moved here to allow for spec inactivity checks as well
+	if ( !ClientInactivityTimer( client ) ) {
+		return;
+	}
+
 	// spectators don't do much
 	// DHM - Nerve :: In limbo use SpectatorThink
 	if ( client->sess.sessionTeam == TEAM_SPECTATOR || client->ps.pm_flags & PMF_LIMBO ) {
@@ -1114,12 +1184,7 @@ void ClientThink_real( gentity_t *ent ) {
 		else
 			client->dropWeaponTime = 0;
   }
-// jpw
-
-	// check for inactivity timer, but never drop the local client of a non-dedicated server
-	if ( !ClientInactivityTimer( client ) ) {
-		return;
-	}
+// jpw	
 
 	// L0 - Admin bot, ping fluxation
 	SB_maxPingFlux(client);

@@ -181,6 +181,8 @@ vmCvar_t	g_autoShuffle;			// Auto shuffles teams after rounds set here
 vmCvar_t	g_printMatchInfo;		// Prints events when they happen (retake, obj planted..)
 vmCvar_t	g_allowLateJoiners;		// If enabled it will calculate lives based upon when client joins during game (max lives or equal has to be enabled..)
 vmCvar_t	g_handleLateJoiners;	// Tracks lives and deals with reconnecting clients that try to increase lives by reconnecting/team switching
+vmCvar_t	g_spectatorInactivity;	// Drop spectators after some time..
+vmCvar_t	g_spectatorAllowDemo;	// Basically ignores any client that's following other players when g_spectatorInactivity is set.
 
 // Game
 vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
@@ -468,6 +470,8 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_printMatchInfo, "g_printMatchInfo", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_allowLateJoiners, "g_allowLateJoiners", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &g_handleLateJoiners, "g_handleLateJoiners", "1", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue},
+	{ &g_spectatorInactivity, "g_spectatorInactivity", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_spectatorAllowDemo, "g_spectatorAllowDemo", "0", CVAR_ARCHIVE, 0, qtrue },
 
 	// Game
 	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
