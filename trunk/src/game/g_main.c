@@ -143,11 +143,11 @@ vmCvar_t	a1_pass;		// Level 1 admin
 vmCvar_t	a2_pass;		// Level 2 admin
 vmCvar_t	a3_pass;		// Level 3 admin
 vmCvar_t	a4_pass;		// Level 4 admin
-vmCvar_t	a5_pass;		// Level 4 admin
+vmCvar_t	a5_pass;		// Level 5 admin
 vmCvar_t	a1_tag;			// Level 1 admin tag
 vmCvar_t	a2_tag;			// Level 2 admin tag
 vmCvar_t	a3_tag;			// Level 3 admin tag
-vmCvar_t	a4_tag;			// Level 3 admin tag
+vmCvar_t	a4_tag;			// Level 4 admin tag
 vmCvar_t	a5_tag;			// Level 5 admin tag
 vmCvar_t	a1_cmds;		// Level 1 admin commands
 vmCvar_t	a2_cmds;		// Level 2 admin commands
