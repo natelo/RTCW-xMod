@@ -849,6 +849,7 @@ typedef struct {
 	int			alliedPlayers;		// For auto lock and auto team balance
 	int			balanceTimer;		// Auto balance teams timer
 	int			leftCheck;			// When it was checked the last time..
+	int			lastVoteTime;		// Delay between votes..
 	// Weapons restrictions
 	int			axisSniper, alliedSniper;
 	int			axisPF, alliedPF;
@@ -1337,6 +1338,7 @@ extern vmCvar_t		adm_help;
 // System
 extern vmCvar_t		g_extendedLog;
 extern vmCvar_t		g_maxVotes;
+extern vmCvar_t		g_voteDelay;
 extern vmCvar_t		IP_handling;
 extern vmCvar_t		bannedMSG;
 extern vmCvar_t		g_censorWords;

@@ -1780,7 +1780,6 @@ void Cmd_Where_f( gentity_t *ent ) {
 	trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", vtos( ent->s.origin ) ) );
 }
 
-
 static const char *gameNames[] = {
 	"Free For All",
 	"Tournament",
@@ -1806,7 +1805,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	int		mask = 0;
 	char	*check;
 
-	// Ignored 
+	// L0 - Ignored 
 	if (ent->client->sess.ignored) 
 	{		
 		CP(va("print \"You are %s^7!\n\"", 
@@ -1825,12 +1824,20 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	}
 	// L0 - Replaced hardcored limit & patched so Admins are not subjected to max vote limit..
 	if ( ent->client->pers.voteCount >= g_maxVotes.integer && ent->client->sess.admin == ADM_NONE ) {
-		trap_SendServerCommand( ent-g_entities, "print \"You have called the maximum number of votes.\n\"" );
+		CP("print \"You have called the maximum number of votes.\n\"" );
 		return;
 	}
 	// L0 - Admins can call votes from spectators..disallowed votes will still be server depended
 	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR && ent->client->sess.admin == ADM_NONE) {
-		trap_SendServerCommand( ent-g_entities, "print \"Not allowed to call a vote as spectator.\n\"" );
+		CP("print \"Not allowed to call a vote as spectator.\n\"" );
+		return;
+	}
+
+	// L0 - Check if enough of time has passed before calling another vote (only non logged in players)
+	if( (level.lastVoteTime + 1000*g_voteDelay.integer) > level.time && ent->client->sess.admin == ADM_NONE)
+	{
+		CP(va("cp \"Please wait ^3%d ^7seconds before calling a vote.\"2", 
+			(int)((level.lastVoteTime + 1000*g_voteDelay.integer) - level.time) / 1000 ));
 		return;
 	}
 
@@ -2034,6 +2041,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 
 	// start the voting, the caller automatically votes yes
 	level.voteTime = level.time;
+	level.lastVoteTime = level.time;
 	level.voteYes = 1;
 	level.voteNo = 0;
 	// L0 - Ehm, and where's the user vote count? Doh..

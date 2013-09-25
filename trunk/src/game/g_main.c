@@ -161,6 +161,7 @@ vmCvar_t	adm_help;		// If enabled users can use !list_cmds to get list of comman
 // System
 vmCvar_t	g_extendedLog;			// Logs admin actions (1 = essentials, 2 = all).
 vmCvar_t	g_maxVotes;				// Max votes user can call per round
+vmCvar_t	g_voteDelay;			// Time that has to pass before another vote can be called
 vmCvar_t	IP_handling;			// If enabled it checks for IP bans and tempbans..
 vmCvar_t	bannedMSG;				// Message that will be printed to banned users.
 vmCvar_t	g_censorWords;			// Censored words
@@ -442,6 +443,7 @@ cvarTable_t		gameCvarTable[] = {
 	// System
 	{ &g_extendedLog, "g_extendedLog", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_maxVotes, "g_maxVotes", "3", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_voteDelay, "g_voteDelay", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &IP_handling, "IP_handling", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &bannedMSG, "bannedMSG", "^7You are ^1Banned ^7from this server^1!", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_censorWords, "g_censorWords", "fuuck", 0 },
