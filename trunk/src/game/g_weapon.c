@@ -664,6 +664,29 @@ void G_AirStrikeExplode( gentity_t *self ) {
 	self->nextthink = level.time + 50;
 }
 
+/*
+======================
+ L0 - Air Strikes/FFE Limits
+======================
+*/
+// Air Strikes
+void G_ASdelay( gentity_t *ent )
+{
+	if (ent->client->sess.sessionTeam == TEAM_RED)	
+		level.axisBomber = level.time + g_axisASdelay.integer * 1000;	
+	else	
+		level.alliedBomber = level.time + g_alliedASdelay.integer * 1000;	
+}
+// Air Strikes - FFE (Firing for effect)
+void G_ASdelayFFE( gentity_t *ent )
+{
+	if (ent->client->sess.sessionTeam == TEAM_RED)
+		level.axisArty = level.time + g_axisASdelayFFE.integer * 1000;
+	else
+		level.alliedArty = level.time + g_alliedASdelayFFE.integer * 1000;
+	
+}
+
 #define NUMBOMBS 10
 #define BOMBSPREAD 150
 extern void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, const char *name, const char *message, qboolean localize );
@@ -738,6 +761,9 @@ void weapon_callAirStrike(gentity_t *ent) {
 		te->s.eventParm = G_SoundIndex("sound/multiplayer/axis/g-affirmative_omw.wav");
 		te->s.teamNum = ent->parent->s.clientNum;
 	}
+
+	// L0 - AS Limit
+	G_ASdelay( ent->parent );
 
 	VectorCopy(tr.endpos, bomboffset);
 	traceheight = bomboffset[2];
@@ -901,6 +927,22 @@ void Weapon_Artillery(gentity_t *ent) {
 		VectorCopy(pos,bomboffset);
 		bomboffset[2] += 4096;
 
+		// L0 - AS limit
+		if ( ent->client->sess.sessionTeam == TEAM_RED && level.axisArty > level.time)
+		{
+			CP(va("chat \"HQ: ^3Our radars will be repaired in %d seconds!\n\"",
+				(level.axisArty - level.time) / 1000 ));
+			CPS(ent, "sound/multiplayer/radar_loop02.wav");
+			return;
+		}
+		else if ( ent->client->sess.sessionTeam == TEAM_BLUE && level.alliedArty > level.time)
+		{
+			CP(va("chat \"HQ: ^3Our radars will be repaired in %d seconds!\n\"",
+				(level.axisArty - level.time) / 1000 ));
+			CPS(ent, "sound/multiplayer/radar_loop02.wav");
+			return;
+		} // End
+
 		trap_Trace(&trace, pos, NULL, NULL, bomboffset, ent->s.number, MASK_SHOT);
 		if ((trace.fraction < 1.0) && (!(trace.surfaceFlags & SURF_NOIMPACT)) ) { // JPW NERVE was SURF_SKY)) ) {
 			G_SayTo( ent, ent, 2, COLOR_YELLOW, "Fire Mission: ", "Aborting, can't see target.", qtrue );
@@ -929,6 +971,9 @@ void Weapon_Artillery(gentity_t *ent) {
 			te->s.eventParm = G_SoundIndex("sound/multiplayer/axis/g-firing.wav");
 			te->s.teamNum = ent->s.clientNum;
 		}
+
+		// L0 - AS limit
+		G_ASdelayFFE( ent );
 
 		VectorCopy(trace.endpos, bomboffset);
 		traceheight = bomboffset[2];
@@ -2463,7 +2508,25 @@ void FireWeapon( gentity_t *ent ) {
 		} 
 // end
 
-		if (level.time - ent->client->ps.classWeaponTime >= g_LTChargeTime.integer*0.5f) {
+		if (level.time - ent->client->ps.classWeaponTime >= g_LTChargeTime.integer*0.5f) 
+		{
+// L0 - AS limit
+			// I've put it here to prevent animation problems etc..
+			if ( ent->client->sess.sessionTeam == TEAM_RED && level.axisBomber > level.time)
+			{
+				CP(va("chat \"HQ: ^3Planes will be available in %d seconds!\n\"",
+					(level.axisBomber - level.time) / 1000 ));
+				CPS(ent, "sound/multiplayer/radar_loop02.wav");
+				return;
+			}
+			else if ( ent->client->sess.sessionTeam == TEAM_BLUE && level.alliedBomber > level.time)
+			{
+				CP(va("chat \"HQ: ^3Planes will be available in %d seconds!\n\"",
+					(level.alliedBomber - level.time) / 1000 ));
+				CPS(ent, "sound/multiplayer/radar_loop02.wav");
+				return;
+			} 
+// End
 			if (level.time - ent->client->ps.classWeaponTime > g_LTChargeTime.integer)
 				ent->client->ps.classWeaponTime = level.time - g_LTChargeTime.integer;
 			ent->client->ps.classWeaponTime = level.time;//+= g_LTChargeTime.integer*0.5f; FIXME later

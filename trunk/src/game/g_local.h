@@ -855,6 +855,9 @@ typedef struct {
 	int			axisPF, alliedPF;
 	int			axisVenom, alliedVenom;
 	int			axisFlamer, alliedFlamer;
+	// Air Strike Restrictions
+	int			axisBomber, alliedBomber;
+	int			axisArty, alliedArty;
 	// Map Stats
 	unsigned int		topScore;
 	char		topOwner[MAX_NETNAME+1];
@@ -1410,6 +1413,10 @@ extern vmCvar_t		g_panzerArc;
 extern vmCvar_t		g_LTinfoMsg;
 extern vmCvar_t		g_enableSpies;
 extern vmCvar_t		g_reportSpies;
+extern vmCvar_t		g_axisASdelay;
+extern vmCvar_t		g_axisASdelayFFE;
+extern vmCvar_t		g_alliedASdelay;
+extern vmCvar_t		g_alliedASdelayFFE;
 
 // Server Bot
 extern vmCvar_t		sb_system;
