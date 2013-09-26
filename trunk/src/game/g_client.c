@@ -1406,6 +1406,35 @@ void SaveIP_f ( gclient_t * client, char * sip ) {
 
 /*
 ===========
+L0 - Sort IP for spoof check (strips port)
+
+ETpub Port
+============
+*/
+char *GetParsedIP(const char *ipadd)
+{
+	// code by Dan Pop, http://bytes.com/forum/thread212174.html
+	unsigned b1, b2, b3, b4, port = 0;
+	unsigned char c;
+	int rc;
+	static char ipge[20];
+
+	if(!Q_strncmp(ipadd,"localhost",strlen("localhost")))
+		return "localhost";
+
+	rc = sscanf(ipadd, "%3u.%3u.%3u.%3u:%u%c", &b1, &b2, &b3, &b4, &port, &c);
+	if (rc < 4 || rc > 5)
+		return NULL;
+	if ( (b1 | b2 | b3 | b4) > 255 || port > 65535)
+		return NULL;
+	if (strspn(ipadd, "0123456789.:") < strlen(ipadd))
+		return NULL;
+	sprintf(ipge, "%u.%u.%u.%u", b1, b2, b3, b4);
+	return ipge;
+}
+
+/*
+===========
 L0 - Check spoofing..
 
 Used ETpub for reference
@@ -1437,7 +1466,7 @@ char *spoofcheck( gclient_t *client, char *guid, char *ip ){
 	cIP = va("%i.%i.%i.%i", client->sess.ip[0], client->sess.ip[1], client->sess.ip[2], client->sess.ip[3] );
 	if(Q_stricmp(cIP, ip) != 0) {
 		G_LogPrintf( 
-			"IP SPOOF: client %i Original ip %s"
+			"IP SPOOF: client %i Original ip %s \n"
 			"Secondary ip %s\n",
 			client->ps.clientNum,
 			cIP,
@@ -1509,7 +1538,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	Q_strncpyz(guid, Info_ValueForKey(userinfo, "cl_guid"), sizeof(guid));
 	// IP & Guid check
 	if( !( ent->r.svFlags & SVF_BOT ) ) { 
-		reason = spoofcheck( client, guid, Info_ValueForKey( userinfo, "ip"  ) );
+		reason = spoofcheck( client, guid, GetParsedIP(Info_ValueForKey( userinfo, "ip"  )) );
 		if( reason ) {
 			trap_DropClient( clientNum, va( "^1%s", reason ));
 		}
