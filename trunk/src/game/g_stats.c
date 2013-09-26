@@ -603,7 +603,7 @@ void write_RoundStats(char *player, unsigned int score, unsigned int stats) {
 		char *more = "";
 
 		// Adds comma if not a single entry
-		if (roundStats[stats].score == score && !Q_stricmp(roundStats[stats].player, player))
+		if (roundStats[stats].score == score && Q_stricmp(roundStats[stats].player, player) == 0)
 			more = va("%s^7, ", roundStats[stats].player);
 		
 		player = va("%s%s", more, player);
@@ -712,8 +712,8 @@ void read_RoundStats( void ) {
 	char	*score;
 	unsigned int	stats;
 	char	players[1024];
-	char	arg[1024];
-	char	arg2[1024];
+	char	arg1[1024];
+	char	arg2[1024];	
 	char	scores[1024];
 	char	type[1024];
 	char	alt[1024];
@@ -721,60 +721,94 @@ void read_RoundStats( void ) {
 	statsFile = fopen("roundStats.txt","a+");
 	while ( fgets(data, 1024, statsFile) != NULL )
 	{	
-		ParseStr(data, type, arg);
-		ParseStr(arg, scores, arg2);	
-		ParseStr(arg2, players, alt);
+		ParseStr(data, type, arg1);
 		stats = atoi(type);
+		ParseStr(arg1, scores, players);	
 		score = scores;	
 		
 		// Offset: Have to account for hits/shots
 		if (stats == ROUND_ACC)
 		{
+			ParseStr(arg1, scores, arg2);	
+			ParseStr(arg2, players, alt);	
+
 			score = va("%s %s", scores, players);
 			Q_strncpyz ( players, alt, sizeof( players ) );
 		}	
-
+		
 		roundStats[stats].stats = stats;		
 		Q_strncpyz ( roundStats[stats].out, score, sizeof( roundStats[stats].out ) );
 		Q_strncpyz ( roundStats[stats].player, players, sizeof( roundStats[stats].player ) );
-	
 	}			
 	fclose(statsFile);
 }
 
+// Compute warmup time
+void sortWarmupTime( int start, int inBetween )
+{
+	if ( roundStats != NULL )
+	{
+		unsigned int i;
+		unsigned int k = 0;
+		unsigned int v = 0;
+		unsigned int countDown = 7100; // To match countdown() in g_main.c
+		unsigned int gracetime = 3000; // Just to make sure..
+
+		for(i = 0; i < ROUND_LIMIT; i++)
+			if (roundStats[i].stats != 0)
+				k++;
+
+		v = ((countDown + start + gracetime) + (k * inBetween)) / 1000;
+
+		// Sorts warmup to match stats..
+		trap_Cvar_Set("g_warmup", va("%d", ((v > 20) ? v : 20)));
+	}
+}
+
 // Front end
 void stats_RoundStats( void ) {
+	int statsStartup = 4000;
+	int statsTime = 3600;
 	
 	if(level.statsNum == 0)
 	{
 		read_RoundStats();
-
-		AP(va("cp \"%s:\n\"2", rSM[0].reward));
-		APS(va("xmod/sound/scenaric/matchRewards/%s", rSM[0].snd));
+		sortWarmupTime(statsStartup, statsTime);
 	} 
+	else if (level.statsNum == 1)
+	{
+		
+		AP(va("cp \"^2%s\n\"2", rSM[0].reward));
+		APS(va("xmod/sound/scenaric/achievers/%s", rSM[0].snd));
+		level.statsStarted = qtrue;
+	}
 	else if (level.statsNum < ROUND_LIMIT)
 	{
-		if ( roundStats[level.statsNum].stats)
+		int i, k=0;
+		for(i = 0; i < ROUND_LIMIT; i++)
 		{
-			char *score;
-			score = va("%s %s", roundStats[level.statsNum].out, rSM[level.statsNum-1].label);
+			if (i >= level.statsNum)
+			{
+				if ( roundStats[level.statsNum].stats )
+				{
+					char *score;
+					score = va("%s%s", roundStats[level.statsNum].out, rSM[level.statsNum-1].label);
 
-			AP(va("cp \"%s: %s\n%s \n\"2", rSM[level.statsNum-1].reward, score, roundStats[level.statsNum ].player));
-			APS(va("xmod/sound/scenaric/matchRewards/%s", rSM[level.statsNum-1].snd));
-		}
-		else
-		{
-			level.statsNum++;
+					AP(va("cp \"^2%s: ^7%s\n^7%s \n\"2", 
+						rSM[level.statsNum-1].reward, score, roundStats[level.statsNum ].player));
+					APS(va("xmod/sound/scenaric/achievers/%s", 
+						rSM[level.statsNum-1].snd));
+				}
+				else
+				{
+					level.statsNum++;
+				}
+			}
 		}
 	}
 
-	level.statsPrint = level.time+(!level.statsNum  ? 5000 : 3600);	
-	
-	if (level.statsNum  == ROUND_LIMIT) 	
-		CountDown();
+	level.statsPrint = level.time+(!level.statsStarted ? statsStartup : statsTime);	
 
-	AP(va("chat \"Located at: %d\n\"", level.statsNum ));
-		
 	// Push it forward
 	level.statsNum++;  
 }

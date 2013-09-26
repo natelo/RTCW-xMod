@@ -114,27 +114,27 @@ typedef struct {
 } round_stats_t;
 
 static const round_stats_t rSM[] = {	
-	{"High Achievers for Last Round", "", ""},
-	{"Most kills",				"", ""},
-	{"Born to Die",				"", ""},
-	{"Headhunter",				"", ""},
-	{"TeamKiller",				"", ""},
-	{"TeamBleeder",				"", ""},
-	{"Toxic Doctor",			"", ""},
-	{"Most Revives",			"", ""},
-	{"Most Ammo Given",			"", ""},
-	{"Most Med Given",			"", ""},
-	{"Corpse Expert",			"", ""},
-	{"Most Depressed",			"", "suicides"},
-	{"Knife Juggler",			"", ""},
-	{"Silent Knife Expert",		"", "stabs"},
-	{"Coward",					"", ""},
-	{"Highest Killer Spree",	"", ""},
-	{"Highest Death Spree",		"", ""},
-	{"Accuracy",				"", ""},
-	{"Killer Ratio",			"", ""},
-	{"Most Efficient player",	"", ""},
-	{NULL, NULL}
+	{"Results from last match are", "intro.wav",			""},
+	{"Most kills",					"blazeofglory.wav",		""},	
+	{"Born to Die",					"yousuck.wav",			""},
+	{"Headhunter",					"headhunter.wav",		"hs"},
+	{"TeamKiller",					"teamkiller.wav",		""},
+	{"TeamBleeder",					"teambleeder.wav",		"hp"},
+	{"Toxic Doctor",				"toxic.wav",			""},
+	{"Most Revives",				"excellent.wav",		""},
+	{"Most Ammo Given",				"ammo.wav",				""},
+	{"Most Med Given",				"med.wav",				""},
+	{"Corpse Expert",				"ownage.wav",			" gibs"},
+	{"Most Depressed",				"suicides.wav",			" suicides"},
+	{"Knife Juggler",				"knife_juggler.wav",	""},
+	{"Stealth Killer",				"assasin.wav",			""},
+	{"Coward",						"chicken.wav",			""},
+	{"Highest Killer Spree",		"killingmachine.wav",	""},
+	{"Highest Death Spree",			"slaughter.wav",		""},
+	{"Accuracy",					"accuracy.wav",			""},
+	{"Killer Ratio",				"outstanding.wav",		""},
+	{"Most Efficient player",		"impressive.wav",		""},
+	{NULL,							NULL,		NULL}
 };
 
 struct round_stats_structure_s {

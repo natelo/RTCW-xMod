@@ -527,7 +527,6 @@ typedef struct {
 	char	cmd3[128];	// !command attribute extra	
 
 	// Server Bot
-	int		sb_teamBleed;
 	int		sb_ping;
 	int		sb_maxPing;
 	int		sb_chatWarned;

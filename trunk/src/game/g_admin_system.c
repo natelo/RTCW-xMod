@@ -614,15 +614,15 @@ Kicks for bleeding
 ===========
 */
 void SB_maxTeamBleed( gentity_t *ent ) {	
-	int count = ent->client->pers.sb_teamBleed;
+	int count = ent->client->pers.dmgTeam;
 
 	if (level.warmupTime || !sb_system.integer || sb_maxTeamBleed.integer == (-1))
 		return;
 
-	if ( sb_maxTeamBleed.integer - ent->client->pers.sb_teamBleed == 10 ) 		
+	if ( sb_maxTeamBleed.integer - count == 10 ) 		
 		AP(va("chat \"^3[WARNING]: ^7%s ^7is getting close to being kicked for ^3Bleeding^7!\n\"", ent->client->pers.netname));
 
-	if ((count >= sb_maxTeamBleed.integer) && (ent->client->pers.sb_teamBleed)) {
+	if ((count >= sb_maxTeamBleed.integer) && count) {
 
 		// Tempban
 		if (sb_maxTeamBleedTempbanMins.integer)

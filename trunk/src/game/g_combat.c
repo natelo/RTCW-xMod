@@ -1362,8 +1362,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( OnSameTeam( targ, attacker ) ) {
 			attacker->client->ps.persistant[PERS_HITS] -= damage;
 			// L0 - Admin bot, Team bleed
-			SB_maxTeamBleed(attacker);
-			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.sb_teamBleed, ROUND_TEAMBLEED);
+			SB_maxTeamBleed(attacker);			
 		} else {
 			attacker->client->ps.persistant[PERS_HITS] += damage;
 		}
@@ -1458,6 +1457,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		// Count team damage but only if victim is alive..
 		} else if (OnSameTeam( attacker, targ ) && targ->client->ps.stats[STAT_HEALTH] > 0) {
 			attacker->client->pers.dmgTeam += take;
+			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.dmgTeam, ROUND_TEAMBLEED);
 		}
 	}
 	// End
