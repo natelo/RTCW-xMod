@@ -24,6 +24,19 @@ const char *dMonths[12] = {
 
 /*
 ===========
+Stats Handle 
+
+Tracks and deals with all at one spot so it's easier to maintain..
+===========
+*/
+void stats_Process(unsigned int type, gentity_t *ent) 
+{
+
+}
+
+
+/*
+===========
 Double+ kills
 ===========
 */
@@ -565,4 +578,197 @@ void stats_MapStats( void ) {
 	
 	handle_MapStats(mapName, suffix);
 }
+
+/*
+===========
+Round Stats
+
+Stats that are printed each round.
+'L0 - NOTE to readers: Don't get scared..my look complex at 1st glance but it's really simple.
+===========
+*/
+roundStruct roundStats[ROUND_LIMIT];
+
+// Process stats during match
+void write_RoundStats(char *player, unsigned int score, unsigned int stats) {
+
+	if (!g_roundStats.integer)
+		return;
+
+	if (Q_FindToken(g_excludedRoundStats.string, (char *)stats))
+		return;
+	
+	if (score && roundStats[stats].score <= score)
+	{
+		char *more = "";
+
+		// Adds comma if not a single entry
+		if (roundStats[stats].score == score && !Q_stricmp(roundStats[stats].player, player))
+			more = va("%s^7, ", roundStats[stats].player);
+		
+		player = va("%s%s", more, player);
+		
+		Q_strncpyz ( roundStats[stats].player, player, sizeof( roundStats[stats].player ) );		 			
+		roundStats[stats].stats = stats;
+		roundStats[stats].score = score;
+	}
+}
+
+// Sort what's left before writting to file (efficency, killer ratio & accuracy)
+void sort_RoundStats( void ) {
+	int i;	
+
+	for (i = 0 ; i < g_maxclients.integer; i++) 
+	{
+		int shots = level.clients[i].pers.acc_shots;
+		int hits = level.clients[i].pers.acc_hits;
+		int kills = level.clients[i].pers.kills;
+		int deaths = level.clients[i].pers.deaths;
+		float kr = 0.00f;
+		float eff = 0.00f;
+		float acc = 0.00f;
+		float topKr = 0.00f;
+		float topEff = 0.00f;
+		float topAcc = 0.00f;
+
+		// Sort stuff
+		eff = ( deaths + kills == 0 ) ? 0 : 100 * kills / ( deaths + kills );
+		if ( eff < 0 ) { eff = 0; }			
+		kr = (float)kills / (!deaths ? 1 : (float)deaths);
+		if(shots > 49) acc = ((float)hits / (float)shots) * 100.0f;
+
+		//
+		// Store stuff
+		//
+		if (eff && eff > topEff) 
+		{
+			if (!Q_FindToken(g_excludedRoundStats.string, (char *)ROUND_EFF))
+			{
+				roundStats[ROUND_EFF].stats = ROUND_EFF;
+				Q_strncpyz ( roundStats[ROUND_EFF].player, level.clients[i].pers.netname, sizeof( roundStats[ROUND_EFF].player ) );
+				Q_strncpyz ( roundStats[ROUND_EFF].out, va("%2.2f", eff), sizeof( roundStats[ROUND_EFF].out ) );
+			}
+			topEff = eff;
+		} 
+
+		if (kr && kr > topKr) 
+		{
+			if (!Q_FindToken(g_excludedRoundStats.string, (char *)ROUND_KR))
+			{
+				roundStats[ROUND_KR].stats = ROUND_KR;
+				Q_strncpyz ( roundStats[ROUND_KR].player, level.clients[i].pers.netname, sizeof( roundStats[ROUND_KR].player ) );	
+				Q_strncpyz ( roundStats[ROUND_KR].out, va("%2.2f", kr), sizeof( roundStats[ROUND_KR].out ) );					
+			}
+			topKr = kr;
+		} 
+
+		if (acc && acc > topAcc) 
+		{
+			if (!Q_FindToken(g_excludedRoundStats.string, (char *)ROUND_ACC))
+			{
+				roundStats[ROUND_ACC].stats = ROUND_ACC;
+				Q_strncpyz ( roundStats[ROUND_ACC].player, level.clients[i].pers.netname, sizeof( roundStats[ROUND_ACC].player ) );	
+				Q_strncpyz ( roundStats[ROUND_ACC].out, va("%2.2f (%d/%d)", acc, hits, shots), sizeof( roundStats[ROUND_ACC].out ) );
+			}
+			topAcc = acc;
+		} 
+	}
+
+	return;
+}
+
+// Write (to file) stats
+void add_RoundStats( void ) {
+	FILE	*stats;	
+	int i;
+
+	sort_RoundStats();
+
+	// Unload stats	
+	stats = fopen("roundStats.txt","w+");
+	if (roundStats != NULL)
+		for ( i = 0; i < ROUND_LIMIT; i++ )
+		{		
+			char *sorted;
+			
+			if (roundStats[i].stats)
+			{
+				if (roundStats[i].stats == ROUND_ACC || roundStats[i].stats == ROUND_EFF || roundStats[i].stats == ROUND_KR)													
+					sorted = va("%d %s %s", roundStats[i].stats, roundStats[i].out, parseNames(roundStats[i].player));
+				else
+					sorted = va("%d %d %s", roundStats[i].stats, roundStats[i].score, parseNames(roundStats[i].player));
+			}
+
+			if (roundStats[i].stats/* && (roundStats[i].score > 0 || !Q_stricmp(roundStats[i].out, "0"))*/)
+				fputs( va( "%s\n", sorted ), stats );
+		}
+	fclose( stats );
+}
+
+// Read stats
+void read_RoundStats( void ) {
+	FILE*	statsFile;
+	char	data[1024];
+	char *	score;
+	unsigned int		stats;
+	char	players[1024];
+	char	arg[1024];
+	char	scores[1024];
+	char	type[1024];
+
+	statsFile = fopen("roundStats.txt","a+");
+	while ( fgets(data, 1024, statsFile) != NULL )
+	{	
+		ParseStr(data, type, arg);
+		ParseStr(arg, scores, players);	
+		stats = atoi(type);
+		score = scores;	
+
+		AP(va("print \"STATS: %d | Score: %s | Player: %s \n\"", stats, score, players));
+
+		roundStats[stats].stats = stats;		
+		Q_strncpyz ( roundStats[stats].out, score, sizeof( roundStats[stats].out ) );
+		Q_strncpyz ( roundStats[stats].player, players, sizeof( roundStats[stats].player ) );
+	
+	}			
+	fclose(statsFile);
+}
+
+// Front end
+void stats_RoundStats( void ) {
+	
+	if(level.statsNum == 0)
+	{
+		read_RoundStats();
+
+		AP(va("cp \"%s:\n\"2", rSM[0].reward));
+		APS(va("xmod/sound/scenaric/matchRewards/%s", rSM[0].snd));
+	} 
+	else if (level.statsNum < ROUND_LIMIT)
+	{
+		if ( roundStats[level.statsNum].stats)
+		{
+			char *score;
+			score = va("%s %s", roundStats[level.statsNum].out, rSM[level.statsNum-1].label);
+
+			AP(va("cp \"%s: %s\n%s \n\"2", rSM[level.statsNum-1].reward, score, roundStats[level.statsNum ].player));
+			APS(va("xmod/sound/scenaric/matchRewards/%s", rSM[level.statsNum-1].snd));
+		}
+		else
+		{
+			level.statsNum++;
+		}
+	}
+
+	level.statsPrint = level.time+(!level.statsNum  ? 5000 : 3600);	
+	
+	if (level.statsNum  == ROUND_LIMIT) 	
+		CountDown();
+
+	AP(va("chat \"Located at: %d\n\"", level.statsNum ));
+		
+	// Push it forward
+	level.statsNum++;  
+}
+
 

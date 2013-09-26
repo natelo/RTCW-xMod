@@ -524,8 +524,7 @@ qboolean ClientInactivityTimer( gclient_t *client ) {
 						return qfalse;
 					}
 				} 
-			}
-			
+			}			
 		}
 		else if ( !client->inactivityWarning && level.time > client->inactivityTime - 10 * 1000 ) 
 		{

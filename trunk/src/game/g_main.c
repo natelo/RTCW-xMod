@@ -2170,6 +2170,12 @@ void ExitLevel (void) {
 			AP(va("chat \"%s \n\"", mapAchiever.string));
 	} 
 
+	// L0 - Round Stats (creates stats)
+	if (g_roundStats.integer)
+	{
+		add_RoundStats();
+	}
+
 	// change all client states to connecting, so the early players into the
 	// next level will know the others aren't done reconnecting
 	for (i=0 ; i< g_maxclients.integer ; i++) {
@@ -3283,6 +3289,14 @@ void G_RunFrame( int levelTime ) {
 		(g_gamestate.integer == GS_WARMUP_COUNTDOWN)) {
 		CountDown(); 
 	}
+
+	// L0 - Round Stats
+	if ((level.time > level.statsPrint) && 
+		(g_gamestate.integer == GS_WARMUP_COUNTDOWN) && 
+		g_roundStats.integer) 
+	{
+		stats_RoundStats();
+	} 
 
 	if (g_listEntity.integer) {
 		for (i = 0; i < MAX_GENTITIES; i++) {
