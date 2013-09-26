@@ -1838,7 +1838,8 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	}
 
 	// L0 - Check if enough of time has passed before calling another vote (only non logged in players)
-	if( (level.lastVoteTime + 1000*g_voteDelay.integer) > level.time && ent->client->sess.admin == ADM_NONE)
+	if( (level.lastVoteTime + 1000*g_voteDelay.integer) > level.time && ent->client->sess.admin == ADM_NONE
+		&& g_gamestate.integer == GS_PLAYING)
 	{
 		CP(va("cp \"Please wait ^3%d ^7seconds before calling a vote.\n\"2", 
 			(int)((level.lastVoteTime + 1000*g_voteDelay.integer) - level.time) / 1000 ));

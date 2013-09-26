@@ -540,9 +540,9 @@ qboolean ClientInactivityTimer( gclient_t *client ) {
 				client->sess.sessionTeam == TEAM_SPECTATOR ) 
 			{
 				if (g_spectatorAllowDemo.integer && !(client->ps.pm_flags & PMF_FOLLOW))
-					trap_SendServerCommand( client - level.clients, "cp \"^3You have Ten seconds to join before\n^3being dropped due inactivity!\n\"2" );
+					trap_SendServerCommand( client - level.clients, "cp \"^3You have Ten seconds to join before ^3being dropped due inactivity!\n\"2" );
 				else if (!g_spectatorAllowDemo.integer)
-					trap_SendServerCommand( client - level.clients, "cp \"^3You have Ten seconds to join before\n^3being dropped due inactivity!\n\"2" );
+					trap_SendServerCommand( client - level.clients, "cp \"^3You have Ten seconds to join before ^3being dropped due inactivity!\n\"2" );
 			}
 
 			client->inactivityWarning = qtrue;
