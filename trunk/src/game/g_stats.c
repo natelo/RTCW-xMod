@@ -707,24 +707,32 @@ void add_RoundStats( void ) {
 
 // Read stats
 void read_RoundStats( void ) {
-	FILE*	statsFile;
+	FILE	*statsFile;
 	char	data[1024];
-	char *	score;
-	unsigned int		stats;
+	char	*score;
+	unsigned int	stats;
 	char	players[1024];
 	char	arg[1024];
+	char	arg2[1024];
 	char	scores[1024];
 	char	type[1024];
+	char	alt[1024];
 
 	statsFile = fopen("roundStats.txt","a+");
 	while ( fgets(data, 1024, statsFile) != NULL )
 	{	
 		ParseStr(data, type, arg);
-		ParseStr(arg, scores, players);	
+		ParseStr(arg, scores, arg2);	
+		ParseStr(arg2, players, alt);
 		stats = atoi(type);
 		score = scores;	
-
-		AP(va("print \"STATS: %d | Score: %s | Player: %s \n\"", stats, score, players));
+		
+		// Offset: Have to account for hits/shots
+		if (stats == ROUND_ACC)
+		{
+			score = va("%s %s", scores, players);
+			Q_strncpyz ( players, alt, sizeof( players ) );
+		}	
 
 		roundStats[stats].stats = stats;		
 		Q_strncpyz ( roundStats[stats].out, score, sizeof( roundStats[stats].out ) );
