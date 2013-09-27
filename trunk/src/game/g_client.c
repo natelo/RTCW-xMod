@@ -1495,7 +1495,7 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	// L0 - New stuff
 	char guid[PB_GUID_LENGTH + 1]; 
-	char *reason;
+//	char *reason;
 	// End
 
 	ent = g_entities + clientNum;
