@@ -121,9 +121,6 @@ void AICast_InputToUserCommand(cast_state_t *cs, bot_input_t *bi, usercmd_t *ucm
 	short temp;
 	int j;
 	signed char movechar;
-	gentity_t *ent;
-
-	ent = &g_entities[cs->entityNum];
 
 	//clear the whole structure
 	memset(ucmd, 0, sizeof(usercmd_t));
@@ -796,7 +793,7 @@ AICast_StartServerFrame
 */
 void AICast_StartServerFrame ( int time)
 {
-	int i, elapsed, count, clCount;
+	int i, elapsed, clCount;
 	cast_state_t	*cs;
 	int		castcount;
 	static int	lasttime;
@@ -864,7 +861,6 @@ void AICast_StartServerFrame ( int time)
 	//
 	AICast_SightUpdate( (int)((float)SIGHT_PER_SEC * ((float)elapsed / 1000)) );
 	//
-	count = 0;
 	castcount = 0;
 	clCount = 0;
 	ent = g_entities;

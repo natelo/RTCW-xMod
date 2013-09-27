@@ -38,11 +38,9 @@ AIFunc_ZombieFlameAttack()
 
 char *AIFunc_ZombieFlameAttack( cast_state_t *cs )
 {
-	bot_state_t	*bs;
 	gentity_t *ent;
 	//
-	ent = &g_entities[cs->entityNum];
-	bs = cs->bs;
+	ent = &g_entities[cs->entityNum];	
 	//
 	ent->s.onFireEnd = level.time + 2000;
 	//
@@ -160,11 +158,9 @@ int		lastZombieSpiritAttack;
 
 char *AIFunc_ZombieAttack2( cast_state_t *cs )
 {
-	bot_state_t	*bs;
 	gentity_t *ent;
 	//
 	ent = &g_entities[cs->entityNum];
-	bs = cs->bs;
 	//
 	lastZombieSpiritAttack = level.time;
 	//
@@ -700,10 +696,8 @@ char *AIFunc_StimSoldierAttack2( cast_state_t *cs )
 
 char *AIFunc_StimSoldierAttack2Start( cast_state_t *cs )
 {
-	gentity_t	*ent;
 	//
 	cs->weaponFireTimes[cs->bs->weaponnum] = level.time;
-	ent = &g_entities[cs->entityNum];
 	//
 	// face them
 	AICast_AimAtEnemy( cs );
@@ -727,22 +721,19 @@ char *AIFunc_BlackGuardAttack1( cast_state_t *cs )
 
 char *AIFunc_BlackGuardAttack1Start( cast_state_t *cs )
 {
-	gentity_t	*ent;
-	//
 	cs->weaponFireTimes[cs->bs->weaponnum] = level.time;
 
-// TODO!
-G_Printf( "TODO: black guard kick attack\n" );
-return NULL;
-
-	//
-	ent = &g_entities[cs->entityNum];
-	//
+#if 1
+	// TODO!
+	G_Printf( "TODO: black guard kick attack\n" );
+	return NULL;
+#else
 	// face them
 	AICast_AimAtEnemy( cs );
 	//
 	cs->aifunc = AIFunc_BlackGuardAttack1;
 	return "AIFunc_BlackGuardAttack1";
+#endif
 }
 
 

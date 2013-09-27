@@ -1640,31 +1640,24 @@ float AngleDifference(float ang1, float ang2);
 
 void clamp_hweapontofirearc (gentity_t *self, vec3_t dang) 
 {
-	float diff, yawspeed;
-	qboolean clamped;
-
-	clamped = qfalse;
+	float diff;
 
 	// go back to start position
 	VectorCopy (self->s.angles, dang );
-	yawspeed = MG42_IDLEYAWSPEED;
 	
-	if (dang[0] < 0 && dang[0] < -(self->varc)) {
-		clamped = qtrue;
+	if (dang[0] < 0 && dang[0] < -(self->varc)) 
+	{
 		dang[0] = -(self->varc);
 	}
 
 	if (dang[0] > 0 && dang[0] > ( self->varc / 2 ) ) 
-	{
-		clamped = qtrue;
+	{	
 		dang[0] = self->varc / 2;
 	}
 
 	// sanity check the angles again to make sure we don't go passed the harc
 	diff = AngleDifference( self->s.angles[YAW], dang[YAW] );
 	if (fabs(diff) > self->harc) {
-		clamped = qtrue;
-		
 		if (diff > 0) {
 			dang[YAW] = AngleMod( self->s.angles[YAW] - self->harc );
 		} else {
@@ -2330,7 +2323,6 @@ void miscGunnerThink(gentity_t *ent)
 	qboolean	fire=qfalse;
 	float		yawspeed, diff;
 	vec3_t		dang;
-	qboolean	clamped = qfalse;
 	int			i;
 
 	// find the entities
@@ -2398,8 +2390,7 @@ void miscGunnerThink(gentity_t *ent)
 		}
 
 		// restrict vertical range
-		if (dang[0] < 0 && fabs(dang[0]) > (gun->varc/2)) {
-			clamped = qtrue;
+		if (dang[0] < 0 && fabs(dang[0]) > (gun->varc/2)) {			
 			if (dang[0] < 0)
 				dang[0] = -(gun->varc/2);
 			else
@@ -2411,8 +2402,7 @@ void miscGunnerThink(gentity_t *ent)
 		for (i=0; i<3; i++) {
 			BG_EvaluateTrajectory( &gun->s.apos, level.time, gun->r.currentAngles );
 			diff = AngleDifference( dang[i], gun->r.currentAngles[i] );
-			if (fabs(diff) > (yawspeed * ((float)FRAMETIME/1000.0))) {
-				clamped = qtrue;
+			if (fabs(diff) > (yawspeed * ((float)FRAMETIME/1000.0))) {				
 				if (diff > 0) {
 					dang[i] = AngleMod(gun->r.currentAngles[i] + (yawspeed * ((float)FRAMETIME/1000.0)));
 				} else {

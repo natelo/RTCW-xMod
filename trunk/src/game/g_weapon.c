@@ -1615,14 +1615,6 @@ void EmitterCheck(gentity_t *ent, gentity_t *attacker, trace_t *tr) {
 	}
 }
 
-
-void SniperSoundEFX (vec3_t pos)
-{
-	gentity_t *sniperEnt;
-	sniperEnt = G_TempEntity( pos, EV_SNIPER_SOUND );
-}
-
-
 /*
 ==============
 Bullet_Endpos
@@ -2037,7 +2029,6 @@ void VenomPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *ent ) {
 	float		r, u;
 	vec3_t		end;
 	vec3_t		forward, right, up;
-	int			oldScore;
 	qboolean	hitClient = qfalse;
 
 	// derive the right and up vectors from the forward vector, because
@@ -2051,8 +2042,6 @@ void VenomPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *ent ) {
         !(ent->r.svFlags & SVF_BOT) ) {
         G_TimeShiftAllClients( ent->client->pers.cmd.serverTime, ent );
     } // end
-
-	oldScore = ent->client->ps.persistant[PERS_SCORE];
 
 	// generate the "random" spread pattern
 	for ( i = 0 ; i < DEFAULT_VENOM_COUNT ; i++ ) {
@@ -2218,8 +2207,7 @@ static vec3_t	flameChunkMaxs = { 4,  4,  4};
 
 #define SQR_SIN_T 0.44 // ~ sqr(sin(20))
 
-void Weapon_FlamethrowerFire( gentity_t *ent ) {
-	gentity_t	*traceEnt;
+void Weapon_FlamethrowerFire( gentity_t *ent ) {	
 	vec3_t		start;
 	vec3_t		trace_start;
 	vec3_t		trace_end;
@@ -2253,7 +2241,7 @@ void Weapon_FlamethrowerFire( gentity_t *ent ) {
 		}
 	}
 
-	traceEnt = fire_flamechunk ( ent, start, forward );
+	fire_flamechunk ( ent, start, forward );
 }
 
 //======================================================================

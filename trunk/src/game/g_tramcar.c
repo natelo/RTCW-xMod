@@ -182,7 +182,6 @@ void Calc_Roll (gentity_t *ent)
 	vec3_t	forward;
 	vec3_t	right;
 	float	dot;
-	float	dot2;
 	vec3_t	tang;
 
 	target = ent->nextTrain;
@@ -193,13 +192,12 @@ void Calc_Roll (gentity_t *ent)
 	AngleVectors (tang, forward, right, NULL);
 	VectorSubtract (target->nextTrain->nextTrain->s.origin, ent->r.currentOrigin, vec);
 	VectorNormalize (vec);
-	
-	dot = DotProduct (vec, forward);
-	dot2 = DotProduct (vec, right);
+
+	dot = DotProduct (vec, right);
 	
 	ent->angle = (int) ent->angle;
 
-	if (dot2 > 0)
+	if (dot > 0)
 	{
 		if (ent->s.apos.trBase[ROLL] < -(ent->angle*2))
 			ent->s.apos.trBase[ROLL] +=2;
@@ -209,7 +207,7 @@ void Calc_Roll (gentity_t *ent)
 		if (ent->s.apos.trBase[ROLL] > 90)
 			ent->s.apos.trBase[ROLL] = 90;
 	}
-	else if (dot2 < 0)
+	else if (dot < 0)
 	{
 		if (ent->s.apos.trBase[ROLL] > -(ent->angle*2))
 			ent->s.apos.trBase[ROLL] -=2;

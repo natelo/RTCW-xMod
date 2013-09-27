@@ -642,8 +642,7 @@ int SortMaxLivesGUID( gentity_t *ent )
 		if ( !Q_stricmp (lifeGUIDs[i].guid, guid ) )
 		{	
 			int axis = lifeGUIDs[i].axisLives; 
-			int allied = lifeGUIDs[i].alliedLives;			
-			int lives = 0;
+			int allied = lifeGUIDs[i].alliedLives;	
 
 			// Make sure player didn't wasted all lifes on one team and tries to join other
 			if ((axis == 0) || (allied == 0))

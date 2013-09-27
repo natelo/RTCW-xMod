@@ -1806,7 +1806,6 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	char	arg1[MAX_STRING_TOKENS];
 	char	arg2[MAX_STRING_TOKENS];
 	char	cleanName[64]; // JPW NERVE
-	int		mask = 0;
 	char	*check;
 
 	// L0 - Ignored 
@@ -1863,24 +1862,15 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		}
 	} 
 
-	if ( !Q_stricmp( arg1, "map_restart" ) ) {
-		mask = VOTEFLAGS_RESTART;
-	} else if ( !Q_stricmp( arg1, "nextmap" ) ) {
-		mask = VOTEFLAGS_NEXTMAP;
-	} else if ( !Q_stricmp( arg1, "map" ) ) {
-		mask = VOTEFLAGS_MAP;
-	} else if ( !Q_stricmp( arg1, "g_gametype" ) ) {
-		mask = VOTEFLAGS_TYPE;
-	} else if ( !Q_stricmp( arg1, "kick" ) ) {
-		mask = VOTEFLAGS_KICK;
-	} else if ( !Q_stricmp( arg1, "clientkick" ) ) {
-		mask = VOTEFLAGS_KICK;
-	} else if ( !Q_stricmp( arg1, "start_match" ) ) {		// NERVE - SMF
-		mask = VOTEFLAGS_STARTMATCH;
-	} else if ( !Q_stricmp( arg1, "reset_match" ) ) {		// NERVE - SMF
-		mask = VOTEFLAGS_RESETMATCH;
-	} else if ( !Q_stricmp( arg1, "swap_teams" ) ) {		// NERVE - SMF
-		mask = VOTEFLAGS_SWAP;
+	if ( !Q_stricmp( arg1, "map_restart" ) ) {		
+	} else if ( !Q_stricmp( arg1, "nextmap" ) ) {		
+	} else if ( !Q_stricmp( arg1, "map" ) ) {		
+	} else if ( !Q_stricmp( arg1, "g_gametype" ) ) {		
+	} else if ( !Q_stricmp( arg1, "kick" ) ) {		
+	} else if ( !Q_stricmp( arg1, "clientkick" ) ) {		
+	} else if ( !Q_stricmp( arg1, "start_match" ) ) {		// NERVE - SMF	
+	} else if ( !Q_stricmp( arg1, "reset_match" ) ) {		// NERVE - SMF	
+	} else if ( !Q_stricmp( arg1, "swap_teams" ) ) {		// NERVE - SMF		
 // L0 - New votes
 	} else if ( !Q_stricmp( arg1, "shuffle" ) ) {  	
 	} else if ( !Q_stricmp( arg1, "?" )) {

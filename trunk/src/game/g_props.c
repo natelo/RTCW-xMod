@@ -881,7 +881,6 @@ void Just_Got_Thrown (gentity_t *self)
 {
 	float	len;
 	vec3_t	vec;
-	qboolean prop_hits = qfalse;
 
 	len = 0;
 
@@ -896,8 +895,7 @@ void Just_Got_Thrown (gentity_t *self)
 			player = AICast_FindEntityForName( "player" );
 
 			if (player && player != self->enemy)
-			{
-				prop_hits = qtrue;
+			{	
 				G_Damage ( self->enemy, self, self, NULL, NULL, 5, 0, MOD_CRUSH );
 				
 				self->die = Props_Chair_Die;
@@ -2012,20 +2010,11 @@ void smoker_think (gentity_t *ent)
 
 void SP_OilSlick (gentity_t *ent)
 {
-	gentity_t *tent;
-	gentity_t	*target = NULL;
-	vec3_t		point;
+	gentity_t *tent;	
 
-	if (ent->target)
-		target = G_Find( NULL, FOFS(targetname), ent->target );
-	
-	if (target)
-	{
-		VectorCopy (target->s.origin, point);
-		point[2] = ent->r.currentOrigin[2]; // just in case
+	if ( ent->target ) {
+		G_Find( NULL, FOFS( targetname ), ent->target );
 	}
-	else
-		VectorCopy (ent->r.currentOrigin, point);
 
 	tent = G_TempEntity (ent->r.currentOrigin, EV_OILSLICK);
 	VectorCopy (ent->r.currentOrigin, tent->s.origin);

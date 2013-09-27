@@ -11,6 +11,8 @@ Updated:
 */
 #include "g_local.h"
 
+extern char *stats_chars[];
+
 /*
 ==================
 L0 - Ported from et: NQ

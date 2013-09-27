@@ -1643,7 +1643,6 @@ so the movement delta can be calculated
 */
 void InitMoverRotate ( gentity_t *ent ) {
 	vec3_t		move;
-	float		distance;
 	float		light;
 	vec3_t		color;
 	qboolean	lightSet, colorSet;
@@ -1699,7 +1698,6 @@ void InitMoverRotate ( gentity_t *ent ) {
 
 	// calculate time to reach second position from speed
 	VectorSubtract( ent->pos2, ent->pos1, move );
-	distance = VectorLength( move );
 	if ( ! ent->speed ) {
 		ent->speed = 100;
 	}

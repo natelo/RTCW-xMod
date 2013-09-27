@@ -85,17 +85,15 @@ AIFunc_FZombie_LightningAttack
 */
 char *AIFunc_FZombie_LightningAttack( cast_state_t *cs )
 {
-	bot_state_t	*bs;
 	gentity_t *ent, *marker, *trav;
-  // TTimo gcc: 'best' might be used uninitialized in this function
-  gentity_t *best = NULL;
+	// TTimo gcc: 'best' might be used uninitialized in this function
+	gentity_t *best = NULL;
 	qboolean	move;
 	float	bestdist, dist;
 	vec3_t	axis[3];
 	cast_state_t	*ecs;
 	//
 	ent = &g_entities[cs->entityNum];
-	bs = cs->bs;
 	trav = AICast_FindEntityForName( "player" );
 	if (!trav) return NULL;	// huh?
 	cs->bs->enemy = trav->s.number;
@@ -445,11 +443,9 @@ AIFunc_Helga_Idle
 */
 char *AIFunc_Helga_Idle( cast_state_t *cs )
 {
-	bot_state_t	*bs;
 	gentity_t *ent;
 	//
 	ent = &g_entities[cs->entityNum];
-	bs = cs->bs;
 	//
 	if (cs->aiFlags & AIFL_LAND_ANIM_PLAYED) {
 		return NULL;

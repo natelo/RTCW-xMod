@@ -496,8 +496,7 @@ reinforce
 // -- called when time expires for a team deployment cycle and there is at least one guy ready to go
 */
 void reinforce(gentity_t *ent) {
-	int p, team;// numDeployable=0, finished=0; // TTimo unused
-	char *classname;
+	int p;// numDeployable=0, finished=0; // TTimo unused	
 	gclient_t *rclient;
 
 	if (g_gametype.integer == GT_SINGLE_PLAYER) {
@@ -509,16 +508,6 @@ void reinforce(gentity_t *ent) {
 		return;
 	}
 	// get team to deploy from passed entity
-
-	team = ent->client->sess.sessionTeam;
-
-	// find number active team spawnpoints
-	if (team == TEAM_RED)
-		classname = "team_CTF_redspawn";
-	else if (team == TEAM_BLUE)
-		classname = "team_CTF_bluespawn";
-	else
-		assert(0);
 
 	// DHM - Nerve :: restore persistant data now that we're out of Limbo
 	rclient = ent->client;
@@ -1874,7 +1863,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime ) {
 		// Ridah
-		if (!ent->r.svFlags & SVF_CASTAI)
+		if (!(ent->r.svFlags & SVF_CASTAI))
 		// done.
 		trap_SendServerCommand( -1, va("print \"[lof]%s" S_COLOR_WHITE " [lon]connected\n\"", client->pers.netname) );
 
@@ -2039,7 +2028,7 @@ void ClientBegin( int clientNum ) {
 
 		if ( g_gametype.integer != GT_TOURNAMENT ) {
 			// Ridah
-			if (!ent->r.svFlags & SVF_CASTAI)
+			if (!(ent->r.svFlags & SVF_CASTAI))
 			// done.
 			trap_SendServerCommand( -1, va("print \"[lof]%s" S_COLOR_WHITE " [lon]entered the game\n\"", client->pers.netname) );
 		}
