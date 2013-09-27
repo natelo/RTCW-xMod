@@ -595,7 +595,7 @@ void write_RoundStats(char *player, unsigned int score, unsigned int stats) {
 	if (!g_roundStats.integer)
 		return;
 
-	if (Q_FindToken(g_excludedRoundStats.string, (char *)stats))
+	if (Q_FindToken(g_excludedRoundStats.string, va("%d", stats)))
 		return;
 	
 	if (score && roundStats[stats].score <= score)
@@ -642,7 +642,7 @@ void sort_RoundStats( void ) {
 		//
 		if (eff && eff > topEff) 
 		{
-			if (!Q_FindToken(g_excludedRoundStats.string, (char *)ROUND_EFF))
+			if (!Q_FindToken(g_excludedRoundStats.string, va("%d", ROUND_EFF)))
 			{
 				roundStats[ROUND_EFF].stats = ROUND_EFF;
 				Q_strncpyz ( roundStats[ROUND_EFF].player, level.clients[i].pers.netname, sizeof( roundStats[ROUND_EFF].player ) );
@@ -653,7 +653,7 @@ void sort_RoundStats( void ) {
 
 		if (kr && kr > topKr) 
 		{
-			if (!Q_FindToken(g_excludedRoundStats.string, (char *)ROUND_KR))
+			if (!Q_FindToken(g_excludedRoundStats.string, va("%d", ROUND_KR)))
 			{
 				roundStats[ROUND_KR].stats = ROUND_KR;
 				Q_strncpyz ( roundStats[ROUND_KR].player, level.clients[i].pers.netname, sizeof( roundStats[ROUND_KR].player ) );	
@@ -664,7 +664,7 @@ void sort_RoundStats( void ) {
 
 		if (acc && acc > topAcc) 
 		{
-			if (!Q_FindToken(g_excludedRoundStats.string, (char *)ROUND_ACC))
+			if (!Q_FindToken(g_excludedRoundStats.string, va("%d", ROUND_ACC)))
 			{
 				roundStats[ROUND_ACC].stats = ROUND_ACC;
 				Q_strncpyz ( roundStats[ROUND_ACC].player, level.clients[i].pers.netname, sizeof( roundStats[ROUND_ACC].player ) );	
