@@ -678,7 +678,7 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 
 	if ((g_maxlives.integer || g_axismaxlives.integer || g_alliedmaxlives.integer))
 	{
-		if (!canJoinMaxLives( ent ))
+		if (!canJoinMaxLives( ent )) // L0 - Fixme - AXIS/ALLIED count is wrong..needs NEW team check..
 		{
 			if (!forced)
 			{

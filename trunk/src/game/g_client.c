@@ -2020,18 +2020,12 @@ void ClientBegin( int clientNum ) {
 		AICast_ScriptEvent( AICast_GetCastState(clientNum), "spawn", "" );
 	}
 
-	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) 
+	{
 		// send event
 		// DHM - Nerve :: Add back if we decide to have a spawn effect
 		//tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
 		//tent->s.clientNum = ent->s.clientNum;
-
-		if ( g_gametype.integer != GT_TOURNAMENT ) {
-			// Ridah
-			if (!(ent->r.svFlags & SVF_CASTAI))
-			// done.
-			trap_SendServerCommand( -1, va("print \"[lof]%s" S_COLOR_WHITE " [lon]entered the game\n\"", client->pers.netname) );
-		}
 	}
 	G_LogPrintf( "ClientBegin: %i\n", clientNum );
 

@@ -713,6 +713,15 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 	// L0 - commented out this spam but left it in for just in case if is expected in log by any stats script?
 	//G_LogPrintf( "Item: %i %s\n", other->s.number, ent->item->classname );
 
+	// OSP - Don't let them pickup winning stuff in warmup
+	if (g_gamestate.integer != GS_PLAYING) {
+		if ( ent->item->giType != IT_WEAPON &&
+			 ent->item->giType != IT_AMMO &&
+			 ent->item->giType != IT_HEALTH ) {
+			return;
+		}
+	}
+
 	// call the item-specific pickup function
 	switch( ent->item->giType ) {
 	case IT_WEAPON:
