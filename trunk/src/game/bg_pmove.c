@@ -475,14 +475,12 @@ PM_CheckJump
 */
 static qboolean PM_CheckJump( void ) {
 // L0 - Bunny Jump
-// HACK to make it work on linux..
-// TODO: Sort this if ever moving to client mod..
-//#if defined( GAMEDLL )
+#if defined( GAMEDLL )
 	extern vmCvar_t g_bunnyJump;
 	int bunny = g_bunnyJump.integer;
-//#else
-//	int bunny = 0;
-//#endif
+#else
+	int bunny = 0;
+#endif
 
 	// JPW NERVE -- jumping in multiplayer uses and requires sprint juice (to prevent turbo skating, sprint + jumps)
 	if (pm->gametype != GT_SINGLE_PLAYER) {
