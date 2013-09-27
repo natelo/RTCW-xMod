@@ -1716,7 +1716,7 @@ void ClientUserinfoChanged( int clientNum ) {
 		// Print essentials and skip garbage
 		// TODO : Do VSP stats expect cl_guid or guid?
 		s = va( "name\\%s\\team\\%s\\IP\\%s\\guid\\%s", 
-			client->pers.netname, team, Info_ValueForKey( userinfo, "ip" ), guid);
+			client->pers.netname, team, GetParsedIP(Info_ValueForKey( userinfo, "ip" )), guid);
 	}
 
 	// this is not the userinfo actually, it's the config string
