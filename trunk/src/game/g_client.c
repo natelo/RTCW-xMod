@@ -1523,6 +1523,8 @@ void ClientUserinfoChanged( int clientNum ) {
 		SaveIP_f( client, s );
 	} 
 
+	// Needs some fine tunning..
+/*	
 	// Spoofs
 	Q_strncpyz(guid, Info_ValueForKey(userinfo, "cl_guid"), sizeof(guid));
 	// IP & Guid check
@@ -1532,6 +1534,7 @@ void ClientUserinfoChanged( int clientNum ) {
 			trap_DropClient( clientNum, va( "^1%s", reason ));
 		}
 	}
+*/
 // L0 - end
 
 	// check the item prediction
