@@ -388,7 +388,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 		if (r == 0)
 			snd = "stab.wav";
-		else if (r == 1)
+		else
 			snd = "stab_alt.wav";
 
 		APRS(self, va("xmod/sound/game/events/%s", ((g_fastStabSound.integer == 1) ? "stab.wav" : 

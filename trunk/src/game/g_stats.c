@@ -557,7 +557,7 @@ void write_MapStats( gentity_t *ent, unsigned int score, int type ) {
 // Front end for mapStats handling..
 void stats_MapStats( void ) {
 	char mapName[64];	
-	char *suffix;
+	char *suffix = "killer";
 
 	if (!g_mapStats.integer)
 		return;

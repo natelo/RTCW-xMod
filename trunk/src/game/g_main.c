@@ -1813,7 +1813,7 @@ void CalculateRanks( void ) {
 	level.numFinalDead[0] = 0;		// NERVE - SMF
 	level.numFinalDead[1] = 0;		// NERVE - SMF
 
-	for ( i = 0; i < TEAM_NUM_TEAMS; i++ ) {
+	for ( i = 0; i < ARRAY_LEN(level.numteamVotingClients); i++ ) {
 		level.numteamVotingClients[i] = 0;
 	}
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
