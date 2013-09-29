@@ -1739,8 +1739,8 @@ void cmd_getstatus(gentity_t *ent) {
 	trap_RealTime(&ct);	
 
 	CP(va("print \"\n^7Server: %s    ^7%02d:%02d:%02d ^3(^7%02d %s %d^3)\n\"", sv_hostname.string, ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, cMonths[ct.tm_mon], 1900+ct.tm_year));
-	CP("print \"^3--------------------------------------------------------------------------\n\"");
-	CP("print \"^7Slot : Team : Name       : ^3IP           ^7: ^3Guid         ^7: Status \n\"");
+	CP("print \"^3--------------------------------------------------------------------------\n\"");	
+	CP("print \"^7Slot : Team : Name       : ^3IP              ^7: ^3Guid         ^7: Status \n\"");
 	CP("print \"^3--------------------------------------------------------------------------\n\"");
 
 	for ( j = 0; j <= (MAX_CLIENTS-1); j++) {	
@@ -1772,7 +1772,7 @@ void cmd_getstatus(gentity_t *ent) {
 					(g_entities[j].client->sess.sessionTeam == TEAM_RED ? "^1Axis^7" : "^4Alld^7" );
 									
 				ip = ( ent->client->sess.admin == ADM_NONE ) ?
-					va("%i.%i.*.*", g_entities[j].client->sess.ip[0], g_entities[j].client->sess.ip[1] ) :
+					va("%i.*.*.*", g_entities[j].client->sess.ip[0] ) :
 					va("%i.%i.%i.%i", g_entities[j].client->sess.ip[0], g_entities[j].client->sess.ip[1], g_entities[j].client->sess.ip[2], g_entities[j].client->sess.ip[3]  );					
 					
 				switch (g_entities[j].client->sess.admin) {
@@ -1810,7 +1810,7 @@ void cmd_getstatus(gentity_t *ent) {
 				stripChars(g_entities[j].client->sess.guid, guid, 12);
 				
 					// Print it now
-					CP(va("print \"%-4s : %s : %-10s : ^3%-12s ^7: ^3%-12s ^7: %-12s \n\"", 
+					CP(va("print \"%-4s : %s : %-10s : ^3%-15s ^7: ^3%-12s ^7: %-12s \n\"", 
 						slot, 
 						team, 
 						n2,

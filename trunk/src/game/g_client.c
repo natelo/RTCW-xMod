@@ -1432,12 +1432,6 @@ Used ETpub for reference
 char *spoofcheck( gclient_t *client, char *guid, char *ip ){
 	char *cIP;
 
-	// L0 - FIXME : Temp solution applied
-	if(!Q_stricmp(guid, ""))
-		Q_strncpyz( client->sess.guid, guid, sizeof( client->sess.guid ) );
-
-	return 0;
-
 	if(Q_stricmp(client->sess.guid, guid)) {
 		if( !client->sess.guid ||
 			!Q_stricmp( client->sess.guid, "" ) ||
@@ -1500,8 +1494,8 @@ void ClientUserinfoChanged( int clientNum ) {
 	char	userinfo[MAX_INFO_STRING];
 
 	// L0 - New stuff
-	char guid[PB_GUID_LENGTH + 1]; 
-	char *reason;
+//	char guid[PB_GUID_LENGTH + 1]; 
+//	char *reason;
 	// End
 
 	ent = g_entities + clientNum;
@@ -1529,7 +1523,7 @@ void ClientUserinfoChanged( int clientNum ) {
 		SaveIP_f( client, s );
 	} 
 
-	
+/*	
 	// Spoofs
 	Q_strncpyz(guid, Info_ValueForKey(userinfo, "cl_guid"), sizeof(guid));
 	// IP & Guid check
@@ -1539,6 +1533,7 @@ void ClientUserinfoChanged( int clientNum ) {
 			trap_DropClient( clientNum, va( "^1%s", reason ));
 		}
 	}
+*/
 // L0 - end
 
 	// check the item prediction
@@ -1712,7 +1707,7 @@ void ClientUserinfoChanged( int clientNum ) {
 		// Print essentials and skip garbage
 		// TODO : Do VSP stats expect cl_guid or guid?
 		s = va( "name\\%s\\team\\%s\\IP\\%s\\guid\\%s", 
-			client->pers.netname, team, GetParsedIP(Info_ValueForKey( userinfo, "ip" )), guid);
+			client->pers.netname, team, GetParsedIP(Info_ValueForKey( userinfo, "ip" )), Info_ValueForKey( userinfo, "cl_guid" ));
 	}
 
 	// this is not the userinfo actually, it's the config string
@@ -1845,16 +1840,6 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	}
 	G_ReadSessionData( client );
 
-	// L0 - Add guid if it's not already added..
-	if( !client->sess.guid || 
-		!Q_stricmp( client->sess.guid, "" ) ||
-		!Q_stricmp( client->sess.guid, "NOGUID" ) ) {
-			
-		if( Q_stricmp( guid, "unknown" ) && Q_stricmp( guid, "NO_GUID" ) ) {
-			Q_strncpyz( client->sess.guid, guid, sizeof( client->sess.guid ) );
-		}
-	}
-
 	if( isBot ) {
 		ent->r.svFlags |= SVF_BOT;
 		ent->inuse = qtrue;
@@ -1873,6 +1858,9 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		if (!(ent->r.svFlags & SVF_CASTAI))
 		// done.
 		trap_SendServerCommand( -1, va("print \"[lof]%s" S_COLOR_WHITE " [lon]connected\n\"", client->pers.netname) );
+
+		// L0 - Store guid		
+		Q_strncpyz( client->sess.guid, Info_ValueForKey (userinfo, "cl_guid"), sizeof( client->sess.guid ) );
 
 		// L0 - Ignore client if they're suppose to be..
 		if (ignored)
