@@ -1432,6 +1432,12 @@ Used ETpub for reference
 char *spoofcheck( gclient_t *client, char *guid, char *ip ){
 	char *cIP;
 
+	// L0 - FIXME : Temp solution applied
+	if(!Q_stricmp(guid, ""))
+		Q_strncpyz( client->sess.guid, guid, sizeof( client->sess.guid ) );
+
+	return 0;
+
 	if(Q_stricmp(client->sess.guid, guid)) {
 		if( !client->sess.guid ||
 			!Q_stricmp( client->sess.guid, "" ) ||
@@ -1495,7 +1501,7 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	// L0 - New stuff
 	char guid[PB_GUID_LENGTH + 1]; 
-//	char *reason;
+	char *reason;
 	// End
 
 	ent = g_entities + clientNum;
@@ -1523,8 +1529,7 @@ void ClientUserinfoChanged( int clientNum ) {
 		SaveIP_f( client, s );
 	} 
 
-	// Needs some fine tunning..
-/*	
+	
 	// Spoofs
 	Q_strncpyz(guid, Info_ValueForKey(userinfo, "cl_guid"), sizeof(guid));
 	// IP & Guid check
@@ -1534,7 +1539,6 @@ void ClientUserinfoChanged( int clientNum ) {
 			trap_DropClient( clientNum, va( "^1%s", reason ));
 		}
 	}
-*/
 // L0 - end
 
 	// check the item prediction
