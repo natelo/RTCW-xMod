@@ -992,32 +992,14 @@ static void CG_DamageBlendBlob( void ) {
 		ent.shaderRGBA[0] = 255;
 		ent.shaderRGBA[1] = 255;
 		ent.shaderRGBA[2] = 255;
-		ent.shaderRGBA[3] = 255;
+		// L0 - OSP dump
+		ent.shaderRGBA[3] = 255 * ( ( cg_bloodDamageBlend.value > 1.0f ) ? 1.0f :
+									( cg_bloodDamageBlend.value < 0.0f ) ? 0.0f : cg_bloodDamageBlend.value );
+		// End
 		trap_R_AddRefEntityToScene( &ent );
 
 		redFlash += ent.radius;
 	}
-
-	/* moved over to cg_draw.c
-	if (cg.v_dmg_time > cg.time) {
-		redFlash = fabs(cg.v_dmg_pitch * ((cg.v_dmg_time - cg.time) / DAMAGE_TIME));
-
-		// blend the entire screen red
-		if (redFlash > 5)
-			redFlash = 5;
-
-		memset( &ent, 0, sizeof( ent ) );
-		ent.reType = RT_SPRITE;
-		ent.renderfx = RF_FIRST_PERSON;
-
-		VectorMA( cg.refdef.vieworg, 8, cg.refdef.viewaxis[0], ent.origin );
-		ent.radius = 80;	// occupy entire screen
-		ent.customShader = cgs.media.viewFlashBlood;
-		ent.shaderRGBA[3] = (int)(180.0 * redFlash/5.0);
-		
-		trap_R_AddRefEntityToScene( &ent );
-	}
-	*/
 }
 
 /*

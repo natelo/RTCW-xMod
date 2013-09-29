@@ -1639,7 +1639,8 @@ static void CG_DrawCrosshair(void) {
 	w = h = cg_crosshairSize.value;
 
 	// RF, crosshair size represents aim spread
-	f = (float)cg.snap->ps.aimSpreadScale / 255.0;
+	// L0 - Crosshair pulsing..
+	f = (float)( ( cg_crosshairPulse.integer == 0 ) ? 0 : cg.snap->ps.aimSpreadScale / 255.0 );
 	w *= ( 1 + f*2.0 );
 	h *= ( 1 + f*2.0 );
 	
@@ -2044,7 +2045,7 @@ static void CG_DrawVote(void) {
 	float color[4] = { 1, 1, 0, 1 };
 	int		sec;
 
-	if ( cgs.complaintEndTime > cg.time ) {
+	if ( cgs.complaintEndTime > cg.time && !cg.demoPlayback && cgs.complaintClient >= 0 ) {
 
 		if ( cgs.complaintClient == -1 ) {
 			s = "Your complaint has been filed";
@@ -2076,11 +2077,16 @@ static void CG_DrawVote(void) {
 			Q_strncpyz( str2, "vote no", 32 );
 		}
 
-		s = va( CG_TranslateString( "File complaint against %s for team-killing?" ), cgs.clientinfo[cgs.complaintClient].name);
-		CG_DrawStringExt( 8, 200, s, color, qtrue, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 80 );
+		// L0 - OSP alike complain
+		// Note that complain can still be filled..it just wont show up on screen..
+		if (cg_complaintPopUp.integer)
+		{
+			s = va( CG_TranslateString( "File complaint against %s for team-killing?" ), cgs.clientinfo[cgs.complaintClient].name);
+			CG_DrawStringExt( 8, 200, s, color, qtrue, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 80 );
 
-		s = va( CG_TranslateString( "Press '%s' for YES, or '%s' for No" ), str1, str2 );
-		CG_DrawStringExt( 8, 214, s, color, qtrue, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 80 );
+			s = va( CG_TranslateString( "Press '%s' for YES, or '%s' for No" ), str1, str2 );
+			CG_DrawStringExt( 8, 214, s, color, qtrue, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 80 );
+		}
 		return;
 	}
 
@@ -2594,7 +2600,10 @@ static void CG_DrawFlashDamage( void ) {
 			redFlash = 5;
 
 		VectorSet( col, 0.2, 0, 0 );
-		col[3] =  0.7 * (redFlash/5.0);
+		// L0 - Blood blending (OSP)
+		col[3] =  0.7 * ( redFlash / 5.0 ) * ( ( cg_bloodFlash.value > 1.0 ) ? 1.0 :
+											   ( cg_bloodFlash.value < 0.0 ) ? 0.0 :
+											   cg_bloodFlash.value );
 		
 		CG_FillRect( -10, -10, 650, 490, col );
 	}
