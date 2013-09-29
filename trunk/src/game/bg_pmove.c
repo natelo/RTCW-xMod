@@ -2352,9 +2352,11 @@ Generates weapon events and modifes the weapon counter
 
 //#define DO_WEAPON_DBG 1
 
-// L0 - for spies
+// L0 - for 
+#ifdef GAMEDLL
 void trap_SendServerCommand( int clientNum, const char *text );
 void ClientUserinfoChanged ( int clientNum ) ;
+#endif
 
 static void PM_Weapon( void ) {
 	int			addTime = 0; // TTimo: init
@@ -2391,8 +2393,10 @@ static void PM_Weapon( void ) {
 			}else{
 				pm->ps->isSpy = qfalse;
 				pm->ps->weaponTime = 500;
+#ifdef GAMEDLL
 				trap_SendServerCommand(pm->ps->clientNum, "cp \"Yor cover is blown^1!\"1");
 				ClientUserinfoChanged(pm->ps->clientNum);
+#endif
 				return;
 			}
 		}
