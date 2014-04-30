@@ -1356,6 +1356,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( OnSameTeam( targ, attacker ) ) {
 			attacker->client->ps.persistant[PERS_HITS] -= damage;
 			// L0 - Admin bot, Team bleed
+			attacker->client->pers.sb_teamBleed++;
 			SB_maxTeamBleed(attacker);			
 		} else {
 			attacker->client->ps.persistant[PERS_HITS] += damage;

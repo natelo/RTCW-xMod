@@ -534,6 +534,7 @@ typedef struct {
 	int		sb_TKforgiven;
 	int		sb_TKkillTime;
 	qboolean sb_TKwarned;
+	int		sb_teamBleed;
 
 	// Shortcuts
 	int		lastkilled_client;

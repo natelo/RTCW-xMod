@@ -614,7 +614,7 @@ Kicks for bleeding
 ===========
 */
 void SB_maxTeamBleed( gentity_t *ent ) {	
-	int count = ent->client->pers.dmgTeam;
+	int count = ent->client->pers.sb_teamBleed;
 
 	if (level.warmupTime || !sb_system.integer || sb_maxTeamBleed.integer == (-1))
 		return;
