@@ -586,7 +586,7 @@ int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, int team ) {
 		{
 			other->client->ps.isSpy = qfalse;
 			other->client->ps.weaponTime = 500;
-			CPx( other-g_entities, "cp \"Yor cover is blown^1!\"1");
+			CPx( other-g_entities, "cp \"Your cover is blown^1!\"1");
 			ClientUserinfoChanged( other->client->ps.clientNum );	
 		} // L0 - end
 
@@ -1385,7 +1385,7 @@ void checkpoint_touch (gentity_t *self, gentity_t *other, trace_t *trace) {
 		{
 			other->client->ps.isSpy = qfalse;
 			other->client->ps.weaponTime = 500;
-			CPx( other-g_entities, "cp \"Yor cover is blown^1!\"1");
+			CPx( other-g_entities, "cp \"Your cover is blown^1!\"1");
 			ClientUserinfoChanged( other->client->ps.clientNum );
 		}
 	} // L0 - end
@@ -1510,7 +1510,7 @@ void checkpoint_spawntouch (gentity_t *self, gentity_t *other, trace_t *trace) {
 		{
 			other->client->ps.weaponTime = 500;
 			other->client->ps.isSpy = qfalse;
-			CPx( other-g_entities, "cp \"Yor cover is blown^1!\"1");
+			CPx( other-g_entities, "cp \"Your cover is blown^1!\"1");
 			ClientUserinfoChanged( other->client->ps.clientNum );		
 		}
 	}
