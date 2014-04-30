@@ -148,23 +148,23 @@ char *parseNames( char *name )
 L0 - Splits string into tokens
 ==================
 */
-void Q_Tokenize(char *str, char **splitstr, char *delim) {      
-	char *p;      
-	int i=0;      
+void Q_Tokenize(char *str, char **splitstr, char *delim) {
+	char *p;
+	int i = 0;
 
-	p = strtok(str,delim);      
-	while(p!= NULL)      
-	{                
+	p = strtok(str, delim);
+	while (p != NULL)
+	{
 		printf("%s", p);
-	
+
 		splitstr[i] = G_Alloc(strlen(p) + 1);
 
 		if (splitstr[i])
 			strcpy(splitstr[i], p);
 		i++;
 
-		p = strtok (NULL, delim);       
-	} 
+		p = strtok(NULL, delim);
+	}
 }
 
 /*
@@ -206,20 +206,17 @@ See if there's a match
 */
 qboolean Q_FindToken(char *haystack, char *needle) {
 
-	if (strlen(haystack)) {
-		char *token, *list;
-		list = haystack;
+	if (strlen(haystack) && strlen(needle)) {
+		char *token;
 
 		while (1)
 		{
-			token = COM_Parse(&list);
+			token = COM_Parse(&haystack);
 			if (!token || !token[0])
 				break;
-			
-				if (!Q_stricmp(needle, token))
-					return qtrue;
-				else 
-					return qfalse;
+
+			if (!Q_stricmp(needle, token))
+				return qtrue;
 		}
 	}
 	return qfalse;
