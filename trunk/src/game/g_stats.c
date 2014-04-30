@@ -320,7 +320,7 @@ void stats_KillerSpree(gentity_t *ent, int score) {
 EOM (End of Match) stats
 ===========
 */
-void stats_MatchInfo( void ) {
+void stats_MatchInfo(void) {
 	int i, j, cnt, eff;
 	float tot_acc = 0.00f;
 	int tot_kills, tot_deaths, tot_gp, tot_hs, tot_sui, tot_tk, tot_dg, tot_dr, tot_td, tot_hits, tot_shots;
@@ -331,12 +331,13 @@ void stats_MatchInfo( void ) {
 	qtime_t ct;
 
 	trap_RealTime(&ct);
-	AP(va("print \"\nMod: %s \n^7Server: %s  \n^7Time: ^7%02d:%02d:%02d ^3(^7%02d %s %d^3)\n\n\"", 
-			GAMEVERSION, sv_hostname.string, ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, dMonths[ct.tm_mon], 1900+ct.tm_year));
+	AP(va("print \"\nMod: %s \n^7Server: %s  \n^7Time: ^7%02d:%02d:%02d ^3(^7%02d %s %d^3)\n\n\"",
+		GAMEVERSION, sv_hostname.string, ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, dMonths[ct.tm_mon], 1900 + ct.tm_year));
+
 
 	cnt = 0;
-	for ( i = TEAM_RED; i <= TEAM_BLUE; i++ ) {
-		if ( !TeamCount( -1, i ) ) {
+	for (i = TEAM_RED; i <= TEAM_BLUE; i++) {
+		if (!TeamCount(-1, i)) {
 			continue;
 		}
 
@@ -353,82 +354,82 @@ void stats_MatchInfo( void ) {
 		tot_shots = 0;
 		tot_acc = 0;
 
-		AP( va("print \"%s ^7Team\n"
-			     "^7-----------------------------------------------------------------------"
-				 "\nPlayer          ^3Kll ^7Dth Sui TK ^5Eff Accrcy   ^2HS    DG    DR    TD  ^7Score\n"
-				 "^7-----------------------------------------------------------------------\n\"", (i == TEAM_RED) ? "^1Axis" : "^4Allied"  ));
+		AP(va("print \"%s ^7Team\n"
+			"^7-----------------------------------------------------------------------"
+			"\nPlayer            ^3K   ^7D  /K  TK  ^5Eff   Acc   ^2HS   DG    DR    TD  ^7Score\n"
+			"^7-----------------------------------------------------------------------\n\"", (i == TEAM_RED) ? "^1Axis" : "^4Allied"));
 
-		for ( j = 0; j < level.numPlayingClients; j++ ) {
-			cl = level.clients + level.sortedClients[j];			
+		for (j = 0; j < level.numPlayingClients; j++) {
+			cl = level.clients + level.sortedClients[j];
 
-			if ( cl->pers.connected != CON_CONNECTED || cl->sess.sessionTeam != i ) {
+			if (cl->pers.connected != CON_CONNECTED || cl->sess.sessionTeam != i) {
 				continue;
 			}
 
 			// Bug fix - ^Pentagram always manages to break stats so it needs different approach. ^^
 			DecolorString(cl->pers.netname, n1);
-			SanitizeString(n1, n2, qfalse); 
-			Q_CleanStr(n2);				
+			SanitizeString(n1, n2, qfalse);
+			Q_CleanStr(n2);
 			n2[15] = 0;
 
 			ref = "^7";
 			tot_kills += cl->pers.kills;
-			tot_deaths += cl->pers.deaths;			
+			tot_deaths += cl->pers.deaths;
 			tot_sui += cl->pers.suicides;
 			tot_tk += cl->pers.teamKills;
 			tot_hs += cl->pers.headshots;
 			tot_dg += cl->pers.dmgGiven;
 			tot_dr += cl->pers.dmgReceived;
-			tot_td += cl->pers.dmgTeam;	
-			tot_gp += cl->ps.persistant[PERS_SCORE];						
+			tot_td += cl->pers.dmgTeam;
+			tot_gp += cl->ps.persistant[PERS_SCORE];
 			tot_hits += cl->pers.acc_hits;
 			tot_shots += cl->pers.acc_shots;
 
-			eff = ( cl->pers.deaths + cl->pers.kills == 0 ) ? 0 : 100 * cl->pers.kills / ( cl->pers.deaths + cl->pers.kills );
-			if ( eff < 0 ) {
+			eff = (cl->pers.deaths + cl->pers.kills == 0) ? 0 : 100 * cl->pers.kills / (cl->pers.deaths + cl->pers.kills);
+			if (eff < 0) {
 				eff = 0;
-			}	
+			}
 
 			cnt++;
-			AP( va( "print \"%s%-15s^3%4d^7%4d%4d%3d%s^5%4d %6.2f^2%5d%6d%6d%6d^7%7d\n\"",					
-					ref,
-					n2,
-					cl->pers.kills,
-					cl->pers.deaths,					
-					cl->pers.suicides,
-					cl->pers.teamKills,
-					ref,
-					eff,						
-					( (cl->pers.acc_shots == 0) ? 0.00 : ((float)cl->pers.acc_hits / (float)cl->pers.acc_shots ) * 100.00f ),
-					cl->pers.headshots,
-					cl->pers.dmgGiven,
-					cl->pers.dmgReceived,
-					cl->pers.dmgTeam,
-					cl->ps.persistant[PERS_SCORE] ) );
+			AP(va("print \"%s%-15s^3%4d^7%4d%4d%4d%s^5%4d %6.2f^2%4d%6d%6d%6d^7%7d\n\"",
+				ref,
+				n2,
+				cl->pers.kills,
+				cl->pers.deaths,
+				cl->pers.suicides,
+				cl->pers.teamKills,
+				ref,
+				eff,
+				((cl->pers.acc_shots == 0) ? 0.00 : ((float)cl->pers.acc_hits / (float)cl->pers.acc_shots) * 100.00f),
+				cl->pers.headshots,
+				cl->pers.dmgGiven,
+				cl->pers.dmgReceived,
+				cl->pers.dmgTeam,
+				cl->ps.persistant[PERS_SCORE]));
 		}
 
-		eff = ( tot_kills + tot_deaths == 0 ) ? 0 : 100 * tot_kills / ( tot_kills + tot_deaths );
-		if ( eff < 0 ) {
+		eff = (tot_kills + tot_deaths == 0) ? 0 : 100 * tot_kills / (tot_kills + tot_deaths);
+		if (eff < 0) {
 			eff = 0;
 		}
-		tot_acc = ( (tot_shots == 0) ? 0.00 : ((float)tot_hits / (float)tot_shots ) * 100.00f );
+		tot_acc = ((tot_shots == 0) ? 0.00 : ((float)tot_hits / (float)tot_shots) * 100.00f);
 
-		AP( va( "print \"^7-----------------------------------------------------------------------\n"
-				"%-19s^3%4d^7%4d%4d%3d^5%4d %6.2f^2%5d%6d%6d%6d^7%7d\n\n\"",				
-				"^3Totals^7",
-				tot_kills,
-				tot_deaths,				
-				tot_sui,
-				tot_tk,
-				eff,
-				tot_acc,
-				tot_hs,
-				tot_dg,
-				tot_dr,
-				tot_td,
-				tot_gp ) );
+		AP(va("print \"^7-----------------------------------------------------------------------\n"
+			"%-19s^3%4d^7%4d%4d%4d^5%4d %6.2f^2%4d%6d%6d%6d^7%7d\n\n\"",
+			"^3Totals^7",
+			tot_kills,
+			tot_deaths,
+			tot_sui,
+			tot_tk,
+			eff,
+			tot_acc,
+			tot_hs,
+			tot_dg,
+			tot_dr,
+			tot_td,
+			tot_gp));
 	}
-	AP( va( "print \"%s\n\" 0", ( ( !cnt ) ? "^3\nNo scores to report." : "" ) ) );
+	AP(va("print \"%s\n\" 0", ((!cnt) ? "^3\nNo scores to report." : "")));
 }
 
 /*
@@ -781,39 +782,60 @@ void sortWarmupTime( int start, int inBetween )
 	}
 }
 
+// Check if there's any entry at all..
+qboolean RoundStatsAreEmpty(void) {
+	int i;
+	qboolean empty = qtrue;
+
+	for (i = 0; i < ROUND_LIMIT; i++)
+	{
+		if (roundStats[i].stats)
+			empty = qfalse;
+	}
+	return empty;
+}
+
 // Front end
-void stats_RoundStats( void ) {
+void stats_RoundStats(void) {
 	int statsStartup = 4000;
 	int statsTime = 3600;
-	
-	if(level.statsNum == 0)
+
+	if (level.statsNum == 0)
 	{
 		read_RoundStats();
 		sortWarmupTime(statsStartup, statsTime);
-	} 
+	}
 	else if (level.statsNum == 1)
 	{
-		
-		AP(va("cp \"^2%s\n\"2", rSM[0].reward));
-		APS(va("xmod/sound/scenaric/achievers/%s", rSM[0].snd));
+		if (!RoundStatsAreEmpty())
+		{
+			AP(va("cp \"^2%s\n\"2", rSM[0].reward));
+			APS(va("xmod/sound/scenaric/achievers/%s", rSM[0].snd));
+		}
+		else
+		{
+			AP("cp \"^2No stats for previous round^7!\n\"2");
+		}
+
+
 		level.statsStarted = qtrue;
 	}
 	else if (level.statsNum < ROUND_LIMIT)
 	{
 		int i;
-		for(i = 0; i < ROUND_LIMIT; i++)
+		for (i = 0; i < ROUND_LIMIT; i++)
 		{
 			if (i >= level.statsNum)
 			{
-				if ( roundStats[level.statsNum].stats )
+				if (roundStats[level.statsNum].stats)
 				{
 					char *score;
-					score = va("%s%s", roundStats[level.statsNum].out, rSM[level.statsNum-1].label);
+					score = va("%s", roundStats[level.statsNum].out);
 
-					AP(va("cp \"^2%s: ^7%s\n^7%s \n\"2", 
-						rSM[level.statsNum-1].reward, score, roundStats[level.statsNum ].player));
-					APS(va("xmod/sound/scenaric/achievers/%s", 
-						rSM[level.statsNum-1].snd));
+					AP(va("cp \"^2%s: ^7%s\n^7%s \n\"2",
+						rSM[level.statsNum - 1].reward, score, roundStats[level.statsNum].player));
+					APS(va("xmod/sound/scenaric/achievers/%s",
+						rSM[level.statsNum - 1].snd));
 				}
 				else
 				{
@@ -823,10 +845,8 @@ void stats_RoundStats( void ) {
 		}
 	}
 
-	level.statsPrint = level.time+(!level.statsStarted ? statsStartup : statsTime);	
+	level.statsPrint = level.time + (!level.statsStarted ? statsStartup : statsTime);
 
 	// Push it forward
-	level.statsNum++;  
+	level.statsNum++;
 }
-
-
