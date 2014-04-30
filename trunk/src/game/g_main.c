@@ -276,7 +276,6 @@ vmCvar_t	sv_hostname;		// So it's more accesible
 vmCvar_t	motdNum;			// To track motds..
 vmCvar_t	g_swapCounter;		// Count times so it auto swaps once it reaches it..
 vmCvar_t	g_needBalance;		// Flag for auto balance check
-vmCvar_t	mapAchiever;		// A static cvar for map achiever..
 vmCvar_t	shuffleTracking;	// Tracks rounds for (auto) shuffle
 
 // General
@@ -565,7 +564,6 @@ cvarTable_t		gameCvarTable[] = {
 	{ &motdNum, "motdNum", "1", 0, 0, qfalse },
 	{ &g_swapCounter, "g_swapCounter", "1", 0, 0, qfalse }, 
 	{ &g_needBalance, "g_needBalance", "0", CVAR_CHEAT, qfalse },
-	{ &mapAchiever, "mapAchiever", "", 0, 0, qfalse },
 	{ &shuffleTracking, "shuffleTracking", "0", 0, 0, qfalse },
 
 	// General
@@ -1541,13 +1539,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	}
 
 	G_RemapTeamShaders();
-
-	// L0 - Map Stats
-	if (g_mapStats.integer && !g_mapStatsWarmupOnly.integer)
-	{
-		if (mapAchiever.string)
-			AP(va("chat \"%s \n\"", mapAchiever.string));
-	} 
 }
 
 /*
@@ -2099,7 +2090,12 @@ void BeginIntermission( void ) {
 
 	// Map Stats
 	if (g_mapStats.integer)
+	{
+		// So stats aren't printer as we only store them and check if there's a new record..
+		level.mapStatsPrinted = qtrue;
+
 		stats_MapStats();
+	}
 
 	// autoShuffle
 	if (g_autoShuffle.integer)
@@ -2158,14 +2154,6 @@ void ExitLevel (void) {
 	
 	// L0 - Clean up the (GUID) tempbans
 	clean_tempbans_guids();
-
-	// L0 - Map Stats
-	if (g_mapStats.integer)
-	{
-		// Show only if warmup setting is enabled otherwise it prints twice (when enabled).
-		if (mapAchiever.string && g_mapStatsWarmupOnly.integer)
-			AP(va("chat \"%s \n\"", mapAchiever.string));
-	} 
 
 	// L0 - Round Stats (creates stats)
 	if (g_roundStats.integer)
@@ -3287,13 +3275,13 @@ void G_RunFrame( int levelTime ) {
 		CountDown(); 
 	}
 
-	// L0 - Round Stats
-	if ((level.time > level.statsPrint) && 
-		(g_gamestate.integer == GS_WARMUP_COUNTDOWN) && 
-		g_roundStats.integer) 
+	// L0 - Map Stats
+	if (g_mapStats.integer &&
+		(g_gamestate.integer == GS_WARMUP_COUNTDOWN) &&
+		!level.mapStatsPrinted)
 	{
-		stats_RoundStats();
-	} 
+		stats_MapStats();
+	}
 
 	if (g_listEntity.integer) {
 		for (i = 0; i < MAX_GENTITIES; i++) {

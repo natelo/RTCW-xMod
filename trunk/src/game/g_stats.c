@@ -38,6 +38,18 @@ const char *dMonths[12] = {
 	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
+// Returns current time
+char *getTime(void)
+{
+	qtime_t		ct;
+	trap_RealTime(&ct);
+
+	return va("%02d:%02d:%02d/%02d %s %d",
+		ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday,
+		dMonths[ct.tm_mon], 1900 + ct.tm_year);
+}
+
+
 /*
 ===========
 Stats Handle 
@@ -440,25 +452,25 @@ This will be bunch of bouncing code around but should be simple enough (hopefull
 ===========
 */
 // Builds Message String
-char *mapStatsMsg(char *map, unsigned int score, char *player, char *date) {	
+char *mapStatsMsg(char *map, unsigned int score, char *player, char *date) {
 	if (g_mapStats.integer == 1)
-		return va("^1HALL OF FAME(^7%s^1) ^7>> Top Killer(^1%d^7): %s ^7/ Achieved: ^1%s^7\n\"",	
-			map, score, player, ((date == NULL) ? "previous round": date));
-	else if (g_mapStats.integer == 2)		
-		return va("^1HALL OF FAME(^7%s^1) ^7>> Top Killing Spree(^1%d^7): %s ^7/ Achieved: ^1%s^7\n\"",	
-			map, score, player, ((date == NULL) ? "previous round": date));
-	else if (g_mapStats.integer == 3)		
-		return va("^1HALL OF SHAME(^7%s^1) ^7>> Most Deaths(^1%d^7): %s ^7/ Achieved: ^1%s^7\n\"",	
-			map, score, player, ((date == NULL) ? "previous round": date));
-	else if (g_mapStats.integer == 4)	
-		return va("^1HALL OF SHAME(^7%s^1) ^7>> Most Deaths in a row(^1%d^7): %s ^7/ Achieved: ^1%s^7\n\"",	
-			map, score, player, ((date == NULL) ? "previous round": date));
+		return va("^1HALL OF FAME(^7%s^1) ^7>> Top Killer(^1%d^7): %s ^7/ Achieved: ^1%s^7\n\"",
+		map, score, player, ((date == NULL) ? "previous round" : date));
+	else if (g_mapStats.integer == 2)
+		return va("^1HALL OF FAME(^7%s^1) ^7>> Top Killing Spree(^1%d^7): %s ^7/ Achieved: ^1%s^7\n\"",
+		map, score, player, ((date == NULL) ? "previous round" : date));
+	else if (g_mapStats.integer == 3)
+		return va("^1HALL OF SHAME(^7%s^1) ^7>> Most Deaths(^1%d^7): %s ^7/ Achieved: ^1%s^7\n\"",
+		map, score, player, ((date == NULL) ? "previous round" : date));
+	else if (g_mapStats.integer == 4)
+		return va("^1HALL OF SHAME(^7%s^1) ^7>> Highest Death Spree(^1%d^7): %s ^7/ Achieved: ^1%s^7\n\"",
+		map, score, player, ((date == NULL) ? "previous round" : date));
 	else if (g_mapStats.integer == 5)
-		return va("^1HALL OF FAME(^7%s^1) ^7>> Most Revives(^1%d^7): %s ^7/ Achieved: ^1%s^7\n\"",	
-			map, score, player, ((date == NULL) ? "previous round": date));
+		return va("^1HALL OF FAME(^7%s^1) ^7>> Most Revives(^1%d^7): %s ^7/ Achieved: ^1%s^7\n\"",
+		map, score, player, ((date == NULL) ? "previous round" : date));
 	else if (g_mapStats.integer == 6)
-		return va("^1HALL OF FAME(^7%s^1) ^7>> Most Headshots(^1%^7): %s ^7/ Achieved: ^1%s^7\n\"",	
-			map, score, player, ((date == NULL) ? "previous round": date));
+		return va("^1HALL OF FAME(^7%s^1) ^7>> Most Headshots(^1%^7): %s ^7/ Achieved: ^1%s^7\n\"",
+		map, score, player, ((date == NULL) ? "previous round" : date));
 	else
 		return NULL;
 }
@@ -467,35 +479,30 @@ char *mapStatsMsg(char *map, unsigned int score, char *player, char *date) {
 void add_MapStats(char *file) {
 	fileHandle_t statsFile;
 	char *entry;
-	qtime_t		ct;
 
-	trap_RealTime( &ct );
-	entry=va("%d\\%s\\%02d.%02d:%02d/%02d.%s.%d\\null",
-		level.topScore, parseNames(level.topOwner),
-		ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday,
-		dMonths[ct.tm_mon], 1900+ct.tm_year);
+	entry = va("%d\\%s\\%s\\null", level.topScore, parseNames(level.topOwner), getTime());
 
 	// Re-create new file (overwrites old one)
-	trap_FS_FOpenFile( file, &statsFile, FS_WRITE);
-	trap_FS_Write(entry, strlen( entry ), statsFile);
+	trap_FS_FOpenFile(file, &statsFile, FS_WRITE);
+	trap_FS_Write(entry, strlen(entry), statsFile);
 	trap_FS_FCloseFile(statsFile);
 }
 
 // Set cvar
 void set_mapStats(char *map, unsigned int score, char *player, char *date) {
-	trap_Cvar_Set("mapAchiever", mapStatsMsg(map, score, player, date));
+	if (!level.mapStatsPrinted)
+		AP(va("chat \"%s\n\"", mapStatsMsg(map, score, player, date)));
 }
 
 // Check stats
-void handle_MapStats( char *map, char *suffix ) {
+void handle_MapStats(char *map, char *suffix) {
 	fileHandle_t	statsFile;
 	char	filename[255], data[512];
 	int		file;
 	char	*token[512] = { NULL };
-	
-	Com_sprintf(filename, 255,  "%s%s_%s", STSPTH, map, suffix);
 
-	file = trap_FS_FOpenFile( filename, &statsFile, FS_READ );
+	Com_sprintf(filename, 255, "%s%s_%s", STSPTH, map, suffix);
+	file = trap_FS_FOpenFile(filename, &statsFile, FS_READ);
 
 	// Check|Write
 	if (file > 0)
@@ -503,12 +510,12 @@ void handle_MapStats( char *map, char *suffix ) {
 		// read the existing data
 		trap_FS_Read(data, file, statsFile);
 		trap_FS_FCloseFile(statsFile);
-		
+
 		// score\\name\\date
 		Q_Tokenize(data, token, "\\");
 
 		// New record!
-		if (token[0] && atoi(token[0]) < level.topScore) 
+		if (token[0] && atoi(token[0]) < level.topScore)
 		{
 			add_MapStats(filename);
 			set_mapStats(map, level.topScore, level.topOwner, NULL);
@@ -524,6 +531,9 @@ void handle_MapStats( char *map, char *suffix ) {
 	}
 	else
 	{
+		// Close the pointer..
+		trap_FS_FCloseFile(statsFile);
+
 		// Create it if there's an entry for it..
 		if (level.topScore && level.topOwner)
 		{
@@ -534,68 +544,64 @@ void handle_MapStats( char *map, char *suffix ) {
 				AP(va("print \"^1New Map Record! ^7Be it good or bad, %s ^7has the stuff Legends are made of^1!\n\"",
 				level.topOwner));
 		}
-		else
-		{
-			trap_Cvar_Set("mapAchiever", "");
-		}
 	}
 }
 
 // Writes stats during game
-void write_MapStats( gentity_t *ent, unsigned int score, int type ) {
+void write_MapStats(gentity_t *ent, unsigned int score, int type) {
 	// FCFS method!
-	if (g_mapStats.integer && 
+	if (g_mapStats.integer &&
 		score > level.topScore &&
 		g_gamestate.integer == GS_PLAYING &&
 		type == g_mapStats.integer)
-	{	
-		Q_strncpyz ( level.topOwner, "", sizeof( level.topOwner ) );		
+	{
+		Q_strncpyz(level.topOwner, "", sizeof(level.topOwner));
 		strcat(level.topOwner, ent->client->pers.netname);
 		level.topScore = score;
 	}
 }
 
 // Front end for mapStats handling..
-void stats_MapStats( void ) {
-	char mapName[64];	
+void stats_MapStats(void) {
+	char mapName[64];
 	char *suffix = "killer";
 
 	if (!g_mapStats.integer)
 		return;
 
-	trap_Cvar_VariableStringBuffer( "mapname", mapName, sizeof(mapName) );
+	trap_Cvar_VariableStringBuffer("mapname", mapName, sizeof(mapName));
 
 	// NOTE: Add more if desired/needed and simply patch/add the storing call in appropriate places..
 	switch (g_mapStats.integer) {
 		// Top Killer (most overall kills)
-		case 1:
-			suffix = "killer";
+	case 1:
+		suffix = "killer";
 		break;
 		// Top Killer Spree (most kills in a row)
-		case 2:
-			suffix = "killingSpree";
+	case 2:
+		suffix = "killingSpree";
 		break;
 		// Top Victim (most overall deaths)
-		case 3:
-			suffix = "victim";
+	case 3:
+		suffix = "victim";
 		break;
 		// Top Death Spree (most deaths in a row)
-		case 4:
-			suffix = "deathSpree";
+	case 4:
+		suffix = "deathSpree";
 		break;
 		// Top Medic (most revives)
-		case 5:
-			suffix = "revives";		
+	case 5:
+		suffix = "revives";
 		break;
-		case 6:
 		// Top Headshoter
-			suffix = "headshots";
+	case 6:
+		suffix = "headshots";
 		break;
 	}
-	
-	handle_MapStats(mapName, suffix);
-}
 
+	handle_MapStats(mapName, suffix);
+	level.mapStatsPrinted = qtrue;
+}
 /*
 ===========
 Round Stats

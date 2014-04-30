@@ -10,7 +10,7 @@
 
 // the "gameversion" client command will print this plus compile date
 //----(SA) Wolfenstein
-#define	GAMEVERSION	"xMod Alpha"
+#define	GAMEVERSION	"xMod 0.2 /Beta"
 // done.
 
 #define BODY_QUEUE_SIZE		8
@@ -858,8 +858,9 @@ typedef struct {
 	int			axisBomber, alliedBomber;
 	int			axisArty, alliedArty;
 	// Map Stats
-	unsigned int		topScore;
+	unsigned int	topScore;
 	char		topOwner[MAX_NETNAME+1];
+	qboolean		mapStatsPrinted;
 	// Last Blood 
 	char		lastKiller[MAX_NETNAME+1];
 	char		lastVictim[MAX_NETNAME+1];
@@ -1445,7 +1446,6 @@ extern vmCvar_t		g_serverMessage;
 extern vmCvar_t		sv_hostname;
 extern vmCvar_t		g_swapCounter;
 extern vmCvar_t		g_needBalance;
-extern vmCvar_t		mapAchiever;
 extern vmCvar_t		shuffleTracking;
 
 // General
