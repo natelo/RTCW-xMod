@@ -2086,7 +2086,7 @@ void BeginIntermission( void ) {
 	matchInfo( MT_EI, NULL );
 
 	// Last killer (match stats/info)
-	stats_LastBloodMessage();
+	stats_LastBloodMessage(qtrue);
 
 	// Map Stats
 	if (g_mapStats.integer)
@@ -2510,6 +2510,9 @@ void CheckExitRules( void ) {
 			if ( g_gamestate.integer != GS_PLAYING )
 				return;
 
+			// L0 - Last killer			
+			stats_LastBloodMessage(qfalse);
+
 			trap_SendServerCommand( -1, "print \"Timelimit hit.\n\"");
 			LogExit( "Timelimit hit." );
 
@@ -2526,24 +2529,32 @@ void CheckExitRules( void ) {
 			trap_GetConfigstring( CS_MULTI_MAPWINNER, cs, sizeof(cs) );
 			Info_SetValueForKey( cs, "winner", "1" );
 			trap_SetConfigstring( CS_MULTI_MAPWINNER, cs );
+			// L0 - Last killer			
+			stats_LastBloodMessage(qfalse);
 			LogExit( "Axis team eliminated." );
 		}
 		else if ( level.numFinalDead[1] >= level.numteamVotingClients[1] && level.numteamVotingClients[1] > 0 ) {
 			trap_GetConfigstring( CS_MULTI_MAPWINNER, cs, sizeof(cs) );
 			Info_SetValueForKey( cs, "winner", "0" );
 			trap_SetConfigstring( CS_MULTI_MAPWINNER, cs );
+			// L0 - Last killer			
+			stats_LastBloodMessage(qfalse);
 			LogExit( "Allied team eliminated." );
 		}
 	}
 
 	if ( (g_gametype.integer != GT_CTF && g_gametype.integer < GT_WOLF) && g_fraglimit.integer ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
+			// L0 - Last killer			
+			stats_LastBloodMessage(qfalse);
 			trap_SendServerCommand( -1, "print \"Red hit the fraglimit.\n\"" );
 			LogExit( "Fraglimit hit." );
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_fraglimit.integer ) {
+			// L0 - Last killer			
+			stats_LastBloodMessage(qfalse);
 			trap_SendServerCommand( -1, "print \"Blue hit the fraglimit.\n\"" );
 			LogExit( "Fraglimit hit." );
 			return;
@@ -2559,6 +2570,8 @@ void CheckExitRules( void ) {
 			}
 
 			if ( cl->ps.persistant[PERS_SCORE] >= g_fraglimit.integer ) {
+				// L0 - Last killer			
+				stats_LastBloodMessage(qfalse);
 				LogExit( "Fraglimit hit." );
 				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " hit the fraglimit.\n\"",
 					cl->pers.netname ) );
@@ -2571,12 +2584,16 @@ void CheckExitRules( void ) {
 
 		if ( level.teamScores[TEAM_RED] >= g_capturelimit.integer ) {
 			trap_SendServerCommand( -1, "print \"Red hit the capturelimit.\n\"" );
+			// L0 - Last killer			
+			stats_LastBloodMessage(qfalse);
 			LogExit( "Capturelimit hit." );
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_capturelimit.integer ) {
 			trap_SendServerCommand( -1, "print \"Blue hit the capturelimit.\n\"" );
+			// L0 - Last killer			
+			stats_LastBloodMessage(qfalse);
 			LogExit( "Capturelimit hit." );
 			return;
 		}
