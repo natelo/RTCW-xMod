@@ -328,27 +328,25 @@ void Svcmd_Shuffle_f( void )
 	char	cmd[MAX_TOKEN_CHARS];
 
 	trap_Argv( 1, cmd, sizeof( cmd ) );
-
 	memset(players, -1, sizeof(players));
 	
-	if (g_gamestate.integer == GS_RESET)
-	return;
+	if (g_gamestate.integer == GS_RESET || 
+		g_gamestate.integer == GS_INITIALIZE)
+		return;
 	
 	for (i = 0; i < MAX_CLIENTS; i++)
-	{
-		//skip client numbers that aren't used
+	{	
 		if ((!g_entities[i].inuse) || (level.clients[i].pers.connected != CON_CONNECTED))
 			continue;
-
-		//ignore spectators
-		if ((level.clients[i].sess.sessionTeam != TEAM_RED) && (level.clients[i].sess.sessionTeam != TEAM_BLUE))
+		
+		if ((level.clients[i].sess.sessionTeam != TEAM_RED) && 
+			(level.clients[i].sess.sessionTeam != TEAM_BLUE))
 			continue;
 
 		players[count] = i;	
 		count++;
 	}
-
-	tmpCount = count;	// copy the number of active clients
+	tmpCount = count;
 
 	//loop through all the active players
 	for (i = 0; i < count; i++)
@@ -358,8 +356,7 @@ void Svcmd_Shuffle_f( void )
 		do {
 			j = (rand() % count);		
 		} while (players[j] == -1);
-
-		//put every other random choice on allies
+		
 		if (i & 1)
 			level.clients[players[j]].sess.sessionTeam = TEAM_BLUE;
 		else
@@ -367,7 +364,6 @@ void Svcmd_Shuffle_f( void )
 		
 		ClientUserinfoChanged(players[j]);
 		ClientBegin(players[j]);
-
 
 		players[j] = players[tmpCount-1];
 		players[tmpCount-1] = -1;
