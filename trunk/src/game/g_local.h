@@ -385,6 +385,8 @@ struct gentity_s {
 	int			poisonEnt;					// Poison
 	int			lastPoisonTime;				// Poison
 	qboolean	droppedObj;					// Objective dropping	
+	qboolean	dmginloop;					// New (explosions) damage code
+	gentity_t	*dmgparent;					// New (explosions) damage code
 	// End
 };
 
