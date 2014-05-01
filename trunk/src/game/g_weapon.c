@@ -937,14 +937,14 @@ void Weapon_Artillery(gentity_t *ent) {
 		if ( ent->client->sess.sessionTeam == TEAM_RED && level.axisArty > level.time)
 		{
 			CP(va("chat \"HQ: ^3All available planes are already en-route. Plane available in %i seconds.\n\"",
-				(level.axisArty - level.time) / 1000 ));
+				((level.axisArty - level.time) / 1000 ) + 1));
 			//CPS(ent, "sound/multiplayer/radar_loop02.wav");
 			return;
 		}
 		else if ( ent->client->sess.sessionTeam == TEAM_BLUE && level.alliedArty > level.time)
 		{
 			CP(va("chat \"HQ: ^3All available planes are already en-route. Plane available in %i seconds.\n\"",
-				(level.alliedArty - level.time) / 1000 ));
+				((level.alliedArty - level.time) / 1000 ) + 1));
 			//CPS(ent, "sound/multiplayer/radar_loop02.wav");
 			return;
 		} // End
@@ -2519,14 +2519,14 @@ void FireWeapon( gentity_t *ent ) {
 			if ( ent->client->sess.sessionTeam == TEAM_RED && level.axisBomber > level.time)
 			{
 				CP(va("chat \"HQ: ^3Planes will be available in %d seconds!\n\"",
-					(level.axisBomber - level.time) / 1000 ));
+					((level.axisBomber - level.time) / 1000 ) + 1));
 				//CPS(ent, "sound/multiplayer/radar_loop02.wav");
 				return;
 			}
 			else if ( ent->client->sess.sessionTeam == TEAM_BLUE && level.alliedBomber > level.time)
 			{
 				CP(va("chat \"HQ: ^3Planes will be available in %d seconds!\n\"",
-					(level.alliedBomber - level.time) / 1000 ));
+					((level.alliedBomber - level.time) / 1000 ) + 1));
 				//CPS(ent, "sound/multiplayer/radar_loop02.wav");
 				return;
 			} 
