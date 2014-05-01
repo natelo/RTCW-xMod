@@ -295,6 +295,9 @@ vmCvar_t	g_mapStatsWarmupOnly;	// Shows only in warmup, otherwise every time gam
 vmCvar_t	g_roundStats;			// Prints high achievers each round
 vmCvar_t	g_excludedRoundStats;	// List of excluded stats (not tracked and not printed)
 
+// Forced cvars (due OSPx Client mod)
+vmCvar_t	cl_allowdownload;		// Map downloading 
+
 // L0 - End
 
 cvarTable_t		gameCvarTable[] = {
@@ -583,6 +586,8 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_roundStats, "g_roundStats", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &g_excludedRoundStats, "g_excludedRoundStats", "", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 
+	// Forced stuff
+	{ 0, "cl_allowdownload", "1", CVAR_SYSTEMINFO, qfalse },
 	// End
 
 	{&g_dbgRevive, "g_dbgRevive", "0", 0, 0, qfalse}
@@ -3290,6 +3295,14 @@ void G_RunFrame( int levelTime ) {
 	if ((level.time > level.cnPush) && 
 		(g_gamestate.integer == GS_WARMUP_COUNTDOWN)) {
 		CountDown(); 
+	}
+
+	// L0 - Round Stats
+	if ((level.time > level.statsPrint) &&
+		(g_gamestate.integer == GS_WARMUP_COUNTDOWN) &&
+		g_roundStats.integer)
+	{
+		stats_RoundStats();
 	}
 
 	// L0 - Map Stats
