@@ -57,8 +57,9 @@ void setCustomMG( gentity_t* ent, int type ) {
 		return;
 	}
 
-	if (ent->client->ps.stats[STAT_PLAYER_CLASS] == PC_MEDIC ||
-		ent->client->ps.stats[STAT_PLAYER_CLASS] == PC_ENGINEER ) {
+	if ((ent->client->ps.stats[STAT_PLAYER_CLASS] == PC_MEDIC ||
+		ent->client->ps.stats[STAT_PLAYER_CLASS] == PC_ENGINEER ) ||
+		ent->client->sess.sessionTeam == TEAM_SPECTATOR) {
 
 		if (type == 1) {
 			if (ent->client->sess.selectedWeapon == WP_MP40)
@@ -96,7 +97,7 @@ void setCustomMG( gentity_t* ent, int type ) {
 
 	// Lt's and soliders can't choose weapons..
 	} else {
-		CP("cp \"^3Only Medics and Engineers can choose custom SMG!\n\"2");
+		CP("cp \"Only Medics and Engineers can choose custom SMG!\n\"2");
 	}
 }
 
