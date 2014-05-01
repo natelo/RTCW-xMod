@@ -275,8 +275,6 @@ void setDefaultWeapon(gclient_t *client, qboolean isSold) {
 Chicken Run
 
 Originally from etPUB (i think)
-
-TODO: Once stats are ported make sure it counts as kill for attacker.
 =================
 */
 gentity_t *G_FearCheck( gentity_t *ent ) {
