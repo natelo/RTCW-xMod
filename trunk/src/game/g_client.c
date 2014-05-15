@@ -1858,7 +1858,11 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		// Ridah
 		if (!(ent->r.svFlags & SVF_CASTAI))
 		// done.
-		trap_SendServerCommand( -1, va("print \"[lof]%s" S_COLOR_WHITE " [lon]connected\n\"", client->pers.netname) );
+		AP( va("print \"[lof]%s" S_COLOR_WHITE " [lon]connected\n\"", client->pers.netname) );
+
+		// L0 - Advertise..
+		CPx(clientNum, va("print \"^7This server is running ^3%s\n\"", GAMEVERSION));
+		CPx(clientNum, "print \"^7Type ^3/commands ^7to see the list of all available options.\n\"");
 
 		// L0 - Store guid		
 		Q_strncpyz( client->sess.guid, Info_ValueForKey (userinfo, "cl_guid"), sizeof( client->sess.guid ) );
