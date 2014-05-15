@@ -1183,8 +1183,8 @@ static void PM_CrashLand( void ) {
 		}
 		// done
 */
-
-		if (delta > 77)
+		// L0 - Upped Delta's 
+		if (delta > 84)
 		{
 			PM_AddEvent(EV_FALL_NDIE);
 		}
@@ -1224,7 +1224,7 @@ static void PM_CrashLand( void ) {
 				PM_AddEvent(EV_FALL_DMG_10);
 			}
 		}
-		else if ( delta > 7 ) 
+		else if ( delta > 20 ) 
 		{
 			PM_AddEvent( EV_FALL_SHORT );
 		} 

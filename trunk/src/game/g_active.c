@@ -690,21 +690,21 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			}
 			else if (event == EV_FALL_DMG_50)
 			{
-				damage = 50;
+				damage = 75; // L0 - Changed from 50..
 				ent->client->ps.pm_time = 1000;
 				ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 				VectorClear (ent->client->ps.velocity);
 			}
 			else if (event == EV_FALL_DMG_25)
 			{
-				damage = 25;
+				damage = 50; // L0 - Changed from 25..
 				ent->client->ps.pm_time = 250;
 				ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 				VectorClear (ent->client->ps.velocity);
 			}
 			else if (event == EV_FALL_DMG_15)
 			{
-				damage = 15;
+				damage = 20; // L0 - Changed from 15..
 				ent->client->ps.pm_time = 1000;
 				ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 				VectorClear (ent->client->ps.velocity);
