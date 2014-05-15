@@ -24,12 +24,6 @@ int FlagBalance( void ) {
 	if (!g_balanceFlagRetake.integer)
 		return 0;
 
-	sortedActivePlayers();
-
-	// Avoid dealing with check if there's less than 2 players..
-	if (level.axisPlayers < 2 && level.alliedPlayers < 2)
-		return 0;
-
 	// Even or difference by 1
 	if (level.axisPlayers == level.alliedPlayers)
 		return 0;
@@ -172,7 +166,6 @@ can spawn with heavy weapon..
 =================
 */
 qboolean isWeaponBalanced( int weapon ) {
-	sortedActivePlayers();
 
 	// Sniper
 	if (g_balanceSniper.integer && (weapon == 6)) {
@@ -199,10 +192,8 @@ qboolean isWeaponBalanced( int weapon ) {
 		else
 			return qfalse;	
 	}
-
 	return qtrue;
 }
-
 
 /*
 ================
