@@ -3037,6 +3037,10 @@ void ClientCommand( int clientNum ) {
 		Cmd_Smoke_f(ent);
 	else if (Q_stricmp (cmd, "time") == 0)
 		Cmd_Time_f(ent);
+	else if (Q_stricmp(cmd, "hitsound") == 0)
+		Cmd_hitsounds(ent);
+	else if (Q_stricmp(cmd, "commands") == 0)
+		Cmd_help(ent);
 // End
 	else if (Q_stricmp (cmd, "levelshot") == 0)
 		Cmd_LevelShot_f (ent);

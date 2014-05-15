@@ -22,7 +22,7 @@ void G_WriteClientSessionData( gclient_t *client ) {
 	const char	*s;
 	const char	*var;
 
-	s = va("%i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %s %i %i",		// DHM - Nerve
+	s = va("%i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %s %i %i %i",		// DHM - Nerve
 		client->sess.sessionTeam,
 		client->sess.spectatorTime,
 		client->sess.spectatorState,
@@ -49,7 +49,8 @@ void G_WriteClientSessionData( gclient_t *client ) {
 		client->sess.guid &&
 			( !client->sess.guid || !Q_stricmp( client->sess.guid, "" ) ) ? "NOGUID" : client->sess.guid,
 		client->sess.ignored,
-		client->sess.selectedWeapon
+		client->sess.selectedWeapon,
+		client->sess.clientFlags
 
 		);
 
@@ -99,7 +100,8 @@ void G_ReadSessionData( gclient_t *client ) {
 		(int *)&client->sess.ip[3],
 		client->sess.guid,
 		&client->sess.ignored,
-		&client->sess.selectedWeapon
+		&client->sess.selectedWeapon,
+		&client->sess.clientFlags
 
 		);
 
@@ -193,6 +195,7 @@ void G_InitSessionData( gclient_t *client, char *userinfo ) {
 	sess->incognito = 0;		// Incognito for admins
 	sess->ignored = 0;			// Starts as non-ignored (unless forced elsewhere)
 	sess->selectedWeapon = 0;	// Starts with default
+	sess->clientFlags = 0;		// Will be overwritten in clientConnect..
 	// End
 
 	G_WriteClientSessionData( client );

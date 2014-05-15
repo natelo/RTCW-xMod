@@ -1671,9 +1671,10 @@ void ClientUserinfoChanged( int clientNum ) {
 	}
 	//dhm - end
 
-
 	// colors
 	c1 = Info_ValueForKey( userinfo, "color" );
+	// L0 - Set some permanent values..	
+	client->sess.clientFlags = atoi(c1);
 
 	// send over a subset of the userinfo keys so other clients can
 	// print scoreboards, display models, and play custom sounds

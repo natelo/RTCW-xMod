@@ -373,7 +373,6 @@ void Cmd_Push(gentity_t* ent)
 	VectorMA(target->client->ps.velocity, shoveAmount, forward, target->client->ps.velocity);
 
 	APRS(target, "sound/multiplayer/vo_revive.wav");
-
 	ent->lastPushTime = level.time;	
 }
 
@@ -633,4 +632,96 @@ void Cmd_Stats_f(gentity_t *ent) {
 		client->pers.lifeKillsPeak, client->pers.lifeDeathsPeak
 	));
 }
+
+/*
+=================
+Hitsounds
+
+Do it like in shrub just permanently 
+(A hack tied to color so one doesn't need to type it all the time..)
+=================
+*/
+void Cmd_hitsounds(gentity_t *ent) {
+	char *action = (ent->client->sess.clientFlags & CFLAGS_HITSOUNDS ? "^3Disable^7" : "^3Enable^7");
+	int	flag = (ent->client->sess.clientFlags & CFLAGS_HITSOUNDS ? 0 : 1);
+
+	CP(va("print \"Bit flag to %s Hitsounds is /color %d \nType ^3/commands bitflags^7 for explanation.\n\"", action, flag));
+	return;	
+}
+
+/*
+=================
+User help..
+
+Spam fest^^
+=================
+*/
+void Cmd_help(gentity_t *ent) {
+	char		about[MAX_STRING_TOKENS];	
+
+	trap_Argv(1, about, sizeof(about));
+
+	// About
+	if (!Q_stricmp(about, "about")) {
+		CP("print \"^7\n\"");
+		CP("print \"^3About:\n\"");
+		CP("print \"^7-------------------------------------------\n\"");
+		CP(va("print \"^3Mod:           ^7%s\n\"", GAMEVERSION));
+		CP("print \"^3Developer:     ^7Nate 'L0\n\"");
+		CP("print \"^3Forums:        ^7http://rtcwx.com\n\"");
+		CP("print \"^3Contact:       ^7nate.afk@gmail.com\n\"");
+		CP("print \"^3Source code:   ^7Available per request\n\"");
+		CP("print \"^3Bugs/Ideas:    ^7Use info provided above.\n\"");
+		CP("print \"^3Show Support:  ^7Donate on forums..\n\"");
+		CP("print \"^7-------------------------------------------\n\n\"");
+	}
+	// Bit flags
+	else if (!Q_stricmp(about, "bitflags")) {
+		CP("print \"^7\n\"");
+		CP("print \"^3Bit Flags:\n\"");		
+		CP("print \"^7-----------------------------------------\n\"");
+		CP("print \"^7Hitsounds ^3>> 1\n\"");
+		CP("print \"^7MP40      ^3>> 2\n\"");
+		CP("print \"^7Thompson  ^3>> 8\n\"");
+		CP("print \"^7Sten      ^3>> 16\n\"");
+		CP("print \"^7\n\"");
+		CP("print \"^3Example\n\"");
+		CP("print \"^7/color 3 = Hitsounds On + Spawn with mp40\n\"");
+		CP("print \"^7-----------------------------------------\n\"");
+		CP("print \"^3Usage^7: /color <num>\n\n\"");
+	}
+	// Commands
+	else if (!Q_stricmp(about, "list")) {
+		CP("print \"^7\n\"");
+		CP("print \"^3Available Commands:\n\"");
+		CP("print \"^7-----------------------------------------------\n\"");
+		CP("print \"^7/getstatus         ^3>> Player's list\n\"");
+		CP("print \"^7/hitsound          ^3>> Hitsounds on/off\n\"");
+		CP("print \"^7/login <password>  ^3>> Logs you as Admin\n\"");
+		CP("print \"^7/mp40              ^3>> Spawn with MP40\n\"");
+		CP("print \"^7/pm <target> <msg> ^3>> Sends private message\n\"");
+		CP("print \"^7/private <msg>     ^3>> Private Admin chat\n\"");
+		CP("print \"^7/smoke             ^3>> Throw smoke (LT only)\n\"");
+		CP("print \"^7/stats             ^3>> Prints your current stats\n\"");
+		CP("print \"^7/sten              ^3>> Spawn with Sten\n\"");
+		CP("print \"^7/sui               ^3>> Suicide without a gib\n\"");
+		CP("print \"^7/thompson          ^3>> Spawn with Thompson\n\"");
+		CP("print \"^7/time              ^3>> Current server time\n\"");
+		CP("print \"^7-----------------------------------------------\n\n\"");
+		CP("print \"^3Usage^7: /<command>\n\"");
+	}
+	// Nothing specific..list all categories
+	else {
+		CP("print \"^7\n\"");
+		CP("print \"^3Available Categories:\n\"");
+		CP("print \"^7--------------------\n\"");
+		CP("print \"^3- about\n\"");
+		CP("print \"^3- bitflags\n\"");
+		CP("print \"^3- list\n\"");
+		CP("print \"^7--------------------\n\"");
+		CP("print \"^3Usage^7: /commands <category>\n\n\"");
+	}
+
+}
+
 

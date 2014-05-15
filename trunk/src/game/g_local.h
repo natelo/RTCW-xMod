@@ -479,6 +479,7 @@ typedef struct {
 	char		guid[PB_GUID_LENGTH + 1];
 	int			ignored;			// Ignored clients
 	int			selectedWeapon;		// If enabled allows mp40, sten, thompson..
+	int			clientFlags;		// Sort some stuff based upon user settings
 	// End
 } clientSession_t;
 
@@ -1796,6 +1797,8 @@ void Cmd_DropObj(gentity_t *self);
 void Cmd_Spy( gentity_t *ent );
 void checkSpies( gentity_t *ent );
 void Cmd_Stats_f(gentity_t *ent);
+void Cmd_hitsounds(gentity_t *ent);
+void Cmd_help(gentity_t *ent);
 
 //
 // g_stats.c
@@ -1847,6 +1850,14 @@ qboolean Q_FindToken(char *haystack, char *needle);
 #define APS(x) APSound(x)									// Global sound 
 #define APRS(x, y) APRSound(x, y)							// Global sound with limited (radius) range
 #define CPS(x, y) CPSound(x, y)								// Client sound only
+
+//
+// Bit flags (for color hacks..)
+//
+#define CFLAGS_HITSOUNDS	1
+#define CFLAGS_MP40			2
+#define CFLAGS_THOMPSON		8
+#define CFLAGS_STEN			16
 
 //
 // Stats Header
