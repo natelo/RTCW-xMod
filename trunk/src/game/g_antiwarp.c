@@ -64,14 +64,6 @@ extern float pm_proneSpeedScale;
 static float G_CmdScale(gentity_t *ent, usercmd_t *cmd) {
 	float scale;
 
-#ifdef CGAMEDLL
-	int gametype = cg_gameType.integer;
-	int movespeed = cg_movespeed.integer;
-#elif GAMEDLL
-	int gametype = g_gametype.integer;
-	int movespeed = g_speed.integer;
-#endif
-
 	scale = abs(cmd->forwardmove);
 	if (abs(cmd->rightmove) > scale) {
 		scale = abs(cmd->rightmove);
