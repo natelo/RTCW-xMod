@@ -482,6 +482,10 @@ void Cmd_Kill_f( gentity_t *ent ) {
 	if ( g_gametype.integer >= GT_WOLF && ent->client->ps.pm_flags & PMF_LIMBO ) {
 		return;
 	}
+	// L0 - Headshots only
+	if (g_headshotsOnly.integer) {
+		return;
+	}
 
 	// L0 - Chicken
 	attacker = G_FearCheck(ent);
@@ -522,6 +526,10 @@ void Cmd_SoftKill_f( gentity_t *ent ) {
 		return;
 	}
 	if ( g_gametype.integer >= GT_WOLF && ent->client->ps.pm_flags & PMF_LIMBO ) {
+		return;
+	}
+	// L0 - Headshots only
+	if (g_headshotsOnly.integer) {
 		return;
 	}
 
@@ -746,6 +754,10 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 	// L0 - Advertise
 	CPx(clientNum, va("print \"This server is running ^3%s\n\"", GAMEVERSION));
 	CPx(clientNum, "print \"^7Type ^3/commands ^7to see the list of all available options.\n\"");
+
+	// L0 - Headshots only..
+	if (g_headshotsOnly.integer)
+		CPx(clientNum, "chat \"console: ^3Headshots Only ^7mode is enabled.\n\"");
 
 	// get and distribute relevent paramters
 	ClientUserinfoChanged( clientNum );
@@ -1886,6 +1898,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	} else if ( !Q_stricmp( arg1, "?" )) {
 	} else if ( !Q_stricmp( arg1, "ignore" )) {
 	} else if ( !Q_stricmp( arg1, "unignore" )) {
+	} else if ( !Q_stricmp( arg1, "headshotsonly")) {
 // End
 
 // JPW NERVE
@@ -2032,6 +2045,15 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		} else {
 			CPx( ent - g_entities, "print \"Client not on server.\n\"" );
 			return;
+		}
+	// Headshots only
+	} else if (!Q_stricmp(arg1, "headshotsonly")) { 
+		Com_sprintf(level.voteString, sizeof(level.voteString), "headshotsonly");
+		if (g_headshotsOnly.integer) {
+			Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "Disable headshots only mode?");			
+		}
+		else {
+			Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "Enable headshots only mode?");			
 		}
 // End
 	} else {

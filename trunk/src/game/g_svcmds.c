@@ -439,6 +439,24 @@ void Svcmd_handleIgnore_f( qboolean unignore ) {
 
 /*
 =================
+L0 - Headshots Only
+=================
+*/
+void Svcmd_Headshots_f() {
+
+	if (g_headshotsOnly.integer != 0) {
+		trap_SendConsoleCommand(EXEC_APPEND, "g_headshotsonly 0\n");
+		AP("chat \"console: Headshots only mode has been disabled^1!\n\"");
+	}
+	else {
+		trap_SendConsoleCommand(EXEC_APPEND, "g_headshotsonly 1\n");
+		AP("chat \"console: Headshots only mode has been enabled^2!\n\"");
+	}
+
+}
+
+/*
+=================
 ConsoleCommand
 
 =================

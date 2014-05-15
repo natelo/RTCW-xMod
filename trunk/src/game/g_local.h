@@ -1430,6 +1430,7 @@ extern vmCvar_t		g_axisASdelay;
 extern vmCvar_t		g_axisASdelayFFE;
 extern vmCvar_t		g_alliedASdelay;
 extern vmCvar_t		g_alliedASdelayFFE;
+extern vmCvar_t		g_headshotsOnly;
 
 // Server Bot
 extern vmCvar_t		sb_system;

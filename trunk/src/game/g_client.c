@@ -1864,6 +1864,10 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		CPx(clientNum, va("print \"^7This server is running ^3%s\n\"", GAMEVERSION));
 		CPx(clientNum, "print \"^7Type ^3/commands ^7to see the list of all available options.\n\"");
 
+		// L0 - Headshots only..
+		if (g_headshotsOnly.integer)
+			CPx(clientNum, "chat \"console: ^3Headshots Only ^7mode is enabled.\n\"");
+
 		// L0 - Store guid		
 		Q_strncpyz( client->sess.guid, Info_ValueForKey (userinfo, "cl_guid"), sizeof( client->sess.guid ) );
 

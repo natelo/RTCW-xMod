@@ -241,6 +241,7 @@ vmCvar_t	g_axisASdelay;			// Limit for Axis Air strikes
 vmCvar_t	g_axisASdelayFFE;		// Limit for Allied Air strikes
 vmCvar_t	g_alliedASdelay;		// Limit for Axis Air strikes (Firing for effect)
 vmCvar_t	g_alliedASdelayFFE;		// Limit for Allied Air strikes (Firing for effect)
+vmCvar_t	g_headshotsOnly;		// Enables Headshots only mode..
 
 // Server Bot
 vmCvar_t	sb_system;						// Controls all SB functionality
@@ -535,6 +536,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_axisASdelayFFE, "g_axisASdelayFFE", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_alliedASdelay, "g_alliedASdelay", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_alliedASdelayFFE, "g_alliedASdelayFFE", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_headshotsOnly, "g_headshotsOnly", "0", CVAR_ARCHIVE, 0, qtrue },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 

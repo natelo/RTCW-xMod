@@ -1413,6 +1413,12 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				write_MapStats(attacker, attacker->client->pers.deaths, MAP_HEADSHOTS);
 		}
 	}
+	// L0 - Headshots only mode..
+	else if ( (targ && targ->client) && 
+		(g_headshotsOnly.integer) && 
+		(targ->client->ps.stats[STAT_HEALTH] > 0) ) {
+		return;
+	}
 	
 	if ( g_debugDamage.integer ) {
 		G_Printf( "client:%i health:%i damage:%i armor:%i\n", targ->s.number,
