@@ -240,11 +240,12 @@ void setDefaultWeapon(gclient_t *client, qboolean isSold) {
 	}
 
 	// Sort any bit flags..
-	if (client->sess.clientFlags & CFLAGS_MP40 && g_customMGs.integer)
+	// NOTE: If client during game types e.g. /thompson they will spawn with it during server session..
+	if (client->sess.clientFlags & CFLAGS_MP40 && g_customMGs.integer && !client->sess.selectedWeapon)
 		client->sess.selectedWeapon = WP_MP40;
-	else if (client->sess.clientFlags & CFLAGS_THOMPSON  && g_customMGs.integer)
+	else if (client->sess.clientFlags & CFLAGS_THOMPSON  && g_customMGs.integer && !client->sess.selectedWeapon)
 		client->sess.selectedWeapon = WP_THOMPSON;
-	else if (client->sess.clientFlags & CFLAGS_STEN  && g_customMGs.integer)
+	else if (client->sess.clientFlags & CFLAGS_STEN  && g_customMGs.integer && !client->sess.selectedWeapon)
 		client->sess.selectedWeapon = WP_STEN;
 
 	// Sorts ammo
