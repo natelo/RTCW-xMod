@@ -1943,7 +1943,7 @@ void ClientBegin( int clientNum ) {
 
 	client->pers.complaintClient = -1;
 	client->pers.complaintEndTime = -1;
-
+	
 // L0 - New stuff
 	// Shortcuts
 	client->pers.lastkilled_client = -1;

@@ -653,6 +653,67 @@ void cmd_kill(gentity_t *ent)
 
 /*
 ===========
+Flip client's view
+===========
+*/
+void cmd_fling(gentity_t *ent, int type) {
+	int count = 0;
+	int i;
+	int nums[MAX_CLIENTS];
+	char *tag, *log;
+
+	tag = sortTag(ent);
+	count = ClientNumberFromNameMatch(ent->client->pers.cmd2, nums);
+
+	if (count == 0) {
+		CP("print \"Client not on server^1!\n\"");
+		return;
+	}
+	else if (count > 1) {
+		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		return;
+	}
+
+	for (i = 0; i < count; i++) {
+		vec3_t dir, flingvec;
+		char *action = (!type ? "fling" : (type == 1 ? "throw" : "launch"));
+		
+		if (g_entities[nums[i]].health <= 0)
+			return;
+		
+		// Fling
+		if (type == 0) {
+			VectorSet(dir, crandom() * 50, crandom() * 50, 10);
+		}
+		// Throw
+		else if (type == 1) {
+			AngleVectors(g_entities[nums[i]].client->ps.viewangles, dir, NULL, NULL);
+			dir[2] = .25f;
+		}
+		// Launch
+		else {	
+			VectorSet(dir, 0, 0, 10);
+		}
+
+		VectorNormalize(dir);
+		VectorScale(dir, 1500, flingvec);
+		VectorAdd(g_entities[nums[i]].s.pos.trDelta, flingvec, g_entities[nums[i]].s.pos.trDelta);
+		VectorAdd(g_entities[nums[i]].client->ps.velocity,
+			flingvec,
+			g_entities[nums[i]].client->ps.velocity);
+
+		AP(va("chat \"console: ^7%s used ^3%s ^7on a %s^7.\n\"", tag, action, g_entities[nums[i]].client->pers.netname));
+
+		// Log it
+		log = va("Player %s (IP:%i.%i.%i.%i) used %s on a %s.",
+			ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2],
+			ent->client->sess.ip[3], action, g_entities[nums[i]].client->pers.netname);
+		logEntry(ADMACT, log);
+	}
+}
+
+/*
+===========
 Force user to spectators
 ===========
 */
@@ -1838,6 +1899,9 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd,"clientkick"))		{ if (canUse(ent, qtrue)) cmd_clientkick(ent);	else cantUse(ent); return qtrue;}
 	else if (!strcmp(cmd,"slap"))			{ if (canUse(ent, qtrue)) cmd_slap(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"kill"))			{ if (canUse(ent, qtrue)) cmd_kill(ent); else cantUse(ent); return qtrue;} 
+	else if (!strcmp(cmd, "fling"))			{ if (canUse(ent, qtrue)) cmd_fling(ent, 0); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "throw"))			{ if (canUse(ent, qtrue)) cmd_fling(ent, 1); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "launch"))		{ if (canUse(ent, qtrue)) cmd_fling(ent, 2); else cantUse(ent); return qtrue; }	
 	else if (!strcmp(cmd,"specs"))			{ if (canUse(ent, qtrue)) cmd_specs(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"axis"))			{ if (canUse(ent, qtrue)) cmd_axis(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"allies"))			{ if (canUse(ent, qtrue)) cmd_allied(ent); else cantUse(ent); return qtrue;} 
@@ -1910,6 +1974,9 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("clientkick", "Kicks player from server.", "Uses client slot number! Optionally you can add a message.")
 	_HELP("slap", "Slaps player and takes 20hp.", "Uses client slot number!")
 	_HELP("kill", "Kills player on spot.", "Uses client slot number!")
+	_HELP("fling", "Disorientates player's view.", "Uses unique part of name!")
+	_HELP("throw", "Throws player randomly.", "Uses unique part of name!")
+	_HELP("launch", "Launches player in air.", "Uses unique part of name!")
 	_HELP("specs", "Forces player to spectators.", "Uses unique part of name!")
 	_HELP("axis", "Forces player to Axis team.", "Uses unique part of name!")
 	_HELP("allies", "Forces player to Allied team.", "Uses unique part of name!")

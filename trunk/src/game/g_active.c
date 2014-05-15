@@ -201,8 +201,7 @@ void P_WorldEffects( gentity_t *ent ) {
 	
 	// L0 - poison
 	if (ent->poisoned && ent->client)
-	{	
-
+	{
 		// Check if person is under spawn protection before any damange can be done
 		if ( ent->client->ps.powerups[PW_INVULNERABLE] ) {
 			ent->poisoned = qfalse; // if he's under protecion reset poison or it kicks in once protection expires =X
