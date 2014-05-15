@@ -1084,57 +1084,13 @@ void cmd_swap(gentity_t *ent) {
 Shuffle
 ===========
 */
-void cmd_shuffle(gentity_t *ent, qboolean reset) {
-	char *tag, *log;
-	int count=0, tmpCount, i;
-	int players[MAX_CLIENTS];
+void cmd_shuffle(gentity_t *ent) {
+	char  *log;
 
-	tag = sortTag(ent);	
-	memset(players, -1, sizeof(players));	
+	AP(va("print \"console: %s has ^3shuffled ^7teams.\n\"", sortTag(ent)));
 
-	for (i = 0; i < MAX_CLIENTS; i++)
-	{
-		if ((!g_entities[i].inuse) || (level.clients[i].pers.connected != CON_CONNECTED))
-			continue;
-
-		//ignore spectators
-		if ((level.clients[i].sess.sessionTeam != TEAM_RED) && (level.clients[i].sess.sessionTeam != TEAM_BLUE))
-			continue;
-
-		players[count] = i;
-		count++;
-	}
-
-	tmpCount = count;
-
-	for (i = 0; i < count; i++)
-	{
-		int j;
-
-		do {
-			j = (rand() % count);	
-		} while (players[j] == -1);
-	
-		if (i & 1)
-			level.clients[players[j]].sess.sessionTeam = TEAM_BLUE;
-		else
-			level.clients[players[j]].sess.sessionTeam = TEAM_RED;
-
-		ClientUserinfoChanged(players[j]);
-		ClientBegin(players[j]);
-
-		players[j] = players[tmpCount-1];
-		players[tmpCount-1] = -1;
-		tmpCount--;
-	}
-
-	AP(va("print \"console: %s has ^3shuffled ^7teams.\n\"", tag));
-
-	// Optionally shuffle can occur without resetting match..
-	if (reset)
-	{
-		trap_SendConsoleCommand(EXEC_APPEND, va("reset_match %i\n", GS_WARMUP));
-	}
+	// Shuffle it...	
+	trap_SendConsoleCommand(EXEC_APPEND, va("shuffle%s", (!Q_stricmp(ent->client->pers.cmd2, "@") ? " @" : "")));
 
 	// Log it
 	log =va("Player %s (IP:%i.%i.%i.%i) has shuffled teams.", 
@@ -1897,8 +1853,7 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd,"restart"))		{ if (canUse(ent, qtrue)) cmd_restart(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"reset"))			{ if (canUse(ent, qtrue)) cmd_resetmatch(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"swap"))			{ if (canUse(ent, qtrue)) cmd_swap(ent); else cantUse(ent); return qtrue;} 
-	else if (!strcmp(cmd,"shuffle"))		{ if (canUse(ent, qtrue)) cmd_shuffle(ent, qtrue); else cantUse(ent); return qtrue;} 
-	else if (!strcmp(cmd,"@shuffle"))		{ if (canUse(ent, qtrue)) cmd_shuffle(ent, qfalse); else cantUse(ent); return qtrue;} 
+	else if (!strcmp(cmd,"shuffle"))		{ if (canUse(ent, qtrue)) cmd_shuffle(ent); else cantUse(ent); return qtrue;}
 	else if (!strcmp(cmd,"spec999"))		{ if (canUse(ent, qtrue)) cmd_specs999(ent); else cantUse(ent); return qtrue;} 	
 	else if (!strcmp(cmd,"whereis"))		{ if (canUse(ent, qtrue)) cmd_revealCamper(ent); else cantUse(ent); return qtrue;}
 	else if (!strcmp(cmd,"rename"))			{ if (canUse(ent, qtrue)) cmd_rename(ent); else cantUse(ent); return qtrue;}
@@ -1971,8 +1926,7 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("restart", "Restarts the round.", NULL)
 	_HELP("reset", "Resets the match.", NULL)
 	_HELP("swap", "Swaps the teams.", NULL)
-	_HELP("shuffle", "Shuffles the teams and resets the match.", NULL)
-	_HELP("@shuffle", "Shuffles the teams and starts the match.", NULL)
+	_HELP("shuffle", "Shuffles the teams- Optionally use @ to shuffle without match reset.", "!shuffle @")
 	_HELP("spec999", "Moves all lagged (999) players to spectators.", NULL)
 	_HELP("whereis", "Reveals players location to all.", "Uses client slot number!")
 	_HELP("rename", "Renames players.", "!rename <client slot> <new name>")

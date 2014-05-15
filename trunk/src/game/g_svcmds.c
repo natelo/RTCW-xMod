@@ -321,29 +321,26 @@ void Svcmd_SwapTeams_f(void) {
 L0 - Shuffle
 ===========
 */
-void Svcmd_Shuffle_f( void )
-{
-	int count=0, tmpCount, i;
+void doShuffle(void) {
+	int count = 0, tmpCount, i;
 	int players[MAX_CLIENTS];
-	char	cmd[MAX_TOKEN_CHARS];
 
-	trap_Argv( 1, cmd, sizeof( cmd ) );
 	memset(players, -1, sizeof(players));
-	
-	if (g_gamestate.integer == GS_RESET || 
+
+	if (g_gamestate.integer == GS_RESET ||
 		g_gamestate.integer == GS_INITIALIZE)
 		return;
-	
+
 	for (i = 0; i < MAX_CLIENTS; i++)
-	{	
+	{
 		if ((!g_entities[i].inuse) || (level.clients[i].pers.connected != CON_CONNECTED))
 			continue;
-		
-		if ((level.clients[i].sess.sessionTeam != TEAM_RED) && 
+
+		if ((level.clients[i].sess.sessionTeam != TEAM_RED) &&
 			(level.clients[i].sess.sessionTeam != TEAM_BLUE))
 			continue;
 
-		players[count] = i;	
+		players[count] = i;
 		count++;
 	}
 	tmpCount = count;
@@ -352,23 +349,34 @@ void Svcmd_Shuffle_f( void )
 	for (i = 0; i < count; i++)
 	{
 		int j;
-			
+
 		do {
-			j = (rand() % count);		
+			j = (rand() % count);
 		} while (players[j] == -1);
-		
+
 		if (i & 1)
 			level.clients[players[j]].sess.sessionTeam = TEAM_BLUE;
 		else
 			level.clients[players[j]].sess.sessionTeam = TEAM_RED;
-		
+
 		ClientUserinfoChanged(players[j]);
 		ClientBegin(players[j]);
 
-		players[j] = players[tmpCount-1];
-		players[tmpCount-1] = -1;
+		players[j] = players[tmpCount - 1];
+		players[tmpCount - 1] = -1;
 		tmpCount--;
 	}
+}
+// Just a wrapper..
+void Svcmd_Shuffle_f( void ) {
+	char cmd[MAX_TOKEN_CHARS];
+
+	trap_Argv( 1, cmd, sizeof( cmd ) );	
+	
+	// Randomize it...
+	doShuffle();
+	doShuffle();
+	doShuffle();
 
 	if (Q_stricmp (cmd, "@") != 0 && Q_stricmp (cmd, "@print") != 0)
 		Svcmd_ResetMatch_f();

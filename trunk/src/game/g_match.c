@@ -469,17 +469,20 @@ void CountDown( void ) {
 		// Auto shuffle if enabled and treshhold is reached
 		if (g_autoShuffle.integer)
 		{
-			if (shuffleTracking.integer >= g_autoShuffle.integer)
-			{
-				trap_SendConsoleCommand( EXEC_APPEND, "shuffle @print\n" );
-				trap_Cvar_Set("shuffleTracking", 0);
-				AP("chat \"console: Teams were ^3Auto shuffled^7!\n\"");
-			}
-			// Notify that shuffle will occur next round..
-			else if ((g_autoShuffle.integer > 2 ) &&
-				(shuffleTracking.integer == (g_autoShuffle.integer - 1)) )
-			{
-				AP(("chat \"^3Notice: ^7Teams will be ^3Auto Shuffled ^7next round^3!\n\""));
+			// Do not bother with this if there's not at least 6 players
+			if (level.axisPlayers > 2 && level.alliedPlayers > 2) {
+				if (shuffleTracking.integer >= g_autoShuffle.integer)
+				{
+					trap_SendConsoleCommand(EXEC_APPEND, "shuffle @print\n");
+					trap_Cvar_Set("shuffleTracking", 0);
+					AP("chat \"console: Teams were ^3Auto shuffled^7!\n\"");
+				}
+				// Notify that shuffle will occur next round..
+				else if ((g_autoShuffle.integer > 2) &&
+					(shuffleTracking.integer == (g_autoShuffle.integer - 1)))
+				{
+					AP(("chat \"^3Notice: ^7Teams will be ^3Auto Shuffled ^7next round^3!\n\""));
+				}
 			}
 		}
 
