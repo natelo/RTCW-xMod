@@ -1176,7 +1176,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			   vec3_t dir, vec3_t point, int damage, int dflags, int mod ) {
 	gclient_t	*client;
 	int			take;
-	int			asave;
+//	int			asave; // L0 - Armor is out..
 	int			knockback;
 
 	if (!targ->takedamage) {
@@ -1385,8 +1385,11 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	Hitsounds( targ, attacker, qtrue);
 
 	// save some from armor
+	// L0 - Not for MP..
+	/*
 	asave = CheckArmor (targ, take, dflags);
 	take -= asave;
+	*/
 
 	if ( IsHeadShot(targ, qfalse, dir, point, mod) ) {
 
@@ -1424,12 +1427,14 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		(targ->client->ps.stats[STAT_HEALTH] > 0) ) {
 		return;
 	}
-	
+
+	// L0 - Not used anymore..
+/*
 	if ( g_debugDamage.integer ) {
 		G_Printf( "client:%i health:%i damage:%i armor:%i\n", targ->s.number,
 			targ->health, take, asave );
 	}
-
+*/
 	// add to the damage inflicted on a player this frame
 	// the total will be turned into screen blends and view angle kicks
 	// at the end of the frame
@@ -1439,7 +1444,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		} else {
 			client->ps.persistant[PERS_ATTACKER] = ENTITYNUM_WORLD;
 		}
-		client->damage_armor += asave;
+		//client->damage_armor += asave; // L0 - Removed..
 		client->damage_blood += take;
 		client->damage_knockback += knockback;
 
