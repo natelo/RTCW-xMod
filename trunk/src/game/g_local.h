@@ -599,6 +599,13 @@ typedef struct {
     vec3_t    currentOrigin;
     int       time, leveltime;
 } clientTrail_t;
+
+// L0 - Anti Warp
+#define LAG_MAX_COMMANDS 512
+#define LAG_MAX_DELTA 75
+#define LAG_MAX_DROP_THRESHOLD 800
+#define LAG_MIN_DROP_THRESHOLD ( LAG_MAX_DROP_THRESHOLD - 200 )
+#define LAG_DECAY 1.02f
 // End
 
 #define LT_SPECIAL_PICKUP_MOD	3		// JPW NERVE # of times (minus one for modulo) LT must drop ammo before scoring a point
@@ -709,6 +716,13 @@ struct gclient_s {
 	// L0 - New stuff
 	int			doublekill;		// (stats) Double+ Kills
 	int			infoTime;		// LT/spies Info
+
+	// Anti Warp
+	int lastCmdRealTime;
+	int cmdhead;                    // antiwarp command queue head
+	int cmdcount;                   // antiwarp command queue # valid commands
+	float cmddelta;                 // antiwarp command queue # valid commands
+	usercmd_t cmds[LAG_MAX_COMMANDS];       // antiwarp command queue
 	// End
 };
 
@@ -1374,6 +1388,7 @@ extern vmCvar_t		g_allowLateJoiners;
 extern vmCvar_t		g_handleLateJoiners;
 extern vmCvar_t		g_spectatorInactivity;
 extern vmCvar_t		g_spectatorAllowDemo;
+extern vmCvar_t		g_antiWarp;
 
 // Game
 extern vmCvar_t		g_unlockWeapons;
@@ -1830,6 +1845,13 @@ char *parseNames( char *name );
 void Q_Tokenize(char *str, char **splitstr, char *delim);
 void ParseStr(const char *strInput, char *strCmd, char *strArgs);
 qboolean Q_FindToken(char *haystack, char *needle);
+
+//
+// g_antiwarp.c
+//
+qboolean G_DoAntiwarp(gentity_t *ent);
+void etpro_AddUsercmd(int clientNum, usercmd_t *cmd);
+void DoClientThinks(gentity_t *ent);
 
 //
 // Logs

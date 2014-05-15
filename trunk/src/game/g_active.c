@@ -1525,6 +1525,19 @@ void ClientThink_real( gentity_t *ent ) {
 
 /*
 ==================
+L0 - ClientThink_cmd
+
+ET->S4NDMoD port
+==================
+*/
+void ClientThink_cmd(gentity_t *ent, usercmd_t *cmd) {
+	ent->client->pers.oldcmd = ent->client->pers.cmd;
+	ent->client->pers.cmd = *cmd;
+	ClientThink_real(ent);
+}
+
+/*
+==================
 ClientThink
 
 A new command has arrived from the client
@@ -1532,22 +1545,38 @@ A new command has arrived from the client
 */
 void ClientThink( int clientNum ) {
 	gentity_t *ent;
+// L0 - Anti Warp port (Modified)
+	usercmd_t newcmd; 
 
 	ent = g_entities + clientNum;
-	ent->client->pers.oldcmd = ent->client->pers.cmd;
-	trap_GetUsercmd( clientNum, &ent->client->pers.cmd );
+	trap_GetUsercmd(clientNum, &newcmd);
+// - End
 
 	// mark the time we got info, so we can display the
 	// phone jack if they don't get any for a while
 	ent->client->lastCmdTime = level.time;
 
 	if ( !g_synchronousClients.integer ) {
-		ClientThink_real( ent );
+		// L0 - Anti Warp port
+		if (G_DoAntiwarp(ent)) {
+			// josh: use zinx antiwarp code
+			etpro_AddUsercmd(clientNum, &newcmd);
+			DoClientThinks(ent);
+		}
+		else {
+			ClientThink_cmd(ent, &newcmd);
+		} // -End
 	}
 }
 
 
 void G_RunClient( gentity_t *ent ) {
+	// L0 - Anti Warp port
+	if (G_DoAntiwarp(ent)) {
+		// josh: use zinx antiwarp code
+		DoClientThinks(ent);
+	}
+
 	if ( !g_synchronousClients.integer ) {
 		return;
 	}
