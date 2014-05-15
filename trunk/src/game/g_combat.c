@@ -912,8 +912,9 @@ qboolean IsHeadShot (gentity_t *targ, qboolean isAICharacter, vec3_t dir, vec3_t
 		VectorCopy (targ->r.currentAngles, head->s.angles); 
 		VectorCopy (head->s.angles, head->s.apos.trBase);
 		VectorCopy (head->s.angles, head->s.apos.trDelta);		
-		VectorSet (head->r.mins , -6, -6, -2); // JPW NERVE changed this z from -12 to -6 for crouching, also removed standing offset
-		VectorSet (head->r.maxs , 6, 6, 10); // changed this z from 0 to 6
+		// L0 - Was -6 -6 -2 & 6 6 10
+		VectorSet (head->r.mins , -6, -6, -6); // JPW NERVE changed this z from -12 to -6 for crouching, also removed standing offset
+		VectorSet (head->r.maxs , 6, 6, 6); // changed this z from 0 to 6
 		head->clipmask = CONTENTS_SOLID;
 		head->r.contents = CONTENTS_SOLID;
 
@@ -1003,8 +1004,9 @@ gentity_t* G_BuildHead(gentity_t *ent) {
 	VectorCopy (ent->r.currentAngles, head->s.angles); 
 	VectorCopy (head->s.angles, head->s.apos.trBase);
 	VectorCopy (head->s.angles, head->s.apos.trDelta);
-	VectorSet (head->r.mins , -6, -6, -2); // JPW NERVE changed this z from -12 to -6 for crouching, also removed standing offset
-	VectorSet (head->r.maxs , 6, 6, 10); // changed this z from 0 to 6
+	// L0 - Was -6 -6 -2 & 6 6 10
+	VectorSet (head->r.mins , -6, -6, -6); // JPW NERVE changed this z from -12 to -6 for crouching, also removed standing offset
+	VectorSet (head->r.maxs , 6, 6, 6); // changed this z from 0 to 6
 	head->clipmask = CONTENTS_SOLID;
 	head->r.contents = CONTENTS_SOLID;
 	head->parent = ent;
