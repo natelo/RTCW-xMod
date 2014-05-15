@@ -34,8 +34,18 @@ void Touch_Knife( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 		if ( ( g_friendlyFire.integer ) || ( !OnSameTeam( other, ent->parent ) ) ) {
 			int i;
 			int sound;
-			int damage = 20;     
-			damage -= rand() % 10;
+			int damage = g_knifeDamage.integer;
+			int randomize = g_knifeDamageRand.integer;
+
+			// Randomize damage a little if enabled..
+			if (randomize) {
+				if (randomize > 100)
+					randomize = 100;
+				else if (randomize < 1)
+					randomize = 1;
+
+				damage -= rand() % randomize;
+			}
 
 			if ( damage <= 0 ) {
 				damage = 1;
@@ -105,7 +115,7 @@ void Cmd_ThrowKnives( gentity_t *ent ) {
 	// If out or -1/unlimited
 	if ( ( ent->client->pers.throwingKnives == 0 ) && 
 		 ( g_throwKnives.integer != -1 ) ) {
-	return;
+		return;
 	}
 	
 	AngleVectors( ent->client->ps.viewangles, velocity, NULL, NULL );
@@ -273,7 +283,7 @@ void Cmd_Time_f( gentity_t *ent ) {
 ===================
 Drag players 
 
-Came from BOTW/S4NDMoD 
+From BOTW/S4NDMoD 
 ===================
 */
 void Cmd_Drag( gentity_t *ent) {
@@ -295,8 +305,7 @@ void Cmd_Drag( gentity_t *ent) {
 
 	VectorCopy(ent->s.pos.trBase, start);	
 	start[2] += ent->client->ps.viewheight;
-	VectorMA (start, 100, dir, end);
-
+	VectorMA (start, 128, dir, end);
 
 	trap_Trace (&tr, start, NULL, NULL, end, ent->s.number, CONTENTS_CORPSE);
 
@@ -305,17 +314,17 @@ void Cmd_Drag( gentity_t *ent) {
 
 	target = &(g_entities[tr.entityNum]);
 
-       	if ((!target->inuse) || (!target->client))
-		return;		
+    if ((!target->inuse) || (!target->client))
+	return;		
 
-		VectorCopy(target->r.currentOrigin, start); 
-		VectorCopy(ent->r.currentOrigin, end); 
-		VectorSubtract(end, start, dir); 
-		VectorNormalize(dir); 
-		VectorScale(dir,100, target->client->ps.velocity);
-		VectorCopy(dir, target->movedir); 
+	VectorCopy(target->r.currentOrigin, start); 
+	VectorCopy(ent->r.currentOrigin, end); 
+	VectorSubtract(end, start, dir); 
+	VectorNormalize(dir); 
+	VectorScale(dir,100, target->client->ps.velocity);
+	VectorCopy(dir, target->movedir); 
        
-		ent->lastDragTime = level.time;		
+	ent->lastDragTime = level.time;		
 }
 
 /*
@@ -360,7 +369,7 @@ void Cmd_Push(gentity_t* ent)
 	if (target->client->ps.stats[STAT_HEALTH] <= 0)	
 		return;
 
-	shoveAmount = 512 * .8;
+	shoveAmount = 512 * g_shoveAmount.value;
 	VectorMA(target->client->ps.velocity, shoveAmount, forward, target->client->ps.velocity);
 
 	APRS(target, "sound/multiplayer/vo_revive.wav");
