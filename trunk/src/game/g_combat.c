@@ -885,7 +885,7 @@ qboolean IsHeadShot (gentity_t *targ, qboolean isAICharacter, vec3_t dir, vec3_t
 			G_SetOrigin (head, targ->r.currentOrigin); 
 
 			if (targ->client->ps.pm_flags & PMF_DUCKED)	// closer fake offset for 'head' box when crouching
-				height = targ->client->ps.crouchViewHeight - 10; // L0 - Was -12
+				height = targ->client->ps.crouchViewHeight - 4; // L0 - Was -12
 			else
 				height = targ->client->ps.viewheight;
 
@@ -977,7 +977,7 @@ gentity_t* G_BuildHead(gentity_t *ent) {
 		G_SetOrigin (head, ent->r.currentOrigin); 
 
 		if (ent->client->ps.pm_flags & PMF_DUCKED)	// closer fake offset for 'head' box when crouching
-			height = ent->client->ps.crouchViewHeight - 10; // L0 - Was -12
+			height = ent->client->ps.crouchViewHeight - 4; // L0 - Was -12
 		else
 			height = ent->client->ps.viewheight;
 
