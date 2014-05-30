@@ -321,7 +321,7 @@ void cmdCustom(gentity_t *ent, char *cmd) {
 		if (!strcmp(ent->client->pers.cmd3,"@"))  			
 			CP(va("print \"Info: ^2%s ^7was silently changed to ^2%s^3!\n\"", cmd, ent->client->pers.cmd2));
 		else			
-			AP(va("chat \"^console:^7 %s ^7changed ^3%s ^7to ^3%s %s\n\"", tag, cmd, ent->client->pers.cmd2, ent->client->pers.cmd3));
+			AP(va("chat \"console:^7 %s ^7changed ^3%s ^7to ^3%s %s\n\"", tag, cmd, ent->client->pers.cmd2, ent->client->pers.cmd3));
 		// Change the stuff
 		trap_SendConsoleCommand( EXEC_APPEND, va("%s %s %s", cmd, ent->client->pers.cmd2, ent->client->pers.cmd3));	
 		// Log it
