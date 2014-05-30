@@ -1447,6 +1447,7 @@ extern vmCvar_t		g_axisASdelayFFE;
 extern vmCvar_t		g_alliedASdelay;
 extern vmCvar_t		g_alliedASdelayFFE;
 extern vmCvar_t		g_headshotsOnly;
+extern vmCvar_t		g_allowGiveAmmo;
 
 // Server Bot
 extern vmCvar_t		sb_system;
@@ -1815,6 +1816,7 @@ void Cmd_Spy( gentity_t *ent );
 void checkSpies( gentity_t *ent );
 void Cmd_Stats_f(gentity_t *ent);
 void Cmd_hitsounds(gentity_t *ent);
+void Cmd_GiveAmmo(gentity_t* ent);
 void Cmd_help(gentity_t *ent);
 
 //

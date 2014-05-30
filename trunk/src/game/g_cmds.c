@@ -3067,6 +3067,8 @@ void ClientCommand( int clientNum ) {
 		Cmd_hitsounds(ent);
 	else if (Q_stricmp(cmd, "commands") == 0)
 		Cmd_help(ent);
+	else if (Q_stricmp(cmd, "giveammo") == 0)
+		Cmd_GiveAmmo(ent);
 // End
 	else if (Q_stricmp (cmd, "levelshot") == 0)
 		Cmd_LevelShot_f (ent);

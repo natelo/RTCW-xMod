@@ -651,6 +651,221 @@ void Cmd_hitsounds(gentity_t *ent) {
 
 /*
 =================
+GiveAmmo
+
+Borrowed this from S4NDMoD o:)
+=================
+*/
+void Cmd_GiveAmmo(gentity_t* ent) {
+	gentity_t *target;
+	trace_t tr;
+	vec3_t start, end, forward;
+	char arg1[MAX_STRING_TOKENS];
+	int givenAmmo;
+	int weapon, targWeap;
+	int maxGive; //the max ammount of ammo you can give this player(just in case a player gives too much ammo they will get it back)
+
+	if (!g_allowGiveAmmo.integer) {
+		CPx(ent - g_entities, va("cp \"^3/giveammo^7 is not enabled on this server!\"1"));
+		return;
+	}
+
+	trap_Argv(1, arg1, sizeof(arg1));
+	givenAmmo = atoi(arg1);
+
+	if (ent->client->ps.stats[STAT_HEALTH] <= 0) {
+		CPx(ent - g_entities, va("cp \"You have to be alive to do that!\"1"));
+		return;
+	}
+
+	AngleVectors(ent->client->ps.viewangles, forward, NULL, NULL);
+
+	VectorCopy(ent->s.pos.trBase, start);   //set 'start' to the player's position (plus the viewheight)
+	start[2] += ent->client->ps.viewheight;
+	VectorMA(start, 128, forward, end);    //put 'end' 128 units forward of 'start'
+
+	//see if we hit anything between 'start' and 'end'
+	trap_Trace(&tr, start, NULL, NULL, end, ent->s.number, CONTENTS_BODY);
+
+	//if we didn't hit a player, return
+	if (tr.entityNum >= MAX_CLIENTS) {
+		return;
+	}
+
+	target = &(g_entities[tr.entityNum]);
+
+	if ((!target->inuse) || (!target->client)) { //if the player is lagged/disconnected/etc
+		return;
+	}
+	if (target->client->sess.sessionTeam != ent->client->sess.sessionTeam) { //not on same team
+		CPx(ent - g_entities, va("cp \"What are you a spy or something!\"1"));
+		return;
+	}
+
+	if (target->client->ps.stats[STAT_HEALTH] <= 0) {   //if they're dead
+		CPx(ent - g_entities, va("cp \"You can not give ammo to the dead!\"1"));
+		return;
+	}
+
+	//if given ammo is 0 or unset make it the size of a clip
+	if (givenAmmo <= 0) {
+		givenAmmo = ammoTable[ent->client->ps.weapon].maxclip;
+	}
+
+	weapon = ent->client->ps.weapon;
+
+	switch (weapon) {
+	case WP_LUGER:
+	case WP_COLT:
+
+		if (ent->client->ps.ammo[BG_FindClipForWeapon(ent->client->ps.weapon)] < givenAmmo) {
+			CPx(ent - g_entities, va("cp \"You do not have enough ammo to give ^7%i^3!\"2", givenAmmo));
+			return;
+		}
+
+		if (!COM_BitCheck(target->client->ps.weapons, WP_LUGER) && !COM_BitCheck(target->client->ps.weapons, WP_COLT)) {
+			CPx(ent - g_entities, va("cp \"%s ^7does not have a Pistol!\"2", target->client->pers.netname));
+			return;
+		}
+
+		if (COM_BitCheck(target->client->ps.weapons, WP_LUGER)) {
+			targWeap = WP_LUGER;
+		}
+		else {
+			targWeap = WP_COLT;
+		}
+
+		maxGive = (ammoTable[targWeap].maxclip * 4) - target->client->ps.ammo[BG_FindAmmoForWeapon(targWeap)];
+		target->client->ps.ammo[BG_FindAmmoForWeapon(targWeap)] += givenAmmo;
+		if (target->client->ps.ammo[BG_FindAmmoForWeapon(targWeap)] > ammoTable[targWeap].maxclip * 4) {
+			target->client->ps.ammo[BG_FindAmmoForWeapon(targWeap)] = ammoTable[targWeap].maxclip * 4;
+		}
+
+		break;
+
+	case WP_MP40:
+	case WP_THOMPSON:
+	case WP_STEN:
+
+		if (ent->client->ps.ammo[BG_FindClipForWeapon(ent->client->ps.weapon)] < givenAmmo) {
+			CPx(ent - g_entities, va("cp \"You do not have enough ammo to give ^7%i^7!\"2", givenAmmo));
+			return;
+		}
+
+		if (!COM_BitCheck(target->client->ps.weapons, WP_MP40) && !COM_BitCheck(target->client->ps.weapons, WP_THOMPSON) && !COM_BitCheck(target->client->ps.weapons, WP_STEN)) {
+			CPx(ent - g_entities, va("cp \"%s ^7does not have a SMG!\"2", target->client->pers.netname));
+			return;
+		}
+
+		if (COM_BitCheck(target->client->ps.weapons, WP_MP40)) {
+			targWeap = WP_MP40;
+		}
+		else if (COM_BitCheck(target->client->ps.weapons, WP_THOMPSON)) {
+			targWeap = WP_THOMPSON;
+		}
+		else {
+			targWeap = WP_STEN;
+		}
+
+		maxGive = (ammoTable[targWeap].maxclip * 3) - target->client->ps.ammo[BG_FindAmmoForWeapon(targWeap)];
+		target->client->ps.ammo[BG_FindAmmoForWeapon(targWeap)] += givenAmmo;
+		if (target->client->ps.ammo[BG_FindAmmoForWeapon(targWeap)] > ammoTable[targWeap].maxclip * 3) {
+			target->client->ps.ammo[BG_FindAmmoForWeapon(targWeap)] = ammoTable[targWeap].maxclip * 3;
+		}
+
+		break;
+
+	case WP_MAUSER:
+	case WP_SNIPERRIFLE:
+
+		if (ent->client->ps.ammo[BG_FindClipForWeapon(ent->client->ps.weapon)] < givenAmmo) {
+			CPx(ent - g_entities, va("cp \"You do not have enough ammo to give ^7%i^7!\"2", givenAmmo));
+			return;
+		}
+
+		if (!COM_BitCheck(target->client->ps.weapons, WP_SNIPERRIFLE) && !COM_BitCheck(target->client->ps.weapons, WP_MAUSER)) {
+			CPx(ent - g_entities, va("cp \"%s ^7does not have a Mauser!\"2", target->client->pers.netname));
+			return;
+		}
+		
+		maxGive = (ammoTable[WP_SNIPERRIFLE].maxclip * 3) - target->client->ps.ammo[BG_FindAmmoForWeapon(WP_SNIPERRIFLE)];
+		target->client->ps.ammo[BG_FindAmmoForWeapon(WP_SNIPERRIFLE)] += givenAmmo;
+		if (target->client->ps.ammo[BG_FindAmmoForWeapon(WP_SNIPERRIFLE)] > ammoTable[WP_SNIPERRIFLE].maxclip * 3) {
+			target->client->ps.ammo[BG_FindAmmoForWeapon(WP_SNIPERRIFLE)] = ammoTable[WP_SNIPERRIFLE].maxclip * 3;
+		}
+
+		maxGive = (ammoTable[WP_MAUSER].maxclip * 3) - target->client->ps.ammo[BG_FindAmmoForWeapon(WP_MAUSER)];
+		target->client->ps.ammo[BG_FindAmmoForWeapon(WP_MAUSER)] += givenAmmo;
+		if (target->client->ps.ammo[BG_FindAmmoForWeapon(WP_MAUSER)] > ammoTable[WP_MAUSER].maxclip * 3) {
+			target->client->ps.ammo[BG_FindAmmoForWeapon(WP_MAUSER)] = ammoTable[WP_MAUSER].maxclip * 3;
+		}
+		break;
+
+
+	case WP_PANZERFAUST:
+
+		if (ent->client->ps.ammo[BG_FindClipForWeapon(ent->client->ps.weapon)] < givenAmmo) {
+			CPx(ent - g_entities, va("cp \"You do not have enough ammo to give ^7%i^7!\"2", givenAmmo));
+			return;
+		}
+
+		if (!COM_BitCheck(target->client->ps.weapons, WP_PANZERFAUST)) {
+			CPx(ent - g_entities, va("cp \"%s ^7does not have a Panzerfaust!\"2", target->client->pers.netname));
+			return;
+		}
+		maxGive = (ammoTable[WP_PANZERFAUST].maxclip * 3) - target->client->ps.ammo[BG_FindAmmoForWeapon(WP_PANZERFAUST)];
+		target->client->ps.ammo[BG_FindAmmoForWeapon(WP_PANZERFAUST)] += givenAmmo;
+		if (target->client->ps.ammo[BG_FindAmmoForWeapon(WP_PANZERFAUST)] > ammoTable[WP_PANZERFAUST].maxclip * 3) {
+			target->client->ps.ammo[BG_FindAmmoForWeapon(WP_PANZERFAUST)] = ammoTable[WP_PANZERFAUST].maxclip * 3;
+		}
+
+		break;
+
+
+	case WP_VENOM:
+
+		if (ent->client->ps.ammo[BG_FindClipForWeapon(ent->client->ps.weapon)] < givenAmmo) {
+			CPx(ent - g_entities, va("cp \"You do not have enough ammo to give ^7%i^7!\"2", givenAmmo));
+			return;
+		}
+
+		if (!COM_BitCheck(target->client->ps.weapons, WP_VENOM)) {
+			CPx(ent - g_entities, va("cp \"^7%s ^7does not have a Venom!\"2", target->client->pers.netname));
+			return;
+		}
+		maxGive = (ammoTable[WP_VENOM].maxclip * 3) - target->client->ps.ammo[BG_FindAmmoForWeapon(WP_VENOM)];
+		target->client->ps.ammo[BG_FindAmmoForWeapon(WP_VENOM)] += givenAmmo;
+		if (target->client->ps.ammo[BG_FindAmmoForWeapon(WP_VENOM)] > ammoTable[WP_VENOM].maxclip * 3) {
+			target->client->ps.ammo[BG_FindAmmoForWeapon(WP_VENOM)] = ammoTable[WP_VENOM].maxclip * 3;
+		}
+		break;
+
+	default:
+		CPx(ent - g_entities, va("cp \"You can not use ^3/giveammo^7 with this weapon!\"2"));
+		return;
+	}
+
+	if (maxGive <= 0) {
+		CPx(ent - g_entities, va("cp \"%s ^7does not need any ammo!\"3", target->client->pers.netname));
+		return;
+	}
+
+	if (givenAmmo > maxGive) {
+		CPx(ent - g_entities, va("cp \"You gave ^3%s^7 ammo, ^3%i ^7was all he could carry!\"3", target->client->pers.netname, maxGive));
+		CPx(target - g_entities, va("cp \"%s^7 gave you ^3%i ^7ammo!\"3", ent->client->pers.netname, maxGive));
+		ent->client->ps.ammo[BG_FindClipForWeapon(weapon)] -= maxGive;
+
+	}
+	else {
+
+		CPx(ent - g_entities, va("cp \"You gave ^3%i^7 ammo to %s^7!\"3", givenAmmo, target->client->pers.netname));
+		CPx(target - g_entities, va("cp \"%s^7 gave you ^3%i ^7ammo!\"3", ent->client->pers.netname, givenAmmo));
+		ent->client->ps.ammo[BG_FindClipForWeapon(weapon)] -= givenAmmo;
+	}
+}
+
+/*
+=================
 User help..
 
 Spam fest^^
