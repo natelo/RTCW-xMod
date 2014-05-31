@@ -414,6 +414,12 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 			other->client->ps.ammoclip[BG_FindClipForWeapon(weapon)]++;
 		COM_BitSet(other->client->ps.weapons,weapon);
 
+		// L0 - Ammo gives Helmet if enabled..
+		if (other->client->ps.eFlags & EF_HEADSHOT){
+			if (g_ammoGivesHelmet.integer)
+				other->client->ps.eFlags &= ~EF_HEADSHOT;
+		}
+
 		// L0 - Give med's a syringe
 		if (other->client->ps.stats[STAT_PLAYER_CLASS] == PC_MEDIC)
 		{
