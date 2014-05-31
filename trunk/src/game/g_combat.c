@@ -88,6 +88,15 @@ void TossClientItems( gentity_t *self ) {
 	}
 
 	// L0 - dropping stuff when going to limbo
+
+	// Binocs
+	if (self->client->ps.stats[STAT_KEYS] & (1 << INV_BINOCS) && g_dropBinocs.integer){
+		item = &bg_itemlist[82];
+		drop = Drop_Item(self, item, 0, qfalse);
+		drop->think = MagicSink;
+		drop->timestamp = level.time + 31200;
+		drop->parent = NULL;
+	}
 		
 	// drop medpacks
 	if (g_dropHealth.integer) {

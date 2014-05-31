@@ -1451,6 +1451,7 @@ extern vmCvar_t		g_headshotsOnly;
 extern vmCvar_t		g_allowGiveAmmo;
 extern vmCvar_t		g_goomba;
 extern vmCvar_t		g_ammoGivesHelmet;
+extern vmCvar_t		g_dropBinocs;
 
 // Server Bot
 extern vmCvar_t		sb_system;

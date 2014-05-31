@@ -2389,8 +2389,7 @@ static void PM_Weapon( void ) {
 	if((pm->ps->isSpy) && (pm->ps->weapon != WP_KNIFE && pm->ps->weapon != WP_KNIFE2 && pm->ps->weapon != WP_SNIPERRIFLE && pm->ps->weapon != WP_SMOKE_GRENADE && 
 		pm->ps->weapon != WP_STEN )){
 		if(pm->cmd.buttons & BUTTON_ATTACK){
-			if((pm->ps->eFlags & EF_ZOOMING) && (pm->ps->stats[STAT_KEYS] & (1 << INV_BINOCS))){
-			}else{
+			if(!( (pm->ps->eFlags & EF_ZOOMING) && (pm->ps->stats[STAT_KEYS] & (1 << INV_BINOCS))) ) {			
 				pm->ps->isSpy = qfalse;
 				pm->ps->weaponTime = 500;
 #ifdef GAMEDLL

@@ -246,6 +246,7 @@ vmCvar_t	g_headshotsOnly;		// Enables Headshots only mode..
 vmCvar_t	g_allowGiveAmmo;		// Allows /giveammo command if enabled..
 vmCvar_t	g_goomba;				// Kill player by jumping on his head..
 vmCvar_t	g_ammoGivesHelmet;		// Ammo gives helmet..
+vmCvar_t	g_dropBinocs;			// Drop Binocs..
 
 // Server Bot
 vmCvar_t	sb_system;						// Controls all SB functionality
@@ -545,6 +546,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_allowGiveAmmo, "g_allowGiveAmmo", "0", 0, 0, qtrue },
 	{ &g_goomba, "g_goomba", "0", 0, CVAR_ARCHIVE, 0, qfalse },
 	{ &g_ammoGivesHelmet, "g_ammoGivesHelmet", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_dropBinocs, "g_dropBinocs", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// ServerBot
 	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 

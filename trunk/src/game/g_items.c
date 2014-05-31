@@ -1176,10 +1176,13 @@ void ClearRegisteredItems( void ) {
 //			but for now, re-register the MP40 automatically
 //	RegisterItem( BG_FindItemForWeapon( WP_MP40 ) );
 	RegisterItem( BG_FindItem("Med Health") );			// NERVE - SMF - this is so med packs properly display
-	// L0 - For dropping nade packs
+// L0 
+	// For dropping nade packs
 	RegisterItem( BG_FindItem( "Grenades" ) );
 	RegisterItem( BG_FindItem( "Pineapples" ) );
-
+	// Binocs..
+	RegisterItem(&bg_itemlist[82]);	
+// End
 }
 
 /*
