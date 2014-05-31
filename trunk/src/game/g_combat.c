@@ -290,6 +290,7 @@ char	*modNames[] = {
 	"MOD_THROWKNIFE",	// Killed by knife throw
 	"MOD_CHICKEN",		// Funny print when player self kills to avoid being killed
 	"MOD_POISONDMED",	// Killed by poison
+	"MOD_GOOMBA",		// Killed by some1 landing on his head..
 // End
 	"MOD_BAT"
 };
@@ -410,6 +411,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		attacker->client->pers.poison++; 
 
 		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.poison, ROUND_POISON);
+	}
+
+	if (meansOfDeath == MOD_GOOMBA && g_gamestate.integer == GS_PLAYING)  {
+		AP(va("print \"%s ^7experienced death from above by %s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname));
+		attacker->client->pers.goomba++;
+		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.goomba, ROUND_GOOMBAS);
 	}
 // Mod hacks ends here
 

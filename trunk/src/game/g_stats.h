@@ -81,15 +81,16 @@ static const killer_sprees_t killerSprees[] = {
 #define ROUND_MEDGIVEN		10
 #define ROUND_GIBS			11
 #define ROUND_SUICIDES		12
-#define ROUND_KNIFETHROW	13
-#define ROUND_FASTSTABS		14
-#define ROUND_CHICKEN		15
-#define ROUND_KILLPEAK		16
-#define ROUND_DEATHPEAK		17
-#define ROUND_ACC			18
-#define ROUND_KR			19
-#define ROUND_EFF			20
-#define ROUND_LIMIT			21	// Should always be Last!
+#define ROUND_GOOMBAS		13
+#define ROUND_KNIFETHROW	14
+#define ROUND_FASTSTABS		15
+#define ROUND_CHICKEN		16
+#define ROUND_KILLPEAK		17
+#define ROUND_DEATHPEAK		18
+#define ROUND_ACC			19
+#define ROUND_KR			20
+#define ROUND_EFF			21
+#define ROUND_LIMIT			22	// Should always be Last!
 
 typedef struct {
 	char *reward;
@@ -97,26 +98,27 @@ typedef struct {
 } round_stats_t;
 
 static const round_stats_t rSM[] = {
-	{ "Match Results", "intro.wav" },
-	{ "Most Kills", "blazeofglory.wav" },
-	{ "Most Deaths", "yousuck.wav" },
-	{ "Most Headshots", "headhunter.wav" },
-	{ "Most Team Kills", "teamkiller.wav" },
-	{ "Most Team Bleeding", "teambleeder.wav" },
-	{ "Most Poisons", "toxic.wav" },
-	{ "Most Revives", "excellent.wav" },
-	{ "Most Ammo Given", "ammo.wav" },
-	{ "Most Med Given", "med.wav" },
-	{ "Most Gibs", "ownage.wav" },
-	{ "Most Suicides", "suicides.wav" },
-	{ "Knife Juggler", "knife_juggler.wav" },
-	{ "Stealth Kills", "assasin.wav" },
-	{ "Coward", "chicken.wav" },
-	{ "Highest Kill Spree", "killingmachine.wav" },
-	{ "Highest Death Spree", "slaughter.wav" },
-	{ "Highest Accuracy", "accuracy.wav" },
-	{ "Highest Kill Ratio", "outstanding.wav" },
-	{ "Most Efficient", "impressive.wav" },
+	{ "Match Results",			"xmod/sound/scenaric/achievers/intro.wav" },
+	{ "Most Kills",				"xmod/sound/scenaric/achievers/blazeofglory.wav" },
+	{ "Most Deaths",			"xmod/sound/scenaric/achievers/yousuck.wav" },
+	{ "Most Headshots",			"xmod/sound/scenaric/achievers/headhunter.wav" },
+	{ "Most Team Kills",		"xmod/sound/scenaric/achievers/teamkiller.wav" },
+	{ "Most Team Bleeding",		"xmod/sound/scenaric/achievers/teambleeder.wav" },
+	{ "Most Poisons",			"xmod/sound/scenaric/achievers/toxic.wav" },
+	{ "Most Revives",			"xmod/sound/scenaric/achievers/excellent.wav" },
+	{ "Most Ammo Given",		"xmod/sound/scenaric/achievers/ammo.wav" },
+	{ "Most Med Given",			"xmod/sound/scenaric/achievers/med.wav" },
+	{ "Most Gibs",				"xmod/sound/scenaric/achievers/ownage.wav" },
+	{ "Most Suicides",			"xmod/sound/scenaric/achievers/suicides.wav" },
+	{ "Most Goomba Kills",		"sound/player/gibsplt1.wav" },
+	{ "Knife Juggler",			"xmod/sound/scenaric/achievers/knife_juggler.wav" },
+	{ "Stealth Kills",			"xmod/sound/scenaric/achievers/assasin.wav" },
+	{ "Coward",					"xmod/sound/scenaric/achievers/chicken.wav" },
+	{ "Highest Kill Spree",		"xmod/sound/scenaric/achievers/killingmachine.wav" },
+	{ "Highest Death Spree",	"xmod/sound/scenaric/achievers/slaughter.wav" },
+	{ "Highest Accuracy",		"xmod/sound/scenaric/achievers/accuracy.wav" },
+	{ "Highest Kill Ratio",		"xmod/sound/scenaric/achievers/outstanding.wav" },
+	{ "Most Efficient",			"xmod/sound/scenaric/achievers/impressive.wav" },
 	{ NULL, NULL }
 };
 

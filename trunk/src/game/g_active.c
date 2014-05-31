@@ -716,11 +716,19 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 				ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 				VectorClear (ent->client->ps.velocity);
 			}
-			else
+			else {
 				damage = 5; // never used
-			ent->pain_debounce_time = level.time + 200;	// no normal pain sound
-			G_Damage (ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
-			break;
+			}
+			
+			// L0 - Goomba
+			if ((g_goomba.value > 0) && (ent->s.groundEntityNum < MAX_CLIENTS) && (ent->s.groundEntityNum != -1) && (g_entities[ent->s.groundEntityNum].client->ps.stats[STAT_HEALTH] > 0)) {
+				damage *= g_goomba.value;
+
+				if (!OnSameTeam(&g_entities[ent->s.groundEntityNum], ent)) {
+					G_Damage(&g_entities[ent->s.groundEntityNum], ent, ent, tv(0, 0, -1), NULL, damage, 0, MOD_GOOMBA);
+				}
+				break;
+			}
 // JPW NERVE
 		case EV_TESTID1:
 		case EV_TESTID2:

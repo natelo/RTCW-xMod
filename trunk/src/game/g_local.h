@@ -10,7 +10,7 @@
 
 // the "gameversion" client command will print this plus compile date
 //----(SA) Wolfenstein
-#define MODVERSION "0.3"
+#define MODVERSION "0.3.2"
 #define	GAMEVERSION	"^7x^3M^7od " MODVERSION
 // done.
 
@@ -571,6 +571,7 @@ typedef struct {
 	int		dmgTeam;
 	int		gibs;
 	int		suicides;
+	int		goomba;
 	int		poison;
 	int		chicken;
 	int		knifeKills;
@@ -1448,6 +1449,7 @@ extern vmCvar_t		g_alliedASdelay;
 extern vmCvar_t		g_alliedASdelayFFE;
 extern vmCvar_t		g_headshotsOnly;
 extern vmCvar_t		g_allowGiveAmmo;
+extern vmCvar_t		g_goomba;
 
 // Server Bot
 extern vmCvar_t		sb_system;

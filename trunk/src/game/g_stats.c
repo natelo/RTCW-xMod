@@ -825,7 +825,7 @@ void stats_RoundStats(void) {
 		if (!RoundStatsAreEmpty())
 		{
 			AP(va("cp \"^2%s\n\"2", rSM[0].reward));
-			APS(va("xmod/sound/scenaric/achievers/%s", rSM[0].snd));
+			APS(va("%s", rSM[0].snd));
 		}
 		else
 		{
@@ -849,7 +849,7 @@ void stats_RoundStats(void) {
 
 					AP(va("cp \"^2%s: ^7%s\n^7%s \n\"2",
 						rSM[level.statsNum - 1].reward, score, roundStats[level.statsNum].player));
-					APS(va("xmod/sound/scenaric/achievers/%s",
+					APS(va("%s",
 						rSM[level.statsNum - 1].snd));
 				}
 				else
