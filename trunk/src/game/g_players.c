@@ -305,7 +305,7 @@ void Cmd_Drag( gentity_t *ent) {
 
 	VectorCopy(ent->s.pos.trBase, start);	
 	start[2] += ent->client->ps.viewheight;
-	VectorMA (start, 128, dir, end);
+	VectorMA (start, 100, dir, end);
 
 	trap_Trace (&tr, start, NULL, NULL, end, ent->s.number, CONTENTS_CORPSE);
 

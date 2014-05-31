@@ -1424,9 +1424,9 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 
 	// L0 - drag bodies
-	if (client->buttons & BUTTON_GESTURE) {	
+	if (client->buttons & BUTTON_GESTURE || client->buttons & BUTTON_ACTIVATE) {
 		Cmd_Drag( ent );
-	} // End
+	} // End	
 
 	if (ent->flags & FL_NOFATIGUE)
 		ent->client->ps.sprintTime = 20000;
