@@ -290,6 +290,14 @@ vmCvar_t	shuffleTracking;	// Tracks rounds for (auto) shuffle
 // General
 vmCvar_t	g_screenShake;		// Screenshaking on explosions (4 = default, 2 = half.. etc)
 
+// HTTP Stats (etPub port)
+vmCvar_t	g_httpPostURL_chat;			// Post chats to this URL
+vmCvar_t	g_httpPostURL_ratings;		// Post end of round kill rating and player rating to this URL
+vmCvar_t	g_httpPostURL_log;			// Post every log message to this URL
+vmCvar_t	g_etpub_stats_id;			// Unique ID to identify server with stats.etpub.org, this ID should be part of all stats.etpub.org posts
+vmCvar_t	g_etpub_stats_master_url;	// URL of the stats master. Defaults to http://stats.etpub.org/submit_game.php
+vmCvar_t	g_debugHttpPost;
+
 // Stats
 vmCvar_t	g_doubleKills;			// Double, tripple & quad kills
 vmCvar_t	g_killingSprees;		// Killing sprees for each 5/10 kill..
@@ -589,6 +597,14 @@ cvarTable_t		gameCvarTable[] = {
 
 	// General
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
+
+	// HTTP Stats
+	{ &g_httpPostURL_chat, "g_httpPostURL_chat", "", 0 },
+	{ &g_httpPostURL_ratings, "g_httpPostURL_ratings", "", 0 },
+	{ &g_httpPostURL_log, "g_httpPostURL_log", "", 0 },
+	{ &g_etpub_stats_id, "g_etpub_stats_id", "-1", 0 },
+	{ &g_etpub_stats_master_url, "g_etpub_stats_master_url", "http://stats.etpub.org/submit_game.php", 0 },
+	{ &g_debugHttpPost, "g_debugHttpPost", "0", 0, 0, qfalse },
 
 	// Stats
 	{ &g_doubleKills, "g_doubleKills", "0", CVAR_ARCHIVE, 0, qfalse },

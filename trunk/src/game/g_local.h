@@ -16,7 +16,7 @@
 
 #define BODY_QUEUE_SIZE		8
 
-#define INFINITE			1000000
+//#define INFINITE			1000000
 
 #define	FRAMETIME			100					// msec
 #define	EVENT_VALID_MSEC	300
@@ -1480,6 +1480,14 @@ extern vmCvar_t		shuffleTracking;
 // General
 extern vmCvar_t		g_screenShake;
 
+// HTTP Stats
+extern vmCvar_t		g_etpub_stats_id;
+extern vmCvar_t		g_etpub_stats_master_url;
+extern vmCvar_t		g_httpPostURL_chat;
+extern vmCvar_t		g_httpPostURL_ratings;
+extern vmCvar_t		g_httpPostURL_log;
+extern vmCvar_t		g_debugHttpPost;
+
 // Stats
 extern vmCvar_t		g_doubleKills;
 extern vmCvar_t		g_killingSprees;
@@ -1752,7 +1760,7 @@ void SB_chatWarn(gentity_t *ent);
 // 
 // g_censored.c
 //
-// (etPUB port)
+// (etPub port)
 //
 typedef struct {
 	int num_nulled_words;
@@ -1764,6 +1772,26 @@ extern wordDictionary censorNamesDictionary;
 qboolean G_CensorName(char *testname, char *userinfo, int clientNum);
 qboolean G_CensorText(char *text, wordDictionary *dictionary);
 qboolean G_ReservedName(char *testname, char *userinfo, int clientNum);
+
+//
+// G_http_client.c
+//
+// (etPub Port)
+//
+// josh: http message struct for thread
+typedef struct {
+	char url[MAX_CVAR_VALUE_STRING];
+	// 1024 since that's the max G_LogPrintf length
+	char message[1024];
+} g_httpinfo_t;
+
+// josh: for posting match info to global stats
+typedef struct {
+	char url[MAX_CVAR_VALUE_STRING];
+	char **info_lines; //(MAX_SAY_TEXT+MAX_NETNAME+4) * 65 lines
+	int *info_lines_lengths;
+	int num_lines;
+} g_http_matchinfo_t;
 
 //
 // g_antilag.c

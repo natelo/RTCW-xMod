@@ -97,6 +97,14 @@
 
 #define	QDECL
 
+// bani
+//======================= GNUC DEFINES ==================================
+#ifdef __GNUC__
+#define _attribute(x) __attribute__(x)
+#else
+#define _attribute(x)  
+#endif
+
 //======================= WIN32 DEFINES =================================
 
 #ifdef WIN32
