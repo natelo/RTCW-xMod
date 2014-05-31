@@ -481,11 +481,7 @@ void Cmd_Kill_f( gentity_t *ent ) {
 	}	
 	if ( g_gametype.integer >= GT_WOLF && ent->client->ps.pm_flags & PMF_LIMBO ) {
 		return;
-	}
-	// L0 - Headshots only
-	if (g_headshotsOnly.integer) {
-		return;
-	}
+	}	
 
 	// L0 - Chicken
 	attacker = G_FearCheck(ent);
@@ -526,10 +522,6 @@ void Cmd_SoftKill_f( gentity_t *ent ) {
 		return;
 	}
 	if ( g_gametype.integer >= GT_WOLF && ent->client->ps.pm_flags & PMF_LIMBO ) {
-		return;
-	}
-	// L0 - Headshots only
-	if (g_headshotsOnly.integer) {
 		return;
 	}
 
