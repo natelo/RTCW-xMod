@@ -10,7 +10,7 @@
 
 // the "gameversion" client command will print this plus compile date
 //----(SA) Wolfenstein
-#define MODVERSION "0.3.2"
+#define MODVERSION "0.3.2a"
 #define	GAMEVERSION	"^7x^3M^7od " MODVERSION
 // done.
 
