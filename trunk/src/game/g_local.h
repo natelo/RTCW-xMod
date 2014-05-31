@@ -1854,7 +1854,6 @@ void Cmd_help(gentity_t *ent);
 //
 // g_stats.c
 //
-void stats_Process(unsigned int type, gentity_t *ent);
 void stats_DoubleKill (gentity_t *ent, int meansOfDeath );
 void stats_FirstHeadshot (gentity_t *attacker, gentity_t *targ);
 void stats_FirstBlood (gentity_t *self, gentity_t *attacker);
@@ -1901,7 +1900,6 @@ void DoClientThinks(gentity_t *ent);
 // Macros
 //
 #define ARRAY_LEN(x)	(sizeof(x) / sizeof(*(x)))
-#define STATS(x, y) stats_Process(x, y)
 #define AP(x) trap_SendServerCommand(-1, x)					// Print to all
 #define CP(x) trap_SendServerCommand(ent-g_entities, x)		// Print to an ent
 #define CPx(x, y) trap_SendServerCommand(x, y)				// Print to id = x

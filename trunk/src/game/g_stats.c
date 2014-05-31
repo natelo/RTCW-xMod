@@ -49,20 +49,6 @@ char *getTime(void)
 		dMonths[ct.tm_mon], 1900 + ct.tm_year);
 }
 
-
-/*
-===========
-Stats Handle 
-
-Tracks and deals with all at one spot so it's easier to maintain..
-===========
-*/
-void stats_Process(unsigned int type, gentity_t *ent) 
-{
-
-}
-
-
 /*
 ===========
 Double+ kills
