@@ -901,7 +901,7 @@ qboolean IsHeadShot (gentity_t *targ, qboolean isAICharacter, vec3_t dir, vec3_t
 			G_SetOrigin (head, targ->r.currentOrigin); 
 
 			if (targ->client->ps.pm_flags & PMF_DUCKED)	// closer fake offset for 'head' box when crouching
-				height = targ->client->ps.crouchViewHeight - 4; // L0 - Was -12
+				height = targ->client->ps.crouchViewHeight - 12;
 			else
 				height = targ->client->ps.viewheight;
 
@@ -917,7 +917,7 @@ qboolean IsHeadShot (gentity_t *targ, qboolean isAICharacter, vec3_t dir, vec3_t
 			AngleVectors( angles, forward, right, up );
 			VectorScale( forward, 5, v );			
 			VectorMA( v, 18, up, v );
-			VectorMA(v, 5, right, v); // L0 - Align better
+			//VectorMA(v, 5, right, v); // L0 - Align better
 
 			VectorAdd( v, head->r.currentOrigin, head->r.currentOrigin );
 			head->r.currentOrigin[2] += height / 2;
@@ -927,10 +927,9 @@ qboolean IsHeadShot (gentity_t *targ, qboolean isAICharacter, vec3_t dir, vec3_t
 		VectorCopy (head->r.currentOrigin, head->s.origin);
 		VectorCopy (targ->r.currentAngles, head->s.angles); 
 		VectorCopy (head->s.angles, head->s.apos.trBase);
-		VectorCopy (head->s.angles, head->s.apos.trDelta);		
-		// L0 - Was -6 -6 -2 & 6 6 10
-		VectorSet (head->r.mins , -6, -6, -6); // JPW NERVE changed this z from -12 to -6 for crouching, also removed standing offset
-		VectorSet (head->r.maxs , 6, 6, 6); // changed this z from 0 to 6
+		VectorCopy (head->s.angles, head->s.apos.trDelta);	
+		VectorSet(head->r.mins, -6, -6, -2);
+		VectorSet(head->r.maxs, 6, 6, 10); // changed this z from 0 to 6
 		head->clipmask = CONTENTS_SOLID;
 		head->r.contents = CONTENTS_SOLID;
 
@@ -993,7 +992,7 @@ gentity_t* G_BuildHead(gentity_t *ent) {
 		G_SetOrigin (head, ent->r.currentOrigin); 
 
 		if (ent->client->ps.pm_flags & PMF_DUCKED)	// closer fake offset for 'head' box when crouching
-			height = ent->client->ps.crouchViewHeight - 4; // L0 - Was -12
+			height = ent->client->ps.crouchViewHeight - 12;
 		else
 			height = ent->client->ps.viewheight;
 
@@ -1009,7 +1008,7 @@ gentity_t* G_BuildHead(gentity_t *ent) {
 		AngleVectors( angles, forward, right, up );
 		VectorScale( forward, 5, v );
 		VectorMA( v, 18, up, v );
-		VectorMA(v, 5, right, v); // L0 - Align better
+		//VectorMA(v, 5, right, v); // L0 - Align better
 
 		VectorAdd( v, head->r.currentOrigin, head->r.currentOrigin );
 		head->r.currentOrigin[2] += height / 2;
@@ -1020,9 +1019,8 @@ gentity_t* G_BuildHead(gentity_t *ent) {
 	VectorCopy (ent->r.currentAngles, head->s.angles); 
 	VectorCopy (head->s.angles, head->s.apos.trBase);
 	VectorCopy (head->s.angles, head->s.apos.trDelta);
-	// L0 - Was -6 -6 -2 & 6 6 10
-	VectorSet (head->r.mins , -6, -6, -6); // JPW NERVE changed this z from -12 to -6 for crouching, also removed standing offset
-	VectorSet (head->r.maxs , 6, 6, 6); // changed this z from 0 to 6
+	VectorSet(head->r.mins, -6, -6, -2);
+	VectorSet(head->r.maxs, 6, 6, 10); // changed this z from 0 to 6
 	head->clipmask = CONTENTS_SOLID;
 	head->r.contents = CONTENTS_SOLID;
 	head->parent = ent;
