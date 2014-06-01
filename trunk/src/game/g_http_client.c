@@ -80,10 +80,7 @@ void QDECL LogPrintf( const char *fmt, ... )_attribute((format(printf,1,2)));
 *
 * If *stringp is NULL, strsep returns NULL.
 */
-
-char *
-strsep(char **stringp, const char *delim)
-{
+char *strsep(char **stringp, const char *delim) {
 	register char *s;
 	register const char *spanp;
 	register int c, sc;
@@ -91,15 +88,18 @@ strsep(char **stringp, const char *delim)
 
 	if ((s = *stringp) == NULL)
 		return (NULL);
+
 	for (tok = s;;) {
 		c = *s++;
 		spanp = delim;
+
 		do {
 			if ((sc = *spanp++) == c) {
 				if (c == 0)
 					s = NULL;
 				else
 					s[-1] = 0;
+
 				*stringp = s;
 				return (tok);
 			}
@@ -109,213 +109,178 @@ strsep(char **stringp, const char *delim)
 }
 #endif
 
-struct _http_client_t *
-libhttpc_connect(char *address, int port)
-{
-  struct _http_client_t *client = 0;
-  struct sockaddr_in     addr;
-  int                    opt;
-#ifdef WIN32
-  SOCKET                 fd;
-  int                    socketerrno;
-#else
-  int                    fd;
-#endif
-  
 
-  if (!(address))
-    return 0;
+struct _http_client_t *libhttpc_connect(char *address, int port) {
+	struct _http_client_t *client = 0;
+	struct sockaddr_in     addr;
+	int                    opt;
+#ifdef WIN32
+	SOCKET                 fd;
+	int                    socketerrno;
+#else
+	int                    fd;
+#endif  
 
-  if ((fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-    {
-#ifdef WIN32
-      LogPrintf("http_client.c: cannot create socket %d\n", WSAGetLastError());
-#else
-      LogPrintf("http_client.c: cannot create socket %d\n", errno);
-#endif
-      return 0;
-    }
-  
-  addr.sin_family = AF_INET;
-#ifdef WIN32
-  if (((addr.sin_addr.s_addr = inet_addr(address)) == INADDR_NONE))
-#else
-  if (!(inet_aton(address, &(addr.sin_addr))))
-#endif
-    {
-      LogPrintf("http_client.c: invalid network address %s\n", address);
-#ifdef WIN32
-      closesocket(fd);
-#else
-      close(fd);
-#endif
-      
-      return 0;
-    }
-  
-  addr.sin_port = htons(port);
-  
-  memset(&addr.sin_zero, 0, 8);
+	if (!(address))
+		return 0;
 
-  opt = 1;
+	if ((fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+#ifdef WIN32
+		LogPrintf("http_client.c: cannot create socket %d\n", WSAGetLastError());
+#else
+		LogPrintf("http_client.c: cannot create socket %d\n", errno);
+#endif
+		return 0;
+	}
+  
+	addr.sin_family = AF_INET;
+
+#ifdef WIN32
+	if (((addr.sin_addr.s_addr = inet_addr(address)) == INADDR_NONE)) {
+#else
+	if (!(inet_aton(address, &(addr.sin_addr)))) {
+#endif
+		LogPrintf("http_client.c: invalid network address %s\n", address);
+#ifdef WIN32
+		closesocket(fd);
+#else
+		close(fd);
+#endif
+
+		return 0;
+	}
+  
+	addr.sin_port = htons(port);  
+	memset(&addr.sin_zero, 0, 8);
+	opt = 1;
 
 #ifdef WIN32 
-  setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&opt, sizeof(int));
+	setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&opt, sizeof(int));
 #else
-  setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(int));
+	setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(int));
 #endif
   
 #ifdef WIN32
-  ioctlsocket(fd, FIONBIO, &opt);
+	ioctlsocket(fd, FIONBIO, &opt);
 #else
-  fcntl(fd, F_SETFL, O_NONBLOCK);
+	fcntl(fd, F_SETFL, O_NONBLOCK);
 #endif
 
-  while ((connect(fd, (struct sockaddr *)&addr, sizeof(struct sockaddr)) == -1))
-    {
+	while ((connect(fd, (struct sockaddr *)&addr, sizeof(struct sockaddr)) == -1)) {
 #ifdef WIN32
-      socketerrno = WSAGetLastError();
-      if (socketerrno == WSAEISCONN)
-	{
-	  break;
-	}
+		socketerrno = WSAGetLastError();
+		if (socketerrno == WSAEISCONN) {
+			break;
+		}
 
-      if (socketerrno == WSAEWOULDBLOCK)
-	{
-	  Sleep(200);
-	  continue;
-	}
-
-      else if (socketerrno == WSAEINPROGRESS || socketerrno == WSAEALREADY || socketerrno == WSAEINVAL)
-	{
-	  Sleep(200);
-	  continue;
-	}
-
-      else
-	{
-	  LogPrintf("http_client: connection failed %d\n", socketerrno);
-	  closesocket(fd);
-	  
-	  return 0;
-	}
+		if (socketerrno == WSAEWOULDBLOCK) {
+			Sleep(200);
+			continue;
+		}
+		else if (socketerrno == WSAEINPROGRESS || socketerrno == WSAEALREADY || socketerrno == WSAEINVAL) {
+			Sleep(200);
+			continue;
+		}
+		else {
+			LogPrintf("http_client: connection failed %d\n", socketerrno);
+			closesocket(fd);	  
+			return 0;
+		}
 #else
-      if (errno == EAGAIN)
-	{
-	  usleep(1000);
-	  continue;
-	}
-
-      else if (errno == EINPROGRESS || errno == EALREADY)
-	{
-	  usleep(500);
-	  continue;
-	}
-
-      else
-	{
-	  LogPrintf("http_client.c: connection failed %d\n", errno);
-	  close(fd);
-	  
-	  return 0;
-	}
+		if (errno == EAGAIN) {
+			usleep(1000);
+			continue;
+		}
+		else if (errno == EINPROGRESS || errno == EALREADY)	{
+			usleep(500);
+			continue;
+		}
+		else {
+			LogPrintf("http_client.c: connection failed %d\n", errno);
+			close(fd);	  
+			return 0;
+		}
 #endif
-    }
+	}
+
 #ifdef WIN32
-  opt = 0;
-  ioctlsocket(fd, FIONBIO, &opt);
+	opt = 0;
+	ioctlsocket(fd, FIONBIO, &opt);
 #else
-  fcntl(fd, F_SETFL, 0);
+	fcntl(fd, F_SETFL, 0);
 #endif
   
-  if (g_debugHttpPost.integer)
-	  LogPrintf("http_client.c: connected to %s:%d\n",
-			  inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
+	if (g_debugHttpPost.integer)
+		LogPrintf("http_client.c: connected to %s:%d\n", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
   
-  client = (struct _http_client_t *)
-    calloc(1, sizeof(struct _http_client_t));
-
-  client->fd = fd;
-  memcpy(&client->addr, &addr, sizeof(struct sockaddr_in));
+	client = (struct _http_client_t *) calloc(1, sizeof(struct _http_client_t));
+	client->fd = fd;
+	memcpy(&client->addr, &addr, sizeof(struct sockaddr_in));
   
-  return client;
+	return client;
 }
 
 
-int
-_libhttpc_send(int fd, char *buf, int len)
-{
-  int  n;
-  int  count;
+int _libhttpc_send(int fd, char *buf, int len) {
+	int  n;
+	int  count;
 
-  if (!(buf) || !(len))
-    return -1;
+	if (!(buf) || !(len))
+		return -1;
 
-  count = 0;
-
-  while (1)
-    {
+	count = 0;
+	while (1) {
 #ifdef WIN32
-      n = send(fd, buf, len-count, 0);
+		n = send(fd, buf, len-count, 0);
 #else
-      n = send(fd, buf, len-count, MSG_DONTWAIT);
+		n = send(fd, buf, len-count, MSG_DONTWAIT);
 #endif
       
-      if (n < 0)
-	{
+		if (n < 0) {
 #ifdef WIN32
-	  if (WSAGetLastError() == EAGAIN)
+			if (WSAGetLastError() == EAGAIN)
 #else
-	  if (errno == EAGAIN)
+			if (errno == EAGAIN)
 #endif
-	    continue;
+				continue;
 	  
-	  return -1;
-	}
-
-      else if (n == 0)
-	break;
-      
-      else
-	{
-	  count += n;
+			return -1;
+		}
+		else if (n == 0) {
+			break;
+		}
+		else {
+			count += n;
 	  
-	  if (count == len)
-	    break;
-	}
-    }
-  
-  return count;
+			if (count == len)
+				break;
+		}
+	}  
+	return count;
 }
 
 
-int
-libhttpc_send(struct _http_client_t *client,
-	      char *host, char *location, int method,
-	      char *buffer, int len)
+int libhttpc_send(struct _http_client_t *client, char *host, 
+				  char *location, int method, char *buffer, int len) 
 {
   return libhttpc_send_multiple(client, host, location, method, &buffer, &len, 1);
 }
 
 
-int
-libhttpc_send_multiple(struct _http_client_t *client,
-	      char *host, char *location, int method,
-	      char **buffers, int *lens, int buffercount)
-{
+int libhttpc_send_multiple(struct _http_client_t *client, char *host, char *location, 
+						   int method, char **buffers, int *lens, int buffercount) {
 	char header[4096];
 	int  count = 0;
-  int  totallen;
-  int i;
-	
+	int  totallen;
+	int i;	
 	
 	if (!(client) || !(buffers) || !(lens) || !(buffers) || !(buffercount))
-	  return -1;
+		return -1;
 	
-  totallen = 0;
-  for (i = 0; i < buffercount; i++) {
-	  totallen += lens[i];
-  }
+	totallen = 0;
+	for (i = 0; i < buffercount; i++) {
+		totallen += lens[i];
+	}
 
 	snprintf(header,
 			sizeof(header),
@@ -332,38 +297,36 @@ libhttpc_send_multiple(struct _http_client_t *client,
 	if (_libhttpc_send(client->fd, header, strlen(header)) == -1) {
 	    LogPrintf("http_client.c: failed to send header\n");
 	    return -1;
-	  }
+	}
 	
-  for (i = 0; i < buffercount; i++) {
-    if (g_debugHttpPost.integer) {
-      LogPrintf("http_client.c: sending buffer line: %i: %s\n", i, buffers[i]);
-    }
-	  count += _libhttpc_send(client->fd, buffers[i], lens[i]);
-  }
+	for (i = 0; i < buffercount; i++) {
+		if (g_debugHttpPost.integer) {
+			LogPrintf("http_client.c: sending buffer line: %i: %s\n", i, buffers[i]);
+		}
+		count += _libhttpc_send(client->fd, buffers[i], lens[i]);
+	}
 	
 	if (g_debugHttpPost.integer)
 		LogPrintf("http_client.c: wrote %d bytes\n", count);
+
 	return 0;
 }
 
 
-int
-libhttpc_close(struct _http_client_t *client)
-{
-  if (!(client))
-    return -1;
+int libhttpc_close(struct _http_client_t *client) {
+
+	if (!(client))
+		return -1;
 
 #ifdef WIN32
-  closesocket(client->fd);
+	closesocket(client->fd);
 #else
-  close(client->fd);
-#endif
+	close(client->fd);
+#endif  
+	free(client);
   
-  free(client);
-  
-  return 0;
+	return 0;
 }
-
 
 
 void *libhttpc_post(void *post_args) {
@@ -377,6 +340,7 @@ void *libhttpc_post(void *post_args) {
 	char *url = &post_info->url[0];
 	char *message = &post_info->message[0];
 	char empty[] = "";
+
 	if (g_debugHttpPost.integer)
 		LogPrintf("HTTP POST: Original URL: %s\n", url);
 
@@ -448,16 +412,17 @@ void *libhttpc_post(void *post_args) {
 	return 0;
 }
 
+
 #ifdef UNIT_TEST
 
-int
-main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
+
   libhttpc_post(argv[1],argv[2]);
+
   return 0;
 }
-
 #endif
+
 
 /*
 =================
@@ -518,6 +483,7 @@ void *libhttpc_postmatch(void *post_args) {
 	//struct addr_info *result;
 	char *url = &post_matchinfo->url[0];
 	char empty[] = "";
+
 	if (g_debugHttpPost.integer)
 		LogPrintf("HTTP POST: Original URL: %s\n", url);
 
@@ -604,4 +570,3 @@ void *libhttpc_postmatch(void *post_args) {
 	free(post_matchinfo);
 	return 0;
 }
-// etded +set com_hunkmegs 256 +set sv_maxclients 64 +set fs_game etpub +set net_port 5123 +map oasis +set g_etpub_stats_id 0 +set g_tactics 1 +set g_warmup 10 +set g_log etserver.log +set g_logsync 1
