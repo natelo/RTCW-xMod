@@ -27,8 +27,7 @@
 
 #include "g_http_client.h"
 
-int
-_libhttpc_send(int fd, char *buf, int len);
+int _libhttpc_send(int fd, char *buf, int len);
 
 
 void QDECL LogPrintf( const char *fmt, ... );
