@@ -9,26 +9,24 @@
 #include <fcntl.h>
 
 #ifdef WIN32
-#include <process.h> 
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <stdio.h>
-#include <io.h>
-#define snprintf _snprintf
-#define close _close
+	#include <process.h> 
+	#include <winsock2.h>
+	#include <ws2tcpip.h>
+	#include <stdio.h>
+	#include <io.h>
+	#define snprintf _snprintf
+	#define close _close
 #else
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
+	#include <sys/socket.h>
+	#include <netdb.h>
+	#include <netinet/in.h>
+	#include <arpa/inet.h>
+	#include <unistd.h>
 #endif
-
 
 #include "g_http_client.h"
 
 int _libhttpc_send(int fd, char *buf, int len);
-
 
 void QDECL LogPrintf( const char *fmt, ... );
 //bani
@@ -145,7 +143,6 @@ struct _http_client_t *libhttpc_connect(char *address, int port) {
 #else
 		close(fd);
 #endif
-
 		return 0;
 	}
   
@@ -287,8 +284,9 @@ int libhttpc_send_multiple(struct _http_client_t *client, char *host, char *loca
 			"Host: %s\r\n"
 			"User-Agent: libhttpc\r\n"
 			"Content-Length: %d\r\n"
-			"Content-Type: text/plain\r\n\r\n",
-			location, host, totallen);
+			"Content-Type: application/x-www-form-urlencoded\r\n"
+			"Data: %s\r\n\r\n",
+			location, host, totallen, buffers[0]);
   
 	if (g_debugHttpPost.integer)
 		LogPrintf("http_client header: %s", header);
@@ -370,14 +368,6 @@ void *libhttpc_post(void *post_args) {
 				" message %s\n",
 				host,port,location,message);
 	// end parsing
-
-
-	// maybe do it this way later for better WIN32 compat
-	//if (getaddrinfo(host,NULL,NULL,&result)) {
-	//	LogPrintf("http_client: Couldn't getaddrinfo\n");
-	//	free(post_info);
-	//	return 0;
-	//};
 
 	h = gethostbyname(host);
 	if (!h) {

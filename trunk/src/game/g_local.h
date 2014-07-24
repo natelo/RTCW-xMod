@@ -1793,6 +1793,8 @@ typedef struct {
 	int num_lines;
 } g_http_matchinfo_t;
 
+void *libhttpc_post(void *post_args);
+
 //
 // g_antilag.c
 //

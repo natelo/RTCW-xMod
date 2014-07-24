@@ -599,12 +599,12 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
 
 	// HTTP Stats
-	{ &g_httpPostURL_chat, "g_httpPostURL_chat", "", 0 },
-	{ &g_httpPostURL_ratings, "g_httpPostURL_ratings", "", 0 },
-	{ &g_httpPostURL_log, "g_httpPostURL_log", "", 0 },
-	{ &g_etpub_stats_id, "g_etpub_stats_id", "-1", 0 },
-	{ &g_etpub_stats_master_url, "g_etpub_stats_master_url", "http://stats.etpub.org/submit_game.php", 0 },
-	{ &g_debugHttpPost, "g_debugHttpPost", "0", 0, 0, qfalse },
+	{ &g_httpPostURL_chat, "g_httpPostURL_chat", "http://localhost/stats/api", 0 },
+	{ &g_httpPostURL_ratings, "g_httpPostURL_ratings", "http://localhost/stats/api", 0 },
+	{ &g_httpPostURL_log, "g_httpPostURL_log", "http://localhost/stats/api", 0 },
+	{ &g_etpub_stats_id, "g_etpub_stats_id", "1", 0 },
+	{ &g_etpub_stats_master_url, "g_etpub_stats_master_url", "http://localhost/stats/api", 0 },
+	{ &g_debugHttpPost, "g_debugHttpPost", "1", 0, 0, qfalse },
 
 	// Stats
 	{ &g_doubleKills, "g_doubleKills", "0", CVAR_ARCHIVE, 0, qfalse },
@@ -2347,6 +2347,24 @@ void LogExit( const char *string ) {
 		trap_Cvar_Set( "g_currentRound", va( "%i", !g_currentRound.integer ) );
 	}
 	// -NERVE - SMF
+
+	for (i = 0; i<level.numConnectedClients; i++) {
+		gclient_t *cl = level.clients + level.sortedClients[ i ];
+		g_httpinfo_t *post_info = (g_httpinfo_t *)malloc(sizeof(g_httpinfo_t));
+		char *message;
+		message = va("RATINGS:"
+			" GUID: %s"
+			" DTHs: %d"			
+			" Name: %s",
+			cl->sess.guid,
+			cl->pers.deaths,			
+			cl->pers.netname
+		);
+
+		Q_strncpyz( post_info->url, g_httpPostURL_ratings.string, sizeof(post_info->url) );
+		Q_strncpyz( post_info->message, message, sizeof(post_info->message) );
+		libhttpc_post((void*)post_info);
+	}
 }
 
 
