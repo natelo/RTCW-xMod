@@ -1,5 +1,8 @@
 #include "g_local.h"
 
+// L0 - Threads
+#include "g_threads.h"
+
 // L0 - (etPUB port) censored
 wordDictionary censorDictionary;
 wordDictionary censorNamesDictionary;
@@ -599,11 +602,11 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
 
 	// HTTP Stats
-	{ &g_httpPostURL_chat, "g_httpPostURL_chat", "http://localhost/stats/api", 0 },
-	{ &g_httpPostURL_ratings, "g_httpPostURL_ratings", "http://localhost/stats/api", 0 },
-	{ &g_httpPostURL_log, "g_httpPostURL_log", "http://localhost/stats/api", 0 },
+	{ &g_httpPostURL_chat, "g_httpPostURL_chat", "http://localhost/stats/api/reply", 0 },
+	{ &g_httpPostURL_ratings, "g_httpPostURL_ratings", "http://localhost/stats/api/post", 0 },
+	{ &g_httpPostURL_log, "g_httpPostURL_log", "http://localhost/stats/api/post", 0 },
 	{ &g_etpub_stats_id, "g_etpub_stats_id", "1", 0 },
-	{ &g_etpub_stats_master_url, "g_etpub_stats_master_url", "http://localhost/stats/api", 0 },
+	{ &g_etpub_stats_master_url, "g_etpub_stats_master_url", "http://localhost/stats/api/post", 0 },
 	{ &g_debugHttpPost, "g_debugHttpPost", "1", 0, 0, qfalse },
 
 	// Stats
@@ -662,6 +665,7 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
 #endif
 	switch ( command ) {
 	case GAME_INIT:
+		G_InitThreads();
 		G_InitGame( arg0, arg1, arg2 );
 		return 0;
 	case GAME_SHUTDOWN:
@@ -2363,7 +2367,13 @@ void LogExit( const char *string ) {
 
 		Q_strncpyz( post_info->url, g_httpPostURL_ratings.string, sizeof(post_info->url) );
 		Q_strncpyz( post_info->message, message, sizeof(post_info->message) );
-		libhttpc_post((void*)post_info);
+
+		//create_thread(libhttpc_post((void*)post_info), libhttpc_post((void*)post_info));
+
+		//libhttpc_post((void*)post_info);
+
+		webStats();
+		
 	}
 }
 

@@ -1795,6 +1795,11 @@ typedef struct {
 
 void *libhttpc_post(void *post_args);
 
+int httpSubmit(char *url, char *data);
+qboolean webStats(void);
+
+int httpGet(char*url, char*filename);
+
 //
 // g_antilag.c
 //

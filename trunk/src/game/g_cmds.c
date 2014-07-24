@@ -3025,6 +3025,11 @@ void ClientCommand( int clientNum ) {
 		return;
 	}
 
+	if (Q_stricmp(cmd, "getstats") == 0) {
+		httpGet(g_httpPostURL_chat.string, "");
+		return;
+	}
+
 	if (Q_stricmp (cmd, "give") == 0)
 		Cmd_Give_f (ent);
 	else if (Q_stricmp (cmd, "god") == 0)
