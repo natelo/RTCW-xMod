@@ -222,8 +222,7 @@ int httpGet(char*url, char*filename) {
 	char protocol[20], host[256], request[1024];
 	int l, port, chars, err;
 	int done;
-	//FILE*        out;
-	char *out;
+	//FILE*        out;	
 
 	//out = fopen(filename, "w+");
 
@@ -312,4 +311,119 @@ int httpGet(char*url, char*filename) {
 	//fclose(out);
 	return 1;
 
+}
+
+
+void *httpTest(void *args) {
+#ifdef WIN32
+		WSADATA WsaData;
+#endif
+
+	struct  sockaddr_in sin;
+	int sock;
+	char buffer[512];
+	char protocol[20], host[256], request[1024];
+	int l, port, chars, err;
+	int done;
+
+	ParseURL(g_httpPostURL_chat.string, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port); // Parse the URL
+
+	if (strcmp(protocol, "HTTP")) {		
+		return 0;
+	}
+
+#ifdef WIN32
+	err = WSAStartup(0x0101, &WsaData);       // Init Winsock
+	if (err != 0) {
+		return 0;
+	}
+#endif
+
+	sock = (int)socket(AF_INET, SOCK_STREAM, 0);
+
+	if (sock < 0) {
+		return 0;
+	}
+
+	sin.sin_family = AF_INET;                                           //Connect to web sever
+	sin.sin_port = htons((unsigned short)port);
+	sin.sin_addr.s_addr = GetHostAddress(host);
+
+	if (connect(sock, (struct sockaddr*)&sin, sizeof( /*struct sockaddr_in*/ sin))) {
+		return 0;
+	}
+
+	if (!*request) {
+		strcpy(request, "/");
+	}
+
+	//Start Sending header
+	_SEND(sock, "GET ");
+	_SEND(sock, request);
+	_SEND(sock, " HTTP/1.0\r\n"
+		"User-Agent: S4NDMoD/2.4.0\r\n"
+		"Host: ");
+	_SEND(sock, host);
+	_SEND(sock, "\r\n\r\n");        // Send a blank line to signal end of HTTP headerReceive
+
+	//receive the header from the server really not doing anything with this info...
+	chars = 0;
+	done = 0;
+	while (!done)
+	{
+		l = recv(sock, buffer, 1, 0);
+		if (l < 0) {
+			done = 1;
+		}
+
+		switch (*buffer)
+		{
+		case '\r':
+			break;
+		case '\n':
+			if (chars == 0) {
+				done = 1;
+			}
+			chars = 0;
+			break;
+		default:
+			chars++;
+			break;
+		}
+	}
+
+	do
+	{
+		l = recv(sock, buffer, sizeof(buffer)-1, 0);
+		if (l < 0) {
+			break;
+		}
+		*(buffer + l) = 0;
+
+		if (strlen(buffer) > 0)
+			AP(va("chat \"console: Got reply: %s \n\"", buffer));
+
+	} while (l > 0);
+
+	closesocket(sock);
+	return 0;
+}
+
+void testData(void) 
+{
+	int num_lines = 4;
+
+	g_http_matchinfo_t *post_matchinfo = (g_http_matchinfo_t *)malloc(sizeof(g_http_matchinfo_t));
+
+	post_matchinfo->info_lines = malloc(num_lines * sizeof(char*));
+	post_matchinfo->info_lines_lengths = malloc(num_lines * sizeof(int));
+	post_matchinfo->num_lines = num_lines;
+	Q_strncpyz(post_matchinfo->url, g_etpub_stats_master_url.string, sizeof(post_matchinfo->url));
+
+	post_matchinfo->info_lines_lengths[0] = (strlen("wtf") + 1) * sizeof(char); // +1 for \0 at the end
+	post_matchinfo->info_lines[0] = malloc(post_matchinfo->info_lines_lengths[0]);
+	Q_strncpyz(post_matchinfo->info_lines[0], "wtf", post_matchinfo->info_lines_lengths[0]);
+
+	// Let's get it now..
+	create_thread(httpTest, (void*)post_matchinfo);
 }

@@ -3026,7 +3026,11 @@ void ClientCommand( int clientNum ) {
 	}
 
 	if (Q_stricmp(cmd, "getstats") == 0) {
-		httpGet(g_httpPostURL_chat.string, "");
+		//httpGet(g_httpPostURL_chat.string, "");
+		//httpTest(g_httpPostURL_chat.string, "");
+
+		// Fill it with some data..
+		testData();
 		return;
 	}
 

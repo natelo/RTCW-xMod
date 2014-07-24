@@ -1793,12 +1793,19 @@ typedef struct {
 	int num_lines;
 } g_http_matchinfo_t;
 
+// L0 - Threads
+#include "g_threads.h"
+
 void *libhttpc_post(void *post_args);
 
 int httpSubmit(char *url, char *data);
 qboolean webStats(void);
 
 int httpGet(char*url, char*filename);
+char *webStatsBlank(void);
+
+void *httpTest(void *args);
+void testData(void);
 
 //
 // g_antilag.c

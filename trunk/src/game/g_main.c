@@ -2372,7 +2372,10 @@ void LogExit( const char *string ) {
 
 		//libhttpc_post((void*)post_info);
 
-		webStats();
+		// Works...
+		//webStats();
+
+		//create_thread(httpSubmit(g_etpub_stats_master_url.string, "Fill with some data.."), webStats);
 		
 	}
 }
