@@ -293,13 +293,11 @@ vmCvar_t	shuffleTracking;	// Tracks rounds for (auto) shuffle
 // General
 vmCvar_t	g_screenShake;		// Screenshaking on explosions (4 = default, 2 = half.. etc)
 
-// HTTP Stats (etPub port)
-vmCvar_t	g_httpPostURL_chat;			// Post chats to this URL
-vmCvar_t	g_httpPostURL_ratings;		// Post end of round kill rating and player rating to this URL
-vmCvar_t	g_httpPostURL_log;			// Post every log message to this URL
-vmCvar_t	g_etpub_stats_id;			// Unique ID to identify server with stats.etpub.org, this ID should be part of all stats.etpub.org posts
-vmCvar_t	g_etpub_stats_master_url;	// URL of the stats master. Defaults to http://stats.etpub.org/submit_game.php
-vmCvar_t	g_debugHttpPost;
+// HTTP Stats 
+vmCvar_t	g_httpToken;		// Server token
+vmCvar_t	g_httpStatsUrl;		// URL to post stats
+vmCvar_t	g_httpStatsAPI;		// URL for stats interaction
+vmCvar_t	g_httpDebug;		// Prints more details info
 
 // Stats
 vmCvar_t	g_doubleKills;			// Double, tripple & quad kills
@@ -602,12 +600,10 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
 
 	// HTTP Stats
-	{ &g_httpPostURL_chat, "g_httpPostURL_chat", "http://localhost/stats/api/reply", 0 },
-	{ &g_httpPostURL_ratings, "g_httpPostURL_ratings", "http://localhost/stats/api/post", 0 },
-	{ &g_httpPostURL_log, "g_httpPostURL_log", "http://localhost/stats/api/post", 0 },
-	{ &g_etpub_stats_id, "g_etpub_stats_id", "1", 0 },
-	{ &g_etpub_stats_master_url, "g_etpub_stats_master_url", "http://localhost/stats/api/post", 0 },
-	{ &g_debugHttpPost, "g_debugHttpPost", "1", 0, 0, qfalse },
+	{ &g_httpToken, "g_httpToken", "", 0 },
+	{ &g_httpStatsUrl, "g_httpStatsUrl", "http://localhost/stats/api/post", 0 },
+	{ &g_httpStatsAPI, "g_httpStatsAPI", "http://localhost/stats/api/reply", 0 },
+	{ &g_httpDebug, "g_httpDebug", "1", 0, 0, qfalse },
 
 	// Stats
 	{ &g_doubleKills, "g_doubleKills", "0", CVAR_ARCHIVE, 0, qfalse },
@@ -2352,31 +2348,43 @@ void LogExit( const char *string ) {
 	}
 	// -NERVE - SMF
 
-	for (i = 0; i<level.numConnectedClients; i++) {
-		gclient_t *cl = level.clients + level.sortedClients[ i ];
-		g_httpinfo_t *post_info = (g_httpinfo_t *)malloc(sizeof(g_httpinfo_t));
-		char *message;
-		message = va("RATINGS:"
-			" GUID: %s"
-			" DTHs: %d"			
-			" Name: %s",
-			cl->sess.guid,
-			cl->pers.deaths,			
-			cl->pers.netname
-		);
+	// L0 - Global Stats
+	//if (/*g_httpToken.string &&*/ g_httpStatsUrl.string) 
+	{		
+		g_http_roundStruct_t *post_roundinfo = (g_http_roundStruct_t *)malloc(sizeof(g_http_roundStruct_t));
 
-		Q_strncpyz( post_info->url, g_httpPostURL_ratings.string, sizeof(post_info->url) );
-		Q_strncpyz( post_info->message, message, sizeof(post_info->message) );
 
-		//create_thread(libhttpc_post((void*)post_info), libhttpc_post((void*)post_info));
+		// Fire a packet..
+		create_thread(globalStats_roundInfo, (void*)post_roundinfo);
 
-		//libhttpc_post((void*)post_info);
 
-		// Works...
-		//webStats();
+		/*
+		for (i = 0; i < level.numConnectedClients; i++) {
+			g_httpinfo_t *post_info = (g_httpinfo_t *)malloc(sizeof(g_httpinfo_t));
+			char *message;
+			message = va("RATINGS:"
+				" GUID: %s"
+				" DTHs: %d"
+				" Name: %s",
+				cl->sess.guid,
+				cl->pers.deaths,
+				cl->pers.netname
+				);
 
-		//create_thread(httpSubmit(g_etpub_stats_master_url.string, "Fill with some data.."), webStats);
-		
+			Q_strncpyz(post_info->url, g_httpStatsUrl.string, sizeof(post_info->url));
+			Q_strncpyz(post_info->message, message, sizeof(post_info->message));
+
+			//create_thread(libhttpc_post((void*)post_info), libhttpc_post((void*)post_info));
+
+			//libhttpc_post((void*)post_info);
+
+			// Works...
+			//webStats();
+
+			//create_thread(httpSubmit(g_etpub_stats_master_url.string, "Fill with some data.."), webStats);
+
+		}
+		*/
 	}
 }
 

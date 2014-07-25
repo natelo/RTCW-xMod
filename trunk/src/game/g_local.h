@@ -1481,12 +1481,10 @@ extern vmCvar_t		shuffleTracking;
 extern vmCvar_t		g_screenShake;
 
 // HTTP Stats
-extern vmCvar_t		g_etpub_stats_id;
-extern vmCvar_t		g_etpub_stats_master_url;
-extern vmCvar_t		g_httpPostURL_chat;
-extern vmCvar_t		g_httpPostURL_ratings;
-extern vmCvar_t		g_httpPostURL_log;
-extern vmCvar_t		g_debugHttpPost;
+extern vmCvar_t		g_httpToken;
+extern vmCvar_t		g_httpStatsUrl;
+extern vmCvar_t		g_httpStatsAPI;
+extern vmCvar_t		g_httpDebug;
 
 // Stats
 extern vmCvar_t		g_doubleKills;
@@ -1776,36 +1774,67 @@ qboolean G_ReservedName(char *testname, char *userinfo, int clientNum);
 //
 // G_http_client.c
 //
-// (etPub Port)
+// Stats structure
 //
-// josh: http message struct for thread
-typedef struct {
-	char url[MAX_CVAR_VALUE_STRING];
-	// 1024 since that's the max G_LogPrintf length
-	char message[1024];
-} g_httpinfo_t;
 
-// josh: for posting match info to global stats
+// Player data
 typedef struct {
-	char url[MAX_CVAR_VALUE_STRING];
-	char **info_lines; //(MAX_SAY_TEXT+MAX_NETNAME+4) * 65 lines
-	int *info_lines_lengths;
-	int num_lines;
+	unsigned int kills;
+	unsigned int deaths;
+	unsigned int headshots;
+	unsigned int teamKills;
+	unsigned int teamBleed;
+	unsigned int poison;
+	unsigned int revives;
+	unsigned int ammoGiven;
+	unsigned int medGiven;
+	unsigned int gibs;
+	unsigned int suicides;
+	unsigned int goombas;
+	unsigned int knifeThrows;
+	unsigned int fastStabs;
+	unsigned int killPeak;
+	unsigned int deathPeak;
+	unsigned int shotsFired;
+	unsigned int shorsHit;
+	unsigned int accuracy;
+} g_http_userStats_s;
+
+// Player Info
+typedef struct {
+	char token[32];			// Guid || Unique ID
+	char name[MAX_NETNAME];
+	unsigned int team;
+	unsigned int cClass;
+	char ip[15];			// No IPv6 support...	
+	g_http_userStats_s stats;
 } g_http_matchinfo_t;
+
+// Round info
+typedef struct {	
+	unsigned int teamWon;
+	char *map;
+	char *time;
+	int round;
+	int gametype;
+	int altGametype; // Obj, DM..
+	int axisStartPlayers;
+	int axisEndPlayers;
+	int alliedStartPlayers;
+	int alliedEndPlayers;
+	qboolean finishedRound;	// So we can track round stuff..
+} g_http_roundStruct_t;
 
 // L0 - Threads
 #include "g_threads.h"
 
-void *libhttpc_post(void *post_args);
 
-int httpSubmit(char *url, char *data);
-qboolean webStats(void);
+char *httpGet(char *url, char *cmd);
+void httpPost(char *url, char *data);
 
-int httpGet(char*url, char*filename);
-char *webStatsBlank(void);
 
-void *httpTest(void *args);
-void testData(void);
+void *globalStats_roundInfo(void *args);
+void *globalStats_sendCommand(void *args);
 
 //
 // g_antilag.c

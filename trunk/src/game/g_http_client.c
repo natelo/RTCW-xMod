@@ -24,7 +24,7 @@ In addition, the wolfX Source Code is also subject to certain additional terms. 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
-L0 - http_func.c
+L0 - g_http.c
 Basically all the core http functionality is here.
 
 Credits: Core handling is ported (with few modifications) directly from s4ndmod.
@@ -34,10 +34,6 @@ Last Updated: 17.02 / 2013
 ===========================================================================
 */
 #include "g_local.h"
-
-#ifdef INFINITE
-#undef INFINITE
-#endif
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -127,13 +123,128 @@ void ParseURL(char* url, char* protocol, int lprotocol,
 
 /*
 ===============
-httpSubmit
+httpGet
 
-Submits data and only checks if it was accepted otherwise
-alternatively, tries once more.
+Sends a query command to a server and returns a reply.
 ===============
 */
-int httpSubmit(char *url, char *data) {
+char *httpGet(char *url, char *cmd) {
+#ifdef WIN32
+	WSADATA WsaData;
+#endif
+	struct  sockaddr_in sin;
+	int sock;
+	char buffer[512];
+	char protocol[20], host[256], request[1024];
+	int l, port, chars, err, done;
+	char *header;
+	char *out = NULL;
+
+	// Parse the URL
+	ParseURL(url, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port); 
+
+	if (strcmp(protocol, "HTTP")) {		
+		return NULL;
+	}
+
+#ifdef WIN32
+	// Init Winsock
+	err = WSAStartup(0x0101, &WsaData);      
+	if (err != 0) {
+		return NULL;
+	}
+#endif
+
+	sock = (int)socket(AF_INET, SOCK_STREAM, 0);
+	if (sock < 0) {
+		return NULL;
+	}
+
+	sin.sin_family = AF_INET;   
+	sin.sin_port = htons((unsigned short)port);
+	sin.sin_addr.s_addr = GetHostAddress(host);
+
+	if (connect(sock, (struct sockaddr*)&sin, sizeof( sin))) {
+		return NULL;
+	}
+
+	if (!*request) {
+		strcpy(request, "/");
+	}
+
+	header = va(
+		"GET "
+		"%s"
+		" HTTP/1.0\r\n"
+		"User-Agent: S4NDMoD/2.4.0\r\n"
+		"Host: %s\r\n"
+		"Token: %s\r\n"
+		"Command: %s\r\n"
+		"\r\n\r\n",
+		request,
+		host,
+		g_httpToken.string,
+		cmd
+	);
+
+	// Send Header
+	_SEND(sock, header);
+
+	// Receive the reply
+	chars = 0;
+	done = 0;
+	while (!done)
+	{
+		l = recv(sock, buffer, 1, 0);
+		if (l < 0) {
+			done = 1;
+		}
+
+		switch (*buffer)
+		{
+		case '\r':
+			break;
+		case '\n':
+			if (chars == 0) {
+				done = 1;
+			}
+			chars = 0;
+			break;
+		default:
+			chars++;
+			break;
+		}
+	}
+
+	do
+	{
+		l = recv(sock, buffer, sizeof(buffer)-1, 0);
+		if (l < 0) {
+			break;
+		}
+		*(buffer + l) = 0;
+
+		if (strlen(buffer) > 0)
+		{
+			if (g_httpDebug.integer)
+				AP(va("print \"g_httpDebug - Got reply: %s \n\"", buffer));
+
+			out = va("%s", buffer);
+		}
+	} while (l > 0);
+
+	closesocket(sock);	
+	return out;
+}
+
+/*
+===============
+httpPost
+
+Submits data and doesn't care about any replies..
+===============
+*/
+void httpPost(char *url, char *data) {
 #ifdef WIN32
 	WSADATA WsaData;
 #endif
@@ -142,6 +253,7 @@ int httpSubmit(char *url, char *data) {
 	char protocol[20], host[256], request[1024];
 	int port, err;
 	char mapName[64];
+	char *header;
 
 	ParseURL(url, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port);
 
@@ -149,14 +261,14 @@ int httpSubmit(char *url, char *data) {
 	// Init Winsock
 	err = WSAStartup(0x0101, &WsaData);
 	if (err != 0) {
-		return 0;
+		return;
 	}
 #endif
 
 	sock = (int)socket(AF_INET, SOCK_STREAM, 0);
 
 	if (sock < 0) {
-		return 0;
+		return;
 	}
 
 	//Connect to web sever
@@ -165,7 +277,7 @@ int httpSubmit(char *url, char *data) {
 	sin.sin_addr.s_addr = GetHostAddress(host);
 
 	if (connect(sock, (struct sockaddr*)&sin, sizeof(sin))) {
-		return 0;
+		return;
 	}
 
 	if (!*request) {
@@ -174,256 +286,40 @@ int httpSubmit(char *url, char *data) {
 
 	trap_Cvar_VariableStringBuffer("mapname", mapName, sizeof(mapName));
 
-	//Start Sending header
-	_SEND(sock, "POST ");
-	_SEND(sock, request);
-	_SEND(sock, " HTTP/1.0\r\n"
-		"Accept: */*\r\n");
-	_SEND(sock, va("User-Agent: wolfX//%s//%s//%s\r\n", GAMEVERSION, mapName, sv_hostname.string));
-	_SEND(sock, "Accept-Language: en-us\r\n");
-	_SEND(sock, "Accept-Encoding: gzip, deflate\r\n");
-	//_SEND(sock, va("Content-Length: %d\r\n", strlen(data)));
-	_SEND(sock, va("Content-Length: %d\r\n", strlen("some fucked up data..\r\n")));
-	_SEND(sock, va("Host: %s\r\n", host));
-	_SEND(sock, "Content-Type: application/x-www-form-urlencoded\r\n");
-	//_SEND(sock, "\r\n\r\n");
+	// Header
+	header = va(
+		"POST "
+		"%s"
+		" HTTP/1.0\r\n"
+		"Accept: */*\r\n"
+		"User-Agent: rtcwx\\%s\\%s\r\n"
+		"Accept-Language: en-us\r\n"
+		"Accept-Encoding: gzip, deflate\r\n"
+		"Content-Length: %d\r\n"
+		"Host: %s\r\n"
+		"Token: %s\r\n"
+		"Content-Type: application/x-www-form-urlencoded\r\n",
+		request, 
+		GAMEVERSION, sv_hostname.string,
+		strlen(data),
+		host,
+		g_httpToken.string
+	);
 
-	// Data
-	//_SEND(sock, va("data=%s", data)); // Sends a large text block.
-	_SEND(sock, "User[1]: some fucked up data..\r\n");
-	_SEND(sock, "User[2]: some fucked up data..\r\n");
-	_SEND(sock, "User[3]: some fucked up data..\r\n");
-	_SEND(sock, "User[4]: some fucked up data..\r\n");
-	_SEND(sock, "User[5]: some fucked up data..\r\n");
-	_SEND(sock, "User[6]: some fucked up data..\r\n");
-	_SEND(sock, "User[7]: some fucked up data..\r\n");
-	_SEND(sock, "User[8]: some fucked up data..\r\n");
-	_SEND(sock, "User[9]: some fucked up data..\r\n");
-	_SEND(sock, "User[10]: some fucked up data..\r\n");
+	// Send Header
+	_SEND(sock, header);
 
-	//_SEND(sock, "\r\n");
+	// Send Data	
+	_SEND(sock, va("%s\r\n", data));	
+
+	//_Kill it now
 	_SEND(sock, "\r\n\r\n");
 
 	// We don't care about replay..
 	closesocket(sock);
 
-	// As far as game cares, it was send so replay as such..
-	return 1;
-}
+	if (g_httpDebug.integer)
+		AP("print \"g_httpDebug : Posted data.\n\"");
 
-int httpGet(char*url, char*filename) {
-#ifdef WIN32
-	WSADATA WsaData;
-#endif
-
-	struct  sockaddr_in sin;
-	int sock;
-	char buffer[512];
-	char protocol[20], host[256], request[1024];
-	int l, port, chars, err;
-	int done;
-	//FILE*        out;	
-
-	//out = fopen(filename, "w+");
-
-	ParseURL(url, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port); // Parse the URL
-
-	if (strcmp(protocol, "HTTP")) {
-		//fclose(out);
-		return 0;
-	}
-
-#ifdef WIN32
-	err = WSAStartup(0x0101, &WsaData);       // Init Winsock
-	if (err != 0) {
-		return 0;
-	}
-#endif
-
-	sock = (int)socket(AF_INET, SOCK_STREAM, 0);
-
-	if (sock < 0) {
-		return 0;
-	}
-
-	sin.sin_family = AF_INET;                                           //Connect to web sever
-	sin.sin_port = htons((unsigned short)port);
-	sin.sin_addr.s_addr = GetHostAddress(host);
-
-	if (connect(sock, (struct sockaddr*)&sin, sizeof( /*struct sockaddr_in*/ sin))) {
-		return 0;
-	}
-
-	if (!*request) {
-		strcpy(request, "/");
-	}
-
-	//Start Sending header
-	_SEND(sock, "GET ");
-	_SEND(sock, request);
-	_SEND(sock, " HTTP/1.0\r\n"
-		"User-Agent: S4NDMoD/2.4.0\r\n"
-		"Host: ");
-	_SEND(sock, host);
-	_SEND(sock, "\r\n\r\n");        // Send a blank line to signal end of HTTP headerReceive
-
-	//receive the header from the server really not doing anything with this info...
-	chars = 0;
-	done = 0;
-	while (!done)
-	{
-		l = recv(sock, buffer, 1, 0);
-		if (l < 0) {
-			done = 1;
-		}
-
-		switch (*buffer)
-		{
-		case '\r':
-			break;
-		case '\n':
-			if (chars == 0) {
-				done = 1;
-			}
-			chars = 0;
-			break;
-		default:
-			chars++;
-			break;
-		}
-	}
-
-	do
-	{
-		l = recv(sock, buffer, sizeof(buffer)-1, 0);
-		if (l < 0) {
-			break;
-		}
-		*(buffer + l) = 0;
-		//fputs(buffer, out);
-
-		if (strlen(buffer) > 0)
-			AP(va("chat \"console: Got reply: %s \n\"", buffer));
-
-	} while (l > 0);
-
-	closesocket(sock);
-	//fclose(out);
-	return 1;
-
-}
-
-
-void *httpTest(void *args) {
-#ifdef WIN32
-		WSADATA WsaData;
-#endif
-
-	struct  sockaddr_in sin;
-	int sock;
-	char buffer[512];
-	char protocol[20], host[256], request[1024];
-	int l, port, chars, err;
-	int done;
-
-	ParseURL(g_httpPostURL_chat.string, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port); // Parse the URL
-
-	if (strcmp(protocol, "HTTP")) {		
-		return 0;
-	}
-
-#ifdef WIN32
-	err = WSAStartup(0x0101, &WsaData);       // Init Winsock
-	if (err != 0) {
-		return 0;
-	}
-#endif
-
-	sock = (int)socket(AF_INET, SOCK_STREAM, 0);
-
-	if (sock < 0) {
-		return 0;
-	}
-
-	sin.sin_family = AF_INET;                                           //Connect to web sever
-	sin.sin_port = htons((unsigned short)port);
-	sin.sin_addr.s_addr = GetHostAddress(host);
-
-	if (connect(sock, (struct sockaddr*)&sin, sizeof( /*struct sockaddr_in*/ sin))) {
-		return 0;
-	}
-
-	if (!*request) {
-		strcpy(request, "/");
-	}
-
-	//Start Sending header
-	_SEND(sock, "GET ");
-	_SEND(sock, request);
-	_SEND(sock, " HTTP/1.0\r\n"
-		"User-Agent: S4NDMoD/2.4.0\r\n"
-		"Host: ");
-	_SEND(sock, host);
-	_SEND(sock, "\r\n\r\n");        // Send a blank line to signal end of HTTP headerReceive
-
-	//receive the header from the server really not doing anything with this info...
-	chars = 0;
-	done = 0;
-	while (!done)
-	{
-		l = recv(sock, buffer, 1, 0);
-		if (l < 0) {
-			done = 1;
-		}
-
-		switch (*buffer)
-		{
-		case '\r':
-			break;
-		case '\n':
-			if (chars == 0) {
-				done = 1;
-			}
-			chars = 0;
-			break;
-		default:
-			chars++;
-			break;
-		}
-	}
-
-	do
-	{
-		l = recv(sock, buffer, sizeof(buffer)-1, 0);
-		if (l < 0) {
-			break;
-		}
-		*(buffer + l) = 0;
-
-		if (strlen(buffer) > 0)
-			AP(va("chat \"console: Got reply: %s \n\"", buffer));
-
-	} while (l > 0);
-
-	closesocket(sock);
-	return 0;
-}
-
-void testData(void) 
-{
-	int num_lines = 4;
-
-	g_http_matchinfo_t *post_matchinfo = (g_http_matchinfo_t *)malloc(sizeof(g_http_matchinfo_t));
-
-	post_matchinfo->info_lines = malloc(num_lines * sizeof(char*));
-	post_matchinfo->info_lines_lengths = malloc(num_lines * sizeof(int));
-	post_matchinfo->num_lines = num_lines;
-	Q_strncpyz(post_matchinfo->url, g_etpub_stats_master_url.string, sizeof(post_matchinfo->url));
-
-	post_matchinfo->info_lines_lengths[0] = (strlen("wtf") + 1) * sizeof(char); // +1 for \0 at the end
-	post_matchinfo->info_lines[0] = malloc(post_matchinfo->info_lines_lengths[0]);
-	Q_strncpyz(post_matchinfo->info_lines[0], "wtf", post_matchinfo->info_lines_lengths[0]);
-
-	// Let's get it now..
-	create_thread(httpTest, (void*)post_matchinfo);
+	return;
 }

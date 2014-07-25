@@ -945,8 +945,8 @@ qboolean webStats(void) {
 
 	// Fire a packet
 	//if (httpSubmit(g_etpub_stats_master_url.string, list))
-	if (httpSubmit(g_etpub_stats_master_url.string, "Fill with some data.."))
-		return qtrue;
+	//if (httpSubmit(g_etpub_stats_master_url.string, "Fill with some data.."))
+	//	return qtrue;
 
 	return qfalse;
 }

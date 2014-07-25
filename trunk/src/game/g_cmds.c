@@ -3026,11 +3026,14 @@ void ClientCommand( int clientNum ) {
 	}
 
 	if (Q_stricmp(cmd, "getstats") == 0) {
-		//httpGet(g_httpPostURL_chat.string, "");
-		//httpTest(g_httpPostURL_chat.string, "");
+		
+		g_http_roundStruct_t *post_roundinfo = (g_http_roundStruct_t *)malloc(sizeof(g_http_roundStruct_t));
+		// Fire a packet..
+		create_thread(globalStats_roundInfo, (void*)post_roundinfo);
+		
 
-		// Fill it with some data..
-		testData();
+		//create_thread(globalStats_sendCommand, cmd);
+
 		return;
 	}
 

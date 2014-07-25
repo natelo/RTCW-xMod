@@ -69,9 +69,9 @@ void G_InitThreads(void)
 }
 
 int create_thread(void *(*thread_function)(void *),void *arguments) {
-	void *(*func)(void *) = /*(void *)*/thread_function;
+	void *(*func)(void *) = thread_function;
 
-	AP("cp \"Thread created..\"3");
+	G_Printf("Thread created.\n");
 
 	//Yay - no complaining
 	_beginthread((void ( *)(void *))func, 0, arguments);
