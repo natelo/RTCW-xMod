@@ -1830,8 +1830,7 @@ typedef struct {
 
 
 char *httpGet(char *url, char *cmd);
-void httpPost(char *url, char *data);
-
+void httpSubmit(char *url, char *data);
 
 void *globalStats_roundInfo(void *args);
 void *globalStats_sendCommand(void *args);

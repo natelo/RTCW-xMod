@@ -3027,12 +3027,11 @@ void ClientCommand( int clientNum ) {
 
 	if (Q_stricmp(cmd, "getstats") == 0) {
 		
-		g_http_roundStruct_t *post_roundinfo = (g_http_roundStruct_t *)malloc(sizeof(g_http_roundStruct_t));
+		//g_http_roundStruct_t *post_roundinfo = (g_http_roundStruct_t *)malloc(sizeof(g_http_roundStruct_t));
 		// Fire a packet..
-		create_thread(globalStats_roundInfo, (void*)post_roundinfo);
-		
+		//create_thread(globalStats_roundInfo, (void*)post_roundinfo);
 
-		//create_thread(globalStats_sendCommand, cmd);
+		create_thread(globalStats_sendCommand, cmd);
 
 		return;
 	}

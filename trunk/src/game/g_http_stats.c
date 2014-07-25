@@ -23,14 +23,14 @@ void *globalStats_roundInfo(void *args) {
 	post_roundinfo->altGametype = 0;
 	post_roundinfo->axisStartPlayers = 10;
 	post_roundinfo->axisEndPlayers = 5;
-	post_roundinfo->alliedStartPlayers = 9;
-	post_roundinfo->alliedEndPlayers = 6;
+	post_roundinfo->alliedStartPlayers = 965464;
+	post_roundinfo->alliedEndPlayers = 643242342;
 	post_roundinfo->finishedRound = qtrue;
 
-	//if (g_httpStatsUrl.string /*&& g_httpToken.string*/)
+	if (g_httpStatsUrl.string)
 	{
 		data = va(
-			"GlobalStatsRound: TW: %d\\M: %s\\T: %s\\R: %d\\GT: %d\\AGT: %d\\RRS: %d\\RRE: %i\\BRS: %d\\BRE: %i\\RE: %d ",
+			"data=roundInfo\\%d\\%s\\%s\\%d\\%d\\%d\\%d\\%i\\%d\\%i\\%d\r\n",
 			post_roundinfo->round,
 			post_roundinfo->map,
 			post_roundinfo->time,
@@ -48,7 +48,7 @@ void *globalStats_roundInfo(void *args) {
 		if (g_httpDebug.integer)			
 			AP("print \"g_httpDebug : Sending global round stats.\n\"");
 
-		httpPost(g_httpStatsUrl.string, data);
+		httpSubmit(g_httpStatsUrl.string, data);
 	}
 
 	free(post_roundinfo);
@@ -58,7 +58,6 @@ void *globalStats_roundInfo(void *args) {
 void *globalStats_sendCommand(void *args) {
 	char *msg;
 
-
 	if (g_httpStatsAPI.string) {
 		msg = httpGet(g_httpStatsAPI.string, args);
 	}
@@ -67,3 +66,4 @@ void *globalStats_sendCommand(void *args) {
 
 	return 0;
 }
+

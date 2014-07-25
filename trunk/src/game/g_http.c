@@ -1,31 +1,7 @@
 /*
 ===========================================================================
-
-wolfX GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
-
-This file is part of wolfX source code.
-
-wolfX Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-wolfX Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with wolfX Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
-In addition, the wolfX Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the wolfX Source Code.  If not, please request a copy in writing from id Software at the address below.
-
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-
-===========================================================================
 L0 - g_http.c
-Basically all the core http functionality is here.
+Basically all the core (socket) http functionality is here.
 
 Credits: Core handling is ported (with few modifications) directly from s4ndmod.
 
@@ -36,14 +12,14 @@ Last Updated: 17.02 / 2013
 #include "g_local.h"
 
 #ifdef WIN32
-#include <winsock2.h>
-#pragma comment(lib,"ws2_32.lib")
+	#include <winsock2.h>
+	#pragma comment(lib,"ws2_32.lib")
 #else
-#define closesocket close
-#include <unistd.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>
+	#define closesocket close
+	#include <unistd.h>
+	#include <sys/socket.h>
+	#include <arpa/inet.h>
+	#include <netdb.h>
 #endif
 
 #define _SEND(SOCK, MSG) \
@@ -173,22 +149,30 @@ char *httpGet(char *url, char *cmd) {
 	}
 
 	header = va(
-		"GET "
-		"%s"
-		" HTTP/1.0\r\n"
-		"User-Agent: S4NDMoD/2.4.0\r\n"
-		"Host: %s\r\n"
+		"GET %s HTTP/1.0\r\n"
+		"Accept: */*\r\n"
+		"User-Agent: rtcw//%s\r\n"
+		"Mod: %s\r\n"
 		"Token: %s\r\n"
-		"Command: %s\r\n"
+		"Server: %s\r\n"
+		"Content-Length: %i\r\n"
+		"Host: %s\r\n"
+		"Content-Type: application/x-www-form-urlencoded\r\n"
 		"\r\n\r\n",
 		request,
-		host,
+		GAME_VERSION,
+		GAMEVERSION,
 		g_httpToken.string,
-		cmd
+		sv_hostname.string,
+		strlen(cmd),
+		host
 	);
 
 	// Send Header
 	_SEND(sock, header);
+
+	// Data	
+	_SEND(sock, "\r\n\r\n");
 
 	// Receive the reply
 	chars = 0;
@@ -239,12 +223,12 @@ char *httpGet(char *url, char *cmd) {
 
 /*
 ===============
-httpPost
+httpSubmit
 
-Submits data and doesn't care about any replies..
+Submits data and doesn't care about any replies and simply bails out..
 ===============
 */
-void httpPost(char *url, char *data) {
+void httpSubmit(char *url, char *data) {
 #ifdef WIN32
 	WSADATA WsaData;
 #endif
@@ -252,7 +236,6 @@ void httpPost(char *url, char *data) {
 	int sock;
 	char protocol[20], host[256], request[1024];
 	int port, err;
-	char mapName[64];
 	char *header;
 
 	ParseURL(url, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port);
@@ -284,42 +267,38 @@ void httpPost(char *url, char *data) {
 		strcpy(request, "/");
 	}
 
-	trap_Cvar_VariableStringBuffer("mapname", mapName, sizeof(mapName));
-
-	// Header
 	header = va(
-		"POST "
-		"%s"
-		" HTTP/1.0\r\n"
+		"POST %s HTTP/1.0\r\n"
 		"Accept: */*\r\n"
-		"User-Agent: rtcwx\\%s\\%s\r\n"
-		"Accept-Language: en-us\r\n"
-		"Accept-Encoding: gzip, deflate\r\n"
-		"Content-Length: %d\r\n"
-		"Host: %s\r\n"
+		"User-Agent: rtcw//%s\r\n"
+		"Mod: %s\r\n"
 		"Token: %s\r\n"
-		"Content-Type: application/x-www-form-urlencoded\r\n",
-		request, 
-		GAMEVERSION, sv_hostname.string,
+		"Server: %s\r\n"
+		"Content-Length: %i\r\n"
+		"Host: %s\r\n"
+		"Content-Type: application/x-www-form-urlencoded\r\n"
+		"\r\n\r\n",
+		request,
+		GAME_VERSION,
+		GAMEVERSION,
+		g_httpToken.string,
+		sv_hostname.string,
 		strlen(data),
-		host,
-		g_httpToken.string
+		host
 	);
 
-	// Send Header
+	// Header
 	_SEND(sock, header);
 
-	// Send Data	
-	_SEND(sock, va("%s\r\n", data));	
-
-	//_Kill it now
+	// Data
+	_SEND(sock, data);  
 	_SEND(sock, "\r\n\r\n");
 
-	// We don't care about replay..
+	// We're done..bail out
 	closesocket(sock);
 
 	if (g_httpDebug.integer)
-		AP("print \"g_httpDebug : Posted data.\n\"");
+		AP("print \"g_httpDebug : Submitted data.\n\"");
 
 	return;
 }

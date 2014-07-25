@@ -198,13 +198,13 @@
     <ClCompile Include="..\..\src\game\g_antiwarp.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\game\g_http_client.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\game\g_threads.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\game\g_http_stats.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\g_http.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -302,13 +302,13 @@
     <ClInclude Include="..\..\src\game\g_stats.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\game\g_http_client.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\game\g_threads.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\game\g_http_stats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\g_http.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

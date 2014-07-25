@@ -2353,38 +2353,8 @@ void LogExit( const char *string ) {
 	{		
 		g_http_roundStruct_t *post_roundinfo = (g_http_roundStruct_t *)malloc(sizeof(g_http_roundStruct_t));
 
-
 		// Fire a packet..
 		create_thread(globalStats_roundInfo, (void*)post_roundinfo);
-
-
-		/*
-		for (i = 0; i < level.numConnectedClients; i++) {
-			g_httpinfo_t *post_info = (g_httpinfo_t *)malloc(sizeof(g_httpinfo_t));
-			char *message;
-			message = va("RATINGS:"
-				" GUID: %s"
-				" DTHs: %d"
-				" Name: %s",
-				cl->sess.guid,
-				cl->pers.deaths,
-				cl->pers.netname
-				);
-
-			Q_strncpyz(post_info->url, g_httpStatsUrl.string, sizeof(post_info->url));
-			Q_strncpyz(post_info->message, message, sizeof(post_info->message));
-
-			//create_thread(libhttpc_post((void*)post_info), libhttpc_post((void*)post_info));
-
-			//libhttpc_post((void*)post_info);
-
-			// Works...
-			//webStats();
-
-			//create_thread(httpSubmit(g_etpub_stats_master_url.string, "Fill with some data.."), webStats);
-
-		}
-		*/
 	}
 }
 
