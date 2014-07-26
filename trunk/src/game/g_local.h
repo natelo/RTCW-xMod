@@ -1839,7 +1839,7 @@ g_http_cmd_t httpCmd[1];
 char *httpGet(char *url, char *data);
 void httpSubmit(char *url, char *data);
 
-void httpQuery(char *url, char *data);
+char *httpQuery(char *url, char *data);
 
 void *globalStats_roundInfo(void *args);
 void *globalStats_sendCommand(void *args);

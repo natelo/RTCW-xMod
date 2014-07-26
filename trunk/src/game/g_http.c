@@ -312,7 +312,7 @@ httpQuery
 Sends a query command to a server and returns a reply.
 ===============
 */
-void httpQuery(char *url, char *data) {
+char *httpQuery(char *url, char *data) {
 #ifdef WIN32
 	WSADATA WsaData;
 #endif
@@ -322,27 +322,26 @@ void httpQuery(char *url, char *data) {
 	char protocol[20], host[256], request[1024];
 	int l, port, chars, err, done;
 	char *header;
-
-	AP("print \"Enter\n\"");
-
+	char *out = NULL;
+	
 	// Parse the URL
 	ParseURL(url, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port);
 
 	if (strcmp(protocol, "HTTP")) {
-		return;
+		return out;
 	}
 
 #ifdef WIN32
 	// Init Winsock
 	err = WSAStartup(0x0101, &WsaData);
 	if (err != 0) {
-		return;
+		return out;
 	}
 #endif
 
 	sock = (int)socket(AF_INET, SOCK_STREAM, 0);
 	if (sock < 0) {
-		return;
+		return out;
 	}
 
 	sin.sin_family = AF_INET;
@@ -350,46 +349,41 @@ void httpQuery(char *url, char *data) {
 	sin.sin_addr.s_addr = GetHostAddress(host);
 
 	if (connect(sock, (struct sockaddr*)&sin, sizeof(sin))) {
-		return;
+		return out;
 	}
 
 	if (!*request) {
 		strcpy(request, "/");
 	}
 
-	AP("print \"Prepping\n\"");
-
 	header = va(
-		"GET %s HTTP/1.0\r\n"
+		"POST %s HTTP/1.0\r\n"
 		"Accept: */*\r\n"
 		"User-Agent: rtcw//%s\r\n"
 		"Mod: %s\r\n"
 		"Token: %s\r\n"
 		"Server: %s\r\n"
-		"Content-Length: %i\r\n"
+		"Content-Length: %d \r\n"
 		"Host: %s\r\n"
 		"Content-Type: application/x-www-form-urlencoded\r\n"
-		"Command: %s\r\n"
 		"\r\n\r\n",
 		request,
 		GAME_VERSION,
 		GAMEVERSION,
 		g_httpToken.string,
 		sv_hostname.string,
-		strlen(data),
-		host,
-		data
+		strlen(data) + 8,
+		host
 		);
 
 	// Send Header
 	_SEND(sock, header);
 
-	AP("print \"Send header\n\"");
-
 	// Data	
-	_SEND(sock, "\r\n\r\n");
+	_SEND(sock, va("cmd=%s\r\n", data));
 
-	AP("print \"Closed pipe\n\"");
+	// Null it...
+	_SEND(sock, "\r\n\r\n");
 
 	// Receive the reply
 	chars = 0;
@@ -425,17 +419,16 @@ void httpQuery(char *url, char *data) {
 		}
 		*(buffer + l) = 0;
 
-		if (strlen(buffer) > 0)
-			AP(va("chat \"Reply: %s\n\"", buffer));
+		if (strlen(buffer) > 0)			
+			out = va("%s", buffer);
+
 	} while (l > 0);
 
-	AP("print \"Done\n\"");
-
 	closesocket(sock);
-	return;
+	return out;
 }
 
-
+/*
 void *globalStats_sendCommand(void *args) {
 #ifdef WIN32
 	WSADATA WsaData;
@@ -491,7 +484,7 @@ void *globalStats_sendCommand(void *args) {
 
 	header = va(
 		"POST %s HTTP/1.0\r\n"
-		"Accept: */*\r\n"
+		
 		"User-Agent: rtcw//%s\r\n"
 		"Mod: %s\r\n"
 		"Token: %s\r\n"
@@ -512,42 +505,27 @@ void *globalStats_sendCommand(void *args) {
 	// Send Header
 	_SEND(sock, header);
 
-	AP("print \"Send header\n\"");
-
-	_SEND(sock, va("cmd=%s\r\n", cmd->cmd));
-
-	AP(va("print \"Send Command: %s\n\"", cmd->cmd));
-
 	// Data	
+	_SEND(sock, va("cmd=%s\r\n", cmd->cmd));
+	
+	// Null it...
 	_SEND(sock, "\r\n\r\n");
-
-	AP("print \"Closed pipe\n\"");
-
-	if (WSAGetLastError() != 0) {
-		AP(va("Error: %s", WSAGetLastError()));
-	}
-
+	
 	// Receive the reply
 	chars = 0;
 	done = 0;
 	while (!done)
 	{
-		//AP("print \"Entered while\n\"");
-
 		l = recv(sock, buffer, 1, 0);
 
 		if (WSAGetLastError() != 0) {
 			AP(va("Error: %s", WSAGetLastError()));
 		}
 
-		//AP("print \"Declared recv\n\"");
-
 		if (l < 0) {
 			done = 1;
-			//AP("print \"Recv done\n\"");
 		}
 
-		//AP("print \"Moving to switch\n\"");
 		switch (*buffer)
 		{
 		case '\r':
@@ -566,7 +544,6 @@ void *globalStats_sendCommand(void *args) {
 
 	do
 	{
-		//AP("print \"Entered do..\n\"");
 		l = recv(sock, buffer, sizeof(buffer)-1, 0);
 		if (l < 0) {
 			break;
@@ -578,15 +555,7 @@ void *globalStats_sendCommand(void *args) {
 
 	} while (l > 0);	
 
-	AP("print \"Done\n\"");
-
 	closesocket(sock);
-	//return;
-	
-
-	//AP(va("chat \"Reply: %s\n\"", out));
-
-	//AP(va("chat \"Msg: %s - Got reply: %s\n\"", httpCmd->cmd, out));
 
 	AP("print \"Freeing memory\n\"");
 	free(cmd);
@@ -594,4 +563,5 @@ void *globalStats_sendCommand(void *args) {
 	AP("print \"Thread Destroyed\n\"");
 	return 0;
 }
+*/
 
