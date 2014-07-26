@@ -1825,15 +1825,26 @@ typedef struct {
 	qboolean finishedRound;	// So we can track round stuff..
 } g_http_roundStruct_t;
 
+// Request command
+typedef struct {
+	char *cmd;
+} g_http_cmd_t;
+
+g_http_cmd_t httpCmd[1];
+
 // L0 - Threads
 #include "g_threads.h"
 
 
-char *httpGet(char *url, char *cmd);
+char *httpGet(char *url, char *data);
 void httpSubmit(char *url, char *data);
+
+void httpQuery(char *url, char *data);
 
 void *globalStats_roundInfo(void *args);
 void *globalStats_sendCommand(void *args);
+
+void addtoStructure(char *arg);
 
 //
 // g_antilag.c

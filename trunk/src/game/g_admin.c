@@ -2038,7 +2038,7 @@ qboolean do_help(gentity_t *ent) {
 			wasUsed = qtrue;
 		}
 	}
-return wasUsed;
+	return wasUsed;
 }
 
 /*

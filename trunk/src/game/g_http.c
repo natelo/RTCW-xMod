@@ -104,7 +104,7 @@ httpGet
 Sends a query command to a server and returns a reply.
 ===============
 */
-char *httpGet(char *url, char *cmd) {
+char *httpGet(char *url, char *data) {
 #ifdef WIN32
 	WSADATA WsaData;
 #endif
@@ -158,14 +158,16 @@ char *httpGet(char *url, char *cmd) {
 		"Content-Length: %i\r\n"
 		"Host: %s\r\n"
 		"Content-Type: application/x-www-form-urlencoded\r\n"
+		"Command: %s\r\n"
 		"\r\n\r\n",
 		request,
 		GAME_VERSION,
 		GAMEVERSION,
 		g_httpToken.string,
 		sv_hostname.string,
-		strlen(cmd),
-		host
+		strlen(data),
+		host,
+		data
 	);
 
 	// Send Header
@@ -208,16 +210,14 @@ char *httpGet(char *url, char *cmd) {
 		}
 		*(buffer + l) = 0;
 
-		if (strlen(buffer) > 0)
-		{
-			if (g_httpDebug.integer)
-				AP(va("print \"g_httpDebug - Got reply: %s \n\"", buffer));
-
-			out = va("%s", buffer);
-		}
+		if (strlen(buffer) > 0)		
+			out = va("%s", buffer);		
 	} while (l > 0);
 
 	closesocket(sock);	
+
+	AP("chat \"Done..\n\"");
+
 	return out;
 }
 
@@ -302,3 +302,296 @@ void httpSubmit(char *url, char *data) {
 
 	return;
 }
+
+
+
+/*
+===============
+httpQuery
+
+Sends a query command to a server and returns a reply.
+===============
+*/
+void httpQuery(char *url, char *data) {
+#ifdef WIN32
+	WSADATA WsaData;
+#endif
+	struct  sockaddr_in sin;
+	int sock;
+	char buffer[512];
+	char protocol[20], host[256], request[1024];
+	int l, port, chars, err, done;
+	char *header;
+
+	AP("print \"Enter\n\"");
+
+	// Parse the URL
+	ParseURL(url, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port);
+
+	if (strcmp(protocol, "HTTP")) {
+		return;
+	}
+
+#ifdef WIN32
+	// Init Winsock
+	err = WSAStartup(0x0101, &WsaData);
+	if (err != 0) {
+		return;
+	}
+#endif
+
+	sock = (int)socket(AF_INET, SOCK_STREAM, 0);
+	if (sock < 0) {
+		return;
+	}
+
+	sin.sin_family = AF_INET;
+	sin.sin_port = htons((unsigned short)port);
+	sin.sin_addr.s_addr = GetHostAddress(host);
+
+	if (connect(sock, (struct sockaddr*)&sin, sizeof(sin))) {
+		return;
+	}
+
+	if (!*request) {
+		strcpy(request, "/");
+	}
+
+	AP("print \"Prepping\n\"");
+
+	header = va(
+		"GET %s HTTP/1.0\r\n"
+		"Accept: */*\r\n"
+		"User-Agent: rtcw//%s\r\n"
+		"Mod: %s\r\n"
+		"Token: %s\r\n"
+		"Server: %s\r\n"
+		"Content-Length: %i\r\n"
+		"Host: %s\r\n"
+		"Content-Type: application/x-www-form-urlencoded\r\n"
+		"Command: %s\r\n"
+		"\r\n\r\n",
+		request,
+		GAME_VERSION,
+		GAMEVERSION,
+		g_httpToken.string,
+		sv_hostname.string,
+		strlen(data),
+		host,
+		data
+		);
+
+	// Send Header
+	_SEND(sock, header);
+
+	AP("print \"Send header\n\"");
+
+	// Data	
+	_SEND(sock, "\r\n\r\n");
+
+	AP("print \"Closed pipe\n\"");
+
+	// Receive the reply
+	chars = 0;
+	done = 0;
+	while (!done)
+	{
+		l = recv(sock, buffer, 1, 0);
+		if (l < 0) {
+			done = 1;
+		}
+
+		switch (*buffer)
+		{
+		case '\r':
+			break;
+		case '\n':
+			if (chars == 0) {
+				done = 1;
+			}
+			chars = 0;
+			break;
+		default:
+			chars++;
+			break;
+		}
+	}
+
+	do
+	{
+		l = recv(sock, buffer, sizeof(buffer)-1, 0);
+		if (l < 0) {
+			break;
+		}
+		*(buffer + l) = 0;
+
+		if (strlen(buffer) > 0)
+			AP(va("chat \"Reply: %s\n\"", buffer));
+	} while (l > 0);
+
+	AP("print \"Done\n\"");
+
+	closesocket(sock);
+	return;
+}
+
+
+void *globalStats_sendCommand(void *args) {
+#ifdef WIN32
+	WSADATA WsaData;
+#endif
+	struct  sockaddr_in sin;
+	int sock;
+	char buffer[512];
+	char protocol[20], host[256], request[1024];
+	int l, port, chars, err, done;
+	char *header;
+	g_http_cmd_t *cmd = (g_http_cmd_t *)args;
+
+	AP("print \"Enter\n\"");
+	AP(va("chat \"Cmd: %s\n\"", cmd->cmd));
+
+	// Parse the URL
+	ParseURL(g_httpStatsAPI.string, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port);
+
+	if (strcmp(protocol, "HTTP")) {
+		AP("print \"HTTP failed\n\"");
+		return 0;
+	}
+
+#ifdef WIN32
+	// Init Winsock
+	err = WSAStartup(0x0101, &WsaData);
+	if (err != 0) {
+		AP("print \"WSAStartup failed\n\"");
+		return 0;
+	}
+#endif
+
+	sock = (int)socket(AF_INET, SOCK_STREAM, 0);
+	if (sock < 0) {
+		AP("print \"Sock failed\n\"");
+		return 0;
+	}
+
+	sin.sin_family = AF_INET;
+	sin.sin_port = htons((unsigned short)port);
+	sin.sin_addr.s_addr = GetHostAddress(host);
+
+	if (connect(sock, (struct sockaddr*)&sin, sizeof(sin))) {
+		AP("print \"Connect failed\n\"");
+		return 0;
+	}
+
+	if (!*request) {
+		strcpy(request, "/");
+	}
+
+	AP("print \"Prepping\n\"");
+
+	header = va(
+		"POST %s HTTP/1.0\r\n"
+		"Accept: */*\r\n"
+		"User-Agent: rtcw//%s\r\n"
+		"Mod: %s\r\n"
+		"Token: %s\r\n"
+		"Server: %s\r\n"
+		"Content-Length: %d \r\n"
+		"Host: %s\r\n"
+		"Content-Type: application/x-www-form-urlencoded\r\n"		
+		"\r\n\r\n",
+		request,
+		GAME_VERSION,
+		GAMEVERSION,
+		g_httpToken.string,
+		sv_hostname.string,
+		strlen(cmd->cmd) + 8,
+		host		
+		);
+
+	// Send Header
+	_SEND(sock, header);
+
+	AP("print \"Send header\n\"");
+
+	_SEND(sock, va("cmd=%s\r\n", cmd->cmd));
+
+	AP(va("print \"Send Command: %s\n\"", cmd->cmd));
+
+	// Data	
+	_SEND(sock, "\r\n\r\n");
+
+	AP("print \"Closed pipe\n\"");
+
+	if (WSAGetLastError() != 0) {
+		AP(va("Error: %s", WSAGetLastError()));
+	}
+
+	// Receive the reply
+	chars = 0;
+	done = 0;
+	while (!done)
+	{
+		//AP("print \"Entered while\n\"");
+
+		l = recv(sock, buffer, 1, 0);
+
+		if (WSAGetLastError() != 0) {
+			AP(va("Error: %s", WSAGetLastError()));
+		}
+
+		//AP("print \"Declared recv\n\"");
+
+		if (l < 0) {
+			done = 1;
+			//AP("print \"Recv done\n\"");
+		}
+
+		//AP("print \"Moving to switch\n\"");
+		switch (*buffer)
+		{
+		case '\r':
+			break;
+		case '\n':
+			if (chars == 0) {
+				done = 1;
+			}
+			chars = 0;
+			break;
+		default:
+			chars++;
+			break;
+		}
+	}
+
+	do
+	{
+		//AP("print \"Entered do..\n\"");
+		l = recv(sock, buffer, sizeof(buffer)-1, 0);
+		if (l < 0) {
+			break;
+		}
+		*(buffer + l) = 0;
+
+		if (strlen(buffer) > 0)
+			AP(va("chat \"Reply: %s\n\"", buffer));
+
+	} while (l > 0);	
+
+	AP("print \"Done\n\"");
+
+	closesocket(sock);
+	//return;
+	
+
+	//AP(va("chat \"Reply: %s\n\"", out));
+
+	//AP(va("chat \"Msg: %s - Got reply: %s\n\"", httpCmd->cmd, out));
+
+	AP("print \"Freeing memory\n\"");
+	free(cmd);
+
+	AP("print \"Thread Destroyed\n\"");
+	return 0;
+}
+

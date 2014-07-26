@@ -54,16 +54,26 @@ void *globalStats_roundInfo(void *args) {
 	free(post_roundinfo);
 	return 0;
 }
-
+/*
 void *globalStats_sendCommand(void *args) {
-	char *msg;
+	g_http_cmd_t *cmd = (g_http_cmd_t *)args;
+	//char  *out;	
 
+	AP(va("chat \"Cmd: %s\n\"", cmd->cmd));
+	
 	if (g_httpStatsAPI.string) {
-		msg = httpGet(g_httpStatsAPI.string, args);
+		httpQuery(g_httpStatsAPI.string, cmd->cmd);
 	}
 
-	AP(va("chat \"console: YEAH %s ..DOH\n\"", msg));
+	//AP(va("chat \"Reply: %s\n\"", out));
 
+	//AP(va("chat \"Msg: %s - Got reply: %s\n\"", httpCmd->cmd, out));
+	
+	AP("print \"Freeing memory\n\"");
+	free(cmd);
+
+	AP("print \"Thread Destroyed\n\"");
 	return 0;
 }
+*/
 

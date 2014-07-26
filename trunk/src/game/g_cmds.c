@@ -3026,12 +3026,25 @@ void ClientCommand( int clientNum ) {
 	}
 
 	if (Q_stricmp(cmd, "getstats") == 0) {
-		
+		//char *msg;
+
 		//g_http_roundStruct_t *post_roundinfo = (g_http_roundStruct_t *)malloc(sizeof(g_http_roundStruct_t));
 		// Fire a packet..
 		//create_thread(globalStats_roundInfo, (void*)post_roundinfo);
 
-		create_thread(globalStats_sendCommand, cmd);
+		
+		//httpCmd->cmd = va("%s", cmd);
+		//Q_strncpyz(httpCmd->cmd, cmd, sizeof(httpCmd->cmd));
+		//create_thread(globalStats_sendCommand, cmd);
+
+		g_http_cmd_t *post_cmd = (g_http_cmd_t*)malloc(sizeof(g_http_cmd_t));
+
+		post_cmd->cmd = va("%s", cmd);
+
+		create_thread(globalStats_sendCommand, (void*)post_cmd);
+
+		//httpGet(g_httpStatsAPI.string, cmd);
+		//AP(va("chat \"Reply: %s\n\"", msg ));
 
 		return;
 	}
