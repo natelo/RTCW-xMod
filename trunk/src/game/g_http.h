@@ -28,7 +28,7 @@ Hold declarations and structures of all the HTTP related functionality..
 #define GLOBAL_SUICIDES		11
 #define GLOBAL_GOOMBAS		12
 #define GLOBAL_KNIFETHROWS	13
-#define GLOBAL_FASTTABS		14
+#define GLOBAL_FASTSTABS	14
 #define GLOBAL_STABS		15
 #define GLOBAL_KILLPEAK		16
 #define GLOBAL_DEATHPEAK	17
@@ -75,18 +75,16 @@ typedef struct {
 //
 // Individual Player Info structure
 //
-typedef struct {
-	char id[PB_GUID_LENGTH];
+struct g_http_userInfo_s {
+	int	slot;
+	char guid[PB_GUID_LENGTH];
 	char name[MAX_NETNAME];
 	char ip[15];			// No IPv6 support...	
-	g_http_userUniqueStats_s stats[GLOBAL_LIMIT];
-} g_http_userInfo_t;
+	g_http_userUniqueStats_s stats[GLOBAL_LIMIT];	
+};
 
 // h_http_userInfo Structure limit
-//
-// Theoretical limit.. /64 players with 32 leaving/joining during a round..
-// Should be more then enough for game..most servers are empty anyway..
-#define HTTP_USERINFO_LIMIT	96
+#define HTTP_USERINFO_LIMIT	64
 
 //
 // Round info structure
@@ -124,16 +122,23 @@ char *http_Query(char *url, char *data);
 // g_http_stats.c
 //
 void write_globalUserStats(gentity_t *ent, int type, int value);
-
-void listStructure(void);
-
-// HTTP Stats Macros so it's easier to track stuff..
-#define GLOBALSTATS(x,y,z) write_globalUserStats(x, y, z)
+void listStructure(int num);
 
 //
 // g_http_cmds.c
 //
 void *http_sendQuery(void *args);
 qboolean isHttpCommand(gentity_t *ent, char *cmd1, char *cmd2, char *cmd3);
+
+//
+// Macros
+//
+#define GLOBALSTATS(x,y,z) write_globalUserStats(x, y, z)
+
+//
+// Exporter
+//
+typedef struct g_http_userInfo_s userInfoStats;
+extern userInfoStats userStats[];
 
 #endif // _G_HTTP
