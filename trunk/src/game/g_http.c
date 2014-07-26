@@ -104,7 +104,7 @@ httpGet
 Sends a query command to a server and returns a reply.
 ===============
 */
-char *httpGet(char *url, char *data) {
+char *http_Get(char *url, char *data) {
 #ifdef WIN32
 	WSADATA WsaData;
 #endif
@@ -215,9 +215,6 @@ char *httpGet(char *url, char *data) {
 	} while (l > 0);
 
 	closesocket(sock);	
-
-	AP("chat \"Done..\n\"");
-
 	return out;
 }
 
@@ -228,7 +225,7 @@ httpSubmit
 Submits data and doesn't care about any replies and simply bails out..
 ===============
 */
-void httpSubmit(char *url, char *data) {
+void http_Submit(char *url, char *data) {
 #ifdef WIN32
 	WSADATA WsaData;
 #endif
@@ -296,23 +293,17 @@ void httpSubmit(char *url, char *data) {
 
 	// We're done..bail out
 	closesocket(sock);
-
-	if (g_httpDebug.integer)
-		AP("print \"g_httpDebug : Submitted data.\n\"");
-
 	return;
 }
 
-
-
 /*
 ===============
-httpQuery
+http_Query
 
-Sends a query command to a server and returns a reply.
+Quries a server and reads the reply..
 ===============
 */
-char *httpQuery(char *url, char *data) {
+char *http_Query(char *url, char *data) {
 #ifdef WIN32
 	WSADATA WsaData;
 #endif
@@ -427,141 +418,3 @@ char *httpQuery(char *url, char *data) {
 	closesocket(sock);
 	return out;
 }
-
-/*
-void *globalStats_sendCommand(void *args) {
-#ifdef WIN32
-	WSADATA WsaData;
-#endif
-	struct  sockaddr_in sin;
-	int sock;
-	char buffer[512];
-	char protocol[20], host[256], request[1024];
-	int l, port, chars, err, done;
-	char *header;
-	g_http_cmd_t *cmd = (g_http_cmd_t *)args;
-
-	AP("print \"Enter\n\"");
-	AP(va("chat \"Cmd: %s\n\"", cmd->cmd));
-
-	// Parse the URL
-	ParseURL(g_httpStatsAPI.string, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port);
-
-	if (strcmp(protocol, "HTTP")) {
-		AP("print \"HTTP failed\n\"");
-		return 0;
-	}
-
-#ifdef WIN32
-	// Init Winsock
-	err = WSAStartup(0x0101, &WsaData);
-	if (err != 0) {
-		AP("print \"WSAStartup failed\n\"");
-		return 0;
-	}
-#endif
-
-	sock = (int)socket(AF_INET, SOCK_STREAM, 0);
-	if (sock < 0) {
-		AP("print \"Sock failed\n\"");
-		return 0;
-	}
-
-	sin.sin_family = AF_INET;
-	sin.sin_port = htons((unsigned short)port);
-	sin.sin_addr.s_addr = GetHostAddress(host);
-
-	if (connect(sock, (struct sockaddr*)&sin, sizeof(sin))) {
-		AP("print \"Connect failed\n\"");
-		return 0;
-	}
-
-	if (!*request) {
-		strcpy(request, "/");
-	}
-
-	AP("print \"Prepping\n\"");
-
-	header = va(
-		"POST %s HTTP/1.0\r\n"
-		
-		"User-Agent: rtcw//%s\r\n"
-		"Mod: %s\r\n"
-		"Token: %s\r\n"
-		"Server: %s\r\n"
-		"Content-Length: %d \r\n"
-		"Host: %s\r\n"
-		"Content-Type: application/x-www-form-urlencoded\r\n"		
-		"\r\n\r\n",
-		request,
-		GAME_VERSION,
-		GAMEVERSION,
-		g_httpToken.string,
-		sv_hostname.string,
-		strlen(cmd->cmd) + 8,
-		host		
-		);
-
-	// Send Header
-	_SEND(sock, header);
-
-	// Data	
-	_SEND(sock, va("cmd=%s\r\n", cmd->cmd));
-	
-	// Null it...
-	_SEND(sock, "\r\n\r\n");
-	
-	// Receive the reply
-	chars = 0;
-	done = 0;
-	while (!done)
-	{
-		l = recv(sock, buffer, 1, 0);
-
-		if (WSAGetLastError() != 0) {
-			AP(va("Error: %s", WSAGetLastError()));
-		}
-
-		if (l < 0) {
-			done = 1;
-		}
-
-		switch (*buffer)
-		{
-		case '\r':
-			break;
-		case '\n':
-			if (chars == 0) {
-				done = 1;
-			}
-			chars = 0;
-			break;
-		default:
-			chars++;
-			break;
-		}
-	}
-
-	do
-	{
-		l = recv(sock, buffer, sizeof(buffer)-1, 0);
-		if (l < 0) {
-			break;
-		}
-		*(buffer + l) = 0;
-
-		if (strlen(buffer) > 0)
-			AP(va("chat \"Reply: %s\n\"", buffer));
-
-	} while (l > 0);	
-
-	closesocket(sock);
-
-	AP("print \"Freeing memory\n\"");
-	free(cmd);
-
-	AP("print \"Thread Destroyed\n\"");
-	return 0;
-}
-*/
-

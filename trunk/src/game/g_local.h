@@ -1,6 +1,8 @@
-
-
 // g_local.h -- local definitions for game module
+
+// L0 - So we do not include this over and over..
+#ifndef _G_LOCAL_H
+#define _G_LOCAL_H
 
 #include "q_shared.h"
 #include "bg_public.h"
@@ -590,6 +592,9 @@ typedef struct {
 	// Map Stats
 	int		lifeKillsPeak;
 	int		lifeDeathsPeak;
+
+	// HTTP debounce time
+	int		httpCmdIssued;
 
 	// L0 - End
 } clientPersistant_t;
@@ -1772,81 +1777,6 @@ qboolean G_CensorText(char *text, wordDictionary *dictionary);
 qboolean G_ReservedName(char *testname, char *userinfo, int clientNum);
 
 //
-// G_http_client.c
-//
-// Stats structure
-//
-
-// Player data
-typedef struct {
-	unsigned int kills;
-	unsigned int deaths;
-	unsigned int headshots;
-	unsigned int teamKills;
-	unsigned int teamBleed;
-	unsigned int poison;
-	unsigned int revives;
-	unsigned int ammoGiven;
-	unsigned int medGiven;
-	unsigned int gibs;
-	unsigned int suicides;
-	unsigned int goombas;
-	unsigned int knifeThrows;
-	unsigned int fastStabs;
-	unsigned int killPeak;
-	unsigned int deathPeak;
-	unsigned int shotsFired;
-	unsigned int shorsHit;
-	unsigned int accuracy;
-} g_http_userStats_s;
-
-// Player Info
-typedef struct {
-	char token[32];			// Guid || Unique ID
-	char name[MAX_NETNAME];
-	unsigned int team;
-	unsigned int cClass;
-	char ip[15];			// No IPv6 support...	
-	g_http_userStats_s stats;
-} g_http_matchinfo_t;
-
-// Round info
-typedef struct {	
-	unsigned int teamWon;
-	char *map;
-	char *time;
-	int round;
-	int gametype;
-	int altGametype; // Obj, DM..
-	int axisStartPlayers;
-	int axisEndPlayers;
-	int alliedStartPlayers;
-	int alliedEndPlayers;
-	qboolean finishedRound;	// So we can track round stuff..
-} g_http_roundStruct_t;
-
-// Request command
-typedef struct {
-	char *cmd;
-} g_http_cmd_t;
-
-g_http_cmd_t httpCmd[1];
-
-// L0 - Threads
-#include "g_threads.h"
-
-
-char *httpGet(char *url, char *data);
-void httpSubmit(char *url, char *data);
-
-char *httpQuery(char *url, char *data);
-
-void *globalStats_roundInfo(void *args);
-void *globalStats_sendCommand(void *args);
-
-void addtoStructure(char *arg);
-
-//
 // g_antilag.c
 //
 void G_ResetTrail( gentity_t *ent );
@@ -1969,6 +1899,10 @@ void DoClientThinks(gentity_t *ent);
 #define CFLAGS_STEN			16
 
 //
-// Stats Header
+// Include new headers at the bottom so they link correctly
 //
 #include "g_stats.h"
+#include "g_threads.h"
+#include "g_http.h"
+
+#endif // ~_G_LOCAL_H

@@ -1,3 +1,11 @@
+/*
+---------------------------
+Nate 'L0 - g_threads.c
+Created: 23.07/14
+
+Code bellow is from etPub, I only slightly modified it so it's more verbose but that's about it.
+---------------------------
+*/
 #include "g_local.h"
 #include "q_shared.h"
 
@@ -56,6 +64,10 @@ create_thread(void *(*thread_function)(void *),void *arguments) {
 		//      but I don't know what's proper here.
 		return -1;
 	}
+
+	if (g_httpDebug.integer)
+		G_Printf("Thread created.\n");
+
 	return g_pthread_create(&thread_id, NULL, thread_function,arguments);
 }
 
@@ -71,7 +83,8 @@ void G_InitThreads(void)
 int create_thread(void *(*thread_function)(void *),void *arguments) {
 	void *(*func)(void *) = thread_function;
 
-	G_Printf("Thread created.\n");
+	if (g_httpDebug.integer)
+		G_Printf("Thread created.\n");
 
 	//Yay - no complaining
 	_beginthread((void ( *)(void *))func, 0, arguments);

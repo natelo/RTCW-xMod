@@ -1,3 +1,9 @@
+/*
+---------------------------
+Nate 'L0 - g_threads.h
+Created: 23.07/14
+---------------------------
+*/
 #ifndef _G_THREADS_H
 #define _G_THREADS_H
 

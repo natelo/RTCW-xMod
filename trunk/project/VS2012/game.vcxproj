@@ -186,6 +186,7 @@
     <ClCompile Include="..\..\src\game\g_cmds.c" />
     <ClCompile Include="..\..\src\game\g_combat.c" />
     <ClCompile Include="..\..\src\game\g_http.c" />
+    <ClCompile Include="..\..\src\game\g_http_cmds.c" />
     <ClCompile Include="..\..\src\game\g_http_stats.c" />
     <ClCompile Include="..\..\src\game\g_items.c" />
     <ClCompile Include="..\..\src\game\g_main.c" />
@@ -242,7 +243,6 @@
     <ClInclude Include="..\..\src\game\bg_public.h" />
     <ClInclude Include="..\..\src\game\botlib.h" />
     <ClInclude Include="..\..\src\game\g_http.h" />
-    <ClInclude Include="..\..\src\game\g_http_stats.h" />
     <ClInclude Include="..\..\src\game\g_local.h" />
     <ClInclude Include="..\..\src\game\g_public.h" />
     <ClInclude Include="..\..\src\game\g_stats.h" />

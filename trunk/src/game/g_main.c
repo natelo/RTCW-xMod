@@ -2349,12 +2349,14 @@ void LogExit( const char *string ) {
 	// -NERVE - SMF
 
 	// L0 - Global Stats
-	//if (/*g_httpToken.string &&*/ g_httpStatsUrl.string) 
-	{		
+	if (g_httpStatsUrl.string) 
+	{	
+		/*
 		g_http_roundStruct_t *post_roundinfo = (g_http_roundStruct_t *)malloc(sizeof(g_http_roundStruct_t));
 
 		// Fire a packet..
 		create_thread(globalStats_roundInfo, (void*)post_roundinfo);
+		*/
 	}
 }
 

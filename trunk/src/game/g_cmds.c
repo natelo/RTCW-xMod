@@ -3025,31 +3025,14 @@ void ClientCommand( int clientNum ) {
 		return;
 	}
 
+// L0 - HTTP
 	if (Q_stricmp(cmd, "getstats") == 0) {
-		//char *msg;
-
-		//g_http_roundStruct_t *post_roundinfo = (g_http_roundStruct_t *)malloc(sizeof(g_http_roundStruct_t));
-		// Fire a packet..
-		//create_thread(globalStats_roundInfo, (void*)post_roundinfo);
-
-		
-		//httpCmd->cmd = va("%s", cmd);
-		//Q_strncpyz(httpCmd->cmd, cmd, sizeof(httpCmd->cmd));
-		//create_thread(globalStats_sendCommand, cmd);
-
-		g_http_cmd_t *post_cmd = (g_http_cmd_t*)malloc(sizeof(g_http_cmd_t));
-
-		post_cmd->cmd = va("%s", cmd);
-
-		create_thread(globalStats_sendCommand, (void*)post_cmd);
-
-		//httpGet(g_httpStatsAPI.string, cmd);
-		//AP(va("chat \"Reply: %s\n\"", msg ));
-
+		http_clientCommand(ent, HTTP_QUERYCOMMAND, qfalse);
 		return;
 	}
+// ~End HTTP
 
-	if (Q_stricmp (cmd, "give") == 0)
+	else if (Q_stricmp (cmd, "give") == 0)
 		Cmd_Give_f (ent);
 	else if (Q_stricmp (cmd, "god") == 0)
 		Cmd_God_f (ent);
