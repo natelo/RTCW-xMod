@@ -109,6 +109,16 @@ qboolean isHttpCommand(gentity_t *ent, char *cmd1, char *cmd2, char *cmd3) {
 	char alt[128];
 	char cmd[128];
 
+	// Bail out if stuff is not set..
+	if (_CMD(g_httpStatsUrl.string, "") ||
+		_CMD(g_httpStatsAPI.string, "") || 
+		_CMD(g_httpToken.string, "") || 
+		_CMD(g_httpToken.string, "none")) 
+	{
+		CP("print \"^3INFO^7: WebStats are either mis-configured or disabled on this server..\n");
+		return qtrue;
+	}
+
 	// Do not allow any web commands right before restart..
 	//
 	// XXX: Trying to figure out if it's the PB 
