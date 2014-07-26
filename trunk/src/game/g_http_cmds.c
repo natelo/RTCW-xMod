@@ -109,8 +109,15 @@ qboolean isHttpCommand(gentity_t *ent, char *cmd1, char *cmd2, char *cmd3) {
 	char alt[128];
 	char cmd[128];
 
-	parseCmds(cmd1, alt, cmd, qfalse);
+	// Do not allow any web commands right before restart..
+	//
+	// XXX: Trying to figure out if it's the PB 
+	// crashing it randomly or is it a thread related issue..
+	if (level.warmupTime && level.time > level.warmupTime - 2400) {
+		return qtrue;
+	}
 
+	parseCmds(cmd1, alt, cmd, qfalse);
 	if (_CMD(cmd, HTTP_CLIENT_STATS))
 	{
 		http_clientCommand(ent, HTTP_CLIENT_STATS, qtrue);
