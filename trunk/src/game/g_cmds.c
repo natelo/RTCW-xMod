@@ -1264,27 +1264,27 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	   return;
 	}
 
+	// HTTP Stats come before anything	
+	if (text[0] == '!' || text[0] == '?') {
+		ParseAdmStr(text, cmd1, arg);
+		ParseAdmStr(arg, cmd2, cmd3);
+
+		if (isHttpCommand(ent, va("%s", cmd1), va("%s", cmd2), va("%s", cmd3)))
+			return;
+	}	
+
 	// Admin commands
 	if ( !ent->client->sess.admin == ADM_NONE ) {
 		// Command
-		if ( text[0] == '!' ){
+		if (text[0] == '!' || text[0] == '?'){
 			ParseAdmStr(text, cmd1, arg);	
 			ParseAdmStr(arg, cmd2, cmd3);
 			Q_strncpyz ( ent->client->pers.cmd1, cmd1, sizeof( ent->client->pers.cmd1 ) );
 			Q_strncpyz ( ent->client->pers.cmd2, cmd2, sizeof( ent->client->pers.cmd2 ) );
 			Q_strncpyz ( ent->client->pers.cmd3, cmd3, sizeof( ent->client->pers.cmd3 ) );
-			cmds_admin("!", ent);
 
-			return;
-		// Help
-		} else if ( text[0] == '?' ){
-			ParseAdmStr(text, cmd1, arg);	
-			ParseAdmStr(arg, cmd2, cmd3);
-			Q_strncpyz ( ent->client->pers.cmd1, cmd1, sizeof( ent->client->pers.cmd1 ) );
-			Q_strncpyz ( ent->client->pers.cmd2, cmd2, sizeof( ent->client->pers.cmd2 ) );
-			Q_strncpyz ( ent->client->pers.cmd3, cmd3, sizeof( ent->client->pers.cmd3 ) );
-			cmds_admin("?", ent);
-
+			// Sort Command | Help
+			cmds_admin(((text[0] != '?') ? "!" : "?"), ent);
 			return;
 		}
 	}  
@@ -3024,13 +3024,6 @@ void ClientCommand( int clientNum ) {
 //		Cmd_Say_f (ent, qfalse, qtrue);			// NERVE - SMF - we don't want to spam the clients with this.
 		return;
 	}
-
-// L0 - HTTP
-	if (Q_stricmp(cmd, "getstats") == 0) {
-		http_clientCommand(ent, HTTP_QUERYCOMMAND, qfalse);
-		return;
-	}
-// ~End HTTP
 
 	else if (Q_stricmp (cmd, "give") == 0)
 		Cmd_Give_f (ent);

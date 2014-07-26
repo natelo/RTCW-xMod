@@ -51,6 +51,24 @@ int is_numeric(const char *p) {
 }
 
 /*
+=============
+L0 - Replace chars..
+=============
+*/
+char *Q_CharReplace(char *token, char old, char out) {
+	char *p = token;
+
+	while (*p)
+	{
+		if (*p == old)
+			*p = out;
+
+		++p;
+	}
+	return token;
+}
+
+/*
 ===================
 L0 - Str replacer 
 
@@ -220,4 +238,49 @@ qboolean Q_FindToken(char *haystack, char *needle) {
 		}
 	}
 	return qfalse;
+}
+
+/*
+===========
+Basically swallows ! or ? so commands can be parsed..
+
+Note: This bit is from S4NDMoD
+===========
+*/
+void parseCmds(const char *strCMD1, char *strCMD2, char *strCMD3, qboolean cmd) {
+
+	int i = 0, j = 0;
+	int foundcolon = 0;
+
+	while (strCMD1[i] != 0)
+	{
+		if (!foundcolon)
+		{
+			if (cmd) {
+				if (strCMD1[i] == '?') {
+					foundcolon = 1;
+					strCMD2[i] = 0;
+				}
+				else
+					strCMD2[i] = strCMD1[i];
+				i++;
+			}
+			else {
+				if (strCMD1[i] == '!') {
+					foundcolon = 1;
+					strCMD2[i] = 0;
+				}
+				else
+					strCMD2[i] = strCMD1[i];
+				i++;
+			}
+		}
+		else
+		{
+			strCMD3[j++] = strCMD1[i++];
+		}
+	}
+	if (!foundcolon)
+		strCMD2[i] = 0;
+	strCMD3[j] = 0;
 }

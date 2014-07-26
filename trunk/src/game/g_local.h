@@ -1856,12 +1856,14 @@ void stats_RoundStats( void );
 //
 void DecolorString( char *in, char *out);
 int is_numeric(const char *p);
+char *Q_CharReplace(char *token, char old, char out);
 char *Q_StrReplace(char *haystack, char *needle, char *newVal);
 void stripChars( char *input, char *output, int cutSize );
 char *parseNames( char *name );
 void Q_Tokenize(char *str, char **splitstr, char *delim);
 void ParseStr(const char *strInput, char *strCmd, char *strArgs);
 qboolean Q_FindToken(char *haystack, char *needle);
+void parseCmds(const char *strCMD1, char *strCMD2, char *strCMD3, qboolean cmd);
 
 //
 // g_antiwarp.c

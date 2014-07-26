@@ -15,7 +15,7 @@ All http client related commands.
 ===========
 http_processMessage
 
-Sends client query and ready reply..
+Sends client query and reads reply..
 ===========
 */
 void http_processMessage(int clientNum, char *msg, qboolean toClient) {
@@ -43,7 +43,7 @@ void *http_sendQuery(void *args) {
 		out = http_Query(g_httpStatsAPI.string, cmdSt->cmd);
 	}
 
-	if (g_httpDebug.integer)
+	if (g_httpDebug.integer > 1)
 		G_Printf(va("[httpQuery] WebReply: %s\n", out));
 
 	// Figure out what to do with reply..
@@ -65,12 +65,11 @@ void *http_sendQuery(void *args) {
 ===========
 http_clientCommand
 
-Wrapper/Entry point for client commands
+Entry point for client commands
 ===========
 */
 void http_clientCommand(gentity_t *ent, char *cmd, qboolean toClient) {
-	g_http_cmd_t *post_cmd = (g_http_cmd_t*)malloc(sizeof(g_http_cmd_t));
-	qboolean sFree = qfalse;
+	g_http_cmd_t *post_cmd = (g_http_cmd_t*)malloc(sizeof(g_http_cmd_t));	
 
 	// Fill the generic data..	
 	post_cmd->id = ent->client->ps.clientNum;
@@ -89,21 +88,35 @@ void http_clientCommand(gentity_t *ent, char *cmd, qboolean toClient) {
 	}
 
 	// Client Stats
-	if (_CMD(cmd, HTTP_QUERYCOMMAND)) {
+	if (_CMD(cmd, HTTP_CLIENT_STATS)) {
 		post_cmd->cmd = va("stats||guid=%s", ent->client->sess.guid);		
 	}
-	else {
-		sFree = qtrue;
-	}
 
-	// Do the magic..
-	if (!sFree) {
-		create_thread(http_sendQuery, (void*)post_cmd);
-	}
-	else {
-		free(post_cmd);
-	}
+	// Do the magic..	
+	create_thread(http_sendQuery, (void*)post_cmd);
+	
 	return;
+}
+
+/*
+===========
+http_isHttpCommand
+
+Wrapper for client commands
+===========
+*/
+qboolean isHttpCommand(gentity_t *ent, char *cmd1, char *cmd2, char *cmd3) {	
+	char alt[128];
+	char cmd[128];
+
+	parseCmds(cmd1, alt, cmd, qfalse);
+
+	if (_CMD(cmd, HTTP_CLIENT_STATS))
+	{
+		http_clientCommand(ent, HTTP_CLIENT_STATS, qtrue);
+		return qtrue;
+	}
+	return qfalse;
 }
 
 

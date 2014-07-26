@@ -234,48 +234,6 @@ return index;
 
 /*
 ===========
-Deals with ! & ?
-===========
-*/
-void admCmds(const char *strCMD1, char *strCMD2, char *strCMD3, qboolean cmd){
-	
-	int i = 0, j=0;
-	int foundcolon=0;
-	
-	while(strCMD1[i] != 0)
-	{
-		if(!foundcolon)
-		{	
-			if (cmd) {
-				if(strCMD1[i] == '?') {
-					foundcolon = 1;
-					strCMD2[i]=0;
-				}
-				else
-					strCMD2[i]=strCMD1[i];
-				i++;
-			} else {
-				if(strCMD1[i] == '!') {
-					foundcolon = 1;
-					strCMD2[i]=0;
-				}
-				else
-					strCMD2[i]=strCMD1[i];
-				i++;
-			}
-		}
-		else
-		{
-			strCMD3[j++]=strCMD1[i++];
-		}
-	}
-	if(!foundcolon)
-		strCMD2[i]=0;
-	strCMD3[j]=0;
-}
-
-/*
-===========
 Parse string (if I recall right this bit is from S4NDMoD)
 ===========
 */
@@ -342,7 +300,7 @@ void cantUse(gentity_t *ent) {
 	char alt[128];
 	char cmd[128];
 
-	admCmds(ent->client->pers.cmd1, alt, cmd, qfalse);
+	parseCmds(ent->client->pers.cmd1, alt, cmd, qfalse);
 	
 	CP(va("print \"Command ^3%s ^7is not allowed for your level^3!\n\"", cmd));
 return;
@@ -383,7 +341,7 @@ qboolean canUse(gentity_t *ent, qboolean isCmd) {
 		break;			
 	}
 
-	admCmds(ent->client->pers.cmd1, alt, cmd, qfalse);
+	parseCmds(ent->client->pers.cmd1, alt, cmd, qfalse);
 			
 	if (strlen(permission)) {
 		parse = permission;
@@ -1889,7 +1847,7 @@ qboolean do_cmds(gentity_t *ent) {
 	char alt[128];
 	char cmd[128];
 
-	admCmds(ent->client->pers.cmd1, alt, cmd, qfalse);
+	parseCmds(ent->client->pers.cmd1, alt, cmd, qfalse);
 
 	if (!strcmp(cmd,"incognito"))			{ if (canUse(ent, qtrue)) cmd_incognito(ent); else cantUse(ent);	return qtrue;}
 	else if (!strcmp(cmd,"list_cmds"))		{ cmd_listCmds(ent);	return qtrue;}
@@ -2026,7 +1984,7 @@ qboolean do_help(gentity_t *ent) {
 	const helpCmd_reference_t *hCM;
 	qboolean wasUsed=qfalse;
 
-	admCmds(ent->client->pers.cmd1, alt, cmd, qtrue);
+	parseCmds(ent->client->pers.cmd1, alt, cmd, qtrue);
 
 	for ( i = 0; i < aHelp; i++ ) {
 		hCM = &helpInfo[i];
