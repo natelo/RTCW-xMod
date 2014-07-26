@@ -382,6 +382,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		AP(va("print \"%s ^6was scared to death by ^7%s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname));
 		self->client->pers.chicken++;
 		write_RoundStats(self->client->pers.netname, self->client->pers.chicken, ROUND_CHICKEN);
+		GLOBALSTATS(self, GLOBAL_CHICKEN, self->client->pers.chicken);
 
 		// Give props to attacker
 		attacker->client->pers.kills++;

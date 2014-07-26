@@ -44,13 +44,13 @@ Hold declarations and structures of all the HTTP related functionality..
 #define GLOBAL_ASCALLED		27
 #define GLOBAL_ASTHROWN		28
 #define GLOBAL_SCORE		29
-#define GLOBAL_LIMIT		30
+#define GLOBAL_CHICKEN		30
+#define GLOBAL_LIMIT		31
 
 //
 //	Game Stats
 //
 typedef struct {
-	int type;
 	int value;
 } g_http_userUniqueStats_s;
 
@@ -58,7 +58,7 @@ typedef struct {
 // Killer stats
 //
 typedef struct {
-	char id[32];
+	char id[PB_GUID_LENGTH];
 	int	count;
 	int weapon;
 } g_http_userVictims_s;
@@ -67,7 +67,7 @@ typedef struct {
 // Victim stats
 //
 typedef struct {
-	char id[32];
+	char id[PB_GUID_LENGTH];
 	int count;
 	int weapon;
 } g_http_userKillers_s;
@@ -76,15 +76,17 @@ typedef struct {
 // Individual Player Info structure
 //
 typedef struct {
-	char token[32];			// Guid || Unique ID
+	char id[PB_GUID_LENGTH];
 	char name[MAX_NETNAME];
-	unsigned int team;
-	unsigned int cClass;
 	char ip[15];			// No IPv6 support...	
 	g_http_userUniqueStats_s stats[GLOBAL_LIMIT];
-	g_http_userVictims_s hasKilled;
-	g_http_userKillers_s wasKilled;
-} g_http_matchinfo_t;
+} g_http_userInfo_t;
+
+// h_http_userInfo Structure limit
+//
+// Theoretical limit.. /64 players with 32 leaving/joining during a round..
+// Should be more then enough for game..most servers are empty anyway..
+#define HTTP_USERINFO_LIMIT	96
 
 //
 // Round info structure
@@ -101,7 +103,7 @@ typedef struct {
 	int alliedStartPlayers;
 	int alliedEndPlayers;
 	qboolean finishedRound;	// If round is cut short..
-} g_http_roundStruct_t;
+} g_http_roundInfo_t;
 
 //
 // Client commands structure
@@ -121,7 +123,12 @@ char *http_Query(char *url, char *data);
 //
 // g_http_stats.c
 //
-void *globalStats_roundInfo(void *args);
+void write_globalUserStats(gentity_t *ent, int type, int value);
+
+void listStructure(void);
+
+// HTTP Stats Macros so it's easier to track stuff..
+#define GLOBALSTATS(x,y,z) write_globalUserStats(x, y, z)
 
 //
 // g_http_cmds.c
