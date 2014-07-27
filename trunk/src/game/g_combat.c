@@ -297,14 +297,15 @@ char	*modNames[] = {
 	"MOD_LOPER_HIT",
 // JPW NERVE
 
-// L0 - Hacks for MODs
-	"MOD_ADMKILL",		// Slapped to death || killed by admin
+// L0 - New MODs
+	"MOD_ADMIN",		// Slapped to death || killed by admin
 	"MOD_SELFKILL",		// Suicide (not gib!)
-	"MOD_THROWKNIFE",	// Killed by knife throw
+	"MOD_KNIFETHROW",	// Killed by knife throw
 	"MOD_CHICKEN",		// Funny print when player self kills to avoid being killed
-	"MOD_POISONDMED",	// Killed by poison
+	"MOD_POISONED",	// Killed by poison
 	"MOD_GOOMBA",		// Killed by some1 landing on his head..
 	"MOD_ARTILLERY",	// Air Strike - FFE
+	"MOD_SWITCHTEAM",	// So it's not counted under suicides..
 // End
 	"MOD_BAT"
 };
@@ -376,8 +377,8 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		write_globalKillList(self, attacker);
 	}
 
-// L0 - Hacks for custom MOD's
-	if ( meansOfDeath == MOD_ADMKILL && g_gamestate.integer == GS_PLAYING) {
+// L0 - Hacks for custom MOD's (too lazy to move to g_hacks.c - TODO)
+	if ( meansOfDeath == MOD_ADMIN && g_gamestate.integer == GS_PLAYING) {
 		AP(va("print \"%s ^7was killed by Admin.\n\"", self->client->pers.netname));
 	}
 
@@ -390,7 +391,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			AP(va("print \"%s ^7commited suicide.\n\"", self->client->pers.netname));
 	}
 
-	if ( meansOfDeath == MOD_THROWKNIFE && g_gamestate.integer == GS_PLAYING) {
+	if ( meansOfDeath == MOD_KNIFETHROW && g_gamestate.integer == GS_PLAYING) {
 		AP(va("print \"%s ^7was impaled by %s^7s throwing knife.\n\"", self->client->pers.netname, attacker->client->pers.netname));
 		attacker->client->pers.knifeKills++;	
 		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.knifeKills, ROUND_KNIFETHROW);
@@ -430,7 +431,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.fastStabs, ROUND_FASTSTABS);
 	}  
 
-	if ( meansOfDeath == MOD_POISONDMED && g_gamestate.integer == GS_PLAYING)  {
+	if ( meansOfDeath == MOD_POISONED && g_gamestate.integer == GS_PLAYING)  {
 		int r = rand() %2; 
 		
 		if (r == 0)
@@ -510,25 +511,14 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
 
 	// L0 - (a nasty hack) Don't send this if there's a custom MOD
-	if (meansOfDeath != MOD_ADMKILL) { 
-	if (meansOfDeath != MOD_SELFKILL ) {
-	if (meansOfDeath != MOD_THROWKNIFE) {
-	if (meansOfDeath != MOD_CHICKEN) {
-	if (meansOfDeath != MOD_POISONDMED) {
-	if (meansOfDeath != MOD_ARTILLERY) {
-
+	if (!isCustomMOD(meansOfDeath) && g_gamestate.integer == GS_PLAYING) {
 		// broadcast the death event to everyone
-		// L0 - Don't bother in warmup..
-		if (g_gamestate.integer == GS_PLAYING)
-		{
-			ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY );
-			ent->s.eventParm = meansOfDeath;
-			ent->s.otherEntityNum = self->s.number;
-			ent->s.otherEntityNum2 = killer;
-			ent->r.svFlags = SVF_BROADCAST;	// send to everyone
-		}
-
-	}}}}}}
+		ent = G_TempEntity(self->r.currentOrigin, EV_OBITUARY);
+		ent->s.eventParm = meansOfDeath;
+		ent->s.otherEntityNum = self->s.number;
+		ent->s.otherEntityNum2 = killer;
+		ent->r.svFlags = SVF_BROADCAST;	// send to everyone
+	}
 
 	self->enemy = attacker;
 

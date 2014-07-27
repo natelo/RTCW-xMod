@@ -529,9 +529,9 @@ void cmd_slap(gentity_t *ent)
 	ent = &g_entities[clientid];
 
 	if (ent->client->ps.stats[STAT_HEALTH] <= 20) {
-		G_Damage(ent, NULL, NULL, NULL, NULL, damagetodo, DAMAGE_NO_PROTECTION, MOD_ADMKILL);		
+		G_Damage(ent, NULL, NULL, NULL, NULL, damagetodo, DAMAGE_NO_PROTECTION, MOD_ADMIN);		
 		AP(va("chat \"console:^7 %s ^7was slapped to death by %s^3!\n\"", ent->client->pers.netname, tag));
-		player_die( ent, ent, ent, 100000, MOD_ADMKILL );
+		player_die( ent, ent, ent, 100000, MOD_ADMIN );
 	
 		// Log it
 		log2 =va("%s to death player %s.", log, ent->client->pers.netname);
@@ -540,7 +540,7 @@ void cmd_slap(gentity_t *ent)
 
 		return;
 	} else {
-		G_Damage(ent, NULL, NULL, NULL, NULL, damagetodo, DAMAGE_NO_PROTECTION, MOD_ADMKILL);		
+		G_Damage(ent, NULL, NULL, NULL, NULL, damagetodo, DAMAGE_NO_PROTECTION, MOD_ADMIN);		
 		AP(va("chat \"console:^7 %s ^7was slapped by %s^3!\n\"", ent->client->pers.netname, tag));
 		// it's broadcasted globaly but only to near by players	
 		G_AddEvent(ent, EV_GENERAL_SOUND, G_SoundIndex("sound/multiplayer/vo_revive.wav")); // L0 - TODO: Add sound in pack...
@@ -597,9 +597,9 @@ void cmd_kill(gentity_t *ent)
 	}
 	
 	ent = &g_entities[clientid];
-	G_Damage(ent, NULL, NULL, NULL, NULL, damagetodo, DAMAGE_NO_PROTECTION, MOD_ADMKILL);	
+	G_Damage(ent, NULL, NULL, NULL, NULL, damagetodo, DAMAGE_NO_PROTECTION, MOD_ADMIN);	
 	AP(va("chat \"console:^7 %s ^7was killed by %s^3!\n\"", ent->client->pers.netname, tag));
-	player_die( ent, ent, ent, 100000, MOD_ADMKILL );
+	player_die( ent, ent, ent, 100000, MOD_ADMIN );
 	
 	// Log it
 	log2 =va("%s user %s.", log, ent->client->pers.netname);

@@ -62,7 +62,7 @@ void Touch_Knife( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 			}
 
 			G_Sound( other, sound );  
-			G_Damage( other, ent->parent, ent->parent, NULL, trace->endpos, damage, 0, MOD_THROWKNIFE ); 
+			G_Damage( other, ent->parent, ent->parent, NULL, trace->endpos, damage, 0, MOD_KNIFETHROW ); 
 			hurt = qtrue;
 		}
 	}

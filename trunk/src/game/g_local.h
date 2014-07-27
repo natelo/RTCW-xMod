@@ -1893,6 +1893,11 @@ void etpro_AddUsercmd(int clientNum, usercmd_t *cmd);
 void DoClientThinks(gentity_t *ent);
 
 //
+// g_hacks.c
+//
+qboolean isCustomMOD(meansOfDeath_t mod);
+
+//
 // Logs
 //
 #define ADMLOG "./logs/adminLogins.log"

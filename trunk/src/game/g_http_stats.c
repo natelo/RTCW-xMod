@@ -1,3 +1,12 @@
+/*
+===========================================================================
+L0 - g_http_stats.c
+All essential WebStats functionality resides here.
+
+Created: 23.07 / 14
+Last Updated: 28.07 / 14
+===========================================================================
+*/
 #include "g_local.h"
 
 //
@@ -181,13 +190,13 @@ statsMODs MODtoStats(meansOfDeath_t mod) {
 			return STATS_KNIFE;
 		case MOD_KNIFE_STEALTH:
 			return STATS_KNIFESTEALTH;
-		case MOD_THROWKNIFE:
+		case MOD_KNIFETHROW:
 			return STATS_KNIFETHROW;
 		case MOD_AIRSTRIKE:
 			return STATS_AIRSTRIKE;
 		case MOD_ARTILLERY:
 			return STATS_ARTILLERY;
-		case MOD_POISONDMED:
+		case MOD_POISONED:
 			return STATS_POISON;
 		case MOD_GOOMBA:
 			return STATS_GOOMBA;
@@ -205,7 +214,7 @@ statsMODs MODtoStats(meansOfDeath_t mod) {
 			return STATS_WORLD;
 		case MOD_CRUSH:
 			return STATS_WORLD;
-		case MOD_ADMKILL:
+		case MOD_ADMIN:
 			return STATS_ADMIN;			
 		default:
 			return STATS_MAX;
