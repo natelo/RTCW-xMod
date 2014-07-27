@@ -123,14 +123,7 @@ Prints who done first headshots when round starts.
 void stats_FirstHeadshot(gentity_t *attacker, gentity_t *targ) {
 	qboolean 	onSameTeam = OnSameTeam( targ, attacker);
 
-	// Global Stats
-	if (g_gamestate.integer == GS_PLAYING)	{
-		
-		Q_strncpyz(level.firstHeadshotAttacker, attacker->client->sess.guid, sizeof(level.firstHeadshotAttacker));
-		Q_strncpyz(level.firstHeadshotVictim, targ->client->sess.guid, sizeof(level.firstHeadshotVictim));
-	}
-
-	if (g_showFirstHeadshot.integer && g_gamestate.integer == GS_PLAYING) {
+	if (g_gamestate.integer == GS_PLAYING) {
 
 		if ( !firstheadshot &&
 			targ &&
@@ -143,8 +136,16 @@ void stats_FirstHeadshot(gentity_t *attacker, gentity_t *targ) {
 			g_gamestate.integer == GS_PLAYING &&
 			!onSameTeam )
 		{
-			AP(va("chat \"%s ^7blew out %s^7's brains with the ^3FIRST HEAD SHOT^7!\"", attacker->client->pers.netname, targ->client->pers.netname));
-			APS("xmod/sound/game/events/headshot.wav");				
+			if (g_showFirstHeadshot.integer) {
+				AP(va("chat \"%s ^7blew out %s^7's brains with the ^3FIRST HEAD SHOT^7!\"", attacker->client->pers.netname, targ->client->pers.netname));
+				APS("xmod/sound/game/events/headshot.wav");	
+			}
+
+			// Global Stats
+			Q_strncpyz(level.firstHeadshotAttacker, attacker->client->sess.guid, sizeof(level.firstHeadshotAttacker));
+			Q_strncpyz(level.firstHeadshotVictim, targ->client->sess.guid, sizeof(level.firstHeadshotVictim));
+
+			// Mark it
 			firstheadshot = qtrue;
 		}
 	}
@@ -162,16 +163,9 @@ NOTE: Atm it's only a print..once I'm not lazy I'll set it in a way it can decid
 void stats_FirstBlood(gentity_t *self, gentity_t *attacker) {
 	qboolean 	onSameTeam = OnSameTeam( self, attacker); 
 
-	// Global Stats
-	if (g_gamestate.integer == GS_PLAYING)	{
+	if (g_gamestate.integer == GS_PLAYING) {
 
-		Q_strncpyz(level.firstBloodAttacker, attacker->client->sess.guid, sizeof(level.firstBloodAttacker));
-		Q_strncpyz(level.firstBloodVictim, self->client->sess.guid, sizeof(level.firstBloodVictim));
-	}
-
-	if (g_showFirstBlood.integer && g_gamestate.integer == GS_PLAYING) {
-
-		if (! firstblood &&
+		if (!firstblood &&
 			self &&
 			self->client &&
 			attacker &&
@@ -182,8 +176,16 @@ void stats_FirstBlood(gentity_t *self, gentity_t *attacker) {
 			g_gamestate.integer == GS_PLAYING &&
 			!onSameTeam)
 		{	
-			AP(va("chat \"%s ^7drew ^1FIRST BLOOD ^7from ^7%s^1!\"", attacker->client->pers.netname, self->client->pers.netname));
-			APS("xmod/sound/game/events/firstblood.wav");
+			if (g_showFirstBlood.integer) {
+				AP(va("chat \"%s ^7drew ^1FIRST BLOOD ^7from ^7%s^1!\"", attacker->client->pers.netname, self->client->pers.netname));
+				APS("xmod/sound/game/events/firstblood.wav");				
+			}
+			
+			// Global Stats
+			Q_strncpyz(level.firstBloodAttacker, attacker->client->sess.guid, sizeof(level.firstBloodAttacker));
+			Q_strncpyz(level.firstBloodVictim, self->client->sess.guid, sizeof(level.firstBloodVictim));
+
+			// Mark it
 			firstblood = qtrue;
 		}
 	}
