@@ -33,7 +33,18 @@ void write_globalUserStats(gentity_t *ent, int type, int value) {
 	}
 }
 
-void write_globalMODS(gentity_t *attacker, gentity_t *target, int weapon) {
+
+void write_globalMODS(gentity_t *victim, gentity_t *attacker, int weapon) {
+
+	if (!g_httpStatsUrl.string ||
+		!Q_stricmp(g_httpStatsAPI.string, "") ||
+		!g_httpToken.string ||
+		!Q_stricmp(g_httpToken.string, "none") ||
+		(!g_gamestate.integer == GS_PLAYING))
+	{
+		return;
+	}
+
 
 }
 

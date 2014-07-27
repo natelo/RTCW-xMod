@@ -12,6 +12,9 @@ Hold declarations and structures of all the HTTP related functionality..
 // HTTP Commands for invoking functionality thru a wrapper
 #define HTTP_CLIENT_STATS	"stats"
 
+// h_http_userInfo Structure limit
+#define HTTP_USERINFO_LIMIT	64
+
 //
 // Stats types
 //
@@ -44,23 +47,37 @@ Hold declarations and structures of all the HTTP related functionality..
 #define GLOBAL_CHICKEN		26 // x
 #define GLOBAL_LIMIT		27
 
-//
-// Killer stats
-//
-typedef struct {
-	int slot;
-	int	count;
-	int weapon;
-} g_http_userVictims_s;
+/*
+	Basically:
 
-//
-// Victim stats
-//
+	client = Slot
+	client->killer 
+				- Slot
+				- Weapon
+						- Type
+						- Count
+						- Headshots
+*/
+
+
+
 typedef struct {
-	int slot;
-	int count;
 	int weapon;
-} g_http_userKillers_s;
+	int count;	
+	int headshots;
+} g_http_weapons_t;
+
+typedef struct {
+	int id;
+	char guid[PB_GUID_LENGTH + 1];
+	g_http_weapons_t weapon[MAX_WEAPONS];
+} g_http_killerID_t;
+
+struct g_http_MOD_s {
+	int id;
+	char guid[PB_GUID_LENGTH + 1];
+	g_http_killerID_t killer[HTTP_USERINFO_LIMIT];
+};
 
 //
 //	Game Stats
@@ -80,9 +97,6 @@ struct g_http_userInfo_s {
 	int uClass;
 	g_http_userUniqueStats_s stats[GLOBAL_LIMIT];	
 };
-
-// h_http_userInfo Structure limit
-#define HTTP_USERINFO_LIMIT	64
 
 //
 // Round info structure
