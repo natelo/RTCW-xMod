@@ -885,7 +885,7 @@ void Cmd_help(gentity_t *ent) {
 		CP("print \"^3Developer:     ^7Nate 'L0\n\"");
 		CP("print \"^3Forums:        ^7http://rtcwx.com\n\"");
 		CP("print \"^3Contact:       ^7nate.afk@gmail.com\n\"");
-		CP("print \"^3Source code:   ^7Available per request\n\"");
+		//CP("print \"^3Source code:   ^7Available per request\n\"");
 		CP("print \"^3Bugs/Ideas:    ^7Use info provided above.\n\"");
 		CP("print \"^3Show Support:  ^7Donate on forums..\n\"");
 		CP("print \"^7-------------------------------------------\n\n\"");
