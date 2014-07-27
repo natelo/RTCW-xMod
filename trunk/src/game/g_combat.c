@@ -268,6 +268,14 @@ char	*modNames[] = {
 	"MOD_MORTAR_SPLASH",
 	"MOD_KICKED",
 	"MOD_GRABBER",
+
+	"MOD_DYNAMITE",
+	"MOD_DYNAMITE_SPLASH",
+	"MOD_AIRSTRIKE",
+	"MOD_SYRINGE",
+	"MOD_AMMO",
+	"MOD_ARTY",
+
 	"MOD_WATER",
 	"MOD_SLIME",
 	"MOD_LAVA",
@@ -288,11 +296,7 @@ char	*modNames[] = {
 	"MOD_LOPER_GROUND",
 	"MOD_LOPER_HIT",
 // JPW NERVE
-	"MOD_LT_ARTILLERY",
-	"MOD_LT_AIRSTRIKE",
-	"MOD_ENGINEER",	// not sure if we'll use
-	"MOD_MEDIC",		// these like this or not
-// jpw
+
 // L0 - Hacks for MODs
 	"MOD_ADMKILL",		// Slapped to death || killed by admin
 	"MOD_SELFKILL",		// Suicide (not gib!)
