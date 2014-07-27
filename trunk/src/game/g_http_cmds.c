@@ -122,11 +122,13 @@ qboolean isHttpCommand(gentity_t *ent, char *cmd1, char *cmd2, char *cmd3) {
 		return qtrue;
 	}
 
+
 	// Do not allow any web commands right before restart..
 	//
 	// XXX: Trying to figure out if it's the PB 
 	// crashing it randomly or is it a thread related issue..
-	if (level.warmupTime && level.time > level.warmupTime - 2400) {
+	// Note: Added intermission check since we already are sending stuff then..
+	if (level.warmupTime && level.time > level.warmupTime - 2400 || level.intermissiontime) {
 		return qtrue;
 	}
 

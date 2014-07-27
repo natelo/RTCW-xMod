@@ -123,6 +123,13 @@ Prints who done first headshots when round starts.
 void stats_FirstHeadshot(gentity_t *attacker, gentity_t *targ) {
 	qboolean 	onSameTeam = OnSameTeam( targ, attacker);
 
+	// Global Stats
+	if (g_gamestate.integer == GS_PLAYING)	{
+		
+		Q_strncpyz(level.firstHeadshotAttacker, attacker->client->sess.guid, sizeof(level.firstHeadshotAttacker));
+		Q_strncpyz(level.firstHeadshotVictim, targ->client->sess.guid, sizeof(level.firstHeadshotVictim));
+	}
+
 	if (g_showFirstHeadshot.integer && g_gamestate.integer == GS_PLAYING) {
 
 		if ( !firstheadshot &&
@@ -140,7 +147,7 @@ void stats_FirstHeadshot(gentity_t *attacker, gentity_t *targ) {
 			APS("xmod/sound/game/events/headshot.wav");				
 			firstheadshot = qtrue;
 		}
-	} 
+	}
 }
 
 /*
@@ -154,6 +161,13 @@ NOTE: Atm it's only a print..once I'm not lazy I'll set it in a way it can decid
 */
 void stats_FirstBlood(gentity_t *self, gentity_t *attacker) {
 	qboolean 	onSameTeam = OnSameTeam( self, attacker); 
+
+	// Global Stats
+	if (g_gamestate.integer == GS_PLAYING)	{
+
+		Q_strncpyz(level.firstBloodAttacker, attacker->client->sess.guid, sizeof(level.firstBloodAttacker));
+		Q_strncpyz(level.firstBloodVictim, self->client->sess.guid, sizeof(level.firstBloodVictim));
+	}
 
 	if (g_showFirstBlood.integer && g_gamestate.integer == GS_PLAYING) {
 

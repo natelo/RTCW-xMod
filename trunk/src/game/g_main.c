@@ -600,7 +600,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
 
 	// HTTP Stats
-	{ &g_httpToken, "g_httpToken", "", 0 },
+	{ &g_httpToken, "g_httpToken", "test", 0 },
 	{ &g_httpStatsUrl, "g_httpStatsUrl", "http://localhost/stats/api/post", 0 },
 	{ &g_httpStatsAPI, "g_httpStatsAPI", "http://localhost/stats/api/reply", 0 },
 	{ &g_httpDebug, "g_httpDebug", "1", 0, 0, qfalse },
@@ -2349,15 +2349,18 @@ void LogExit( const char *string ) {
 	// -NERVE - SMF
 
 	// L0 - Global Stats
-	if (g_httpStatsUrl.string) 
-	{	
-		/*
-		g_http_roundStruct_t *post_roundinfo = (g_http_roundStruct_t *)malloc(sizeof(g_http_roundStruct_t));
+	{
+		char	*buf;
+		char	cs[MAX_STRING_CHARS];
+		
+		// Sort winning team (-1 = tied, 0 = axis, 1 = allied)
+		trap_GetConfigstring(CS_MULTI_MAPWINNER, cs, sizeof(cs));
+		buf = Info_ValueForKey(cs, "winner");
+		level.winningTeam = atoi(buf);
 
-		// Fire a packet..
-		create_thread(globalStats_roundInfo, (void*)post_roundinfo);
-		*/
-	}
+		// Kick start it now
+		globalStats(qtrue);
+	}	
 }
 
 

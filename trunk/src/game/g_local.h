@@ -605,6 +605,9 @@ typedef struct {
 	// HTTP debounce time
 	int		httpCmdIssued;
 
+	// Token for unique round session
+	int		uniqueToken;
+
 	// L0 - End
 } clientPersistant_t;
 
@@ -893,8 +896,8 @@ typedef struct {
 	int			axisArty, alliedArty;
 	// Map Stats
 	unsigned int	topScore;
-	char		topOwner[MAX_NETNAME+1];
-	qboolean		mapStatsPrinted;
+	char			topOwner[MAX_NETNAME+1];
+	qboolean		mapStatsPrinted;	
 	// Last Blood 
 	char		lastKiller[MAX_NETNAME+1];
 	char		lastVictim[MAX_NETNAME+1];
@@ -906,6 +909,14 @@ typedef struct {
 	int			statsNum;
 	int			statsPrint;
 	qboolean	statsStarted;
+	// Global Stats [round]
+	int			winningTeam;
+	char		firstBloodAttacker[PB_GUID_LENGTH + 1];
+	char		firstBloodVictim[PB_GUID_LENGTH + 1];
+	char		firstHeadshotAttacker[PB_GUID_LENGTH + 1];
+	char		firstHeadshotVictim[PB_GUID_LENGTH + 1];
+	char		lastBloodAttacker[PB_GUID_LENGTH + 1];
+	char		lastBloodVictim[PB_GUID_LENGTH + 1];
 	// end
 } level_locals_t;
 

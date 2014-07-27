@@ -12,46 +12,47 @@ Hold declarations and structures of all the HTTP related functionality..
 // HTTP Commands for invoking functionality thru a wrapper
 #define HTTP_CLIENT_STATS	"stats"
 
-// h_http_userInfo Structure limit
-#define HTTP_USERINFO_LIMIT	64
+/*
+============
+Stat flags
+============
+*/
+#define GLOBAL_KILLS			1
+#define GLOBAL_DEATHS			2
+#define GLOBAL_HEADSHOTS		3
+#define GLOBAL_TEAMKILLS		4
+#define GLOBAL_TEAMBLEED		5
+#define GLOBAL_POISON			6
+#define GLOBAL_REVIVES			7
+#define GLOBAL_AMMOGIVEN		8
+#define GLOBAL_MEDGIVEN			9
+#define GLOBAL_GIBS				10
+#define GLOBAL_SUICIDES			11
+#define GLOBAL_GOOMBAS			12
+#define GLOBAL_KNIFETHROW		13
+#define GLOBAL_KNIFE			14
+#define GLOBAL_KNIFE_STEALTH	15
+#define GLOBAL_KILLPEAK			16
+#define GLOBAL_DEATHPEAK		17
+#define GLOBAL_SHOTSFIRED		18
+#define GLOBAL_SHOTSHIT			19
+#define GLOBAL_DYNOPLANTED		20
+#define GLOBAL_DYNODISARMED		21
+#define GLOBAL_MGREPAIRED		22
+#define GLOBAL_ASCALLED			22
+#define GLOBAL_ASTHROWN			23
+#define GLOBAL_ASBLOCKED		24
+#define GLOBAL_SCORE			25
+#define GLOBAL_CHICKEN			26
+#define GLOBAL_DMG_GIVEN		27
+#define GLOBAL_DMG_RECEIVED		28
+#define GLOBAL_LIMIT			29
 
 /*
 ============
-Stats types and converions
+MOD Conversions
 ============
 */
-#define GLOBAL_KILLS		1 // x
-#define GLOBAL_DEATHS		2 // x
-#define GLOBAL_HEADSHOTS	3 // x
-#define GLOBAL_TEAMKILLS	4 // x
-#define GLOBAL_TEAMBLEED	5 // x
-#define GLOBAL_POISON		6 // x
-#define GLOBAL_REVIVES		7 // x
-#define GLOBAL_AMMOGIVEN	8 // x
-#define GLOBAL_MEDGIVEN		9 // x
-#define GLOBAL_GIBS			10 // x
-#define GLOBAL_SUICIDES		11 // x
-#define GLOBAL_GOOMBAS		12 // x
-#define GLOBAL_KNIFETHROW	13 // x
-#define GLOBAL_FASTSTABS	14 // x
-#define GLOBAL_STABS		15 // x
-#define GLOBAL_KILLPEAK		16 // x
-#define GLOBAL_DEATHPEAK	17 // x
-#define GLOBAL_SHOTSFIRED	18 // x
-#define GLOBAL_SHOTSHIT		19 // x
-#define GLOBAL_DYNOPLANTED	20 // x
-#define GLOBAL_DYNODISARMED	21 // x
-#define GLOBAL_MGREPAIRED	22 // x
-#define GLOBAL_ASCALLED		22 // x
-#define GLOBAL_ASTHROWN		23 // x
-#define GLOBAL_ASBLOCKED	24 // x
-#define GLOBAL_SCORE		25 // x
-#define GLOBAL_CHICKEN		26 // x
-#define GLOBAL_LIMIT		27
-
-//
-// Stats MODs we'll track..
-//
 typedef enum {	
 	STATS_MP40,
 	STATS_THOMPSON,
@@ -85,86 +86,82 @@ typedef enum {
 
 /*
 ============
-Global Stats Structure
-
-Layout:
-	Round
-		- Round Data
-
-		- [array] Player's list
-			- Player data
-			- Player Rename History
-			- Player Stats
-				- Stats type [id]
-				- Score to track
-
-			- Player MODs
-				- Attacker Data
-				- MOD Data
-					- Weapon
-					- Times
+Kill List
 ============
 */
-
-// Kill list details
 typedef struct {
 	char guid[PB_GUID_LENGTH + 1];
+	int token;
 	int count;
-} global_userKillers_list_s;
+} global_killList_players_s;
 
-// User Kill list
+typedef struct {	
+	global_killList_players_s victim[MAX_CLIENTS];
+} global_killList_t;
+
 /*
-	Victim = slot
-	if Victim leaves it fill fire a packet to a web server with his kill list..
+============
+Client's MOD list
+============
 */
-typedef struct {
-	int slot;
-	global_userKillers_list_s victim[MAX_CLIENTS];
-} global_userKillers_t;
-
-// MOD count
 typedef struct {	
 	int count;	
 } global_MODs_weapon_s;
 
-// User MODs
-typedef struct {	
-	int slot;	
+typedef struct {
 	global_MODs_weapon_s mod[STATS_MAX];
 } global_MODs_t;
 
-// User stats
+/*
+============
+Client Stats
+============
+*/
 typedef struct {
 	int value;
 } global_userList_stats_s;
 
-// User names
 typedef struct {
 	char name[MAX_NETNAME];
-} global_userList_nameHistory_s;
-
-// General properties
-typedef struct {
-	int slot;
-	char name[MAX_NETNAME];
-	char ip[15];
-	char uClass;	
-	global_userList_nameHistory_s nameHistory;			// Renaming
+	char ip[16];
+	int clientClass;
+	int team;
+	int ping;
 	global_userList_stats_s stats[GLOBAL_LIMIT];		// Game stats
-} global_userList_s;
+} global_userList_t;
 
-//
-// Round info structure
-//
+/*
+============
+Round info structure
+============
+*/
 typedef struct {
-	unsigned int teamWon;
+	int winner;
 	char *map;
-	char *time;
+	float time;
 	int round;
 	int gametype;
 	int altGametype; // Obj, DM..
+	char firstBloodAttacker[PB_GUID_LENGTH + 1];
+	char firstBloodVictim[PB_GUID_LENGTH + 1];
+	char firstHeadshotAttacker[PB_GUID_LENGTH + 1];
+	char firstHeadshotVictim[PB_GUID_LENGTH + 1];
+	char lastBloodAttacker[PB_GUID_LENGTH + 1];
+	char lastBloodVictim[PB_GUID_LENGTH + 1];
 	qboolean finishedRound;	// If round is cut short..	
-} g_globalStats_t;
+} g_globalRoundStats_t;
+
+/*
+============
+Global unified structure
+============
+*/
+typedef struct {
+	global_killList_t hitList[MAX_CLIENTS];
+	global_MODs_t		mods[MAX_CLIENTS];
+	global_userList_t	players[MAX_CLIENTS];
+	g_globalRoundStats_t roundStats;
+} global_Stats_t;
 
 /*
 ============
@@ -179,7 +176,7 @@ typedef struct {
 
 /*
 ============
-Declarations
+Prototypes
 ============
 */
 //
@@ -191,21 +188,15 @@ char *http_Query(char *url, char *data);
 //
 // g_http_stats.c
 //
-void write_globalMODs(gentity_t *victim, meansOfDeath_t mod);
+qboolean webStatsAreEnabled(void);
+void write_globalMODs(gentity_t *victim, meansOfDeath_t MOD);
 void write_globalKillList(gentity_t *victim, gentity_t *attacker);
-
-void listStructure(int num);
+void globalStats(qboolean finished);
 
 //
 // g_http_cmds.c
 //
 void *http_sendQuery(void *args);
 qboolean isHttpCommand(gentity_t *ent, char *cmd1, char *cmd2, char *cmd3);
-
-//
-// Exporters
-//
-typedef struct g_http_userInfo_s userInfoStats;
-extern userInfoStats userStats[];
 
 #endif // _G_HTTP

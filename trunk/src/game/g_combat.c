@@ -634,8 +634,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			if (g_showLastBlood.integer)
 			{
 				Q_strncpyz ( level.lastKiller, attacker->client->pers.netname, sizeof( level.lastKiller ) );
-				Q_strncpyz ( level.lastVictim, self->client->pers.netname, sizeof( level.lastVictim ) );
+				Q_strncpyz ( level.lastBloodVictim, self->client->pers.netname, sizeof( level.lastVictim ) );
 			}
+
+			// L0 - Last Blood (global Stats)
+			Q_strncpyz(level.lastBloodAttacker, attacker->client->sess.guid, sizeof(level.lastBloodAttacker));
+			Q_strncpyz(level.lastBloodVictim, self->client->sess.guid, sizeof(level.lastBloodVictim));
 
 			// L0 - Life stats
 			if (g_showLifeStats.integer) {

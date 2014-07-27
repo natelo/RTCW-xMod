@@ -188,7 +188,7 @@ void http_Submit(char *url, char *data) {
 		GAMEVERSION,
 		g_httpToken.string,
 		sv_hostname.string,
-		strlen(data),
+		strlen(data) + 8, // FYI[8]: \r\n\r\n
 		host
 	);
 

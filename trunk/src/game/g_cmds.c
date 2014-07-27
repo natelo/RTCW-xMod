@@ -64,7 +64,6 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 		string ) );
 }
 
-
 /*
 ==================
 Cmd_Score_f
@@ -76,14 +75,12 @@ void Cmd_Score_f( gentity_t *ent ) {
 	DeathmatchScoreboardMessage( ent );
 }
 
-
-
 /*
 ==================
 CheatsOk
 ==================
 */
-qboolean	CheatsOk( gentity_t *ent ) {
+qboolean CheatsOk( gentity_t *ent ) {
 	if ( !g_cheats.integer ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"Cheats are not enabled on this server.\n\""));
 		return qfalse;
@@ -94,7 +91,6 @@ qboolean	CheatsOk( gentity_t *ent ) {
 	}
 	return qtrue;
 }
-
 
 /*
 ==================
@@ -3015,13 +3011,7 @@ void ClientCommand( int clientNum ) {
 	if ( Q_stricmp( cmd, "stats" ) == 0 ) {
 		Cmd_Stats_f( ent );
 	return;
-	}	
-
-	if (Q_stricmp(cmd, "test") == 0) {
-		listStructure(ent->client->ps.clientNum);
-		return;
 	}
-	
 // End	
 
 	// ignore all other commands when at intermission
