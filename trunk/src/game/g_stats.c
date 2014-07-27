@@ -54,7 +54,7 @@ char *getTime(void)
 Double+ kills
 ===========
 */
-void stats_DoubleKill (gentity_t *ent, int meansOfDeath ) {
+void stats_DoubleKill(gentity_t *ent, int meansOfDeath ) {
 	char *random;	
 	int n = rand() % 3; 
 
@@ -120,7 +120,7 @@ First headshots
 Prints who done first headshots when round starts.
 ===========
 */
-void stats_FirstHeadshot (gentity_t *attacker, gentity_t *targ) {
+void stats_FirstHeadshot(gentity_t *attacker, gentity_t *targ) {
 	qboolean 	onSameTeam = OnSameTeam( targ, attacker);
 
 	if (g_showFirstHeadshot.integer && g_gamestate.integer == GS_PLAYING) {
@@ -152,7 +152,7 @@ NOTE: Atm it's only a print..once I'm not lazy I'll set it in a way it can decid
 	  specific maps (like depot, destuction) - so first blood decides who won.
 ===========
 */
-void stats_FirstBlood (gentity_t *self, gentity_t *attacker) {
+void stats_FirstBlood(gentity_t *self, gentity_t *attacker) {
 	qboolean 	onSameTeam = OnSameTeam( self, attacker); 
 
 	if (g_showFirstBlood.integer && g_gamestate.integer == GS_PLAYING) {
@@ -851,3 +851,16 @@ void stats_RoundStats(void) {
 	// Push it forward
 	level.statsNum++;
 }
+
+/*
+===========
+trackStats
+
+Basically a wrapper so all stats are tracked in one place
+===========
+*/
+void trackStats(gentity_t *ent, int score, int type) {
+
+
+}
+

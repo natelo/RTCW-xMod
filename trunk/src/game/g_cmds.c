@@ -495,7 +495,8 @@ void Cmd_Kill_f( gentity_t *ent ) {
 
 		// Stats
 		ent->client->pers.suicides++;
-		write_RoundStats(ent->client->pers.netname, ent->client->pers.suicides, ROUND_SUICIDES);		
+		write_RoundStats(ent->client->pers.netname, ent->client->pers.suicides, ROUND_SUICIDES);
+		GLOBALSTATS(ent, GLOBAL_SUICIDES, ent->client->pers.suicides);
 		return;
 	} 
 
@@ -506,7 +507,8 @@ void Cmd_Kill_f( gentity_t *ent ) {
 
 	// L0 - Stats
 	ent->client->pers.suicides++;
-	write_RoundStats(ent->client->pers.netname, ent->client->pers.suicides, ROUND_SUICIDES);	
+	write_RoundStats(ent->client->pers.netname, ent->client->pers.suicides, ROUND_SUICIDES);
+	GLOBALSTATS(ent, GLOBAL_SUICIDES, ent->client->pers.suicides);
 }
 
 /*
@@ -536,7 +538,8 @@ void Cmd_SoftKill_f( gentity_t *ent ) {
 
 		// Stats
 		ent->client->pers.suicides++;
-		write_RoundStats(ent->client->pers.netname, ent->client->pers.suicides, ROUND_SUICIDES);		
+		write_RoundStats(ent->client->pers.netname, ent->client->pers.suicides, ROUND_SUICIDES);
+		GLOBALSTATS(ent, GLOBAL_SUICIDES, ent->client->pers.suicides);
 		return;
 	} 
 
@@ -548,6 +551,7 @@ void Cmd_SoftKill_f( gentity_t *ent ) {
 	// L0 - Stats
 	ent->client->pers.suicides++;
 	write_RoundStats(ent->client->pers.netname, ent->client->pers.suicides, ROUND_SUICIDES);
+	GLOBALSTATS(ent, GLOBAL_SUICIDES, ent->client->pers.suicides);
 }
 
 /*

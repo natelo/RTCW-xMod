@@ -576,8 +576,17 @@ typedef struct {
 	int		goomba;
 	int		poison;
 	int		chicken;
-	int		knifeKills;
+	int		knifeKills;	
 	int		fastStabs;
+
+	// Web Stats (on top of existing ones)
+	int		stabs;
+	int		AScalled;
+	int		ASthrown;
+	int		ASblocked;
+	int		dynoPlanted;
+	int		dynoDisarmed;
+	int		mgRepair;
 
 	// Death Spree
 	int		spreeDeaths;

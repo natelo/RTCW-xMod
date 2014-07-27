@@ -15,37 +15,34 @@ Hold declarations and structures of all the HTTP related functionality..
 //
 // Stats types
 //
-#define GLOBAL_KILLS		1
-#define GLOBAL_DEATHS		2
-#define GLOBAL_HEADSHOTS	3
-#define GLOBAL_TEAMKILLS	4
-#define GLOBAL_TEAMBLEED	5
-#define GLOBAL_POISON		6
-#define GLOBAL_REVIVES		7
-#define GLOBAL_AMMOGIVEN	8
-#define GLOBAL_MEDGIVEN		9
-#define GLOBAL_GIBS			10
-#define GLOBAL_SUICIDES		11
-#define GLOBAL_GOOMBAS		12
-#define GLOBAL_KNIFETHROWS	13
-#define GLOBAL_FASTSTABS	14
-#define GLOBAL_STABS		15
-#define GLOBAL_KILLPEAK		16
-#define GLOBAL_DEATHPEAK	17
-#define GLOBAL_SHOTSFIRED	18
-#define GLOBAL_SHOTSHIT		19
-#define GLOBAL_DYNOPLATED	20
-#define GLOBAL_DYNODISARMED	21
-#define GLOBAL_MGREPAIRED	22
-#define GLOBAL_MEDIC		23
-#define GLOBAL_SOLD			24
-#define GLOBAL_ENG			25
-#define GLOBAL_LT			26
-#define GLOBAL_ASCALLED		27
-#define GLOBAL_ASTHROWN		28
-#define GLOBAL_SCORE		29
-#define GLOBAL_CHICKEN		30
-#define GLOBAL_LIMIT		31
+#define GLOBAL_KILLS		1 // x
+#define GLOBAL_DEATHS		2 // x
+#define GLOBAL_HEADSHOTS	3 // x
+#define GLOBAL_TEAMKILLS	4 // x
+#define GLOBAL_TEAMBLEED	5 // x
+#define GLOBAL_POISON		6 // x
+#define GLOBAL_REVIVES		7 // x
+#define GLOBAL_AMMOGIVEN	8 // x
+#define GLOBAL_MEDGIVEN		9 // x
+#define GLOBAL_GIBS			10 // x
+#define GLOBAL_SUICIDES		11 // x
+#define GLOBAL_GOOMBAS		12 // x
+#define GLOBAL_KNIFETHROW	13 // x
+#define GLOBAL_FASTSTABS	14 // x
+#define GLOBAL_STABS		15 // x
+#define GLOBAL_KILLPEAK		16 // x
+#define GLOBAL_DEATHPEAK	17 // x
+#define GLOBAL_SHOTSFIRED	18 // x
+#define GLOBAL_SHOTSHIT		19 // x
+#define GLOBAL_DYNOPLANTED	20 // x
+#define GLOBAL_DYNODISARMED	21 // x
+#define GLOBAL_MGREPAIRED	22 // x
+#define GLOBAL_ASCALLED		22 // x
+#define GLOBAL_ASTHROWN		23 // x
+#define GLOBAL_ASBLOCKED	24 // x
+#define GLOBAL_SCORE		25 // x
+#define GLOBAL_CHICKEN		26 // wx
+#define GLOBAL_LIMIT		27
 
 //
 //	Game Stats
@@ -77,9 +74,10 @@ typedef struct {
 //
 struct g_http_userInfo_s {
 	int	slot;
-	char guid[PB_GUID_LENGTH];
+	char guid[PB_GUID_LENGTH+1];
 	char name[MAX_NETNAME];
-	char ip[15];			// No IPv6 support...	
+	char ip[15];			// No IPv6 support...
+	int uClass;
 	g_http_userUniqueStats_s stats[GLOBAL_LIMIT];	
 };
 

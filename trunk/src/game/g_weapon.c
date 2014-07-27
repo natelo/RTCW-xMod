@@ -353,6 +353,7 @@ void Weapon_Syringe(gentity_t *ent) {
 				ent->client->pers.lifeRevives++;
 
 				write_RoundStats(ent->client->pers.netname, ent->client->pers.revives, ROUND_REVIVES);
+				GLOBALSTATS(ent, GLOBAL_REVIVES, ent->client->pers.revives);
 
 				if (g_mapStats.integer == 5)
 					write_MapStats(ent, ent->client->pers.revives, MAP_REVIVES);
@@ -463,6 +464,9 @@ void Weapon_Engineer( gentity_t *ent ) {
 // JPW NERVE sound effect to go with fixing MG42
 			G_AddEvent( ent, EV_MG42_FIXED, 0 );
 // jpw
+			// L0 - Log it for stats
+			ent->client->pers.mgRepair++;
+			GLOBALSTATS(ent, GLOBAL_MGREPAIRED, ent->client->pers.mgRepair);
 		}
 		else
 			traceEnt->health += 3;
@@ -509,6 +513,10 @@ void Weapon_Engineer( gentity_t *ent ) {
 				trap_SendServerCommand( ent-g_entities, "cp \"Dynamite is now armed with a ^330 ^7second timer!\" 1");
 				traceEnt->nextthink = level.time + 30000;
 				traceEnt->think = G_ExplodeMissile;
+
+				// L0 - Log it for webstats
+				ent->client->pers.dynoPlanted++;
+				GLOBALSTATS(ent, GLOBAL_DYNOPLANTED, ent->client->pers.dynoPlanted);
 
 				// check if player is in trigger objective field
 				// NERVE - SMF - made this the actual bounding box of dynamite instead of range, also must snap origin to line up properly
@@ -647,6 +655,10 @@ void Weapon_Engineer( gentity_t *ent ) {
 								traceEnt->s.teamNum = TEAM_BLUE;
 								matchInfo(MT_ME, "Allies disarmed the Dynamite!"); // L0 - Some info
 							}
+
+							// L0 - Log it for stats
+							ent->client->pers.dynoDisarmed++;
+							GLOBALSTATS(ent, GLOBAL_DYNODISARMED, ent->client->pers.dynoDisarmed);
 						}
 					}
 				}
@@ -751,6 +763,10 @@ void weapon_callAirStrike(gentity_t *ent) {
 		if ((tr.entityNum > 0) && (tr.entityNum < MAX_CLIENTS) && (g_entities[tr.entityNum].inuse) && g_easyASBlock.integer) {			
 			AP(va("print \"%s ^3blocked an airstrike^7!\n\"", g_entities[tr.entityNum].client->pers.netname));
 			CPx(ent->parent-g_entities, va("cp \"Your AirStrike was blocked by %s\n\"1", g_entities[tr.entityNum].client->pers.netname));			
+
+			// Log it for web stats
+			g_entities[tr.entityNum].client->pers.ASblocked++;			
+			GLOBALSTATS(&g_entities[tr.entityNum], GLOBAL_ASBLOCKED, g_entities[tr.entityNum].client->pers.ASblocked);
 		} 
 // end
 
@@ -767,6 +783,10 @@ void weapon_callAirStrike(gentity_t *ent) {
 		te->s.eventParm = G_SoundIndex("sound/multiplayer/axis/g-affirmative_omw.wav");
 		te->s.teamNum = ent->parent->s.clientNum;
 	}
+
+	// L0 - Log it for stats
+	ent->parent->client->pers.ASthrown++;
+	GLOBALSTATS(ent->parent, GLOBAL_ASTHROWN, ent->parent->client->pers.ASthrown);
 
 	// L0 - AS Limit
 	G_ASdelay( ent->parent );
@@ -977,6 +997,10 @@ void Weapon_Artillery(gentity_t *ent) {
 			te->s.eventParm = G_SoundIndex("sound/multiplayer/axis/g-firing.wav");
 			te->s.teamNum = ent->s.clientNum;
 		}
+
+		// L0 - Log it for stats
+		ent->client->pers.AScalled++;
+		GLOBALSTATS(ent, GLOBAL_ASCALLED, ent->client->pers.AScalled);
 
 		// L0 - AS limit
 		G_ASdelayFFE( ent );
@@ -1680,6 +1704,7 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 	// L0 - Stats
 	ent->client->pers.acc_shots++;
 	ent->client->pers.lifeAcc_shots++;
+	GLOBALSTATS(ent, GLOBAL_SHOTSFIRED, ent->client->pers.acc_shots);
 }
 
 
@@ -1753,6 +1778,7 @@ void Bullet_Fire_Extended(gentity_t *source, gentity_t *attacker, vec3_t start, 
 			// L0 - Stats
 			attacker->client->pers.acc_hits++;
 			attacker->client->pers.lifeAcc_hits++;
+			GLOBALSTATS(attacker, GLOBAL_SHOTSHIT, attacker->client->pers.acc_hits);
 		}
 
 //----(SA)	added

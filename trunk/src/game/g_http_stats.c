@@ -29,6 +29,7 @@ void write_globalUserStats(gentity_t *ent, int type, int value) {
 			ent->client->sess.ip[3]),
 			sizeof(userStats[ent->client->ps.clientNum].ip));
 		userStats[ent->client->ps.clientNum].stats[type].value = value;
+		userStats[ent->client->ps.clientNum].uClass = ent->client->ps.stats[STAT_PLAYER_CLASS];
 	}
 }
 
@@ -85,5 +86,5 @@ void *globalStats_roundInfo(void *args) {
 void listStructure( int num ) {	
 
 	AP(va("chat \"User data: Slot %i Guid - %s Name - %s IP - %s\n", userStats[num].slot, userStats[num].guid, userStats[num].name, userStats[num].ip));
-	AP(va("chat \"User data: Suicides: %d\n", userStats[num].stats[GLOBAL_SUICIDES].value));
+	AP(va("chat \"User data: AS THROWN: %d\n", userStats[num].stats[GLOBAL_ASTHROWN].value));
 }
