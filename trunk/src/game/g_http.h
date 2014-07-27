@@ -41,21 +41,14 @@ Hold declarations and structures of all the HTTP related functionality..
 #define GLOBAL_ASTHROWN		23 // x
 #define GLOBAL_ASBLOCKED	24 // x
 #define GLOBAL_SCORE		25 // x
-#define GLOBAL_CHICKEN		26 // wx
+#define GLOBAL_CHICKEN		26 // x
 #define GLOBAL_LIMIT		27
-
-//
-//	Game Stats
-//
-typedef struct {
-	int value;
-} g_http_userUniqueStats_s;
 
 //
 // Killer stats
 //
 typedef struct {
-	char id[PB_GUID_LENGTH];
+	int slot;
 	int	count;
 	int weapon;
 } g_http_userVictims_s;
@@ -64,10 +57,17 @@ typedef struct {
 // Victim stats
 //
 typedef struct {
-	char id[PB_GUID_LENGTH];
+	int slot;
 	int count;
 	int weapon;
 } g_http_userKillers_s;
+
+//
+//	Game Stats
+//
+typedef struct {
+	int value;
+} g_http_userUniqueStats_s;
 
 //
 // Individual Player Info structure

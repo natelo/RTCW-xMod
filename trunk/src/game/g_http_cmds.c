@@ -8,14 +8,14 @@ All http client related commands.
 */
 #include "g_local.h"
 
-// So it's little easier for the eyes..
+// So it's little easier..
 #define _CMD(x, y) !Q_stricmp(x, y)
 
 /*
 ===========
 http_processMessage
 
-Sends client query and reads reply..
+Prints message back to public/client.
 ===========
 */
 void http_processMessage(int clientNum, char *msg, qboolean toClient) {
@@ -32,7 +32,7 @@ void http_processMessage(int clientNum, char *msg, qboolean toClient) {
 ===========
 http_sendQuery
 
-Sends client query and ready reply..
+Sends client query and reads reply.
 ===========
 */
 void *http_sendQuery(void *args) {
@@ -69,11 +69,7 @@ Entry point for client commands
 ===========
 */
 void http_clientCommand(gentity_t *ent, char *cmd, qboolean toClient) {
-	g_http_cmd_t *post_cmd = (g_http_cmd_t*)malloc(sizeof(g_http_cmd_t));	
-
-	// Fill the generic data..	
-	post_cmd->id = ent->client->ps.clientNum;
-	post_cmd->toClient = toClient;
+	g_http_cmd_t *post_cmd = (g_http_cmd_t*)malloc(sizeof(g_http_cmd_t));
 
 	// A cheap flood protection
 	if (ent->client->pers.httpCmdIssued >= level.time)
@@ -92,9 +88,13 @@ void http_clientCommand(gentity_t *ent, char *cmd, qboolean toClient) {
 		post_cmd->cmd = va("stats||guid=%s", ent->client->sess.guid);		
 	}
 
+	// Fill the generic data..	
+	post_cmd->id = ent->client->ps.clientNum;
+	post_cmd->toClient = toClient;
+
 	// Do the magic..	
 	create_thread(http_sendQuery, (void*)post_cmd);
-	
+
 	return;
 }
 

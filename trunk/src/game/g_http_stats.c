@@ -33,6 +33,10 @@ void write_globalUserStats(gentity_t *ent, int type, int value) {
 	}
 }
 
+void write_globalMODS(gentity_t *attacker, gentity_t *target, int weapon) {
+
+}
+
 void *globalStats_playersList(void *args) {
 	unsigned int i;
 

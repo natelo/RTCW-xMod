@@ -209,6 +209,7 @@ void http_Submit(char *url, char *data) {
 http_Query
 
 Queries the web server and reads the reply..
+Note: POST field is already appanded (cmd=) and accounted for.
 ===============
 */
 char *http_Query(char *url, char *data) {
@@ -271,9 +272,9 @@ char *http_Query(char *url, char *data) {
 		GAMEVERSION,
 		g_httpToken.string,
 		sv_hostname.string,
-		strlen(data) + 8,
+		strlen(data) + 8, /* FYI[+8]:  "cmd= \r\n" */
 		host
-		);
+	);
 
 	// Send Header
 	_SEND(sock, header);
@@ -318,6 +319,8 @@ char *http_Query(char *url, char *data) {
 		}
 		*(buffer + l) = 0;
 
+		// We do not expect large replies so it will always be the last bit
+		// which ensures we don't 'eat' the whole error/timeout message..
 		if (strlen(buffer) > 0)			
 			out = va("%s", buffer);
 
