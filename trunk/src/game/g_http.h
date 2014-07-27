@@ -15,9 +15,11 @@ Hold declarations and structures of all the HTTP related functionality..
 // h_http_userInfo Structure limit
 #define HTTP_USERINFO_LIMIT	64
 
-//
-// Stats types
-//
+/*
+============
+Stats types and converions
+============
+*/
 #define GLOBAL_KILLS		1 // x
 #define GLOBAL_DEATHS		2 // x
 #define GLOBAL_HEADSHOTS	3 // x
@@ -47,56 +49,109 @@ Hold declarations and structures of all the HTTP related functionality..
 #define GLOBAL_CHICKEN		26 // x
 #define GLOBAL_LIMIT		27
 
-/*
-	Basically:
+//
+// Stats MODs we'll track..
+//
+typedef enum {	
+	STATS_MP40,
+	STATS_THOMPSON,
+	STATS_STEN,
+	STATS_MAUSER,
+	STATS_SNIPERRIFLE,
+	STATS_FLAMETHROWER,
+	STATS_PANZERFRAUST,
+	STATS_VENOM,
+	STATS_GRENADE,
+	STATS_LUGER,
+	STATS_COLT,
+	STATS_DYNAMITE,
+	STATS_MG42,
+	STATS_KNIFE,
+	STATS_KNIFESTEALTH,
+	STATS_KNIFETHROW,
+	STATS_AIRSTRIKE,
+	STATS_ARTILLERY,
+	STATS_POISON,
+	STATS_GOOMBA,
+	STATS_FALLING,
+	STATS_MORTAR,
+	STATS_SUICIDE,
+	STATS_CHICKEN,
+	STATS_DROWN,
+	STATS_WORLD,
+	STATS_ADMIN,
+	STATS_MAX
+} statsMODs;
 
-	client = Slot
-	client->killer 
-				- Slot
-				- Weapon
-						- Type
-						- Count
-						- Headshots
+/*
+============
+Global Stats Structure
+
+Layout:
+	Round
+		- Round Data
+
+		- [array] Player's list
+			- Player data
+			- Player Rename History
+			- Player Stats
+				- Stats type [id]
+				- Score to track
+
+			- Player MODs
+				- Attacker Data
+				- MOD Data
+					- Weapon
+					- Times
+============
 */
 
-
-
+// Kill list details
 typedef struct {
-	int weapon;
+	char guid[PB_GUID_LENGTH + 1];
+	int count;
+} global_userKillers_list_s;
+
+// User Kill list
+/*
+	Victim = slot
+	if Victim leaves it fill fire a packet to a web server with his kill list..
+*/
+typedef struct {
+	int slot;
+	global_userKillers_list_s victim[MAX_CLIENTS];
+} global_userKillers_t;
+
+// MOD count
+typedef struct {	
 	int count;	
-	int headshots;
-} g_http_weapons_t;
+} global_MODs_weapon_s;
 
-typedef struct {
-	int id;
-	char guid[PB_GUID_LENGTH + 1];
-	g_http_weapons_t weapon[MAX_WEAPONS];
-} g_http_killerID_t;
+// User MODs
+typedef struct {	
+	int slot;	
+	global_MODs_weapon_s mod[STATS_MAX];
+} global_MODs_t;
 
-struct g_http_MOD_s {
-	int id;
-	char guid[PB_GUID_LENGTH + 1];
-	g_http_killerID_t killer[HTTP_USERINFO_LIMIT];
-};
-
-//
-//	Game Stats
-//
+// User stats
 typedef struct {
 	int value;
-} g_http_userUniqueStats_s;
+} global_userList_stats_s;
 
-//
-// Individual Player Info structure
-//
-struct g_http_userInfo_s {
-	int	slot;
-	char guid[PB_GUID_LENGTH+1];
+// User names
+typedef struct {
 	char name[MAX_NETNAME];
-	char ip[15];			// No IPv6 support...
-	int uClass;
-	g_http_userUniqueStats_s stats[GLOBAL_LIMIT];	
-};
+} global_userList_nameHistory_s;
+
+// General properties
+typedef struct {
+	int slot;
+	char name[MAX_NETNAME];
+	char ip[15];
+	char uClass;	
+	global_userList_nameHistory_s nameHistory;			// Renaming
+	global_userList_stats_s stats[GLOBAL_LIMIT];		// Game stats
+} global_userList_s;
 
 //
 // Round info structure
@@ -108,22 +163,25 @@ typedef struct {
 	int round;
 	int gametype;
 	int altGametype; // Obj, DM..
-	int axisStartPlayers;
-	int axisEndPlayers;
-	int alliedStartPlayers;
-	int alliedEndPlayers;
-	qboolean finishedRound;	// If round is cut short..
-} g_http_roundInfo_t;
+	qboolean finishedRound;	// If round is cut short..	
+} g_globalStats_t;
 
-//
-// Client commands structure
-//
+/*
+============
+Client commands structure
+============
+*/
 typedef struct {
 	char *cmd;
 	unsigned int id;
 	qboolean toClient;
 } g_http_cmd_t;
 
+/*
+============
+Declarations
+============
+*/
 //
 // g_http.c
 //
@@ -134,6 +192,9 @@ char *http_Query(char *url, char *data);
 // g_http_stats.c
 //
 void write_globalUserStats(gentity_t *ent, int type, int value);
+void write_globalMODs(gentity_t *victim, meansOfDeath_t mod);
+void write_globalKillList(gentity_t *victim, gentity_t *attacker);
+
 void listStructure(int num);
 
 //
@@ -148,7 +209,7 @@ qboolean isHttpCommand(gentity_t *ent, char *cmd1, char *cmd2, char *cmd3);
 #define GLOBALSTATS(x,y,z) write_globalUserStats(x, y, z)
 
 //
-// Exporter
+// Exporters
 //
 typedef struct g_http_userInfo_s userInfoStats;
 extern userInfoStats userStats[];

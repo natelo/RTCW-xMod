@@ -303,6 +303,7 @@ char	*modNames[] = {
 	"MOD_CHICKEN",		// Funny print when player self kills to avoid being killed
 	"MOD_POISONDMED",	// Killed by poison
 	"MOD_GOOMBA",		// Killed by some1 landing on his head..
+	"MOD_ARTILLERY",	// Air Strike - FFE
 // End
 	"MOD_BAT"
 };
@@ -359,6 +360,19 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if ( killer < 0 || killer >= MAX_CLIENTS ) {
 		killer = ENTITYNUM_WORLD;
 		killerName = "<world>";
+	}
+
+	// L0 - Global Stats
+	if (g_gamestate.integer == GS_PLAYING) {
+		// Builds MOD's 
+		write_globalMODs(self, meansOfDeath);
+		
+		// Builds list of all client's kills
+		if (attacker && attacker->client &&
+			!OnSameTeam(self, attacker) &&
+			attacker != self
+		)
+		write_globalKillList(self, attacker);
 	}
 
 // L0 - Hacks for custom MOD's
@@ -442,6 +456,10 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.goomba, ROUND_GOOMBAS);
 		GLOBALSTATS(attacker, GLOBAL_GOOMBAS, attacker->client->pers.goomba);
 	}
+
+	if (meansOfDeath == MOD_ARTILLERY && g_gamestate.integer == GS_PLAYING)  {		
+		meansOfDeath = MOD_AIRSTRIKE; // Just Remaps it back..
+	}
 // Mod hacks ends here
 
 	if ( meansOfDeath < 0 || meansOfDeath >= sizeof( modNames ) / sizeof( modNames[0] ) ) {
@@ -507,6 +525,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if (meansOfDeath != MOD_THROWKNIFE) {
 	if (meansOfDeath != MOD_CHICKEN) {
 	if (meansOfDeath != MOD_POISONDMED) {
+	if (meansOfDeath != MOD_ARTILLERY) {
 
 		// broadcast the death event to everyone
 		// L0 - Don't bother in warmup..
@@ -519,7 +538,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			ent->r.svFlags = SVF_BROADCAST;	// send to everyone
 		}
 
-	}}}}}
+	}}}}}}
 
 	self->enemy = attacker;
 
