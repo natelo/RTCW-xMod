@@ -118,7 +118,7 @@ qboolean isHttpCommand(gentity_t *ent, char *cmd1, char *cmd2, char *cmd3) {
 		if (_CMD(g_httpToken.string, "none") || !g_httpToken.string)
 			CP("print \"^3INFO^7: WebStats are disabled on this server.\n");
 		else
-			CP("print \"^3INFO^7: WebStats are mis-configured..\n");
+			CP("print \"^3INFO^7: Owner of this server has not configured WebStats correctly..\n");
 		return qtrue;
 	}
 
