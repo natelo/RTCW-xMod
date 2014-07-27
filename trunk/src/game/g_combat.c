@@ -35,9 +35,6 @@ void AddScore( gentity_t *ent, int score ) {
 	if (g_gametype.integer >= GT_TEAM) // JPW NERVE changed to >=
 		level.teamScores[ ent->client->ps.persistant[PERS_TEAM] ] += score;
 	CalculateRanks();
-
-	// L0 - Log it for webstats	
-	GLOBALSTATS(ent, GLOBAL_SCORE, ent->client->ps.persistant[PERS_SCORE]);
 }
 
 /*
@@ -393,27 +390,22 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		AP(va("print \"%s ^7was impaled by %s^7s throwing knife.\n\"", self->client->pers.netname, attacker->client->pers.netname));
 		attacker->client->pers.knifeKills++;	
 		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.knifeKills, ROUND_KNIFETHROW);
-		GLOBALSTATS(attacker, GLOBAL_KNIFETHROW, attacker->client->pers.knifeKills);
 	}
 
 	if (meansOfDeath == MOD_KNIFE2 && g_gamestate.integer == GS_PLAYING) {
 		attacker->client->pers.stabs++;
-		GLOBALSTATS(attacker, GLOBAL_STABS, attacker->client->pers.stabs);
 	}
 
 	if ( meansOfDeath == MOD_CHICKEN && g_gamestate.integer == GS_PLAYING) {
 		AP(va("print \"%s ^6was scared to death by ^7%s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname));
-		self->client->pers.chicken++;	
-
+		
+		self->client->pers.chicken++;
 		// Give props to attacker
 		attacker->client->pers.kills++;
 		attacker->client->pers.lifeKills++;
+
 		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.kills, ROUND_KILLS);
 		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.lifeKills, ROUND_KILLPEAK);
-
-		GLOBALSTATS(attacker, GLOBAL_KILLS, attacker->client->pers.kills);
-		GLOBALSTATS(attacker, GLOBAL_KILLPEAK, attacker->client->pers.lifeKills);
-		GLOBALSTATS(attacker, GLOBAL_CHICKEN, attacker->client->pers.chicken);
 	}
 
 	// If person gets stabbed use custom sound from soundpack
@@ -432,7 +424,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 		attacker->client->pers.fastStabs++;
 		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.fastStabs, ROUND_FASTSTABS);
-		GLOBALSTATS(attacker, GLOBAL_FASTSTABS, attacker->client->pers.fastStabs);
 	}  
 
 	if ( meansOfDeath == MOD_POISONDMED && g_gamestate.integer == GS_PLAYING)  {
@@ -447,14 +438,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		attacker->client->pers.poison++; 
 
 		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.poison, ROUND_POISON);
-		GLOBALSTATS(attacker, GLOBAL_POISON, attacker->client->pers.poison);
 	}
 
 	if (meansOfDeath == MOD_GOOMBA && g_gamestate.integer == GS_PLAYING)  {
 		AP(va("print \"%s ^7experienced death from above by %s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname));
 		attacker->client->pers.goomba++;
 		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.goomba, ROUND_GOOMBAS);
-		GLOBALSTATS(attacker, GLOBAL_GOOMBAS, attacker->client->pers.goomba);
 	}
 
 	if (meansOfDeath == MOD_ARTILLERY && g_gamestate.integer == GS_PLAYING)  {		
@@ -488,8 +477,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.kills, ROUND_KILLS);
 			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.lifeKills, ROUND_KILLPEAK);
-			GLOBALSTATS(attacker, GLOBAL_KILLS, attacker->client->pers.kills);
-			GLOBALSTATS(attacker, GLOBAL_KILLPEAK, attacker->client->pers.lifeKills);
 
 			if (g_mapStats.integer == 1)
 				write_MapStats(attacker, attacker->client->pers.kills, MAP_KILLER);
@@ -504,7 +491,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 				SB_maxTeamKill(attacker);
 
 				write_RoundStats(attacker->client->pers.netname, attacker->client->pers.teamKills, ROUND_TEAMKILLS);
-				GLOBALSTATS(attacker, GLOBAL_TEAMKILLS, attacker->client->pers.teamKills);
 			}
 		}
 	} 
@@ -549,8 +535,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	self->client->pers.spreeDeaths++;
 	write_RoundStats(self->client->pers.netname, self->client->pers.deaths, ROUND_DEATHS);	
 	write_RoundStats(self->client->pers.netname, self->client->pers.spreeDeaths, ROUND_DEATHPEAK);	
-	GLOBALSTATS(self, GLOBAL_DEATHS, self->client->pers.deaths);
-	GLOBALSTATS(self, GLOBAL_DEATHPEAK, self->client->pers.spreeDeaths);
 
 	if (g_mapStats.integer == 3)
 		write_MapStats(self, self->client->pers.deaths, MAP_VICTIM);
@@ -1469,7 +1453,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			attacker->client->pers.lifeHeadshots++;
 
 			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.headshots, ROUND_HEADSHOTS);
-			GLOBALSTATS(attacker, GLOBAL_HEADSHOTS, attacker->client->pers.headshots);
 
 			if (g_mapStats.integer == 6)
 				write_MapStats(attacker, attacker->client->pers.deaths, MAP_HEADSHOTS);
@@ -1530,7 +1513,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		} else if (OnSameTeam( attacker, targ ) && targ->client->ps.stats[STAT_HEALTH] > 0) {
 			attacker->client->pers.dmgTeam += take;
 			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.dmgTeam, ROUND_TEAMBLEED);
-			GLOBALSTATS(attacker, GLOBAL_TEAMBLEED, attacker->client->pers.dmgTeam);
 		}
 	}
 	// End
@@ -1562,7 +1544,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 							{
 								attacker->client->pers.gibs++;
 								write_RoundStats(attacker->client->pers.netname, attacker->client->pers.gibs, ROUND_GIBS);
-								GLOBALSTATS(attacker, GLOBAL_GIBS, attacker->client->pers.gibs);
 							}
 
 							// L0 - Gib reports

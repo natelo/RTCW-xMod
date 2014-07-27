@@ -388,7 +388,6 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 		{
 			ent->parent->client->pers.ammoPacks++;	
 			write_RoundStats(ent->parent->client->pers.netname, ent->parent->client->pers.ammoPacks, ROUND_AMMOGIVEN);
-			GLOBALSTATS(ent->parent, GLOBAL_AMMOGIVEN, ent->parent->client->pers.ammoPacks);
 		}
 					
 		// everybody likes grenades -- abuse weapon var as grenade type and i as max # grenades class can carry
@@ -550,7 +549,6 @@ int Pickup_Health (gentity_t *ent, gentity_t *other) {
 	{
 		ent->parent->client->pers.medPacks++;		
 		write_RoundStats(ent->parent->client->pers.netname, ent->parent->client->pers.medPacks, ROUND_MEDGIVEN);
-		GLOBALSTATS(ent->parent, GLOBAL_MEDGIVEN, ent->parent->client->pers.medPacks);
 	}
 
 	// L0 - reset poison

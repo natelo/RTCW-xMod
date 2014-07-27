@@ -3,37 +3,6 @@
 // Exporter
 //userInfoStats userStats[HTTP_USERINFO_LIMIT];
 
-void write_globalUserStats(gentity_t *ent, int type, int value) {	
-	/*
-	if (!g_httpStatsUrl.string ||
-		!Q_stricmp(g_httpStatsAPI.string, "") ||
-		!g_httpToken.string ||
-		!Q_stricmp(g_httpToken.string, "none") ||
-		(!g_gamestate.integer == GS_PLAYING))
-	{
-		return;
-	}
-
-	// Check if we have a entry
-	if (!Q_stricmp(userStats[ent->client->ps.clientNum].guid, ent->client->sess.guid)) {
-		userStats[ent->client->ps.clientNum].stats[type].value = value;
-	} 
-	else { // A new entry..
-		userStats[ent->client->ps.clientNum].slot = ent->client->ps.clientNum;
-		Q_strncpyz(userStats[ent->client->ps.clientNum].guid, ent->client->sess.guid, sizeof(userStats[ent->client->ps.clientNum].guid));
-		Q_strncpyz(userStats[ent->client->ps.clientNum].name, ent->client->pers.netname, sizeof(userStats[ent->client->ps.clientNum].name));
-		Q_strncpyz(userStats[ent->client->ps.clientNum].ip, va("%d.%d.%d.%d",
-			ent->client->sess.ip[0],
-			ent->client->sess.ip[1],
-			ent->client->sess.ip[2],
-			ent->client->sess.ip[3]),
-			sizeof(userStats[ent->client->ps.clientNum].ip));
-		userStats[ent->client->ps.clientNum].stats[type].value = value;
-		userStats[ent->client->ps.clientNum].uClass = ent->client->ps.stats[STAT_PLAYER_CLASS];
-	}
-	*/
-}
-
 
 void write_globalMODS(gentity_t *victim, gentity_t *attacker, int weapon) {
 
@@ -45,8 +14,6 @@ void write_globalMODS(gentity_t *victim, gentity_t *attacker, int weapon) {
 	{
 		return;
 	}
-
-
 }
 
 void *globalStats_playersList(void *args) {
@@ -169,7 +136,6 @@ statsMODs MODtoStats(meansOfDeath_t mod) {
 			return STATS_MAX;
 	}
 }
-
 
 void write_globalMODs(gentity_t *victim, meansOfDeath_t mod) {
 

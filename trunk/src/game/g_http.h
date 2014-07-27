@@ -191,7 +191,6 @@ char *http_Query(char *url, char *data);
 //
 // g_http_stats.c
 //
-void write_globalUserStats(gentity_t *ent, int type, int value);
 void write_globalMODs(gentity_t *victim, meansOfDeath_t mod);
 void write_globalKillList(gentity_t *victim, gentity_t *attacker);
 
@@ -202,11 +201,6 @@ void listStructure(int num);
 //
 void *http_sendQuery(void *args);
 qboolean isHttpCommand(gentity_t *ent, char *cmd1, char *cmd2, char *cmd3);
-
-//
-// Macros
-//
-#define GLOBALSTATS(x,y,z) write_globalUserStats(x, y, z)
 
 //
 // Exporters
