@@ -3,14 +3,14 @@
 //
 // Exporters
 //
-extern global_userList_t userStats[];
+extern global_userList_t globalUserStats[];
 extern global_MODs_t globalMODs[];
-extern global_killList_t killList[];
+extern global_killList_t globalKillList[];
 extern g_globalRoundStats_t globalRoundStats[];
 
-global_userList_t userStats[MAX_CLIENTS];
+global_userList_t globalUserStats[MAX_CLIENTS];
 global_MODs_t globalMODs[MAX_CLIENTS];
-global_killList_t killList[MAX_CLIENTS];
+global_killList_t globalKillList[MAX_CLIENTS];
 g_globalRoundStats_t globalRoundStats[1];
 
 /*
@@ -39,8 +39,9 @@ NOTE: This is also used during a match but it's wiped when round ends..
 ============
 */
 void buildUserStats( int entry, int clientNum ) {
+	/*
 	gentity_t *ent;
-
+	
 	ent = &g_entities[clientNum];
 	
 	// Build General info
@@ -86,6 +87,7 @@ void buildUserStats( int entry, int clientNum ) {
 	userStats[entry].stats[GLOBAL_DMG_RECEIVED].value = ent->client->pers.dmgReceived;
 	userStats[entry].stats[GLOBAL_SCORE].value = ent->client->ps.persistant[PERS_SCORE];
 	userStats[entry].stats[GLOBAL_CHICKEN].value = ent->client->pers.chicken;
+	*/
 }
 
 /*
@@ -96,9 +98,6 @@ Fills stats structure so it can be processed..
 void parseClientStats( void ) {
 	gclient_t *cl;
 	int i;
-
-	// Make sure there's no 'leftovers'
-	memset(userStats, 0, sizeof(userStats));
 
 	for (i = 0; i < level.numConnectedClients; i++)	{
 		cl = level.clients + level.sortedClients[i];
@@ -124,27 +123,24 @@ int altGameType( void ) {
 Fills round structure
 ============
 */
-void parseRoundStats( qboolean finished ) {
+void parseRoundStats(global_Stats_t *roundStats, qboolean finished) {
 	char mapName[64];
 
-	// Make sure there's no 'leftovers'
-	memset(globalRoundStats, 0, sizeof(globalRoundStats));
-
 	trap_Cvar_VariableStringBuffer("mapname", mapName, sizeof(mapName));
-	
-	globalRoundStats[0].winner = level.winningTeam;
-	globalRoundStats[0].map = va("%s", mapName);
-	globalRoundStats[0].time = g_nextTimeLimit.value;
-	globalRoundStats[0].round = g_currentRound.integer;
-	globalRoundStats[0].gametype = g_gametype.integer;
-	globalRoundStats[0].altGametype = altGameType();
-	Q_strncpyz(globalRoundStats[0].firstBloodAttacker, level.firstBloodAttacker, sizeof(globalRoundStats[0].firstBloodAttacker));
-	Q_strncpyz(globalRoundStats[0].firstBloodVictim, level.firstBloodVictim, sizeof(globalRoundStats[0].firstBloodVictim));
-	Q_strncpyz(globalRoundStats[0].firstHeadshotAttacker, level.firstHeadshotAttacker, sizeof(globalRoundStats[0].firstHeadshotAttacker));
-	Q_strncpyz(globalRoundStats[0].firstHeadshotVictim, level.firstHeadshotVictim, sizeof(globalRoundStats[0].firstHeadshotVictim));
-	Q_strncpyz(globalRoundStats[0].lastBloodAttacker, level.lastBloodAttacker, sizeof(globalRoundStats[0].lastBloodAttacker));
-	Q_strncpyz(globalRoundStats[0].lastBloodVictim, level.lastBloodVictim, sizeof(globalRoundStats[0].lastBloodVictim));
-	globalRoundStats[0].finishedRound = finished;
+		
+	roundStats->roundStats.winner = level.winningTeam;
+	roundStats->roundStats.map = va("%s", mapName);
+	roundStats->roundStats.time = g_nextTimeLimit.value;
+	roundStats->roundStats.round = g_currentRound.integer;
+	roundStats->roundStats.gametype = g_gametype.integer;
+	roundStats->roundStats.altGametype = altGameType();
+	Q_strncpyz(roundStats->roundStats.firstBloodAttacker, level.firstBloodAttacker, sizeof(roundStats->roundStats.firstBloodAttacker));
+	Q_strncpyz(roundStats->roundStats.firstBloodVictim, level.firstBloodVictim, sizeof(roundStats->roundStats.firstBloodVictim));
+	Q_strncpyz(roundStats->roundStats.firstHeadshotAttacker, level.firstHeadshotAttacker, sizeof(roundStats->roundStats.firstHeadshotAttacker));
+	Q_strncpyz(roundStats->roundStats.firstHeadshotVictim, level.firstHeadshotVictim, sizeof(roundStats->roundStats.firstHeadshotVictim));
+	Q_strncpyz(roundStats->roundStats.lastBloodAttacker, level.lastBloodAttacker, sizeof(roundStats->roundStats.lastBloodAttacker));
+	Q_strncpyz(roundStats->roundStats.lastBloodVictim, level.lastBloodVictim, sizeof(roundStats->roundStats.lastBloodVictim));
+	roundStats->roundStats.finishedRound = finished;
 }
 
 /*
@@ -257,24 +253,24 @@ void write_globalKillList(gentity_t *victim, gentity_t *attacker) {
 
 	if (!webStatsAreEnabled())
 		return;
-
+	
 	// Check if there's already a match
-	if (killList[killer].victim[target].guid == victim->client->sess.guid) {
+	if (globalKillList[killer].victim[target].guid == victim->client->sess.guid) {
 		// Check if client rejoined
-		if (killList[killer].victim[target].token == victim->client->pers.uniqueToken) {
-			killList[killer].victim[target].count = killList[killer].victim[target].count + 1;
+		if (globalKillList[killer].victim[target].token == victim->client->pers.uniqueToken) {
+			globalKillList[killer].victim[target].count = globalKillList[killer].victim[target].count + 1;
 		}
 		else {
-			killList[killer].victim[target].count = 1;			
-			killList[killer].victim[target].token = victim->client->pers.uniqueToken;	// Update token
+			globalKillList[killer].victim[target].count = 1;
+			globalKillList[killer].victim[target].token = victim->client->pers.uniqueToken;	// Update token
 		}
 	} 
 	else { 
 		// Create a new entry - 
 		// Note: No worries if we reset it, as leaving player already fired a packet with data to a web server..
-		killList[killer].victim[target].count = 1;
-		killList[killer].victim[target].token = victim->client->pers.uniqueToken;
-		Q_strncpyz(killList[killer].victim[target].guid, victim->client->sess.guid, sizeof(killList[killer].victim[target].guid));
+		globalKillList[killer].victim[target].count = 1;
+		globalKillList[killer].victim[target].token = victim->client->pers.uniqueToken;
+		Q_strncpyz(globalKillList[killer].victim[target].guid, victim->client->sess.guid, sizeof(globalKillList[killer].victim[target].guid));
 	}
 }
 
@@ -285,18 +281,16 @@ Builds data and fires a packet to a web server
 */
 void *sendGlobalStats(void *args) {	
 	global_Stats_t *globalStats = (global_Stats_t*)args;
-	//g_http_cmd_t *globalStats = (g_http_cmd_t*)args;
 	char *round = NULL;
-	char *players = NULL;
+	char *stats = NULL;
 	char *mods = NULL;
-	char *killList = NULL;
+	char *hitList = NULL;
 	char *data = NULL;	
 
 	// Round Info
-	if (globalStats->roundStats.finishedRound == qtrue)	
-	/*
+	if (globalStats->roundStats.finishedRound == qtrue)
 		round = va(
-			"roundInfo||%d\\%s\\%f\\%i\\%i\\%i\\%s\\%s\\%s\\%s\\%s\\%s",
+			"%d\\%s\\%3.2f\\%i\\%i\\%i\\%s\\%s\\%s\\%s\\%s\\%s",
 			globalStats->roundStats.winner,
 			globalStats->roundStats.map,
 			globalStats->roundStats.time,
@@ -309,16 +303,17 @@ void *sendGlobalStats(void *args) {
 			globalStats->roundStats.firstHeadshotVictim,
 			globalStats->roundStats.lastBloodAttacker,
 			globalStats->roundStats.lastBloodVictim
-		);		
-	*/
-		round = va("roundInfo||%s", globalStats->roundStats.map);		
+		);	
 	else
-		round = "roundInfo||null";
+		round = "null";
 
 	// Build Stats
 	data = va(
-		"data=%s||",
-		round
+		"data=\\\\round=%s\\\\stats=%s\\\\mods=%s\\\\hitList=%s",
+		round,
+		stats,
+		mods,
+		hitList
 	);
 
 	// Send it now
@@ -334,12 +329,15 @@ void *sendGlobalStats(void *args) {
 
 /*
 ============
-Utilizes stuff and sets thing in motion
+Utilizes stuff and sets things in motion
 ============
 */
-void prepGlobalStats( void ) {	
+void prepGlobalStats( qboolean finished ) {	
 	global_Stats_t *globalStats = (global_Stats_t *)malloc(sizeof(global_Stats_t));
-	//g_http_cmd_t *globalStats = (g_http_cmd_t*)malloc(sizeof(g_http_cmd_t));
+
+	// Build Stats now
+	//parseClientStats(globalStats);
+	parseRoundStats(globalStats, finished);
 
 	// Go for it..
 	create_thread(sendGlobalStats, (void*)globalStats);
@@ -355,18 +353,18 @@ void globalStats(qboolean finished) {
 	if (!webStatsAreEnabled())
 		return;
 
-	// Build Stats now
-	parseClientStats();
-	parseRoundStats(finished);
-
 	// Set things in motion
-	prepGlobalStats();
+	prepGlobalStats(finished);
 }
 
-void cleanGlobalStats() {
-
-	memset(userStats, 0, sizeof(userStats));
+/*
+============
+Wipes the structures
+============
+*/
+void cleanGlobalStats( void ) {
+	memset(globalUserStats, 0, sizeof(globalUserStats));
 	memset(globalRoundStats, 0, sizeof(globalRoundStats));
 	memset(globalMODs, 0, sizeof(globalMODs));
-	memset(killList, 0, sizeof(killList));
+	memset(globalKillList, 0, sizeof(globalKillList));
 }
