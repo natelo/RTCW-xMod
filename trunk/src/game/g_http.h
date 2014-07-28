@@ -73,6 +73,7 @@ typedef struct {
 } global_MODs_weapon_s;
 
 typedef struct {
+	int	client;
 	global_MODs_weapon_s mod[STATS_MAX];
 } global_MODs_t;
 

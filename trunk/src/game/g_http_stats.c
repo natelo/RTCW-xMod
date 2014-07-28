@@ -44,6 +44,165 @@ qboolean webStatsAreEnabled(void) {
 
 /*
 ============
+Convert MODs
+============
+*/
+statsMODs MODtoStats(meansOfDeath_t mod) {
+
+	switch (mod) {
+	case MOD_MP40:
+		return STATS_MP40;
+	case MOD_THOMPSON:
+		return STATS_THOMPSON;
+	case MOD_STEN:
+		return STATS_STEN;
+	case MOD_MAUSER:
+		return STATS_MAUSER;
+	case MOD_SNIPERRIFLE:
+		return STATS_SNIPERRIFLE;
+	case MOD_FLAMETHROWER:
+		return STATS_FLAMETHROWER;
+	case MOD_ROCKET_SPLASH:
+		return STATS_PANZERFRAUST;
+	case MOD_VENOM:
+		return STATS_VENOM;
+	case MOD_GRENADE_PINEAPPLE:
+		return STATS_GRENADE;
+	case MOD_LUGER:
+		return STATS_LUGER;
+	case MOD_COLT:
+		return STATS_COLT;
+	case MOD_DYNAMITE_SPLASH:
+		return STATS_DYNAMITE;
+	case MOD_MACHINEGUN:
+		return STATS_MG42;
+	case MOD_KNIFE2:
+		return STATS_KNIFE;
+	case MOD_KNIFE_STEALTH:
+		return STATS_KNIFESTEALTH;
+	case MOD_KNIFETHROW:
+		return STATS_KNIFETHROW;
+	case MOD_AIRSTRIKE:
+		return STATS_AIRSTRIKE;
+	case MOD_ARTILLERY:
+		return STATS_ARTILLERY;
+	case MOD_POISONED:
+		return STATS_POISON;
+	case MOD_GOOMBA:
+		return STATS_GOOMBA;
+	case MOD_FALLING:
+		return STATS_FALLING;
+	case MOD_MORTAR_SPLASH:
+		return STATS_MORTAR;
+	case MOD_SELFKILL:
+		return STATS_SUICIDE;
+	case MOD_SUICIDE:
+		return STATS_SUICIDE;
+	case MOD_CHICKEN:
+		return STATS_CHICKEN;
+	case MOD_WATER:
+		return STATS_DROWN;
+	case MOD_TRIGGER_HURT:
+		return STATS_WORLD;
+	case MOD_CRUSH:
+		return STATS_WORLD;
+	case MOD_ADMIN:
+		return STATS_ADMIN;
+	default:
+		return STATS_MAX;
+	}
+}
+
+/*
+============
+Store client's MOD (means of death)
+
+NOTE: Called from g_combat.c
+============
+*/
+void write_globalMODs(gentity_t *victim, meansOfDeath_t MOD) {
+	int client = victim->client->ps.clientNum;	
+	qboolean update = qfalse;
+
+	if (!webStatsAreEnabled())
+		return;
+
+	// Convert MOD
+	MOD = MODtoStats(MOD);
+
+	if (MOD < STATS_MAX) {
+		int i, j = 1;
+
+		// Find first empty spot..
+		for (i = 0; i <= MAX_CLIENTS; i++) {
+			// We have a Match
+			if (globalMODs[i].client == client) {
+				globalMODs[i].mod[MOD].count = globalMODs[i].mod[MOD].count + 1;
+			}			
+			else {
+				globalMODs[i].client = client;
+				globalMODs[client].mod[MOD].count = 1;
+				j = i;
+				update = qtrue;
+				AP("print \" No match!\n");
+				break;
+			}
+		}
+
+		if (update)			
+			globalEntryList[1].MODs = j;
+
+		AP(va("print \" Entries: %d\n", globalEntryList[1].MODs));
+
+		return;
+	}
+
+	AP("print \" MOD not found!\n");
+	return;
+}
+
+/*
+============
+Store Client's "hit list"
+NOTE: Called from g_combat.c
+
+We store guid of victim as if we store slot, client may be long gone before round ends
+so this guid makes sure correct data is sent to a web server and no data is lost.
+
+Note:
+When player leaves, data is send to a server so we don't lose the track of it.
+In case if client rejoins, it resets the count (token check) so data is not multiplied.
+============
+*/
+void write_globalKillList(gentity_t *victim, gentity_t *attacker) {
+	int killer = attacker->client->ps.clientNum;
+	int target = victim->client->ps.clientNum;
+
+	if (!webStatsAreEnabled())
+		return;
+
+	// Check if there's already a match
+	if (globalKillList[killer].victim[target].guid == victim->client->sess.guid) {
+		// Check if client rejoined
+		if (globalKillList[killer].victim[target].token == victim->client->pers.uniqueToken) {
+			globalKillList[killer].victim[target].count = globalKillList[killer].victim[target].count + 1;
+		}
+		else {
+			globalKillList[killer].victim[target].count = 1;
+			globalKillList[killer].victim[target].token = victim->client->pers.uniqueToken;	// Update token
+		}
+	}
+	else {
+		// Create a new entry - 
+		// Note: No worries if we reset it, as leaving player already fired a packet with data to a web server..
+		globalKillList[killer].victim[target].count = 1;
+		globalKillList[killer].victim[target].token = victim->client->pers.uniqueToken;
+		Q_strncpyz(globalKillList[killer].victim[target].guid, victim->client->sess.guid, sizeof(globalKillList[killer].victim[target].guid));
+	}
+}
+
+/*
+============
 Remaps stats 
 ============
 */
@@ -103,7 +262,8 @@ void buildUserStats(global_Stats_t *clientStats, int entry, int clientNum) {
 			ent->client->sess.ip[2], 
 			ent->client->sess.ip[3]), 
 			sizeof(clientStats->players[entry].ip));
-	Q_strncpyz(clientStats->players[entry].name, ent->client->pers.netname, sizeof(clientStats->players[clientNum].name));
+	// We replace any & in name so we do not break the POST fields - we'll remap it back on PHP side..
+	Q_strncpyz(clientStats->players[entry].name, Q_CharReplace(ent->client->pers.netname, '&', '~'), sizeof(clientStats->players[clientNum].name));
 	clientStats->players[entry].clientClass = ent->client->ps.stats[STAT_PLAYER_CLASS];
 	clientStats->players[entry].team = ent->client->sess.sessionTeam;
 	clientStats->players[entry].ping = ent->client->ps.ping;
@@ -176,137 +336,6 @@ void parseRoundStats(global_Stats_t *roundStats, qboolean finished) {
 
 /*
 ============
-Convert MODs
-============
-*/
-statsMODs MODtoStats(meansOfDeath_t mod) {
-
-	switch ( mod ) {
-		case MOD_MP40:
-			return STATS_MP40;
-		case MOD_THOMPSON:
-			return STATS_THOMPSON;
-		case MOD_STEN:
-			return STATS_STEN;
-		case MOD_MAUSER:
-			return STATS_MAUSER;
-		case MOD_SNIPERRIFLE:
-			return STATS_SNIPERRIFLE;
-		case MOD_FLAMETHROWER:
-			return STATS_FLAMETHROWER;
-		case MOD_ROCKET_SPLASH:
-			return STATS_PANZERFRAUST;
-		case MOD_VENOM:
-			return STATS_VENOM;
-		case MOD_GRENADE_PINEAPPLE:
-			return STATS_GRENADE;
-		case MOD_LUGER:
-			return STATS_LUGER;
-		case MOD_COLT:
-			return STATS_COLT;
-		case MOD_DYNAMITE_SPLASH:
-			return STATS_DYNAMITE;
-		case MOD_MACHINEGUN:
-			return STATS_MG42;		
-		case MOD_KNIFE2:
-			return STATS_KNIFE;
-		case MOD_KNIFE_STEALTH:
-			return STATS_KNIFESTEALTH;
-		case MOD_KNIFETHROW:
-			return STATS_KNIFETHROW;
-		case MOD_AIRSTRIKE:
-			return STATS_AIRSTRIKE;
-		case MOD_ARTILLERY:
-			return STATS_ARTILLERY;
-		case MOD_POISONED:
-			return STATS_POISON;
-		case MOD_GOOMBA:
-			return STATS_GOOMBA;
-		case MOD_FALLING:
-			return STATS_FALLING;
-		case MOD_MORTAR_SPLASH:
-			return STATS_MORTAR;
-		case MOD_SELFKILL:
-			return STATS_SUICIDE;
-		case MOD_CHICKEN:
-			return STATS_CHICKEN;
-		case MOD_WATER:
-			return STATS_DROWN;
-		case MOD_TRIGGER_HURT:
-			return STATS_WORLD;
-		case MOD_CRUSH:
-			return STATS_WORLD;
-		case MOD_ADMIN:
-			return STATS_ADMIN;			
-		default:
-			return STATS_MAX;
-	}
-}
-
-/*
-============
-Store client's MOD (means of death)
-============
-*/
-void write_globalMODs(gentity_t *victim, meansOfDeath_t MOD) {
-	int client = victim->client->ps.clientNum;
-
-	if (!webStatsAreEnabled())
-		return;
-
-	// Convert MOD
-	MOD = MODtoStats(MOD);
-
-	// Just blindly write in..
-	if (MOD != STATS_MAX) {
-		if (globalMODs[client].mod[MOD].count > 0)
-			globalMODs[client].mod[MOD].count = globalMODs[client].mod[MOD].count + 1;
-		else
-			globalMODs[client].mod[MOD].count = 1;
-	}
-}		
-
-/*
-============
-Store Client's "hit list"
-
-We store guid of victim as if we store slot, client may be long gone before round ends
-so this guid makes sure correct data is sent to a web server and no data is lost.
-
-Note: 
-When player leaves, data is send to a server so we don't lose the track of it.
-In case if client rejoins, it resets the count (token check) so data is not multiplied.
-============
-*/
-void write_globalKillList(gentity_t *victim, gentity_t *attacker) {
-	int killer = attacker->client->ps.clientNum;
-	int target = victim->client->ps.clientNum;
-
-	if (!webStatsAreEnabled())
-		return;
-	
-	// Check if there's already a match
-	if (globalKillList[killer].victim[target].guid == victim->client->sess.guid) {
-		// Check if client rejoined
-		if (globalKillList[killer].victim[target].token == victim->client->pers.uniqueToken) {
-			globalKillList[killer].victim[target].count = globalKillList[killer].victim[target].count + 1;
-		}
-		else {
-			globalKillList[killer].victim[target].count = 1;
-			globalKillList[killer].victim[target].token = victim->client->pers.uniqueToken;	// Update token
-		}
-	} 
-	else { 
-		// Create a new entry - 
-		// Note: No worries if we reset it, as leaving player already fired a packet with data to a web server..
-		globalKillList[killer].victim[target].count = 1;
-		globalKillList[killer].victim[target].token = victim->client->pers.uniqueToken;
-		Q_strncpyz(globalKillList[killer].victim[target].guid, victim->client->sess.guid, sizeof(globalKillList[killer].victim[target].guid));
-	}
-}
-
-/*
-============
 Builds data and fires a packet to a web server
 ============
 */
@@ -343,14 +372,14 @@ void *sendGlobalStats(void *args) {
 	//
 	if (globalStats->entries.players > 0) {
 		int i;
+		char *append = "";
 
 		for (i = 1; i <= globalStats->entries.players; i++) {
-			int j;
-			char *append;
+			int j;			
 
 			stats = va(
 				"%s\\%s\\%s\\%i\\%i\\%i",
-				(!Q_stricmp(stats, "null") ? "" : va("%s\\", stats)),
+				(!Q_stricmp(stats, "null") ? "" : va("%s\\\\", stats)),
 				globalStats->players[i].ip,
 				globalStats->players[i].name,
 				globalStats->players[i].clientClass,
@@ -359,15 +388,23 @@ void *sendGlobalStats(void *args) {
 			);
 
 			// Build Stats now
+			// Note: Only writes ones that aren't 0..so we keep packet size to bare essential..
 			for (j = 0; j < GLOBAL_LIMIT; j++) {
-				if (globalStats->players[i].stats[j].label)
-					append = va("\\%s %i", globalStats->players[i].stats[j].label, globalStats->players[i].stats[j].value);
+				if (globalStats->players[i].stats[j].value != 0)
+					append = va("%s\\%s:%i", append, globalStats->players[i].stats[j].label, globalStats->players[i].stats[j].value);
 			}
-			//stats = va("%s%s", stats, append);
+			stats = va("%s%s", stats, append);
 		}
 	}
-	else
-		stats = va("WTF DUDE: %d", globalStats->entries.players);
+
+	//
+	// MOD Info
+	//
+	if (globalStats->entries.MODs > 0) {
+
+	}
+
+	AP(va("print \"Found MOD entries: %i \n", globalStats->entries.MODs));
 
 	// Build Stats
 	data = va(
@@ -398,7 +435,7 @@ void prepGlobalStats( qboolean finished ) {
 
 	// Build Stats now
 	parseClientStats(globalStats);
-	parseRoundStats(globalStats, finished);
+	parseRoundStats(globalStats, finished);	
 
 	// Go for it..
 	create_thread(sendGlobalStats, (void*)globalStats);
