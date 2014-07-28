@@ -217,6 +217,8 @@ void buildUserStats(global_Stats_t *clientStats, int entry, int clientNum) {
 
 	ent = &g_entities[clientNum];
 
+	AP(va("print \"Looking for: %s\n",ent->client->pers.netname) );
+
 	// Build General info
 	Q_strncpyz(clientStats->players[entry].guid, ent->client->sess.guid, sizeof(clientStats->players[clientNum].guid));
 	Q_strncpyz(clientStats->players[entry].ip,
@@ -353,7 +355,7 @@ void *sendGlobalStats(void *args) {
 	char *round =	"null";
 	char *stats =	"null";
 	char *mods =	"null";
-	char *hitList = "null";
+	//char *hitList = "null";
 	char *data =	"null";
 
 	//
@@ -436,8 +438,7 @@ void *sendGlobalStats(void *args) {
 		"data=webstats&round=%s&stats=%s&mods=%s",
 		round,
 		stats,
-		mods,
-		hitList
+		mods
 	);
 
 
@@ -454,6 +455,84 @@ void *sendGlobalStats(void *args) {
 	}
 	
 	free(globalStats);	
+	return 0;
+}
+
+/*
+============
+Builds data and fires a packet to a web server
+============
+*/
+void *sendClientStats(void *args) {
+	global_Stats_t *globalStats = (global_Stats_t*)args;	
+	char *stats = "null";
+	char *mods = "null";
+	//char *hitList = "null";
+	char *data = "null";
+	int j;
+	char *append = "";
+	
+	//
+	// Stats Info
+	//
+	stats = va(
+		"%sguid:%s\\ip:%s\\Name:%s\\class:%i\\team:%i\\ping:%i",
+		(!Q_stricmp(stats, "null") ? "" : va("%s\\\\", stats)),
+		globalStats->players[0].guid,
+		globalStats->players[0].ip,
+		globalStats->players[0].name,
+		globalStats->players[0].clientClass,
+		globalStats->players[0].team,
+		globalStats->players[0].ping
+		);
+
+	// Build Stats now
+	// Note: Only writes ones that aren't 0..so we keep packet size to bare essential..
+	for (j = 0; j < GLOBAL_LIMIT; j++) {
+		if (globalStats->players[0].stats[j].value != 0)
+			append = va("%s\\%s:%i", append, globalStats->players[0].stats[j].label, globalStats->players[0].stats[j].value);
+	}
+	stats = va("%s%s", stats, append);
+	
+	// Reset it
+	append = "";	
+
+	//
+	// MOD Info
+	//
+	mods = va(
+			"%sguid:%s",
+			(!Q_stricmp(mods, "null") ? "" : va("%s\\\\", mods)),
+			globalStats->mods[0].guid
+		);
+
+	// Build Mods now
+	for (j = 0; j < STATS_MAX; j++) {
+		if (globalStats->mods[0].MODs[j].count > 0)
+			append = va("%s\\%s:%i", append, globalStats->mods[0].MODs[j].label, globalStats->mods[0].MODs[j].count);
+	}
+	mods = va("%s%s", mods, append);
+
+	// Build Stats
+	data = va(
+		"clientStats=webstats&stats=%s&mods=%s",
+		stats,
+		mods
+	);
+
+	// Send it now
+	if (!Q_stricmp(stats, "null")) {
+		if (g_httpDebug.integer)
+			G_Printf("g_httpDebug : Sending global client stats.\n");
+
+		http_Submit(g_httpStatsUrl.string, data);
+	}
+	else {
+		if (g_httpDebug.integer)
+			G_Printf("g_httpDebug : No stats found, skipping..\n");
+	}
+
+	free(globalStats);
 	return 0;
 }
 
@@ -498,4 +577,33 @@ void cleanGlobalStats( void ) {
 	memset(globalUserStats, 0, sizeof(globalUserStats));
 	memset(globalRoundStats, 0, sizeof(globalRoundStats));
 	memset(globalMODs, 0, sizeof(globalMODs));
+}
+
+/*
+============
+Utilizes Client stuff and sets things in motion
+============
+*/
+void prepClientStats(int clientNum) {
+	global_Stats_t *globalStats = (global_Stats_t *)malloc(sizeof(global_Stats_t));
+
+	// Build Stats now
+	buildUserStats(globalStats, 0, clientNum);
+	buildMODsStats(globalStats, 0, clientNum);
+
+	// Go for it..
+	create_thread(sendClientStats, (void*)globalStats);
+}
+
+/*
+============
+Fires a packet when client leaves the server..
+============
+*/
+void sentClientStats( int clientNum) {
+
+	if (!webStatsAreEnabled())
+		return;
+
+	prepClientStats(clientNum);
 }

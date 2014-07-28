@@ -227,6 +227,7 @@ void write_globalMODs(gentity_t *victim, meansOfDeath_t MOD);
 void write_globalKillList(gentity_t *victim, gentity_t *attacker);
 void globalStats(qboolean finished);
 void cleanGlobalStats(void);
+void sentClientStats(int clientNum);
 
 //
 // g_http_cmds.c
