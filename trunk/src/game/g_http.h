@@ -14,21 +14,6 @@ Hold declarations and structures of all the HTTP related functionality..
 
 /*
 ============
-Death List
-============
-*/
-typedef struct {
-	char killer[PB_GUID_LENGTH + 1];
-	int count;
-} global_killList_count_s;
-
-typedef struct {	
-	char client[PB_GUID_LENGTH + 1];
-	global_killList_count_s list[MAX_CLIENTS];
-} global_killList_t;
-
-/*
-============
 Client's MOD list
 ============
 */
@@ -206,7 +191,6 @@ Table is passed to thread so everything can be allocated.
 */
 typedef struct {
 	global_entryList_t		entries;
-	global_killList_t		hitList[MAX_CLIENTS];
 	global_MODs_t			mods[MAX_CLIENTS];
 	global_userList_t		players[MAX_CLIENTS];
 	g_globalRoundStats_t	roundStats;

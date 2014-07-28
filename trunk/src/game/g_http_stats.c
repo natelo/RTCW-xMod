@@ -15,13 +15,11 @@ Last Updated: 28.07 / 14
 extern global_entryList_t globalEntryList[];
 extern global_userList_t globalUserStats[];
 extern global_MODs_t globalMODs[];
-extern global_killList_t globalKillList[];
 extern g_globalRoundStats_t globalRoundStats[];
 
 global_entryList_t globalEntryList[1];
 global_userList_t globalUserStats[MAX_CLIENTS];
 global_MODs_t globalMODs[MAX_CLIENTS];
-global_killList_t globalKillList[MAX_CLIENTS];
 g_globalRoundStats_t globalRoundStats[1];
 
 /*
@@ -346,64 +344,6 @@ void parseMODs(global_Stats_t *modStats) {
 
 /*
 ============
-Fill the death list structure
-============
-*/
-void buildDeathStats(global_Stats_t *deathStats, int entry, int cl) {
-	gentity_t *ent = &g_entities[cl];
-	int i = 0, \
-		j = 0, \
-		k = 0,  \
-		v = 0;
-
-	// Go through Killer List
-	for (i = 0; i <= MAX_CLIENTS; i++) {
-
-		// i.e. killerList[slot 2] = guid, count
-		if (ent->client->pers.killerList[i].count > 0) {			
-			
-			//deathStats->hitList[j].client = OWNER GUID
-			Q_strncpyz(deathStats->hitList[j].client, ent->client->sess.guid, sizeof(deathStats->hitList[j].client));
-
-			// Build a new Killer list now
-			for (k = 0; k <= MAX_CLIENTS; k++) {
-				deathStats->hitList[j].list[v].count = ent->client->pers.killerList[i].count;
-				Q_strncpyz(ent->client->pers.killerList[i].guid, deathStats->hitList[j].list[v].killer, sizeof(ent->client->pers.killerList[i].guid));
-
-				v++; // So it pads right..
-			}
-
-			deathStats->entries.hitListClients = j;
-			j++;
-		}
-	}
-}
-
-/*
-============
-Parses Death Stats
-============
-*/
-void parseDeathStats(global_Stats_t *deathStats) {
-	int i = 0, \
-		j = 0;
-
-	for (i = 0; i < MAX_CLIENTS; i++)	{
-		j++;
-
-		if (level.clients[i].pers.connected != CON_CONNECTED)
-			continue;
-
-		// Add entry
-		buildDeathStats(deathStats, j, level.clients[i].ps.clientNum);
-
-		// Store the count
-		deathStats->entries.hitList = j;
-	}
-}
-
-/*
-============
 Builds data and fires a packet to a web server
 ============
 */
@@ -489,35 +429,9 @@ void *sendGlobalStats(void *args) {
 		}
 	}
 	
-	//
-	// Hit List info
-	//
-	if (globalStats->entries.hitList > 0) {
-		int i;
-		char *append = "";
-
-		for (i = 1; i <= globalStats->entries.hitList; i++) {
-			int j;	
-
-			hitList = va(
-				"%sguid:%s",
-				(!Q_stricmp(hitList, "null") ? "" : va("%s\\\\", hitList)),
-				globalStats->hitList[i].client
-			);
-			/*
-			// Build it now
-			for (j = 0; j <= globalStats->entries.hitListClients; j++) {
-				if (globalStats->hitList[i].list[j].count > 0)
-					append = va("\\%s:%d", globalStats->hitList[i].list[j].killer, globalStats->hitList[i].list[j].count);				
-			}
-			*/
-			hitList = va("%s%s", hitList, append);
-		}
-	}
-	
 	// Build Stats
 	data = va(
-		"data=webstats&round=%s&stats=%s&mods=%s&hitList=%s",
+		"data=webstats&round=%s&stats=%s&mods=%s",
 		round,
 		stats,
 		mods,
@@ -546,7 +460,6 @@ void prepGlobalStats( qboolean finished ) {
 	parseClientStats(globalStats);
 	parseRoundStats(globalStats, finished);	
 	parseMODs(globalStats);
-	parseDeathStats(globalStats);
 
 	// Go for it..
 	create_thread(sendGlobalStats, (void*)globalStats);
@@ -576,5 +489,4 @@ void cleanGlobalStats( void ) {
 	memset(globalUserStats, 0, sizeof(globalUserStats));
 	memset(globalRoundStats, 0, sizeof(globalRoundStats));
 	memset(globalMODs, 0, sizeof(globalMODs));
-	memset(globalKillList, 0, sizeof(globalKillList));
 }
