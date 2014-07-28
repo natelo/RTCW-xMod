@@ -14,53 +14,17 @@ Hold declarations and structures of all the HTTP related functionality..
 
 /*
 ============
-MOD Conversions
-============
-*/
-typedef enum {	
-	STATS_MP40,
-	STATS_THOMPSON,
-	STATS_STEN,
-	STATS_MAUSER,
-	STATS_SNIPERRIFLE,
-	STATS_FLAMETHROWER,
-	STATS_PANZERFRAUST,
-	STATS_VENOM,
-	STATS_GRENADE,
-	STATS_LUGER,
-	STATS_COLT,
-	STATS_DYNAMITE,
-	STATS_MG42,
-	STATS_KNIFE,
-	STATS_KNIFESTEALTH,
-	STATS_KNIFETHROW,
-	STATS_AIRSTRIKE,
-	STATS_ARTILLERY,
-	STATS_POISON,
-	STATS_GOOMBA,
-	STATS_FALLING,
-	STATS_MORTAR,
-	STATS_SUICIDE,
-	STATS_CHICKEN,
-	STATS_DROWN,
-	STATS_WORLD,
-	STATS_ADMIN,
-	STATS_MAX
-} statsMODs;
-
-/*
-============
-Kill List
+Death List
 ============
 */
 typedef struct {
-	char guid[PB_GUID_LENGTH + 1];
-	int token;
+	char killer[PB_GUID_LENGTH + 1];
 	int count;
-} global_killList_players_s;
+} global_killList_count_s;
 
 typedef struct {	
-	global_killList_players_s victim[MAX_CLIENTS];
+	char client[PB_GUID_LENGTH + 1];
+	global_killList_count_s list[MAX_CLIENTS];
 } global_killList_t;
 
 /*
@@ -68,14 +32,46 @@ typedef struct {
 Client's MOD list
 ============
 */
-typedef struct {	
-	int count;	
-} global_MODs_weapon_s;
-
 typedef struct {
-	int	client;
-	global_MODs_weapon_s mod[STATS_MAX];
+	int count;
+	char *label;
+} global_MODs_count_s;
+
+typedef struct {	
+	char guid[PB_GUID_LENGTH + 1];
+	global_MODs_count_s MODs[STATS_MAX];
 } global_MODs_t;
+
+static const global_MODs_count_s global_modTypes[] = {
+	{ STATS_MP40, "mp40" },
+	{ STATS_THOMPSON, "thom" },
+	{ STATS_STEN, "sten" },
+	{ STATS_MAUSER, "maur" },
+	{ STATS_SNIPERRIFLE, "snipr" },
+	{ STATS_FLAMETHROWER, "flam" },
+	{ STATS_PANZERFRAUST, "pf" },
+	{ STATS_VENOM, "venm" },
+	{ STATS_GRENADE, "grnd" },
+	{ STATS_LUGER, "lugr" },
+	{ STATS_COLT, "colt" },
+	{ STATS_DYNAMITE, "dyna" },
+	{ STATS_MG42, "mg42" },
+	{ STATS_KNIFE, "knf" },
+	{ STATS_KNIFESTEALTH, "knfs" },
+	{ STATS_KNIFETHROW, "knft" },
+	{ STATS_AIRSTRIKE, "airs" },
+	{ STATS_ARTILLERY, "arty" },
+	{ STATS_POISON, "pois" },
+	{ STATS_GOOMBA, "goom" },
+	{ STATS_FALLING, "fall" },
+	{ STATS_MORTAR, "mrtr" },
+	{ STATS_SUICIDE, "sui" },
+	{ STATS_CHICKEN, "chkn" },
+	{ STATS_DROWN, "drwn" },
+	{ STATS_WORLD, "wrld" },
+	{ STATS_ADMIN, "admn" },
+	{ STATS_MAX, "" }
+};
 
 /*
 ============
@@ -196,21 +192,24 @@ Holds the entry list count for each table
 */
 typedef struct {
 	int hitList;
+	int hitListClients;
 	int MODs;
 	int players;
 } global_entryList_t;
 
 /*
 ============
-Global unified structure
+Unified table
+
+Table is passed to thread so everything can be allocated.
 ============
 */
 typedef struct {
-	global_entryList_t entries;
-	global_killList_t hitList[MAX_CLIENTS];
-	global_MODs_t		mods[MAX_CLIENTS];
-	global_userList_t	players[MAX_CLIENTS];
-	g_globalRoundStats_t roundStats;
+	global_entryList_t		entries;
+	global_killList_t		hitList[MAX_CLIENTS];
+	global_MODs_t			mods[MAX_CLIENTS];
+	global_userList_t		players[MAX_CLIENTS];
+	g_globalRoundStats_t	roundStats;
 } global_Stats_t;
 
 /*

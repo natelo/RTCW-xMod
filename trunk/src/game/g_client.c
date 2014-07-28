@@ -1962,10 +1962,6 @@ void ClientBegin( int clientNum ) {
 		client->ps.isSpy = qfalse;
 		ClientUserinfoChanged(client->ps.clientNum);
 	} 
-
-	// HTTP Round token..
-	if (!client->pers.uniqueToken)
-		client->pers.uniqueToken = level.time;
 // End
 
 	// locate ent at a spawn point

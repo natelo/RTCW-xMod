@@ -493,6 +493,56 @@ typedef struct {
 #define PICKUP_TOUCH	1	// pickup items when touched
 #define PICKUP_FORCE	2	// pickup the next item when touched (and reset to PICKUP_ACTIVATE when done)
 
+
+// L0 - Client MeansOfDeath's (MODs) for web stats parsing
+/*
+============
+MOD Conversions
+============
+*/
+typedef enum {
+	STATS_MP40,
+	STATS_THOMPSON,
+	STATS_STEN,
+	STATS_MAUSER,
+	STATS_SNIPERRIFLE,
+	STATS_FLAMETHROWER,
+	STATS_PANZERFRAUST,
+	STATS_VENOM,
+	STATS_GRENADE,
+	STATS_LUGER,
+	STATS_COLT,
+	STATS_DYNAMITE,
+	STATS_MG42,
+	STATS_KNIFE,
+	STATS_KNIFESTEALTH,
+	STATS_KNIFETHROW,
+	STATS_AIRSTRIKE,
+	STATS_ARTILLERY,
+	STATS_POISON,
+	STATS_GOOMBA,
+	STATS_FALLING,
+	STATS_MORTAR,
+	STATS_SUICIDE,
+	STATS_CHICKEN,
+	STATS_DROWN,
+	STATS_WORLD,
+	STATS_ADMIN,
+	STATS_MAX
+} statsMODs;
+
+typedef struct {
+	int count;
+} web_MODs_s;
+// ~L0
+
+// L0 - Hit List for web stats parsing
+typedef struct {
+	char guid[PB_GUID_LENGTH + 1];
+	int count;
+} web_deathList_s;
+// ~L0
+
 // client data that stays across multiple respawns, but is cleared
 // on each level change or team change at ClientBegin()
 typedef struct {
@@ -602,11 +652,10 @@ typedef struct {
 	int		lifeKillsPeak;
 	int		lifeDeathsPeak;
 
-	// HTTP debounce time
-	int		httpCmdIssued;
-
-	// Token for unique round session
-	int		uniqueToken;
+	// HTTP (Web Stats)
+	int		httpCmdIssued;						// debounce time	
+	web_MODs_s MODs[STATS_MAX];					// Mods
+	web_deathList_s killerList[MAX_CLIENTS];	// Clients that killed the player
 
 	// L0 - End
 } clientPersistant_t;
