@@ -1914,6 +1914,9 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.voteString ) );
 	}
 
+	// L0 - Save command
+	Q_strncpyz(level.voteCommand, arg1, sizeof(level.voteCommand));
+
 	// special case for g_gametype, check for bad values
 	if ( !Q_stricmp( arg1, "g_gametype" ) ) {
 		i = atoi( arg2 );

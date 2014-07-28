@@ -1040,9 +1040,14 @@ Map restart
 void cmd_restart(gentity_t *ent) {
 	char *tag, *log;
 
+	// L0 - Submit global stats
+	if (g_gamestate.integer == GS_PLAYING) {
+		globalStats(qfalse);
+	}
+
 	tag = sortTag(ent);	
 	AP(va("chat \"console: %s has ^3restarted ^7map.\n\"", tag));
-	trap_SendConsoleCommand( EXEC_APPEND, va("map_restart"));		
+	trap_SendConsoleCommand(EXEC_APPEND, va("wait 500; map_restart 0"));
 
 	// Log it
 	log =va("Player %s (IP:%i.%i.%i.%i) has restarted map.", 

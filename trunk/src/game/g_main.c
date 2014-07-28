@@ -2834,6 +2834,16 @@ void CheckVote( void ) {
 			level.voteExecuteTime = level.time + 3000;
 			level.prevVoteExecuteTime = level.time + 4000;
 
+			// L0 - Submit global stats
+			if (g_gamestate.integer == GS_PLAYING && (
+				(!Q_stricmp(level.voteCommand, "map_restart")) ||
+				(!Q_stricmp(level.voteCommand, "nextmap")) ||
+				(!Q_stricmp(level.voteCommand, "map")) ||
+				(!Q_stricmp(level.voteCommand, "g_gametype")))
+				) {
+				globalStats(qfalse);
+			}
+
 // JPW NERVE
 #ifndef PRE_RELEASE_DEMO
 			{

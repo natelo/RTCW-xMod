@@ -440,11 +440,18 @@ void *sendGlobalStats(void *args) {
 		hitList
 	);
 
-	if (g_httpDebug.integer)
-		G_Printf("g_httpDebug : Sending global round stats.\n");
 
 	// Send it now
-	http_Submit(g_httpStatsUrl.string, data);
+	if (globalStats->entries.players > 0) {	
+		if (g_httpDebug.integer)
+			G_Printf("g_httpDebug : Sending global round stats.\n");
+
+		http_Submit(g_httpStatsUrl.string, data);
+	} 
+	else {
+		if (g_httpDebug.integer)
+			G_Printf("g_httpDebug : No stats found, skipping..\n");
+	}
 	
 	free(globalStats);	
 	return 0;

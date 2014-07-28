@@ -845,6 +845,7 @@ typedef struct {
 	char		voteString[MAX_STRING_CHARS];
 	char		voteDisplayString[MAX_STRING_CHARS];
 	int			voteTime;				// level.time vote was called
+	char		voteCommand[64];		// L0 - Clean vote command so we can submit stats if needed
 	int			voteExecuteTime;		// time the vote is executed
 	int			prevVoteExecuteTime;	// JPW NERVE last vote execute time
 	int			voteYes;
