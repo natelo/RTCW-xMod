@@ -104,32 +104,32 @@ static const global_statsMap_stats_s global_statsTypes[] = {
 	{ "kls" },	// 1
 	{ "dth" },	// 2
 	{ "hs" },	// 3
-	{ "Tk" },	// 4
-	{ "Tb" },	// 5
+	{ "tk" },	// 4
+	{ "tb" },	// 5
 	{ "poi" },	// 6
 	{ "rev" },	// 7
-	{ "aGiv" },	// 8
-	{ "mGiv" },	// 9
+	{ "agiv" },	// 8
+	{ "mgiv" },	// 9
 	{ "gbs" },	// 10
 	{ "sui" },	// 11
 	{ "gomb" },	// 12
-	{ "knfT" },	// 13
+	{ "knft" },	// 13
 	{ "knf" },	// 14
-	{ "knfS" },	// 15
-	{ "kllP" },	// 16
-	{ "dthP" },	// 17
-	{ "accF" },	// 18
-	{ "accH" },	// 19
-	{ "dynP" },	// 20
-	{ "dynD" },	// 21
-	{ "mgR" },	// 22
-	{ "ASc" },	// 23
-	{ "ASt" },	// 24
-	{ "ASb" },	// 25
+	{ "knfs" },	// 15
+	{ "kllp" },	// 16
+	{ "dthp" },	// 17
+	{ "accf" },	// 18
+	{ "acch" },	// 19
+	{ "dynp" },	// 20
+	{ "dynd" },	// 21
+	{ "mgr" },	// 22
+	{ "asc" },	// 23
+	{ "ast" },	// 24
+	{ "asb" },	// 25
 	{ "scr" },	// 26
 	{ "chkn" },	// 27
-	{ "dDiv" },	// 28
-	{ "dRec" },	// 29
+	{ "ddiv" },	// 28
+	{ "drec" },	// 29
 	{  "" }	// 30	
 };
 
@@ -139,7 +139,8 @@ typedef struct {
 } global_userList_stats_s;
 
 typedef struct {
-	char name[MAX_NETNAME];
+	char guid[PB_GUID_LENGTH + 1];
+	char name[MAX_NETNAME];	
 	char ip[16];
 	int clientClass;
 	int team;

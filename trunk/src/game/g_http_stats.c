@@ -218,6 +218,7 @@ void buildUserStats(global_Stats_t *clientStats, int entry, int clientNum) {
 	ent = &g_entities[clientNum];
 
 	// Build General info
+	Q_strncpyz(clientStats->players[entry].guid, ent->client->sess.guid, sizeof(clientStats->players[clientNum].guid));
 	Q_strncpyz(clientStats->players[entry].ip,
 		va("%d.%d.%d.%d", 
 			ent->client->sess.ip[0], 
@@ -384,10 +385,11 @@ void *sendGlobalStats(void *args) {
 
 		for (i = 1; i <= globalStats->entries.players; i++) {
 			int j;			
-			// FIXME :: ADD GUID!
+			
 			stats = va(
-				"%s\\IP:%s\\Name:%s\\Class:%i\\Team:%i\\Ping:%i",
+				"%sguid:%s\\ip:%s\\Name:%s\\class:%i\\team:%i\\ping:%i",
 				(!Q_stricmp(stats, "null") ? "" : va("%s\\\\", stats)),
+				globalStats->players[i].guid,
 				globalStats->players[i].ip,
 				globalStats->players[i].name,
 				globalStats->players[i].clientClass,
