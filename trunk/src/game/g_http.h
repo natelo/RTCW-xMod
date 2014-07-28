@@ -14,42 +14,6 @@ Hold declarations and structures of all the HTTP related functionality..
 
 /*
 ============
-Stat flags
-============
-*/
-#define GLOBAL_KILLS			1
-#define GLOBAL_DEATHS			2
-#define GLOBAL_HEADSHOTS		3
-#define GLOBAL_TEAMKILLS		4
-#define GLOBAL_TEAMBLEED		5
-#define GLOBAL_POISON			6
-#define GLOBAL_REVIVES			7
-#define GLOBAL_AMMOGIVEN		8
-#define GLOBAL_MEDGIVEN			9
-#define GLOBAL_GIBS				10
-#define GLOBAL_SUICIDES			11
-#define GLOBAL_GOOMBAS			12
-#define GLOBAL_KNIFETHROW		13
-#define GLOBAL_KNIFE			14
-#define GLOBAL_KNIFE_STEALTH	15
-#define GLOBAL_KILLPEAK			16
-#define GLOBAL_DEATHPEAK		17
-#define GLOBAL_SHOTSFIRED		18
-#define GLOBAL_SHOTSHIT			19
-#define GLOBAL_DYNOPLANTED		20
-#define GLOBAL_DYNODISARMED		21
-#define GLOBAL_MGREPAIRED		22
-#define GLOBAL_ASCALLED			22
-#define GLOBAL_ASTHROWN			23
-#define GLOBAL_ASBLOCKED		24
-#define GLOBAL_SCORE			25
-#define GLOBAL_CHICKEN			26
-#define GLOBAL_DMG_GIVEN		27
-#define GLOBAL_DMG_RECEIVED		28
-#define GLOBAL_LIMIT			29
-
-/*
-============
 MOD Conversions
 ============
 */
@@ -117,8 +81,79 @@ typedef struct {
 Client Stats
 ============
 */
+typedef enum {
+	GLOBAL_KILLS,			// 1
+	GLOBAL_DEATHS,			// 2
+	GLOBAL_HEADSHOTS,		// 3
+	GLOBAL_TEAMKILLS,		// 4
+	GLOBAL_TEAMBLEED,		// 5
+	GLOBAL_POISON,			// 6
+	GLOBAL_REVIVES,			// 7
+	GLOBAL_AMMOGIVEN,		// 8
+	GLOBAL_MEDGIVEN,		// 9
+	GLOBAL_GIBS,			// 10
+	GLOBAL_SUICIDES,		// 11
+	GLOBAL_GOOMBAS,			// 12
+	GLOBAL_KNIFETHROW,		// 13
+	GLOBAL_KNIFE,			// 14
+	GLOBAL_KNIFE_STEALTH,	// 15
+	GLOBAL_KILLPEAK,		// 16
+	GLOBAL_DEATHPEAK,		// 17
+	GLOBAL_SHOTSFIRED,		// 18
+	GLOBAL_SHOTSHIT,		// 19
+	GLOBAL_DYNOPLANTED,		// 20
+	GLOBAL_DYNODISARMED,	// 21
+	GLOBAL_MGREPAIRED,		// 22
+	GLOBAL_ASCALLED,		// 23
+	GLOBAL_ASTHROWN,		// 24
+	GLOBAL_ASBLOCKED,		// 25
+	GLOBAL_SCORE,			// 26
+	GLOBAL_CHICKEN,			// 27
+	GLOBAL_DMG_GIVEN,		// 28
+	GLOBAL_DMG_RECEIVED,	// 29
+	GLOBAL_LIMIT
+} global_StatsMap_list_t;
+
+typedef struct {	
+	char *label;
+} global_statsMap_stats_s;
+
+static const global_statsMap_stats_s global_statsTypes[] = {
+	{ "kls" },	// 1
+	{ "dth" },	// 2
+	{ "hs" },	// 3
+	{ "Tk" },	// 4
+	{ "Tb" },	// 5
+	{ "poi" },	// 6
+	{ "rev" },	// 7
+	{ "aGiv" },	// 8
+	{ "mGiv" },	// 9
+	{ "gbs" },	// 10
+	{ "sui" },	// 11
+	{ "gomb" },	// 12
+	{ "knfT" },	// 13
+	{ "knf" },	// 14
+	{ "knfS" },	// 15
+	{ "kllP" },	// 16
+	{ "dthP" },	// 17
+	{ "accF" },	// 18
+	{ "accH" },	// 19
+	{ "dynP" },	// 20
+	{ "dynD" },	// 21
+	{ "mgR" },	// 22
+	{ "ASc" },	// 23
+	{ "ASt" },	// 24
+	{ "ASb" },	// 25
+	{ "scr" },	// 26
+	{ "chkn" },	// 27
+	{ "dDiv" },	// 28
+	{ "dRec" },	// 29
+	{  "" }	// 30	
+};
+
 typedef struct {
 	int value;
+	char *label;
 } global_userList_stats_s;
 
 typedef struct {
@@ -153,10 +188,24 @@ typedef struct {
 
 /*
 ============
+Entry Table
+
+Holds the entry list count for each table
+============
+*/
+typedef struct {
+	int hitList;
+	int MODs;
+	int players;
+} global_entryList_t;
+
+/*
+============
 Global unified structure
 ============
 */
 typedef struct {
+	global_entryList_t entries;
 	global_killList_t hitList[MAX_CLIENTS];
 	global_MODs_t		mods[MAX_CLIENTS];
 	global_userList_t	players[MAX_CLIENTS];

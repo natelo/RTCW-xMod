@@ -12,11 +12,13 @@ Last Updated: 28.07 / 14
 //
 // Exporters
 //
+extern global_entryList_t globalEntryList[];
 extern global_userList_t globalUserStats[];
 extern global_MODs_t globalMODs[];
 extern global_killList_t globalKillList[];
 extern g_globalRoundStats_t globalRoundStats[];
 
+global_entryList_t globalEntryList[1];
 global_userList_t globalUserStats[MAX_CLIENTS];
 global_MODs_t globalMODs[MAX_CLIENTS];
 global_killList_t globalKillList[MAX_CLIENTS];
@@ -35,68 +37,82 @@ qboolean webStatsAreEnabled(void) {
 		!Q_stricmp(g_httpToken.string, "none") ||
 		(!g_gamestate.integer == GS_PLAYING))
 	{
-		return qfalse;;
+		return qfalse;
 	}
 	return qtrue;
 }
 
 /*
 ============
-Dumps user stats into a structure..
-
-NOTE: This is also used during a match but it's wiped when round ends..
+Remaps stats 
 ============
 */
-void buildUserStats( int entry, int clientNum ) {
-	/*
+int remapStats(int type, gentity_t *ent) {
+
+	switch ( type ) {
+		case GLOBAL_KILLS:			return ent->client->pers.kills;
+		case GLOBAL_DEATHS:			return ent->client->pers.deaths;
+		case GLOBAL_HEADSHOTS:		return ent->client->pers.headshots;
+		case GLOBAL_TEAMKILLS:		return ent->client->pers.teamKills;
+		case GLOBAL_TEAMBLEED:		return ent->client->pers.dmgTeam;
+		case GLOBAL_POISON:			return ent->client->pers.poison;
+		case GLOBAL_REVIVES:		return ent->client->pers.revives;
+		case GLOBAL_AMMOGIVEN:		return ent->client->pers.ammoPacks;
+		case GLOBAL_MEDGIVEN:		return ent->client->pers.medPacks;
+		case GLOBAL_GIBS:			return ent->client->pers.gibs;
+		case GLOBAL_SUICIDES:		return ent->client->pers.suicides;
+		case GLOBAL_GOOMBAS:		return ent->client->pers.goomba;
+		case GLOBAL_KNIFETHROW:		return ent->client->pers.knifeKills;
+		case GLOBAL_KNIFE:			return ent->client->pers.stabs;
+		case GLOBAL_KNIFE_STEALTH:	return ent->client->pers.fastStabs;
+		case GLOBAL_KILLPEAK:		return ent->client->pers.lifeKillsPeak;
+		case GLOBAL_DEATHPEAK:		return ent->client->pers.lifeDeathsPeak;
+		case GLOBAL_SHOTSFIRED:		return ent->client->pers.acc_shots;
+		case GLOBAL_SHOTSHIT:		return ent->client->pers.acc_hits;
+		case GLOBAL_DYNOPLANTED:	return ent->client->pers.dynoPlanted;
+		case GLOBAL_DYNODISARMED:	return ent->client->pers.dynoDisarmed;
+		case GLOBAL_MGREPAIRED:		return ent->client->pers.mgRepair;
+		case GLOBAL_ASCALLED:		return ent->client->pers.AScalled;
+		case GLOBAL_ASTHROWN:		return ent->client->pers.ASthrown;
+		case GLOBAL_ASBLOCKED:		return ent->client->pers.ASblocked;
+		case GLOBAL_DMG_GIVEN:		return ent->client->pers.dmgGiven;
+		case GLOBAL_DMG_RECEIVED:	return ent->client->pers.dmgReceived;
+		case GLOBAL_SCORE:			return ent->client->ps.persistant[PERS_SCORE];
+		case GLOBAL_CHICKEN:		return ent->client->pers.chicken;
+		default:					return 0;
+	}
+	return 0;
+}
+
+/*
+============
+Dumps user stats into a structure..
+============
+*/
+void buildUserStats(global_Stats_t *clientStats, int entry, int clientNum) {	
 	gentity_t *ent;
-	
+	int i;
+
 	ent = &g_entities[clientNum];
-	
+
 	// Build General info
-	Q_strncpyz(userStats[entry].ip, 
+	Q_strncpyz(clientStats->players[entry].ip,
 		va("%d.%d.%d.%d", 
 			ent->client->sess.ip[0], 
 			ent->client->sess.ip[1], 
 			ent->client->sess.ip[2], 
 			ent->client->sess.ip[3]), 
-			sizeof(userStats[entry].ip));
-	Q_strncpyz(userStats[entry].name, ent->client->pers.netname, sizeof(userStats[clientNum].name));
-	userStats[entry].clientClass = ent->client->ps.stats[STAT_PLAYER_CLASS];
-	userStats[entry].team = ent->client->sess.sessionTeam;
-	userStats[entry].ping = ent->client->ps.ping;
+			sizeof(clientStats->players[entry].ip));
+	Q_strncpyz(clientStats->players[entry].name, ent->client->pers.netname, sizeof(clientStats->players[clientNum].name));
+	clientStats->players[entry].clientClass = ent->client->ps.stats[STAT_PLAYER_CLASS];
+	clientStats->players[entry].team = ent->client->sess.sessionTeam;
+	clientStats->players[entry].ping = ent->client->ps.ping;
 	
 	// Build Stats
-	userStats[entry].stats[GLOBAL_KILLS].value = ent->client->pers.kills;
-	userStats[entry].stats[GLOBAL_DEATHS].value = ent->client->pers.deaths;
-	userStats[entry].stats[GLOBAL_HEADSHOTS].value = ent->client->pers.headshots;
-	userStats[entry].stats[GLOBAL_TEAMKILLS].value = ent->client->pers.teamKills;
-	userStats[entry].stats[GLOBAL_TEAMBLEED].value = ent->client->pers.dmgTeam;
-	userStats[entry].stats[GLOBAL_POISON].value = ent->client->pers.poison;
-	userStats[entry].stats[GLOBAL_REVIVES].value = ent->client->pers.revives;
-	userStats[entry].stats[GLOBAL_AMMOGIVEN].value = ent->client->pers.ammoPacks;
-	userStats[entry].stats[GLOBAL_MEDGIVEN].value = ent->client->pers.medPacks;
-	userStats[entry].stats[GLOBAL_GIBS].value = ent->client->pers.gibs;
-	userStats[entry].stats[GLOBAL_SUICIDES].value = ent->client->pers.suicides;
-	userStats[entry].stats[GLOBAL_GOOMBAS].value = ent->client->pers.goomba;
-	userStats[entry].stats[GLOBAL_KNIFETHROW].value = ent->client->pers.knifeKills;
-	userStats[entry].stats[GLOBAL_KNIFE].value = ent->client->pers.stabs;
-	userStats[entry].stats[GLOBAL_KNIFE_STEALTH].value = ent->client->pers.fastStabs;
-	userStats[entry].stats[GLOBAL_KILLPEAK].value = ent->client->pers.lifeKillsPeak;
-	userStats[entry].stats[GLOBAL_DEATHPEAK].value = ent->client->pers.lifeDeathsPeak;
-	userStats[entry].stats[GLOBAL_SHOTSFIRED].value = ent->client->pers.acc_shots;
-	userStats[entry].stats[GLOBAL_SHOTSHIT].value = ent->client->pers.acc_hits;
-	userStats[entry].stats[GLOBAL_DYNOPLANTED].value = ent->client->pers.dynoPlanted;
-	userStats[entry].stats[GLOBAL_DYNODISARMED].value = ent->client->pers.dynoDisarmed;
-	userStats[entry].stats[GLOBAL_MGREPAIRED].value = ent->client->pers.mgRepair;
-	userStats[entry].stats[GLOBAL_ASCALLED].value = ent->client->pers.AScalled;
-	userStats[entry].stats[GLOBAL_ASTHROWN].value = ent->client->pers.ASthrown;
-	userStats[entry].stats[GLOBAL_ASBLOCKED].value = ent->client->pers.ASblocked;
-	userStats[entry].stats[GLOBAL_DMG_GIVEN].value = ent->client->pers.dmgGiven;
-	userStats[entry].stats[GLOBAL_DMG_RECEIVED].value = ent->client->pers.dmgReceived;
-	userStats[entry].stats[GLOBAL_SCORE].value = ent->client->ps.persistant[PERS_SCORE];
-	userStats[entry].stats[GLOBAL_CHICKEN].value = ent->client->pers.chicken;
-	*/
+	for (i = 0; i < GLOBAL_LIMIT; i++) {	
+		clientStats->players[entry].stats[i].value = remapStats(i, ent);
+		clientStats->players[entry].stats[i].label = global_statsTypes[i].label;
+	}
 }
 
 /*
@@ -104,15 +120,21 @@ void buildUserStats( int entry, int clientNum ) {
 Fills stats structure so it can be processed..
 ============
 */
-void parseClientStats( void ) {
-	gclient_t *cl;
-	int i;
+void parseClientStats(global_Stats_t *clientStats) {	
+	int i=0, \
+		j=0;
 
-	for (i = 0; i < level.numConnectedClients; i++)	{
-		cl = level.clients + level.sortedClients[i];
-		
-		if (cl->pers.connected == CON_CONNECTED)
-			buildUserStats(i, cl->ps.clientNum);
+	for (i = 0; i < MAX_CLIENTS; i++)	{		
+		j++;
+
+		if (level.clients[i].pers.connected != CON_CONNECTED)
+			continue;
+
+		// Add entry
+		buildUserStats(clientStats, j, level.clients[i].ps.clientNum);
+
+		// Store the count
+		clientStats->entries.players = j;		
 	}
 }
 
@@ -288,49 +310,79 @@ void write_globalKillList(gentity_t *victim, gentity_t *attacker) {
 Builds data and fires a packet to a web server
 ============
 */
-void *sendGlobalStats(void *args) {	
+void *sendGlobalStats(void *args) {
 	global_Stats_t *globalStats = (global_Stats_t*)args;
-	char *round = NULL;
-	char *stats = NULL;
-	char *mods = NULL;
-	char *hitList = NULL;
-	char *data = NULL;	
+	char *round =	"null";
+	char *stats =	"null";
+	char *mods =	"null";
+	char *hitList = "null";
+	char *data =	"null";
 
+	//
 	// Round Info
+	//
 	if (globalStats->roundStats.finishedRound == qtrue)
 		round = va(
-			"%d\\%s\\%3.2f\\%i\\%i\\%i\\%s\\%s\\%s\\%s\\%s\\%s",
-			globalStats->roundStats.winner,
-			globalStats->roundStats.map,
-			globalStats->roundStats.time,
-			globalStats->roundStats.round,
-			globalStats->roundStats.gametype,
-			globalStats->roundStats.altGametype,
-			globalStats->roundStats.firstBloodAttacker,
-			globalStats->roundStats.firstBloodVictim,
-			globalStats->roundStats.firstHeadshotAttacker,
-			globalStats->roundStats.firstHeadshotVictim,
-			globalStats->roundStats.lastBloodAttacker,
-			globalStats->roundStats.lastBloodVictim
-		);	
+		"%d\\%s\\%3.2f\\%i\\%i\\%i\\%s\\%s\\%s\\%s\\%s\\%s",
+		globalStats->roundStats.winner,
+		globalStats->roundStats.map,
+		globalStats->roundStats.time,
+		globalStats->roundStats.round,
+		globalStats->roundStats.gametype,
+		globalStats->roundStats.altGametype,
+		globalStats->roundStats.firstBloodAttacker,
+		globalStats->roundStats.firstBloodVictim,
+		globalStats->roundStats.firstHeadshotAttacker,
+		globalStats->roundStats.firstHeadshotVictim,
+		globalStats->roundStats.lastBloodAttacker,
+		globalStats->roundStats.lastBloodVictim
+	);
+
+	//
+	// Stats Info
+	//
+	if (globalStats->entries.players > 0) {
+		int i;
+
+		for (i = 1; i <= globalStats->entries.players; i++) {
+			int j;
+			char *append;
+
+			stats = va(
+				"%s\\%s\\%s\\%i\\%i\\%i",
+				(!Q_stricmp(stats, "null") ? "" : va("%s\\", stats)),
+				globalStats->players[i].ip,
+				globalStats->players[i].name,
+				globalStats->players[i].clientClass,
+				globalStats->players[i].team,
+				globalStats->players[i].ping
+			);
+
+			// Build Stats now
+			for (j = 0; j < GLOBAL_LIMIT; j++) {
+				if (globalStats->players[i].stats[j].label)
+					append = va("\\%s %i", globalStats->players[i].stats[j].label, globalStats->players[i].stats[j].value);
+			}
+			//stats = va("%s%s", stats, append);
+		}
+	}
 	else
-		round = "null";
+		stats = va("WTF DUDE: %d", globalStats->entries.players);
 
 	// Build Stats
 	data = va(
-		"data=\\\\round=%s\\\\stats=%s\\\\mods=%s\\\\hitList=%s",
+		"round=%s&stats=%s&mods=%s&hitList=%s",
 		round,
 		stats,
 		mods,
 		hitList
 	);
+	
+	if (g_httpDebug.integer)
+		G_Printf("g_httpDebug : Sending global round stats.\n");
 
 	// Send it now
-	if (g_httpDebug.integer)
-		AP("print \"g_httpDebug : Sending global round stats.\n\"");
-
 	http_Submit(g_httpStatsUrl.string, data);
-	
 	
 	free(globalStats);	
 	return 0;
@@ -345,7 +397,7 @@ void prepGlobalStats( qboolean finished ) {
 	global_Stats_t *globalStats = (global_Stats_t *)malloc(sizeof(global_Stats_t));
 
 	// Build Stats now
-	//parseClientStats(globalStats);
+	parseClientStats(globalStats);
 	parseRoundStats(globalStats, finished);
 
 	// Go for it..
@@ -372,6 +424,7 @@ Wipes the structures
 ============
 */
 void cleanGlobalStats( void ) {
+	memset(globalEntryList, 0, sizeof(globalEntryList));
 	memset(globalUserStats, 0, sizeof(globalUserStats));
 	memset(globalRoundStats, 0, sizeof(globalRoundStats));
 	memset(globalMODs, 0, sizeof(globalMODs));

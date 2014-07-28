@@ -868,15 +868,4 @@ void stats_RoundStats(void) {
 	level.statsNum++;
 }
 
-/*
-===========
-trackStats
-
-Basically a wrapper so all stats are tracked in one place
-===========
-*/
-void trackStats(gentity_t *ent, int score, int type) {
-
-
-}
 

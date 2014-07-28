@@ -1468,6 +1468,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	level.time = levelTime;
 	level.startTime = levelTime;
 
+	// L0 - Global Stats
+	cleanGlobalStats();
+
 	level.snd_fry = G_SoundIndex("sound/player/fry.wav");	// FIXME standing in lava / slime
 	level.bulletRicochetSound = G_SoundIndex("bulletRicochet");
 	level.snipersound = G_SoundIndex( "sound/weapons/mauser/mauserf1.wav" );
