@@ -2836,11 +2836,14 @@ void CheckVote( void ) {
 
 			// L0 - Submit global stats
 			if (g_gamestate.integer == GS_PLAYING && (
-				(!Q_stricmp(level.voteCommand, "map_restart")) ||
-				(!Q_stricmp(level.voteCommand, "nextmap")) ||
-				(!Q_stricmp(level.voteCommand, "map")) ||
-				(!Q_stricmp(level.voteCommand, "g_gametype")))
-				) {
+				(!Q_stricmp(level.voteCommand, "map_restart")) 
+				/*
+				// Removed this because they can be abused - Call fakeMap - submit stats and repeat..
+				|| (!Q_stricmp(level.voteCommand, "nextmap")) 
+				|| /*(!Q_stricmp(level.voteCommand, "map")) 
+				|| (!Q_stricmp(level.voteCommand, "g_gametype"))*/ 
+				)
+			) {
 				globalStats(qfalse);
 			}
 

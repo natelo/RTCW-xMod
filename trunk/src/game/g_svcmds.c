@@ -222,7 +222,7 @@ Svcmd_ForceTeam_f
 forceteam <player> <team>
 ===================
 */
-void	Svcmd_ForceTeam_f( void ) {
+void Svcmd_ForceTeam_f( void ) {
 	gclient_t	*cl;
 	char		str[MAX_TOKEN_CHARS];
 
