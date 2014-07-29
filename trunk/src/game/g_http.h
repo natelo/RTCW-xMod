@@ -23,7 +23,7 @@ typedef struct {
 } global_MODs_count_s;
 
 typedef struct {	
-	char guid[PB_GUID_LENGTH + 1];
+	char guid[PB_GUID_LENGTH];
 	global_MODs_count_s MODs[STATS_MAX];
 } global_MODs_t;
 
@@ -139,7 +139,7 @@ typedef struct {
 } global_userList_stats_s;
 
 typedef struct {
-	char guid[PB_GUID_LENGTH + 1];
+	char guid[PB_GUID_LENGTH];
 	char name[MAX_NETNAME];	
 	char ip[16];
 	int clientClass;
@@ -160,12 +160,12 @@ typedef struct {
 	int round;
 	int gametype;
 	int altGametype; // Obj, DM..
-	char firstBloodAttacker[PB_GUID_LENGTH + 1];
-	char firstBloodVictim[PB_GUID_LENGTH + 1];
-	char firstHeadshotAttacker[PB_GUID_LENGTH + 1];
-	char firstHeadshotVictim[PB_GUID_LENGTH + 1];
-	char lastBloodAttacker[PB_GUID_LENGTH + 1];
-	char lastBloodVictim[PB_GUID_LENGTH + 1];
+	char firstBloodAttacker[PB_GUID_LENGTH];
+	char firstBloodVictim[PB_GUID_LENGTH];
+	char firstHeadshotAttacker[PB_GUID_LENGTH];
+	char firstHeadshotVictim[PB_GUID_LENGTH];
+	char lastBloodAttacker[PB_GUID_LENGTH];
+	char lastBloodVictim[PB_GUID_LENGTH];
 	qboolean finishedRound;	// If round is cut short..	
 } g_globalRoundStats_t;
 

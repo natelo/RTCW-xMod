@@ -1494,7 +1494,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	char	userinfo[MAX_INFO_STRING];
 
 	// L0 - New stuff
-//	char guid[PB_GUID_LENGTH + 1]; 
+//	char guid[PB_GUID_LENGTH]; 
 //	char *reason;
 	// End
 
@@ -1742,7 +1742,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	gclient_t	*client;
 	char		userinfo[MAX_INFO_STRING];
 	gentity_t	*ent;
-	char		guid[PB_GUID_LENGTH + 1];
+	char		guid[PB_GUID_LENGTH];
 	qboolean	ignored = qfalse;
 
 	ent = &g_entities[ clientNum ];

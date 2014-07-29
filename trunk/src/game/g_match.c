@@ -592,7 +592,7 @@ NOTE 2:
 */
 typedef struct GUID_s
 {
-	char	guid[PB_GUID_LENGTH + 1];
+	char	guid[PB_GUID_LENGTH];
 	int		axisLives;
 	int		alliedLives;
 } GUID_t;
@@ -609,7 +609,7 @@ void AddMaxLivesGUID( char *guid )
 		G_Printf ("[MaxLives] Structure is full!\n");
 		return;
 	}
-	Q_strncpyz (lifeGUIDs[lifeEntries].guid, guid, PB_GUID_LENGTH + 1);	
+	Q_strncpyz (lifeGUIDs[lifeEntries].guid, guid, PB_GUID_LENGTH);	
 	lifeGUIDs[lifeEntries].axisLives = -2;
 	lifeGUIDs[lifeEntries].alliedLives = -2;
 	lifeEntries++;

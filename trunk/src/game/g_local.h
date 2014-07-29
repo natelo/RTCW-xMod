@@ -451,7 +451,7 @@ typedef enum {
 } admLvls_t;
 
 // PB
-#define PB_GUID_LENGTH 32
+#define PB_GUID_LENGTH 33 // 32 + trailing zero
 
 // L0 - End
 
@@ -479,7 +479,7 @@ typedef struct {
 	admLvls_t	admin;				// Admins
 	int			incognito;			// Incognito for admins..
 	unsigned char ip[4];			// IPs
-	char		guid[PB_GUID_LENGTH + 1];
+	char		guid[PB_GUID_LENGTH];
 	int			ignored;			// Ignored clients
 	int			selectedWeapon;		// If enabled allows mp40, sten, thompson..
 	int			clientFlags;		// Sort some stuff based upon user settings
@@ -538,7 +538,7 @@ typedef struct {
 
 // L0 - Hit List for web stats parsing
 typedef struct {
-	char guid[PB_GUID_LENGTH + 1];
+	char guid[PB_GUID_LENGTH];
 	int count;
 } web_deathList_s;
 // ~L0
@@ -961,12 +961,12 @@ typedef struct {
 	qboolean	statsStarted;
 	// Global Stats [round]
 	int			winningTeam;
-	char		firstBloodAttacker[PB_GUID_LENGTH + 1];
-	char		firstBloodVictim[PB_GUID_LENGTH + 1];
-	char		firstHeadshotAttacker[PB_GUID_LENGTH + 1];
-	char		firstHeadshotVictim[PB_GUID_LENGTH + 1];
-	char		lastBloodAttacker[PB_GUID_LENGTH + 1];
-	char		lastBloodVictim[PB_GUID_LENGTH + 1];
+	char		firstBloodAttacker[PB_GUID_LENGTH];
+	char		firstBloodVictim[PB_GUID_LENGTH];
+	char		firstHeadshotAttacker[PB_GUID_LENGTH];
+	char		firstHeadshotVictim[PB_GUID_LENGTH];
+	char		lastBloodAttacker[PB_GUID_LENGTH];
+	char		lastBloodVictim[PB_GUID_LENGTH];
 	// end
 } level_locals_t;
 
