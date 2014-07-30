@@ -1981,6 +1981,6 @@ qboolean isCustomMOD(meansOfDeath_t mod);
 #include "g_stats.h"
 #include "g_threads.h"
 #include "g_http.h"
-#include "g_http2.h"
+#include "g_statsUnified.h"
 
 #endif // ~_G_LOCAL_H
