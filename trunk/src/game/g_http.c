@@ -163,7 +163,7 @@ void http_Submit(char *url, char *data) {
 
 	ParseURL(url, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port);
 
-	if (!g_httpIgnoreSafeSize.integer && strlen(data) >= UFILE_SIZELIMIT) {		
+	if (!g_httpIgnoreSafeSize.integer && strlen(data) > UFILE_SIZELIMIT) {		
 		G_LogPrintf("Request is too big - Web Submitting cancelled.\n");
 		G_LogPrintf("You can disable the limit [g_httpIgnoreSafeSize 1] at your own risk!\n");
 		return;
@@ -273,7 +273,7 @@ void http_SubmitFile(char *url, char *file, qboolean wipe) {
 		return;
 	}
 
-	if (!g_httpIgnoreSafeSize.integer && fsize(fh) >= UFILE_SIZELIMIT) {
+	if (!g_httpIgnoreSafeSize.integer && fsize(fh) > UFILE_SIZELIMIT) {
 		fclose(fh);
 		G_LogPrintf("%s file is too big - Web Submitting cancelled.\n", file);
 		G_LogPrintf("You can disable the limit [g_httpIgnoreSafeSize 1] at your own risk!\n");
