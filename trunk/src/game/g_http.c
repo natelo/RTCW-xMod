@@ -212,6 +212,10 @@ Just wipes the file..so size doesn't kill the server on upload
 void wipeContets(char *file) {
 	FILE *fh;	
 
+	// We call it however we do but ultimatively, choice doesn't depend of us..
+	if (!g_httpFlushFile.integer)
+		return;
+
 	fh = fopen(file, "w");
 
 	if (fh)

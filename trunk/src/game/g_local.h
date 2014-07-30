@@ -1521,6 +1521,8 @@ extern vmCvar_t		g_httpToken;
 extern vmCvar_t		g_httpStatsUrl;
 extern vmCvar_t		g_httpStatsAPI;
 extern vmCvar_t		g_httpDebug;
+extern vmCvar_t		g_httpUseThreads;
+extern vmCvar_t		g_httpFlushFile;
 
 // Stats
 extern vmCvar_t		g_doubleKills;

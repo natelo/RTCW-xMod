@@ -32,7 +32,7 @@ Grabs the file and sends it..
 ============
 */
 void *http_sendStatsFile(void *args) {	
-	http_SubmitFile(g_httpStatsUrl.string, WEBSTATS_LOG, qfalse); // CHANGE TO TRUE..
+	http_SubmitFile(g_httpStatsUrl.string, WEBSTATS_LOG, qtrue);
 
 	if (g_httpDebug.integer)
 		G_LogPrintf("Thread destroyed.\n");
@@ -49,7 +49,11 @@ void globalStats_submit( void ) {
 
 	if (!webStatsAreEnabled())
 		return;
-		
-	create_thread(http_sendStatsFile, NULL);
+	
+	if (g_httpUseThreads.integer)
+		create_thread(http_sendStatsFile, NULL);
+	else
+		http_SubmitFile(g_httpStatsUrl.string, WEBSTATS_LOG, qtrue);
+
 	return;
 }

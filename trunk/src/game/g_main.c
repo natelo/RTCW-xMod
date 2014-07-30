@@ -298,6 +298,8 @@ vmCvar_t	g_httpToken;		// Server token
 vmCvar_t	g_httpStatsUrl;		// URL to post stats
 vmCvar_t	g_httpStatsAPI;		// URL for stats interaction
 vmCvar_t	g_httpDebug;		// Prints more details info
+vmCvar_t	g_httpUseThreads;	// Uses threads or fires a normal packet..
+vmCvar_t	g_httpFlushFile;	// Flushes file on submit
 
 // Stats
 vmCvar_t	g_doubleKills;			// Double, tripple & quad kills
@@ -558,16 +560,16 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_dropBinocs, "g_dropBinocs", "0", CVAR_ARCHIVE, 0, qfalse },
 
 	// ServerBot
-	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_system, "sb_system", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &sb_tempbanIP, "sb_tempbanIP", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
-	{ &sb_maxTKs, "sb_maxTKs", "-1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_maxTKs, "sb_maxTKs", "-1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &sb_makTKsTempbanMins, "sb_makTKsTempbanMins", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &sb_maxTeamBleed, "sb_maxTeamBleed", "-1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_maxTeamBleed, "sb_maxTeamBleed", "-1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &sb_maxTeamBleedTempbanMins, "sb_maxTeamBleedTempbanMins", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &sb_minLowScore, "sb_minLowScore", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_minLowScore, "sb_minLowScore", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &sb_minLowScoreTempbanMins, "sb_minLowScoreTempbanMins", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &sb_maxPingFlux, "sb_maxPingFlux", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
-	{ &sb_maxPingHits, "sb_maxPingHits", "30", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse }, 
+	{ &sb_maxPingFlux, "sb_maxPingFlux", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
+	{ &sb_maxPingHits, "sb_maxPingHits", "30", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &sb_censorPenalty, "sb_censorPenalty", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &sb_censorPentalityTempbanMin, "sb_censorPentalityTempbanMin", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &sb_autoIgnore, "sb_autoIgnore", "0", CVAR_ARCHIVE, 0, qfalse },
@@ -587,12 +589,12 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_motd10, "g_motd10", "", 0, 0, qfalse },
 	{ &g_motd11, "g_motd11", "", 0, 0, qfalse },
 	{ &g_motd12, "g_motd12", "", 0, 0, qfalse },
-	{ &g_motdTime, "g_motdTime", "80", 0, 0, qtrue },	
+	{ &g_motdTime, "g_motdTime", "80", 0, 0, qtrue },
 
 	// Static
 	{ &sv_hostname, "sv_hostname", "", CVAR_SERVERINFO, 0, qfalse },
 	{ &motdNum, "motdNum", "1", 0, 0, qfalse },
-	{ &g_swapCounter, "g_swapCounter", "1", 0, 0, qfalse }, 
+	{ &g_swapCounter, "g_swapCounter", "1", 0, 0, qfalse },
 	{ &g_needBalance, "g_needBalance", "0", CVAR_CHEAT, qfalse },
 	{ &shuffleTracking, "shuffleTracking", "0", 0, 0, qfalse },
 
@@ -604,6 +606,8 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_httpStatsUrl, "g_httpStatsUrl", "http://localhost/stats/api/post", 0 },
 	{ &g_httpStatsAPI, "g_httpStatsAPI", "http://localhost/stats/api/reply", 0 },
 	{ &g_httpDebug, "g_httpDebug", "1", 0, 0, qfalse },
+	{ &g_httpUseThreads, "g_httpUseThreads", "1", 0, 0, qfalse },
+	{ &g_httpFlushFile, "g_httpFlushFile", "1", 0, 0, qfalse },
 
 	// Stats
 	{ &g_doubleKills, "g_doubleKills", "0", CVAR_ARCHIVE, 0, qfalse },
@@ -3392,22 +3396,33 @@ void G_RunFrame( int levelTime ) {
 	sortedActivePlayers();
 
 	// L0 - Global Stats
-	if (g_gamestate.integer == GS_INTERMISSION && level.gsStepping < 2) {
+	if (g_gamestate.integer == GS_INTERMISSION && level.gsStepping < 4) {
 
 		if (!level.gsTime) {
 			level.gsTime = level.time + 500;
 		}
-
-		if (level.gsTime >= level.time && !level.gsStepping) {
+		// Build them
+		else if (level.gsTime >= level.time && !level.gsStepping) {
 			globalStats_buildStats();
 			level.gsStepping = 1;
-			level.gsTime = level.time + 2000;
+			level.gsTime = level.time + 1000;
 		}
-
+		// Dump them in file		
 		if (level.gsTime >= level.time && level.gsStepping == 1) {
 			globalStats_dump();
-			globalStats_cleanList();
+			level.gsTime = level.time + 2000;
 			level.gsStepping = 2;
+		}
+		// Send them to global server
+		else if (level.gsTime >= level.time && level.gsStepping == 2) {
+			globalStats_submit();
+			level.gsTime = level.time + 3000;
+			level.gsStepping = 3;
+		}	
+		// Wipe it..
+		else if (level.gsTime >= level.time && level.gsStepping == 3) {			
+			globalStats_cleanList();
+			level.gsStepping = 4;
 		}
 	}
 }
