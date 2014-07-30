@@ -213,7 +213,7 @@
     <ClCompile Include="..\..\src\game\g_hacks.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\game\g_http_stats2.c">
+    <ClCompile Include="..\..\src\game\g_statsUnified.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -317,7 +317,7 @@
     <ClInclude Include="..\..\src\game\g_http.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\game\g_http2.h">
+    <ClInclude Include="..\..\src\game\g_statsUnified.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

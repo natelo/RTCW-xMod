@@ -1469,7 +1469,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	level.startTime = levelTime;
 
 	// L0 - Global Stats
+#ifdef HTTP_STATS_OLD
 	cleanGlobalStats();
+#endif
 
 	level.snd_fry = G_SoundIndex("sound/player/fry.wav");	// FIXME standing in lava / slime
 	level.bulletRicochetSound = G_SoundIndex("bulletRicochet");
@@ -2351,6 +2353,7 @@ void LogExit( const char *string ) {
 	}
 	// -NERVE - SMF
 
+#ifdef HTTP_STATS_OLD
 	// L0 - Global Stats
 	{
 		char	*buf;
@@ -2361,9 +2364,11 @@ void LogExit( const char *string ) {
 		buf = Info_ValueForKey(cs, "winner");
 		level.winningTeam = atoi(buf);
 
+
 		// Kick start it now
 		globalStats(qtrue);
-	}	
+	}
+#endif
 }
 
 
@@ -2834,6 +2839,7 @@ void CheckVote( void ) {
 			level.voteExecuteTime = level.time + 3000;
 			level.prevVoteExecuteTime = level.time + 4000;
 
+#ifdef HTTP_STATS_OLD
 			// L0 - Submit global stats
 			if (g_gamestate.integer == GS_PLAYING && (
 				(!Q_stricmp(level.voteCommand, "map_restart")) 
@@ -2846,6 +2852,7 @@ void CheckVote( void ) {
 			) {
 				globalStats(qfalse);
 			}
+#endif
 
 // JPW NERVE
 #ifndef PRE_RELEASE_DEMO

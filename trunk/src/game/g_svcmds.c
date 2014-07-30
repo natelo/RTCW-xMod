@@ -283,16 +283,26 @@ void Svcmd_ResetMatch_f(void) {
 	}
 
 	// L0 - Submit global stats
+#ifdef HTTP_STATS_OLD
 	if (g_gamestate.integer == GS_PLAYING) {
 		globalStats(qfalse);
 	}
+#endif
 
 	if ( !g_noTeamSwitching.integer || ( g_minGameClients.integer > 1 && level.numPlayingClients >= g_minGameClients.integer ) ) {
+#ifdef HTTP_STATS_OLD
 		trap_SendConsoleCommand( EXEC_APPEND, va( "wait 500; map_restart 0 %i\n", GS_WARMUP ) );
+#else
+		trap_SendConsoleCommand(EXEC_APPEND, va("map_restart 0 %i\n", GS_WARMUP));
+#endif
 		return;
 	}
 	else {
+#ifdef HTTP_STATS_OLD
 		trap_SendConsoleCommand( EXEC_APPEND, va( "wait 500; map_restart 0 %i\n", GS_WAITING_FOR_PLAYERS ) );
+#else
+		trap_SendConsoleCommand(EXEC_APPEND, va("map_restart 0 %i\n", GS_WAITING_FOR_PLAYERS));
+#endif
 		return;
 	}
 }
@@ -317,13 +327,19 @@ void Svcmd_SwapTeams_f(void) {
 		trap_Cvar_Set( "g_nextTimeLimit", "0" );
 	}
 
+#ifdef HTTP_STATS_OLD
 	// L0 - Submit global stats
 	if (g_gamestate.integer == GS_PLAYING) {
 		globalStats(qfalse);
 	}
+#endif
 
 	trap_Cvar_Set( "g_swapteams", "1" );
+#ifdef HTTP_STATS_OLD
 	trap_SendConsoleCommand( EXEC_APPEND, va( "wait 500; map_restart 0 %i\n", GS_WARMUP ) );
+#else
+	trap_SendConsoleCommand(EXEC_APPEND, va("map_restart 0 %i\n", GS_WARMUP));
+#endif
 }
 
 /*

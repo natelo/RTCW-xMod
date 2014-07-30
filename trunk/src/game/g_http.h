@@ -9,6 +9,8 @@ Hold declarations and structures of all the HTTP related functionality..
 #ifndef _G_HTTP
 #define _G_HTTP
 
+#ifdef HTTP_STATS_OLD
+
 // HTTP Commands for invoking functionality thru a wrapper
 #define HTTP_CLIENT_STATS	"stats"
 
@@ -235,4 +237,5 @@ void sentClientStats(int clientNum);
 void *http_sendQuery(void *args);
 qboolean isHttpCommand(gentity_t *ent, char *cmd1, char *cmd2, char *cmd3);
 
+#endif // HTTP_STATS_OLD
 #endif // _G_HTTP

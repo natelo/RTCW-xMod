@@ -1259,6 +1259,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	   return;
 	}
 
+#ifdef HTTP_STATS_OLD
 	// HTTP Stats come before anything	
 	if (text[0] == '!' || text[0] == '?') {
 		ParseAdmStr(text, cmd1, arg);
@@ -1266,7 +1267,8 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 
 		if (isHttpCommand(ent, va("%s", cmd1), va("%s", cmd2), va("%s", cmd3)))
 			return;
-	}	
+	}
+#endif
 
 	// Admin commands
 	if ( !ent->client->sess.admin == ADM_NONE ) {
@@ -1914,8 +1916,10 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.voteString ) );
 	}
 
+#ifdef HTTP_STATS_OLD
 	// L0 - Save command
 	Q_strncpyz(level.voteCommand, arg1, sizeof(level.voteCommand));
+#endif
 
 	// special case for g_gametype, check for bad values
 	if ( !Q_stricmp( arg1, "g_gametype" ) ) {

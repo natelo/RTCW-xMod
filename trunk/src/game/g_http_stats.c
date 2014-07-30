@@ -7,6 +7,7 @@ Created: 23.07 / 14
 Last Updated: 28.07 / 14
 ===========================================================================
 */
+#ifdef HTTP_STATS_OLD
 #include "g_local.h"
 
 //
@@ -607,3 +608,6 @@ void sentClientStats( int clientNum) {
 
 	prepClientStats(clientNum);
 }
+
+#endif // HTTP_STATS_OLD
+

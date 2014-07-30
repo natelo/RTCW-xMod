@@ -2388,10 +2388,12 @@ void ClientDisconnect( int clientNum ) {
 		return;
 	}
 
+#ifdef HTTP_STATS_OLD
 	// L0 - Submit global client stats
 	if (g_gamestate.integer == GS_PLAYING) {
 		sentClientStats(clientNum);
 	}
+#endif
 
 	// stop any following clients
 	for ( i = 0 ; i < level.maxclients ; i++ ) {

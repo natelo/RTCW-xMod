@@ -141,10 +141,11 @@ void stats_FirstHeadshot(gentity_t *attacker, gentity_t *targ) {
 				APS("xmod/sound/game/events/headshot.wav");	
 			}
 
+#ifdef HTTP_STATS_OLD
 			// Global Stats
 			Q_strncpyz(level.firstHeadshotAttacker, attacker->client->sess.guid, sizeof(level.firstHeadshotAttacker));
 			Q_strncpyz(level.firstHeadshotVictim, targ->client->sess.guid, sizeof(level.firstHeadshotVictim));
-
+#endif
 			// Mark it
 			firstheadshot = qtrue;
 		}
@@ -180,10 +181,12 @@ void stats_FirstBlood(gentity_t *self, gentity_t *attacker) {
 				AP(va("chat \"%s ^7drew ^1FIRST BLOOD ^7from ^7%s^1!\"", attacker->client->pers.netname, self->client->pers.netname));
 				APS("xmod/sound/game/events/firstblood.wav");				
 			}
-			
+
+#ifdef HTTP_STATS_OLD
 			// Global Stats
 			Q_strncpyz(level.firstBloodAttacker, attacker->client->sess.guid, sizeof(level.firstBloodAttacker));
 			Q_strncpyz(level.firstBloodVictim, self->client->sess.guid, sizeof(level.firstBloodVictim));
+#endif
 
 			// Mark it
 			firstblood = qtrue;
