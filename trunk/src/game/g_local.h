@@ -659,6 +659,10 @@ typedef struct {
 	int		lifeAcc_hits;
 	int		lifeHeadshots;
 
+	// Global Stats
+	web_MODs_s MODs[STATS_MAX];				// Mods
+	web_deathList_s hitList[MAX_CLIENTS];	// Clients that killed the player	
+
 #ifdef HTTP_STATS_OLD
 	// HTTP (Web Stats)
 	int		httpCmdIssued;						// debounce time	
@@ -974,8 +978,7 @@ typedef struct {
 	int			statsPrint;
 	qboolean	statsStarted;
 
-#ifdef HTTP_STATS_OLD
-	// Global Stats [round]
+	char		*roundID;
 	int			winningTeam;
 	char		firstBloodAttacker[PB_GUID_LENGTH];
 	char		firstBloodVictim[PB_GUID_LENGTH];
@@ -983,8 +986,8 @@ typedef struct {
 	char		firstHeadshotVictim[PB_GUID_LENGTH];
 	char		lastBloodAttacker[PB_GUID_LENGTH];
 	char		lastBloodVictim[PB_GUID_LENGTH];
-	// end
-#endif
+	int			gsTime;
+	int			gsStepping;
 } level_locals_t;
 
 extern 	qboolean	reloading;				// loading up a savegame
@@ -1951,6 +1954,7 @@ void Q_Tokenize(char *str, char **splitstr, char *delim);
 void ParseStr(const char *strInput, char *strCmd, char *strArgs);
 qboolean Q_FindToken(char *haystack, char *needle);
 void parseCmds(const char *strCMD1, char *strCMD2, char *strCMD3, qboolean cmd);
+char *getTime(qboolean raw);
 
 //
 // g_antiwarp.c
@@ -1998,5 +2002,13 @@ qboolean isCustomMOD(meansOfDeath_t mod);
 #include "g_stats.h"
 #include "g_threads.h"
 #include "g_http.h"
+
+void globalStats_writeMOD(gentity_t *victim, meansOfDeath_t MOD);
+void globalStats_hitList(gentity_t *victim, gentity_t *attacker);
+void globalStats_roundToken(void);
+void globalStats_clientDisconnect(gentity_t *ent);
+void globalStats_buildStats(void);
+void globalStats_dump(void);
+void globalStats_cleanList(void);
 
 #endif // ~_G_LOCAL_H

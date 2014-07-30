@@ -1583,6 +1583,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	}
 
 	G_RemapTeamShaders();
+
+	// L0 - Create round Token
+	if (g_gamestate.integer == GS_PLAYING)		
+		globalStats_roundToken();
 }
 
 /*
@@ -2353,7 +2357,7 @@ void LogExit( const char *string ) {
 	}
 	// -NERVE - SMF
 
-#ifdef HTTP_STATS_OLD
+
 	// L0 - Global Stats
 	{
 		char	*buf;
@@ -2364,11 +2368,12 @@ void LogExit( const char *string ) {
 		buf = Info_ValueForKey(cs, "winner");
 		level.winningTeam = atoi(buf);
 
-
+#ifdef HTTP_STATS_OLD
 		// Kick start it now
 		globalStats(qtrue);
-	}
 #endif
+	}
+
 }
 
 
@@ -3401,4 +3406,24 @@ void G_RunFrame( int levelTime ) {
 
 	// L0 - Count active players..
 	sortedActivePlayers();
+
+	// L0 - Global Stats
+	if (g_gamestate.integer == GS_INTERMISSION && level.gsStepping < 2) {
+
+		if (!level.gsTime) {
+			level.gsTime = level.time + 500;
+		}
+
+		if (level.gsTime >= level.time && !level.gsStepping) {
+			globalStats_buildStats();
+			level.gsStepping = 1;
+			level.gsTime = level.time + 2000;
+		}
+
+		if (level.gsTime >= level.time && level.gsStepping == 1) {
+			globalStats_dump();
+			globalStats_cleanList();
+			level.gsStepping = 2;
+		}
+	}
 }

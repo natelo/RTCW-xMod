@@ -364,20 +364,18 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		killerName = "<world>";
 	}
 
-#ifdef HTTP_STATS_OLD
 	// L0 - Global Stats
 	if (g_gamestate.integer == GS_PLAYING) {
 		// Builds MOD's 
-		write_globalMODs(self, meansOfDeath);
+		globalStats_writeMOD(self, meansOfDeath);
 		
 		// Builds list of all client's kills
 		if (attacker && attacker->client &&
 			!OnSameTeam(self, attacker) &&
 			attacker != self
 		)
-		write_globalKillList(self, attacker);
+			globalStats_hitList(self, attacker);
 	}
-#endif
 
 // L0 - Hacks for custom MOD's (too lazy to move to g_hacks.c - TODO)
 	if ( meansOfDeath == MOD_ADMIN && g_gamestate.integer == GS_PLAYING) {
@@ -633,11 +631,9 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 				Q_strncpyz ( level.lastVictim, self->client->pers.netname, sizeof( level.lastVictim ) );
 			}
 
-#ifdef HTTP_STATS_OLD
 			// L0 - Last Blood (global Stats)
 			Q_strncpyz(level.lastBloodAttacker, attacker->client->sess.guid, sizeof(level.lastBloodAttacker));
 			Q_strncpyz(level.lastBloodVictim, self->client->sess.guid, sizeof(level.lastBloodVictim));
-#endif
 
 			// L0 - Life stats
 			if (g_showLifeStats.integer) {

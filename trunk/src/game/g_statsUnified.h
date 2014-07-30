@@ -79,49 +79,43 @@ typedef struct {
 // Stats
 //
 typedef struct {
-	// General
-	char uid[PB_GUID_LENGTH]; // For non pb (1.0) ID can be a password string etc - but then modify constant since it's 33
-	int ping;
+	int		kills;
+	int		deaths;
+	int		headshots;
+	int		teamKills;	
+	int		poison;
+	int		revives;
+	int		revivesRec;
+	int		ammoGiv;	
+	int		medGiv;		
+	int		medRec;
+	int		ammoRec;
+	int		gibs;
+	int		suicides;
+	int		goomba;
+	int		knife;
+	int		knifeStealth;
+	int		knifeThrow;
+	int		killPeak;
+	int		deathPeak;
+	int		shotsFired;
+	int		shotsHit;
+	int		dynoPlanted;
+	int		dynoDisarmed;
+	int		mgsRepaired;
+	int		ASCalled;
+	int		ASThrown;
+	int		ASBlocked;
+	int		chickenRun;
+	int		dmgTeam;
+	int		dmgGiv;
+	int		dmgRec;
+	int		objSteals;
+	int		flagCapture;
+	int		flagReclaim;
 
-	int kills;
-	int deaths;
-	int headshots;
-	int teamKills;	
-	int poison;
-	int revives;
-	int ammoGiv;	
-	int medGiv;		
-	int medRec;
-	int ammoRec;
-	int gibs;
-	int suicides;
-	int goomba;
-	int knife;
-	int knifeStealth;
-	int knifeThrow;
-	int killPeak;
-	int deathPeak;
-	int shotsFired;
-	int shotsHit;
-	int dynoPlanted;
-	int dynoDisarmed;
-	int mgsRepaired;
-	int ASCalled;
-	int ASThrown;
-	int ASBlocked;
-	int chickenRun;
-	int dmgTeam;
-	int dmgGiv;
-	int dmgRec;
-	int score;
-
-	// Non-mapped - TODO	
-	int revivesRec;
-	int objSteals;
-	int objDestroyed;
-	int flagCapture;
-	int flagReclaim;
-
+	// Non-mapped - Here for OSPx 
+/*
 	int wShotsFired[STATS_MAX];
 	int wShotsHit[STATS_MAX];
 	int wHeadshots[STATS_MAX];
@@ -129,10 +123,7 @@ typedef struct {
 	int wDmgRcv[STATS_MAX];
 	int wTDmgGvn[STATS_MAX];
 	int wTDmgRcv[STATS_MAX];
-
-	int timeAxis;
-	int timeAllies;
+*/
 } statsClientData_t;
-
 
 #endif // _STATS_UNIFIED

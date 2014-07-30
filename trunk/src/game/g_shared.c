@@ -284,3 +284,31 @@ void parseCmds(const char *strCMD1, char *strCMD2, char *strCMD3, qboolean cmd) 
 		strCMD2[i] = 0;
 	strCMD3[j] = 0;
 }
+
+/*
+===========
+Set time so it's more accessible..
+===========
+*/
+extern int trap_RealTime(qtime_t * qtime);
+const char *dMonths[12] = {
+	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+};
+
+// Returns current time
+char *getTime( qboolean raw) {
+	qtime_t		ct;
+	trap_RealTime(&ct);
+
+	if (!raw)
+		return va("%02d:%02d:%02d/%02d %s %d",
+			ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday,
+			dMonths[ct.tm_mon], 1900 + ct.tm_year
+		);
+	else
+		return va("%02d%02d%02d%02d%d%d",
+		ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday,
+		ct.tm_mon, 1900 + ct.tm_year
+		);
+}

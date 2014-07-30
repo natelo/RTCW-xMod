@@ -29,28 +29,6 @@ char *stats_chars[]={
 
 /*
 ===========
-Set time so it's more accessible..
-===========
-*/
-extern int trap_RealTime ( qtime_t * qtime );
-const char *dMonths[12] = {
-	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-};
-
-// Returns current time
-char *getTime(void)
-{
-	qtime_t		ct;
-	trap_RealTime(&ct);
-
-	return va("%02d:%02d:%02d/%02d %s %d",
-		ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday,
-		dMonths[ct.tm_mon], 1900 + ct.tm_year);
-}
-
-/*
-===========
 Double+ kills
 ===========
 */
@@ -141,11 +119,10 @@ void stats_FirstHeadshot(gentity_t *attacker, gentity_t *targ) {
 				APS("xmod/sound/game/events/headshot.wav");	
 			}
 
-#ifdef HTTP_STATS_OLD
 			// Global Stats
 			Q_strncpyz(level.firstHeadshotAttacker, attacker->client->sess.guid, sizeof(level.firstHeadshotAttacker));
 			Q_strncpyz(level.firstHeadshotVictim, targ->client->sess.guid, sizeof(level.firstHeadshotVictim));
-#endif
+
 			// Mark it
 			firstheadshot = qtrue;
 		}
@@ -182,11 +159,9 @@ void stats_FirstBlood(gentity_t *self, gentity_t *attacker) {
 				APS("xmod/sound/game/events/firstblood.wav");				
 			}
 
-#ifdef HTTP_STATS_OLD
 			// Global Stats
 			Q_strncpyz(level.firstBloodAttacker, attacker->client->sess.guid, sizeof(level.firstBloodAttacker));
 			Q_strncpyz(level.firstBloodVictim, self->client->sess.guid, sizeof(level.firstBloodVictim));
-#endif
 
 			// Mark it
 			firstblood = qtrue;
@@ -354,12 +329,9 @@ void stats_MatchInfo(void) {
 	char *ref;
 	char n1[MAX_NETNAME];
 	char n2[MAX_NETNAME];
-	qtime_t ct;
 
-	trap_RealTime(&ct);
-	AP(va("print \"\nMod: %s \n^7Server: %s  \n^7Time: ^7%02d:%02d:%02d ^3(^7%02d %s %d^3)\n\n\"",
-		GAMEVERSION, sv_hostname.string, ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, dMonths[ct.tm_mon], 1900 + ct.tm_year));
-
+	AP(va("print \"\nMod: %s \n^7Server: %s  \n^7Time: %s\n\n\"",
+		GAMEVERSION, sv_hostname.string, getTime(qfalse)));
 
 	cnt = 0;
 	for (i = TEAM_RED; i <= TEAM_BLUE; i++) {
@@ -494,7 +466,7 @@ void add_MapStats(char *file) {
 	fileHandle_t statsFile;
 	char *entry;
 
-	entry = va("%d\\%s\\%s\\null", level.topScore, parseNames(level.topOwner), getTime());
+	entry = va("%d\\%s\\%s\\null", level.topScore, parseNames(level.topOwner), getTime(qfalse));
 
 	// Re-create new file (overwrites old one)
 	trap_FS_FOpenFile(file, &statsFile, FS_WRITE);

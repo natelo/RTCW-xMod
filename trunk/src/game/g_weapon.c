@@ -350,7 +350,8 @@ void Weapon_Syringe(gentity_t *ent) {
 
 				// L0 - Stats			
 				ent->client->pers.lifeRevives++;
-				ent->client->stats.revives++;				
+				ent->client->stats.revives++;	
+				traceEnt->client->stats.revivesRec++;
 
 				write_RoundStats(ent->client->pers.netname, ent->client->stats.revives, ROUND_REVIVES);
 
