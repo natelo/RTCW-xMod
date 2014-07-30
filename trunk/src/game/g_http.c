@@ -206,6 +206,145 @@ void http_Submit(char *url, char *data) {
 
 /*
 ===============
+Just wipes the file..so size doesn't kill the server on upload
+===============
+*/
+void wipeContets(char *file) {
+	FILE *fh;	
+
+	fh = fopen(file, "w");
+
+	if (fh)
+		fclose(fh);
+}
+
+/*
+===============
+Get File size
+
+Author: http://stackoverflow.com/questions/238603/how-can-i-get-a-files-size-in-c
+===============
+*/
+int fsize(FILE *fp) {
+	int prev = ftell(fp);
+	fseek(fp, 0L, SEEK_END);
+	int sz = ftell(fp);
+
+	//go back to where we were
+	fseek(fp, prev, SEEK_SET);
+
+	return sz;
+}
+
+/*
+===============
+http_SubmitFile
+
+Submits file to a web server
+===============
+*/
+void http_SubmitFile(char *url, char *file, qboolean wipe) {
+#ifdef WIN32
+	WSADATA WsaData;
+#endif
+	struct  sockaddr_in sin;
+	int sock;
+	char protocol[20], host[256], request[1024];
+	int port, err;
+	char *header;
+	FILE *fh;
+	char buf[256];
+	qboolean post = qfalse;
+	
+	ParseURL(url, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port);
+
+	fh = fopen(file, "r");
+	if (!fh) {
+		return;
+	}
+
+#ifdef WIN32
+	// Init Winsock
+	err = WSAStartup(0x0101, &WsaData);
+	if (err != 0) {
+		fclose(fh);
+		return;
+	}
+#endif
+
+	sock = (int)socket(AF_INET, SOCK_STREAM, 0);
+
+	if (sock < 0) {
+		fclose(fh);
+		return;
+	}
+
+	//Connect to web sever
+	sin.sin_family = AF_INET;
+	sin.sin_port = htons((unsigned short)port);
+	sin.sin_addr.s_addr = GetHostAddress(host);
+
+	if (connect(sock, (struct sockaddr*)&sin, sizeof(sin))) {
+		fclose(fh);
+		return;
+	}
+
+	if (!*request) {
+		strcpy(request, "/");
+	}
+	
+	header = va(
+		"POST %s HTTP/1.0\r\n"
+		"Accept: */*\r\n"
+		"User-Agent: rtcw//%s\r\n"
+		"Mod: %s\r\n"
+		"Signature: %s\r\n"
+		"Server: %s\r\n"
+		"Content-Length: %i\r\n"
+		"Host: %s\r\n"
+		"Content-Type: application/x-www-form-urlencoded\r\n"
+		"\r\n\r\n",
+		request,
+		GAME_VERSION,
+		GAMEVERSION,
+		g_httpToken.string,
+		sv_hostname.string,
+		fsize(fh) + 9, // FYI[9] = data= \r\n
+		host
+	);
+
+	// Header
+	_SEND(sock, header);
+	
+	// Feed the troll
+	while (fgets(buf, sizeof(buf), fh) != NULL) {
+		if (!post) {
+			// Data
+			_SEND(sock, va("data=%s", buf));
+			post = qtrue;
+		} 
+		else
+			// Data
+			_SEND(sock, buf);
+	}
+
+	// Bail out
+	_SEND(sock, "\r\n\r\n");
+
+	// We're done..bail out
+	closesocket(sock);
+	// Close file 
+	fclose(fh);
+
+	// Wipe the file
+	if (wipe)
+		wipeContets(file);
+
+	return;
+}
+
+/*
+===============
 http_Query
 
 Queries the web server and reads the reply..

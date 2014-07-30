@@ -12,6 +12,9 @@ Hold declarations and structures of all the HTTP related functionality..
 // PB
 #define PB_GUID_LENGTH 33 // 32 + trailing zero
 
+// Log file
+#define WEBSTATS_LOG "webStats.log"
+
 /*
 ============
 Linked list

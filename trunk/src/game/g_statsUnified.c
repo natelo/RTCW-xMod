@@ -150,7 +150,7 @@ void globalStats_dump( void ) {
 	struct statEntry *node;
 	FILE *statsDump;
 
-	statsDump = fopen("webStats.log", "a+"); 	
+	statsDump = fopen(WEBSTATS_LOG, "a+"); 	
 	while (statHead != NULL) {
 		node = statHead;
 		fputs(va("%s\n", node->info), statsDump);

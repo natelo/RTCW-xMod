@@ -2370,7 +2370,7 @@ void LogExit( const char *string ) {
 
 #ifdef HTTP_STATS_OLD
 		// Kick start it now
-		globalStats(qtrue);
+		
 #endif
 	}
 
@@ -2843,22 +2843,6 @@ void CheckVote( void ) {
 			trap_SendServerCommand( -1, "print \"Vote passed.\n\"" );
 			level.voteExecuteTime = level.time + 3000;
 			level.prevVoteExecuteTime = level.time + 4000;
-
-#ifdef HTTP_STATS_OLD
-			// L0 - Submit global stats
-			if (g_gamestate.integer == GS_PLAYING && (
-				(!Q_stricmp(level.voteCommand, "map_restart")) 
-				/*
-				// Removed this because they can be abused - Call fakeMap - submit stats and repeat..
-				|| (!Q_stricmp(level.voteCommand, "nextmap")) 
-				|| /*(!Q_stricmp(level.voteCommand, "map")) 
-				|| (!Q_stricmp(level.voteCommand, "g_gametype"))*/ 
-				)
-			) {
-				globalStats(qfalse);
-			}
-#endif
-
 // JPW NERVE
 #ifndef PRE_RELEASE_DEMO
 			{

@@ -6,7 +6,6 @@ Created: 26.07/14
 All http client related commands.
 ---------------------------
 */
-#ifdef HTTP_STATS_OLD
 #include "g_local.h"
 
 // So it's little easier..
@@ -142,7 +141,6 @@ qboolean isHttpCommand(gentity_t *ent, char *cmd1, char *cmd2, char *cmd3) {
 	return qfalse;
 }
 
-#endif // HTTP_STATS_OLD
 
 
 
