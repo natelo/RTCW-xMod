@@ -294,12 +294,13 @@ vmCvar_t	shuffleTracking;	// Tracks rounds for (auto) shuffle
 vmCvar_t	g_screenShake;		// Screenshaking on explosions (4 = default, 2 = half.. etc)
 
 // HTTP Stats 
-vmCvar_t	g_httpToken;		// Server token
-vmCvar_t	g_httpStatsUrl;		// URL to post stats
-vmCvar_t	g_httpStatsAPI;		// URL for stats interaction
-vmCvar_t	g_httpDebug;		// Prints more details info
-vmCvar_t	g_httpUseThreads;	// Uses threads or fires a normal packet..
-vmCvar_t	g_httpFlushFile;	// Flushes file on submit
+vmCvar_t	g_httpToken;			// Server token
+vmCvar_t	g_httpStatsUrl;			// URL to post stats
+vmCvar_t	g_httpStatsAPI;			// URL for stats interaction
+vmCvar_t	g_httpDebug;			// Prints more details info
+vmCvar_t	g_httpUseThreads;		// Uses threads or fires a normal packet..
+vmCvar_t	g_httpFlushFile;		// Flushes file on submit
+vmCvar_t	g_httpIgnoreSafeSize;	// Will submit files larger then 10mb..at your own risk..
 
 // Stats
 vmCvar_t	g_doubleKills;			// Double, tripple & quad kills
@@ -608,6 +609,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_httpDebug, "g_httpDebug", "1", 0, 0, qfalse },
 	{ &g_httpUseThreads, "g_httpUseThreads", "1", 0, 0, qfalse },
 	{ &g_httpFlushFile, "g_httpFlushFile", "1", 0, 0, qfalse },
+	{ &g_httpIgnoreSafeSize, "g_httpIgnoreSafeSize", "0", 0, 0, qfalse },
 
 	// Stats
 	{ &g_doubleKills, "g_doubleKills", "0", CVAR_ARCHIVE, 0, qfalse },

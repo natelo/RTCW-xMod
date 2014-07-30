@@ -1523,6 +1523,7 @@ extern vmCvar_t		g_httpStatsAPI;
 extern vmCvar_t		g_httpDebug;
 extern vmCvar_t		g_httpUseThreads;
 extern vmCvar_t		g_httpFlushFile;
+extern vmCvar_t		g_httpIgnoreSafeSize;
 
 // Stats
 extern vmCvar_t		g_doubleKills;

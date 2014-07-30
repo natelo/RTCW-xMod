@@ -128,6 +128,24 @@ void ParseURL(char* url, char* protocol, int lprotocol,
 
 /*
 ===============
+Get File size
+
+Author: http://stackoverflow.com/questions/238603/how-can-i-get-a-files-size-in-c
+===============
+*/
+int fsize(FILE *fp) {
+	int prev = ftell(fp);
+	fseek(fp, 0L, SEEK_END);
+	int sz = ftell(fp);
+
+	//go back to where we were
+	fseek(fp, prev, SEEK_SET);
+
+	return sz;
+}
+
+/*
+===============
 http_Submit
 
 Submits data and doesn't care about any replies and simply bails out..
@@ -144,6 +162,12 @@ void http_Submit(char *url, char *data) {
 	char *header;
 
 	ParseURL(url, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port);
+
+	if (!g_httpIgnoreSafeSize.integer && data >= UFILE_SIZELIMIT) {		
+		G_LogPrintf("Request is too big - Web Submitting cancelled.\n");
+		G_LogPrintf("You can disable the limit [g_httpIgnoreSafeSize 1] at your own risk!\n");
+		return;
+	}
 
 #ifdef WIN32
 	// Init Winsock
@@ -224,24 +248,6 @@ void wipeContets(char *file) {
 
 /*
 ===============
-Get File size
-
-Author: http://stackoverflow.com/questions/238603/how-can-i-get-a-files-size-in-c
-===============
-*/
-int fsize(FILE *fp) {
-	int prev = ftell(fp);
-	fseek(fp, 0L, SEEK_END);
-	int sz = ftell(fp);
-
-	//go back to where we were
-	fseek(fp, prev, SEEK_SET);
-
-	return sz;
-}
-
-/*
-===============
 http_SubmitFile
 
 Submits file to a web server
@@ -264,6 +270,13 @@ void http_SubmitFile(char *url, char *file, qboolean wipe) {
 
 	fh = fopen(file, "r");
 	if (!fh) {
+		return;
+	}
+
+	if (!g_httpIgnoreSafeSize.integer && fsize(fh) >= UFILE_SIZELIMIT) {
+		fclose(fh);
+		G_LogPrintf("%s file is too big - Web Submitting cancelled.\n", file);
+		G_LogPrintf("You can disable the limit [g_httpIgnoreSafeSize 1] at your own risk!\n");
 		return;
 	}
 
@@ -313,7 +326,7 @@ void http_SubmitFile(char *url, char *file, qboolean wipe) {
 		GAMEVERSION,
 		g_httpToken.string,
 		sv_hostname.string,
-		fsize(fh) + 9, // FYI[9] = data= \r\n
+		fsize(fh) + 9, // FYI[9]: data= \r\n
 		host
 	);
 

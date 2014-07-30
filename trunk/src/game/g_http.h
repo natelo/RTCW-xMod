@@ -9,6 +9,9 @@ Hold declarations and structures of all the HTTP related functionality..
 #ifndef _G_HTTP
 #define _G_HTTP
 
+// Upload is capped at 10mb..anything more @ your own risk.
+#define UFILE_SIZELIMIT 10000000
+
 // HTTP Commands for invoking functionality thru a wrapper
 #define HTTP_CLIENT_STATS	"stats"
 
