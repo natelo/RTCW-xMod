@@ -490,8 +490,8 @@ void Cmd_Kill_f( gentity_t *ent ) {
 		player_die(ent, attacker, attacker, (ent->health + 100000), MOD_CHICKEN);
 
 		// Stats
-		ent->client->pers.suicides++;
-		write_RoundStats(ent->client->pers.netname, ent->client->pers.suicides, ROUND_SUICIDES);
+		ent->client->stats.suicides++;
+		write_RoundStats(ent->client->pers.netname, ent->client->stats.suicides, ROUND_SUICIDES);
 		return;
 	} 
 
@@ -501,8 +501,8 @@ void Cmd_Kill_f( gentity_t *ent ) {
 	player_die (ent, ent, ent, 100000, MOD_SUICIDE);
 
 	// L0 - Stats
-	ent->client->pers.suicides++;
-	write_RoundStats(ent->client->pers.netname, ent->client->pers.suicides, ROUND_SUICIDES);
+	ent->client->stats.suicides++;
+	write_RoundStats(ent->client->pers.netname, ent->client->stats.suicides, ROUND_SUICIDES);
 }
 
 /*
@@ -531,8 +531,8 @@ void Cmd_SoftKill_f( gentity_t *ent ) {
 		player_die(ent, attacker, attacker, ent->health, MOD_CHICKEN);
 
 		// Stats
-		ent->client->pers.suicides++;
-		write_RoundStats(ent->client->pers.netname, ent->client->pers.suicides, ROUND_SUICIDES);
+		ent->client->stats.suicides++;
+		write_RoundStats(ent->client->pers.netname, ent->client->stats.suicides, ROUND_SUICIDES);
 		return;
 	} 
 
@@ -542,8 +542,8 @@ void Cmd_SoftKill_f( gentity_t *ent ) {
 	player_die (ent, ent, ent, 100000, MOD_SELFKILL);   // L0 - Kill but not gib...
 
 	// L0 - Stats
-	ent->client->pers.suicides++;
-	write_RoundStats(ent->client->pers.netname, ent->client->pers.suicides, ROUND_SUICIDES);
+	ent->client->stats.suicides++;
+	write_RoundStats(ent->client->pers.netname, ent->client->stats.suicides, ROUND_SUICIDES);
 }
 
 /*

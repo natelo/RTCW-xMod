@@ -395,23 +395,23 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	if ( meansOfDeath == MOD_KNIFETHROW && g_gamestate.integer == GS_PLAYING) {
 		AP(va("print \"%s ^7was impaled by %s^7s throwing knife.\n\"", self->client->pers.netname, attacker->client->pers.netname));
-		attacker->client->pers.knifeKills++;	
-		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.knifeKills, ROUND_KNIFETHROW);
+		attacker->client->stats.knifeThrow++;	
+		write_RoundStats(attacker->client->pers.netname, attacker->client->stats.knifeThrow, ROUND_KNIFETHROW);
 	}
 
 	if (meansOfDeath == MOD_KNIFE2 && g_gamestate.integer == GS_PLAYING) {
-		attacker->client->pers.stabs++;
+		attacker->client->stats.knife++;
 	}
 
 	if ( meansOfDeath == MOD_CHICKEN && g_gamestate.integer == GS_PLAYING) {
 		AP(va("print \"%s ^6was scared to death by ^7%s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname));
 		
-		self->client->pers.chicken++;
+		self->client->stats.chickenRun++;
 		// Give props to attacker
-		attacker->client->pers.kills++;
+		attacker->client->stats.kills++;
 		attacker->client->pers.lifeKills++;
 
-		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.kills, ROUND_KILLS);
+		write_RoundStats(attacker->client->pers.netname, attacker->client->stats.kills, ROUND_KILLS);
 		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.lifeKills, ROUND_KILLPEAK);
 	}
 
@@ -429,8 +429,8 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		APRS(self, va("xmod/sound/game/events/%s", ((g_fastStabSound.integer == 1) ? "stab.wav" : 
 			((g_fastStabSound.integer == 2) ? "stab_alt.wav" : snd)	)));
 
-		attacker->client->pers.fastStabs++;
-		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.fastStabs, ROUND_FASTSTABS);
+		attacker->client->stats.knifeStealth++;
+		write_RoundStats(attacker->client->pers.netname, attacker->client->stats.knifeStealth, ROUND_FASTSTABS);
 	}  
 
 	if ( meansOfDeath == MOD_POISONED && g_gamestate.integer == GS_PLAYING)  {
@@ -442,15 +442,14 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			AP(va( "print \"%s ^7tasted %s^7's poison.\n\"", self->client->pers.netname, attacker->client->pers.netname)); 
 
 		// Stats
-		attacker->client->pers.poison++; 
-
-		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.poison, ROUND_POISON);
+		attacker->client->stats.poison++;
+		write_RoundStats(attacker->client->pers.netname, attacker->client->stats.poison, ROUND_POISON);
 	}
 
 	if (meansOfDeath == MOD_GOOMBA && g_gamestate.integer == GS_PLAYING)  {
 		AP(va("print \"%s ^7experienced death from above by %s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname));
-		attacker->client->pers.goomba++;
-		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.goomba, ROUND_GOOMBAS);
+		attacker->client->stats.goomba++;
+		write_RoundStats(attacker->client->pers.netname, attacker->client->stats.goomba, ROUND_GOOMBAS);
 	}
 
 	if (meansOfDeath == MOD_ARTILLERY && g_gamestate.integer == GS_PLAYING)  {		
@@ -479,16 +478,16 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if (attacker && attacker->client && g_gamestate.integer == GS_PLAYING) {
 		// Life kills & death spress
 		if (!OnSameTeam(attacker, self)) {		
-			attacker->client->pers.kills++;	
+			attacker->client->stats.kills++;	
 			attacker->client->pers.lifeKills++; 
 
-			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.kills, ROUND_KILLS);
+			write_RoundStats(attacker->client->pers.netname, attacker->client->stats.kills, ROUND_KILLS);
 			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.lifeKills, ROUND_KILLPEAK);
 
 			if (g_mapStats.integer == 1)
-				write_MapStats(attacker, attacker->client->pers.kills, MAP_KILLER);
+				write_MapStats(attacker, attacker->client->stats.kills, MAP_KILLER);
 			else if (g_mapStats.integer == 2)
-				write_MapStats(attacker, attacker->client->pers.kills, MAP_KILLING_SPREE);
+				write_MapStats(attacker, attacker->client->stats.kills, MAP_KILLING_SPREE);
 
 		// Count teamkill
 		} else {
@@ -497,7 +496,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			{
 				SB_maxTeamKill(attacker);
 
-				write_RoundStats(attacker->client->pers.netname, attacker->client->pers.teamKills, ROUND_TEAMKILLS);
+				write_RoundStats(attacker->client->pers.netname, attacker->client->stats.teamKills, ROUND_TEAMKILLS);
 			}
 		}
 	} 
@@ -505,8 +504,8 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	// L0 - Stats
 	if (attacker && attacker->client)
 	{
-		if (!OnSameTeam(attacker, self) && (attacker->client->pers.spreeDeaths > attacker->client->pers.lifeDeathsPeak))
-			attacker->client->pers.lifeDeathsPeak = attacker->client->pers.spreeDeaths;
+		if (!OnSameTeam(attacker, self) && (attacker->client->pers.spreeDeaths > attacker->client->stats.deathPeak))
+			attacker->client->stats.deathPeak = attacker->client->pers.spreeDeaths;
 
 		if (!OnSameTeam(attacker, self))
 			attacker->client->pers.spreeDeaths = 0;
@@ -527,15 +526,15 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	self->client->ps.persistant[PERS_KILLED]++;
 
 	// L0 - Stats
-	self->client->pers.deaths++;
+	self->client->stats.deaths++;
 	self->client->pers.spreeDeaths++;
-	write_RoundStats(self->client->pers.netname, self->client->pers.deaths, ROUND_DEATHS);	
+	write_RoundStats(self->client->pers.netname, self->client->stats.deaths, ROUND_DEATHS);	
 	write_RoundStats(self->client->pers.netname, self->client->pers.spreeDeaths, ROUND_DEATHPEAK);	
 
 	if (g_mapStats.integer == 3)
-		write_MapStats(self, self->client->pers.deaths, MAP_VICTIM);
+		write_MapStats(self, self->client->stats.deaths, MAP_VICTIM);
 	else if (g_mapStats.integer == 4)
-		write_MapStats(self, self->client->pers.deaths, MAP_DEATH_SPREE);
+		write_MapStats(self, self->client->stats.deaths, MAP_DEATH_SPREE);
 	// End
 
 	// L0 - spies
@@ -594,13 +593,13 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.lifeRevives, acc));
 				else if (self->client->ps.stats[PC_LT])
 					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7AmmoGiv:^3%d ^7Acc:^3%2.2f\n\"",
-					self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.ammoPacks, acc));
+					self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->stats.ammoGiv, acc));
 				else if (self->client->ps.stats[PC_ENGINEER])
 					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7Gibs: ^3%d ^7Acc:^3%2.2f\n\"",
-						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.gibs, acc));
+						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->stats.gibs, acc));
 				else
 					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7Gibs: ^3%d ^7Acc:^3%2.2f\n\"",
-						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.gibs, acc));
+						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->stats.gibs, acc));
 			} // End
 
 		} else {
@@ -653,13 +652,13 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.lifeRevives, acc, attacker->client->pers.netname, attacker->health));
 				else if (self->client->ps.stats[PC_LT])
 					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7AmmoGiv:^3%d ^7Acc:^3%2.2f ^7Killer: %s^3(%ihp)\n\"",
-					self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.ammoPacks, acc, attacker->client->pers.netname, attacker->health));
+					self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->stats.ammoGiv, acc, attacker->client->pers.netname, attacker->health));
 				else if (self->client->ps.stats[PC_ENGINEER])
 					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7Gibs: ^3%d ^7Acc:^3%2.2f ^7Killer: %s^3(%ihp)\n\"",
-						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.gibs, acc, attacker->client->pers.netname, attacker->health));
+						self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->stats.gibs, acc, attacker->client->pers.netname, attacker->health));
 				else
 					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7Gibs: ^3%d ^7Acc:^3%2.2f ^7Killer: %s^3(%ihp)\n\"",
-					self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.gibs, acc, attacker->client->pers.netname, attacker->health));
+					self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->stats.gibs, acc, attacker->client->pers.netname, attacker->health));
 			} // End
 		}
 	} else {
@@ -1452,13 +1451,13 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		// L0 - Stats
 		if (!OnSameTeam(attacker, targ))
 		{
-			attacker->client->pers.headshots++;
+			attacker->client->stats.headshots++;
 			attacker->client->pers.lifeHeadshots++;
 
-			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.headshots, ROUND_HEADSHOTS);
+			write_RoundStats(attacker->client->pers.netname, attacker->client->stats.headshots, ROUND_HEADSHOTS);
 
 			if (g_mapStats.integer == 6)
-				write_MapStats(attacker, attacker->client->pers.deaths, MAP_HEADSHOTS);
+				write_MapStats(attacker, attacker->client->stats.deaths, MAP_HEADSHOTS);
 		}
 	}
 	// L0 - Headshots only mode..
@@ -1510,12 +1509,12 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	// L0 - Stats..
 	if ( (attacker && attacker->client) && (targ && targ->client) ){
 		if ( !OnSameTeam( attacker, targ ) && targ->client->ps.stats[STAT_HEALTH] > 0) {
-			attacker->client->pers.dmgGiven += take;
-			targ->client->pers.dmgReceived += take;
+			attacker->client->stats.dmgGiv += take;
+			targ->client->stats.dmgRec += take;
 		// Count team damage but only if victim is alive..
 		} else if (OnSameTeam( attacker, targ ) && targ->client->ps.stats[STAT_HEALTH] > 0) {
-			attacker->client->pers.dmgTeam += take;
-			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.dmgTeam, ROUND_TEAMBLEED);
+			attacker->client->stats.dmgTeam += take;
+			write_RoundStats(attacker->client->pers.netname, attacker->client->stats.dmgTeam, ROUND_TEAMBLEED);
 		}
 	}
 	// End
@@ -1545,8 +1544,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 							// L0 - Stats
 							if (!OnSameTeam(attacker, targ) && attacker->client)
 							{
-								attacker->client->pers.gibs++;
-								write_RoundStats(attacker->client->pers.netname, attacker->client->pers.gibs, ROUND_GIBS);
+								attacker->client->stats.gibs++;
+								write_RoundStats(attacker->client->pers.netname, attacker->client->stats.gibs, ROUND_GIBS);
 							}
 
 							// L0 - Gib reports

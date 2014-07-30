@@ -7,6 +7,7 @@
 #include "q_shared.h"
 #include "bg_public.h"
 #include "g_public.h"
+#include "g_statsUnified.h" // L0 - Global stats
 
 //==================================================================
 
@@ -438,9 +439,7 @@ typedef struct {
 #define	FOLLOW_ACTIVE1	-1
 #define	FOLLOW_ACTIVE2	-2
 
-// L0 
-
-// Admins
+// L0 Admins
 typedef enum {
 	ADM_NONE, // Normal players	
 	ADM_1,    // Level 1 Admin
@@ -449,11 +448,7 @@ typedef enum {
 	ADM_4,	  // Level 4 Admin 
 	ADM_5	  // Level 5 Admin
 } admLvls_t;
-
-// PB
-#define PB_GUID_LENGTH 33 // 32 + trailing zero
-
-// L0 - End
+// End
 
 // client data that stays across multiple levels or tournament restarts
 // this is achieved by writing all the data to cvar strings at game shutdown
@@ -609,7 +604,7 @@ typedef struct {
 
 	// Bypassing Max Lives
 	qboolean evadingMaxLives;
-
+/*
 	// Stats	
 	int		kills;
 	int		deaths;
@@ -653,6 +648,16 @@ typedef struct {
 	// Map Stats
 	int		lifeKillsPeak;
 	int		lifeDeathsPeak;
+*/
+	// Death Spree
+	int		spreeDeaths;
+
+	// Life Stats
+	int		lifeKills;
+	int		lifeRevives;
+	int		lifeAcc_shots;
+	int		lifeAcc_hits;
+	int		lifeHeadshots;
 
 #ifdef HTTP_STATS_OLD
 	// HTTP (Web Stats)
@@ -791,10 +796,13 @@ struct gclient_s {
 
 	// Anti Warp
 	int lastCmdRealTime;
-	int cmdhead;                    // antiwarp command queue head
-	int cmdcount;                   // antiwarp command queue # valid commands
-	float cmddelta;                 // antiwarp command queue # valid commands
+	int cmdhead;							// antiwarp command queue head
+	int cmdcount;							// antiwarp command queue # valid commands
+	float cmddelta;							// antiwarp command queue # valid commands
 	usercmd_t cmds[LAG_MAX_COMMANDS];       // antiwarp command queue
+
+	// Global stats
+	statsClientData_t stats;	
 	// End
 };
 
@@ -1990,6 +1998,5 @@ qboolean isCustomMOD(meansOfDeath_t mod);
 #include "g_stats.h"
 #include "g_threads.h"
 #include "g_http.h"
-#include "g_statsUnified.h"
 
 #endif // ~_G_LOCAL_H

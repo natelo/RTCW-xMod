@@ -6,8 +6,11 @@ Created: 29.07/14
 Hold declarations and structures of all the HTTP related functionality..
 ---------------------------
 */
-#ifndef _G_HTTP2
-#define _G_HTTP2
+#ifndef _STATS_UNIFIED
+#define _STATS_UNIFIED
+
+// PB
+#define PB_GUID_LENGTH 33 // 32 + trailing zero
 
 /*
 ============
@@ -68,8 +71,7 @@ typedef struct {
 //
 // Hit List
 //
-typedef struct {
-	char guid[PB_GUID_LENGTH];
+typedef struct {	
 	int count;
 } web_deathList_s;
 
@@ -77,20 +79,26 @@ typedef struct {
 // Stats
 //
 typedef struct {
+	// General
+	char uid[PB_GUID_LENGTH]; // For non pb (1.0) ID can be a password string etc - but then modify constant since it's 33
+	int ping;
+
 	int kills;
 	int deaths;
 	int headshots;
-	int teamkills;	
+	int teamKills;	
 	int poison;
 	int revives;
-	int ammoGiven;	
-	int medGiven;		
+	int ammoGiv;	
+	int medGiv;		
+	int medRec;
+	int ammoRec;
 	int gibs;
 	int suicides;
-	int goombas;
-	int knifeThrow;
+	int goomba;
 	int knife;
 	int knifeStealth;
+	int knifeThrow;
 	int killPeak;
 	int deathPeak;
 	int shotsFired;
@@ -100,15 +108,14 @@ typedef struct {
 	int mgsRepaired;
 	int ASCalled;
 	int ASThrown;
-	int chickenRuns;
+	int ASBlocked;
+	int chickenRun;
 	int dmgTeam;
 	int dmgGiv;
 	int dmgRec;
 	int score;
 
-	// Non-mapped - TODO
-	int medRec;
-	int ammoRec;
+	// Non-mapped - TODO	
 	int revivesRec;
 	int objSteals;
 	int objDestroyed;
@@ -122,16 +129,10 @@ typedef struct {
 	int wDmgRcv[STATS_MAX];
 	int wTDmgGvn[STATS_MAX];
 	int wTDmgRcv[STATS_MAX];
-} statsClientData_s;
 
-typedef struct {
-	char id[PB_GUID_LENGTH]; // For non pb (1.0) ID can be a password string etc - but then modify constant since it's 33
-	int ping;	
-	statsClientData_s stats;
-
-	// Non-Mapped
-	int timeAxis;	
+	int timeAxis;
 	int timeAllies;
-}statsData_t;
+} statsClientData_t;
 
-#endif // _G_HTTP2
+
+#endif // _STATS_UNIFIED

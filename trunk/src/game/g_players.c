@@ -584,18 +584,18 @@ void Cmd_Stats_f(gentity_t *ent) {
 	gclient_t *client = ent->client;
 	qtime_t ct;
 	int eff;
-	int deaths = client->pers.deaths;	
-	float killRatio = client->pers.kills;
-	int shots = client->pers.acc_shots;
+	int deaths = client->stats.deaths;	
+	float killRatio = client->stats.kills;
+	int shots = client->stats.shotsFired;
 	float acc = 0.0f;
 
 	if (deaths > 0)
-		killRatio = (float)client->pers.kills / (float)deaths;
+		killRatio = (float)client->stats.kills / (float)deaths;
 	
 	if (shots > 0)
-		acc = ((float)client->pers.acc_hits / (float)shots) * 100.0f;
+		acc = ((float)client->stats.shotsHit / (float)shots) * 100.0f;
 
-	eff = ( client->pers.deaths + client->pers.kills == 0 ) ? 0 : 100 * client->pers.kills / ( client->pers.deaths + client->pers.kills );
+	eff = ( client->stats.deaths + client->stats.kills == 0 ) ? 0 : 100 * client->stats.kills / ( client->stats.deaths + client->stats.kills );
 	if ( eff < 0 ) {
 		eff = 0;
 	}	
@@ -622,14 +622,14 @@ void Cmd_Stats_f(gentity_t *ent) {
 		sv_hostname.string,
 		ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, aMonths[ct.tm_mon], 1900+ct.tm_year,
 		client->pers.netname,
-		client->pers.kills, client->pers.teamKills,	client->pers.poison,
-		deaths,	client->pers.suicides,
-		client->pers.headshots,	client->pers.gibs, client->pers.revives,
-		client->pers.medPacks, client->pers.ammoPacks,
-		acc, client->pers.acc_hits, shots,
-		client->pers.dmgGiven, client->pers.dmgReceived, client->pers.dmgTeam,
+		client->stats.kills, client->stats.teamKills, client->stats.poison,
+		deaths, client->stats.suicides,
+		client->stats.headshots, client->stats.gibs, client->stats.revives,
+		client->stats.medGiv, client->stats.ammoGiv,
+		acc, client->stats.shotsHit, shots,
+		client->stats.dmgGiv, client->stats.dmgRec, client->stats.dmgTeam,
 		killRatio, eff,
-		client->pers.lifeKillsPeak, client->pers.lifeDeathsPeak
+		client->stats.killPeak, client->stats.deathPeak
 	));
 }
 

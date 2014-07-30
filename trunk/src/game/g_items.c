@@ -386,8 +386,9 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 		// L0 - Stats
 		if ((ent->parent) && (ent->parent != other) && (OnSameTeam(ent->parent, other)))
 		{
-			ent->parent->client->pers.ammoPacks++;	
-			write_RoundStats(ent->parent->client->pers.netname, ent->parent->client->pers.ammoPacks, ROUND_AMMOGIVEN);
+			ent->parent->client->stats.ammoGiv++;
+			other->client->stats.ammoRec++;
+			write_RoundStats(ent->parent->client->pers.netname, ent->parent->client->stats.ammoGiv, ROUND_AMMOGIVEN);
 		}
 					
 		// everybody likes grenades -- abuse weapon var as grenade type and i as max # grenades class can carry
@@ -547,8 +548,9 @@ int Pickup_Health (gentity_t *ent, gentity_t *other) {
 	// L0 - Stats
 	if ((ent->parent) && (ent->parent != other) && (OnSameTeam(ent->parent, other)))
 	{
-		ent->parent->client->pers.medPacks++;		
-		write_RoundStats(ent->parent->client->pers.netname, ent->parent->client->pers.medPacks, ROUND_MEDGIVEN);
+		ent->parent->client->stats.medGiv++;
+		other->client->stats.medRec++;
+		write_RoundStats(ent->parent->client->pers.netname, ent->parent->client->stats.medGiv, ROUND_MEDGIVEN);
 	}
 
 	// L0 - reset poison
