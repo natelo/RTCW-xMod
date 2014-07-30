@@ -1,63 +1,183 @@
 /*
-===========================================================================
-L0 - g_stats.h
+---------------------------
+Nate 'L0 - g_stats.h
+Created: 29.07/14
+Updated: 31.07/14
 
-Stats stuff
-
-Created: 9. Sept / 2013
-Last Updated: 10. Sept / 2013
-===========================================================================
+Holds stuff related to stats.
+---------------------------
 */
+#ifndef _STATS
+#define _STATS
 
-/**** Killing sprees (consistent over round) ****/
+// PB
+#define PB_GUID_LENGTH 33 // 32 + trailing zero
+
+// Log file
+#define WEBSTATS_LOG "webStats.log"
+
+/*
+============
+Linked list
+============
+*/
+struct statEntry {
+	char info[2048]; 
+	struct statEntry *next; 
+};
+
+struct statEntry *statHead, *statTail;
+int statNumber;
+
+/*
+============
+MOD Conversions
+============
+*/
+typedef enum {
+	STATS_MP40,
+	STATS_THOMPSON,
+	STATS_STEN,
+	STATS_MAUSER,
+	STATS_SNIPERRIFLE,
+	STATS_FLAMETHROWER,
+	STATS_PANZERFRAUST,
+	STATS_VENOM,
+	STATS_GRENADE,
+	STATS_LUGER,
+	STATS_COLT,
+	STATS_DYNAMITE,
+	STATS_MG42,
+	STATS_KNIFE,
+	STATS_KNIFESTEALTH,
+	STATS_KNIFETHROW,
+	STATS_AIRSTRIKE,
+	STATS_ARTILLERY,
+	STATS_POISON,
+	STATS_GOOMBA,
+	STATS_FALLING,
+	STATS_MORTAR,
+	STATS_SUICIDE,
+	STATS_CHICKEN,
+	STATS_DROWN,
+	STATS_WORLD,
+	STATS_ADMIN,
+	STATS_MAX
+} statsMODs;
+
+//
+// MODs
+//
+typedef struct {
+	int count;
+} web_MODs_s;
+
+//
+// Hit List
+//
+typedef struct {	
+	int count;
+} web_deathList_s;
+
+//
+// Stats
+//
+typedef struct {
+	int		kills;
+	int		deaths;
+	int		headshots;
+	int		teamKills;	
+	int		poison;
+	int		revives;
+	int		revivesRec;
+	int		ammoGiv;	
+	int		medGiv;		
+	int		medRec;
+	int		ammoRec;
+	int		gibs;
+	int		suicides;
+	int		goomba;
+	int		knife;
+	int		knifeStealth;
+	int		knifeThrow;
+	int		killPeak;
+	int		deathPeak;
+	int		shotsFired;
+	int		shotsHit;
+	int		dynoPlanted;
+	int		dynoDisarmed;
+	int		mgsRepaired;
+	int		ASCalled;
+	int		ASThrown;
+	int		ASBlocked;
+	int		chickenRun;
+	int		dmgTeam;
+	int		dmgGiv;
+	int		dmgRec;
+	int		objSteals;
+	int		flagCapture;
+	int		flagReclaim;
+
+	// Non-mapped - Here for OSPx 
+/*
+	int wShotsFired[STATS_MAX];
+	int wShotsHit[STATS_MAX];
+	int wHeadshots[STATS_MAX];
+	int wDmgGvn[STATS_MAX];
+	int wDmgRcv[STATS_MAX];
+	int wTDmgGvn[STATS_MAX];
+	int wTDmgRcv[STATS_MAX];
+*/
+} statsClientData_t;
+
 typedef struct {
 	char *msg;
-	char *snd;	
+	char *snd;
 } killing_sprees_t;
 
 static const killing_sprees_t killingSprees[] = {
-	{"MULTI KILL!",			"multikill.wav"},
-	{"MEGA KILL!",			"megakill.wav"},
-	{"RAMPAGE!",			"rampage.wav"},
-	{"GUNSLINGER!",			"gunslinger.wav"},
-	{"ULTRA KILL!",			"ultrakill.wav"},
-	{"MANIAC!",				"maniac.wav"},
-	{"SLAUGHTER!",			"slaughter.wav"},
-	{"MASSACRE!",			"massacre.wav"},
-	{"IMPRESSIVE!",			"impressive.wav"},
-	{"DOMINATING!",			"dominating.wav"},
-	{"BLOODBATH!",			"bloodbath.wav"},
-	{"KILLING MACHINE!",	"killingmachine.wav"},
-	{"MONSTER KILL!",		"monsterkill.wav"},
-	{"LUDICROUS KILL!",		"ludicrouskill.wav"},
-	{"UNSTOPPABLE!",		"unstoppable.wav"},
-	{"UNREAL!",				"unreal.wav"},
-	{"OUTSTANDING!",		"outstanding.wav"},
-	{"WICKED SICK!",		 "wickedsick.wav"},
-	{"HOLY SHIT!",			"holyshit.wav"},
-	{"BLAZE OF GLORY!!",	"blazeofglory.wav"},
-	{NULL,					NULL}
+	{ "MULTI KILL!", "multikill.wav" },
+	{ "MEGA KILL!", "megakill.wav" },
+	{ "RAMPAGE!", "rampage.wav" },
+	{ "GUNSLINGER!", "gunslinger.wav" },
+	{ "ULTRA KILL!", "ultrakill.wav" },
+	{ "MANIAC!", "maniac.wav" },
+	{ "SLAUGHTER!", "slaughter.wav" },
+	{ "MASSACRE!", "massacre.wav" },
+	{ "IMPRESSIVE!", "impressive.wav" },
+	{ "DOMINATING!", "dominating.wav" },
+	{ "BLOODBATH!", "bloodbath.wav" },
+	{ "KILLING MACHINE!", "killingmachine.wav" },
+	{ "MONSTER KILL!", "monsterkill.wav" },
+	{ "LUDICROUS KILL!", "ludicrouskill.wav" },
+	{ "UNSTOPPABLE!", "unstoppable.wav" },
+	{ "UNREAL!", "unreal.wav" },
+	{ "OUTSTANDING!", "outstanding.wav" },
+	{ "WICKED SICK!", "wickedsick.wav" },
+	{ "HOLY SHIT!", "holyshit.wav" },
+	{ "BLAZE OF GLORY!!", "blazeofglory.wav" },
+	{ NULL, NULL }
 };
 
 /**** Killer Sprees (resets when player dies) ****/
 typedef struct {
 	char *msg;
-	char *snd;	
+	char *snd;
 } killer_sprees_t;
 
 static const killer_sprees_t killerSprees[] = {
-	{"MULTI KILL!",		"multikill.wav"},
-	{"KILLING SPREE!",	"killingspree.wav"},
-	{"RAMPAGE!",		"rampage.wav"},
-	{"ULTRA KILL!",		"ultraKill.wav"},
-	{"MONSTER KILL!",	"monsterkill.wav"},
-	{"LUDICROUS KILL!", "ludicrouskill.wav"},
-	{"DOMINATING!",		"dominating.wav"},
-	{"GODLIKE!",		"godlike.wav"},
-	{"UNSTOPPABLE!",	"unstoppable.wav"},
-	{"WICKED SICK!",	"wickedsick.wav"},
-	{"HOLY SHIT!!",		"holyshit.wav"},
-	{NULL,				NULL}
+	{ "MULTI KILL!", "multikill.wav" },
+	{ "KILLING SPREE!", "killingspree.wav" },
+	{ "RAMPAGE!", "rampage.wav" },
+	{ "ULTRA KILL!", "ultraKill.wav" },
+	{ "MONSTER KILL!", "monsterkill.wav" },
+	{ "LUDICROUS KILL!", "ludicrouskill.wav" },
+	{ "DOMINATING!", "dominating.wav" },
+	{ "GODLIKE!", "godlike.wav" },
+	{ "UNSTOPPABLE!", "unstoppable.wav" },
+	{ "WICKED SICK!", "wickedsick.wav" },
+	{ "HOLY SHIT!!", "holyshit.wav" },
+	{ NULL, NULL }
 };
 
 /**** Map Stats ****/
@@ -98,27 +218,27 @@ typedef struct {
 } round_stats_t;
 
 static const round_stats_t rSM[] = {
-	{ "Match Results",			"xmod/sound/scenaric/achievers/intro.wav" },
-	{ "Most Kills",				"xmod/sound/scenaric/achievers/blazeofglory.wav" },
-	{ "Most Deaths",			"xmod/sound/scenaric/achievers/yousuck.wav" },
-	{ "Most Headshots",			"xmod/sound/scenaric/achievers/headhunter.wav" },
-	{ "Most Team Kills",		"xmod/sound/scenaric/achievers/teamkiller.wav" },
-	{ "Most Team Bleeding",		"xmod/sound/scenaric/achievers/teambleeder.wav" },
-	{ "Most Poisons",			"xmod/sound/scenaric/achievers/toxic.wav" },
-	{ "Most Revives",			"xmod/sound/scenaric/achievers/excellent.wav" },
-	{ "Most Ammo Given",		"xmod/sound/scenaric/achievers/ammo.wav" },
-	{ "Most Med Given",			"xmod/sound/scenaric/achievers/med.wav" },
-	{ "Most Gibs",				"xmod/sound/scenaric/achievers/ownage.wav" },
-	{ "Most Suicides",			"xmod/sound/scenaric/achievers/suicides.wav" },
-	{ "Most Goomba Kills",		"sound/player/gibsplt1.wav" },
-	{ "Knife Juggler",			"xmod/sound/scenaric/achievers/knife_juggler.wav" },
-	{ "Stealth Kills",			"xmod/sound/scenaric/achievers/assasin.wav" },
-	{ "Coward",					"xmod/sound/scenaric/achievers/chicken.wav" },
-	{ "Highest Kill Spree",		"xmod/sound/scenaric/achievers/killingmachine.wav" },
-	{ "Highest Death Spree",	"xmod/sound/scenaric/achievers/slaughter.wav" },
-	{ "Highest Accuracy",		"xmod/sound/scenaric/achievers/accuracy.wav" },
-	{ "Highest Kill Ratio",		"xmod/sound/scenaric/achievers/outstanding.wav" },
-	{ "Most Efficient",			"xmod/sound/scenaric/achievers/impressive.wav" },
+	{ "Match Results", "xmod/sound/scenaric/achievers/intro.wav" },
+	{ "Most Kills", "xmod/sound/scenaric/achievers/blazeofglory.wav" },
+	{ "Most Deaths", "xmod/sound/scenaric/achievers/yousuck.wav" },
+	{ "Most Headshots", "xmod/sound/scenaric/achievers/headhunter.wav" },
+	{ "Most Team Kills", "xmod/sound/scenaric/achievers/teamkiller.wav" },
+	{ "Most Team Bleeding", "xmod/sound/scenaric/achievers/teambleeder.wav" },
+	{ "Most Poisons", "xmod/sound/scenaric/achievers/toxic.wav" },
+	{ "Most Revives", "xmod/sound/scenaric/achievers/excellent.wav" },
+	{ "Most Ammo Given", "xmod/sound/scenaric/achievers/ammo.wav" },
+	{ "Most Med Given", "xmod/sound/scenaric/achievers/med.wav" },
+	{ "Most Gibs", "xmod/sound/scenaric/achievers/ownage.wav" },
+	{ "Most Suicides", "xmod/sound/scenaric/achievers/suicides.wav" },
+	{ "Most Goomba Kills", "sound/player/gibsplt1.wav" },
+	{ "Knife Juggler", "xmod/sound/scenaric/achievers/knife_juggler.wav" },
+	{ "Stealth Kills", "xmod/sound/scenaric/achievers/assasin.wav" },
+	{ "Coward", "xmod/sound/scenaric/achievers/chicken.wav" },
+	{ "Highest Kill Spree", "xmod/sound/scenaric/achievers/killingmachine.wav" },
+	{ "Highest Death Spree", "xmod/sound/scenaric/achievers/slaughter.wav" },
+	{ "Highest Accuracy", "xmod/sound/scenaric/achievers/accuracy.wav" },
+	{ "Highest Kill Ratio", "xmod/sound/scenaric/achievers/outstanding.wav" },
+	{ "Most Efficient", "xmod/sound/scenaric/achievers/impressive.wav" },
 	{ NULL, NULL }
 };
 
@@ -132,3 +252,4 @@ struct round_stats_structure_s {
 typedef struct round_stats_structure_s roundStruct;
 extern roundStruct roundStats[];
 
+#endif // _STATS

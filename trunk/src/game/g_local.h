@@ -7,7 +7,7 @@
 #include "q_shared.h"
 #include "bg_public.h"
 #include "g_public.h"
-#include "g_statsUnified.h" // L0 - Global stats
+#include "g_stats.h" // L0 - Global stats
 
 //==================================================================
 
@@ -1943,7 +1943,6 @@ qboolean isCustomMOD(meansOfDeath_t mod);
 //
 // Include new headers at the bottom so they link correctly
 //
-#include "g_stats.h"
 #include "g_threads.h"
 #include "g_http.h"
 
