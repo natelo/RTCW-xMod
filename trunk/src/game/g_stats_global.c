@@ -338,6 +338,47 @@ void client_buildMODList(gentity_t *ent) {
 
 /*
 ============
+Builds client MODs stats
+============
+*/
+void client_buildWeaponStats(gentity_t *ent) {
+	char data[2048];
+	int i;
+
+	Q_strncpyz(data, va("weaponStats\\%i", ent->client->ps.clientNum), sizeof(data));
+	for (i = 0; i < STATS_MAX; i++) {
+
+		if (
+			ent->client->stats.wShotsFired[i] > 0 || 
+			ent->client->stats.wShotsHit[i] > 0 ||
+			ent->client->stats.wShotsRec[i] > 0 ||
+			ent->client->stats.wHeadshots[i] > 0 ||
+			ent->client->stats.wHeadshotsRec[i] > 0 ||
+			ent->client->stats.wDmgGvn[i] > 0 ||
+			ent->client->stats.wDmgRcv[i] > 0 ||
+			ent->client->stats.wTDmgGvn[i] > 0 ||
+			ent->client->stats.wTDmgRcv[i] > 0
+		)
+			Q_strcat(data, sizeof(data), va("\\%i %i %i %i %i %i %i %i %i %i",
+				i,
+				ent->client->stats.wShotsFired[i],
+				ent->client->stats.wShotsHit[i],
+				ent->client->stats.wShotsRec[i],
+				ent->client->stats.wHeadshots[i],
+				ent->client->stats.wHeadshotsRec[i],
+				ent->client->stats.wDmgGvn[i],
+				ent->client->stats.wDmgRcv[i],
+				ent->client->stats.wTDmgGvn[i],
+				ent->client->stats.wTDmgRcv[i]
+			));
+	}
+
+	stats_addEntry(data);
+
+}
+
+/*
+============
 Builds client stats
 ============
 */
@@ -431,6 +472,8 @@ void globalStats_clientDisconnect(gentity_t *ent) {
 	client_buildMODList(ent);
 	// Build HitList
 	client_hitList(ent);
+	// Weapon Stats
+	client_buildWeaponStats(ent);
 
 	// Build all the data..
 	data = va("%s%s",
@@ -476,5 +519,6 @@ void globalStats_buildStats(void) {
 		stats_clientData(&g_entities[i]);		
 		client_buildMODList(&g_entities[i]);		
 		client_hitList(&g_entities[i]);
+		client_buildWeaponStats(&g_entities[i]);
 	}
 }

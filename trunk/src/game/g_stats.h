@@ -10,11 +10,8 @@ Holds stuff related to stats.
 #ifndef _STATS
 #define _STATS
 
-// PB
-#define PB_GUID_LENGTH 33 // 32 + trailing zero
-
-// Log file
-#define WEBSTATS_LOG "webStats.log"
+#define PB_GUID_LENGTH 33 // PB : 32 + trailing zero
+#define WEBSTATS_LOG "webStats.log"	// Log file
 
 /*
 ============
