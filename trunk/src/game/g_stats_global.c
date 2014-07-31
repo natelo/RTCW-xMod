@@ -374,7 +374,6 @@ void client_buildWeaponStats(gentity_t *ent) {
 	}
 
 	stats_addEntry(data);
-
 }
 
 /*
