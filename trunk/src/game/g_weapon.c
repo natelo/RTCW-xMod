@@ -2628,6 +2628,9 @@ void FireWeapon( gentity_t *ent ) {
 	default:
 		break;
 	}
+
+	// L0 - Weapon Stats
+	globalStats_weaponShots(ent, ent->s.weapon);
 }
 
 

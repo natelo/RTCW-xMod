@@ -1463,13 +1463,12 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		return;
 	}
 
-	// L0 - Not used anymore..
-/*
-	if ( g_debugDamage.integer ) {
-		G_Printf( "client:%i health:%i damage:%i armor:%i\n", targ->s.number,
-			targ->health, take, asave );
-	}
-*/
+	// L0 - Weapon stats
+	globalStats_damageStats(attacker, targ, take, mod, OnSameTeam(attacker, targ));
+	if (attacker && attacker->client) {
+		void globalStats_weaponHits(attacker, targ, take, isHeadshot);
+	} // ~L0
+
 	// add to the damage inflicted on a player this frame
 	// the total will be turned into screen blends and view angle kicks
 	// at the end of the frame

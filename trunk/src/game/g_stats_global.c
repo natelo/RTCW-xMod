@@ -105,6 +105,56 @@ statsMODs MODtoStats(meansOfDeath_t mod) {
 }
 
 /*
+========================================
+stat_mpWeapToStatsWeap
+
+Takes WP_* data to output STATS_* data
+========================================
+*/
+statsMODs weaponStats(weapon_t weapon) {
+	switch (weapon) {
+	case WP_MP40:
+		return STATS_MP40;
+	case WP_THOMPSON:
+		return STATS_THOMPSON;
+	case WP_STEN:
+		return STATS_STEN;
+	case WP_MAUSER:
+		return STATS_MAUSER;
+	case WP_SNIPERRIFLE:
+		return STATS_SNIPERRIFLE;
+	case WP_FLAMETHROWER:
+		return STATS_FLAMETHROWER;
+	case WP_PANZERFAUST:
+		return STATS_PANZERFRAUST;
+	case WP_VENOM:
+		return STATS_VENOM;
+	case WP_GRENADE_LAUNCHER:
+	case WP_GRENADE_PINEAPPLE:
+		return STATS_GRENADE;
+	case WP_LUGER:
+		return STATS_LUGER;
+	case WP_COLT:
+		return STATS_COLT;
+	case WP_KNIFE:
+	case WP_KNIFE2:
+		return STATS_KNIFE;
+	case WP_ARTY:
+		return STATS_ARTILLERY;
+	case WP_SMOKE_GRENADE:
+	case WP_MEDIC_SYRINGE:
+		return STATS_POISON;
+	case WP_DYNAMITE:
+	case WP_DYNAMITE2:
+		return STATS_DYNAMITE;
+	case WP_AMMO:
+	case WP_MEDKIT:
+	default:
+		return STATS_MAX;
+	}
+}
+
+/*
 ============
 Store client's MOD (means of death)
 
@@ -125,14 +175,6 @@ void globalStats_writeMOD(gentity_t *victim, meansOfDeath_t MOD) {
 /*
 ============
 Store Client's "hit list"
-NOTE: Called from g_combat.c
-
-We store guid of killer as if we store slot, client may be long gone before round ends
-so this guid makes sure correct data is sent to a web server and no data is lost.
-
-Note:
-When player leaves, data is send to a server so we don't lose the track of it.
-In case if client rejoins count is increased otherwise it's resetted.
 ============
 */
 void globalStats_hitList(gentity_t *victim, gentity_t *attacker) {
@@ -141,6 +183,60 @@ void globalStats_hitList(gentity_t *victim, gentity_t *attacker) {
 	victim->client->pers.hitList[killer].count = victim->client->pers.hitList[killer].count + 1;
 }
 
+/*
+============
+Track weapon shots  per weapon
+============
+*/
+void globalStats_weaponShots(gentity_t *ent, int sWeapon) {
+	statsMODs weapon;
+
+	weapon = weaponStats(sWeapon);
+	
+	if (weapon < STATS_MAX)
+		ent->client->stats.wShotsFired[sWeapon]++;
+}
+
+/*
+============
+Track weapon hits  per weapon
+============
+*/
+void globalStats_weaponHits(gentity_t *attacker, gentity_t *target, int mod, qboolean headshot) {
+	statsMODs weapon;
+	
+	weapon = weaponStats(mod);
+	if (weapon < STATS_MAX) {
+		attacker->client->stats.wShotsHit[mod]++;
+		target->client->stats.wShotsRec[mod]++;
+
+		if (headshot) {
+			attacker->client->stats.wHeadshots[mod]++;
+			target->client->stats.wHeadshotsRec[mod]++;
+		}		
+	}
+}
+
+/*
+============
+Track damage stats per weapon
+============
+*/
+void globalStats_damageStats(gentity_t *attacker, gentity_t *target, int mod, int dmg, qboolean onSameTeam) {
+
+	if (onSameTeam) {
+		if (attacker->client)
+			attacker->client->stats.wTDmgGvn[mod] += dmg;
+		if (target->client)
+			target->client->stats.wTDmgRcv[mod] += dmg;
+	}
+	else {
+		if (attacker->client)
+			attacker->client->stats.wDmgGvn[mod] += dmg;
+		if (target->client)
+			target->client->stats.wDmgRcv[mod] += dmg;
+	}
+}
 /*
 ============
 Dumps in file that will be later send to web (stats) server
@@ -178,7 +274,6 @@ void globalStats_roundToken( void ) {
 		level.roundID = va("%s", getTime(qtrue));
 
 	stats_addEntry(va("stamp:%s", getTime(qtrue)));
-	//globalStats_dump();
 }
 
 /*

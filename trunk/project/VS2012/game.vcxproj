@@ -189,7 +189,6 @@
     <ClCompile Include="..\..\src\game\g_http.c" />
     <ClCompile Include="..\..\src\game\g_http_cmds.c" />
     <ClCompile Include="..\..\src\game\g_http_stats.c" />
-    <ClCompile Include="..\..\src\game\g_statsUnified.c" />
     <ClCompile Include="..\..\src\game\g_items.c" />
     <ClCompile Include="..\..\src\game\g_main.c" />
     <ClCompile Include="..\..\src\game\g_match.c" />
@@ -206,6 +205,7 @@
     <ClCompile Include="..\..\src\game\g_shared.c" />
     <ClCompile Include="..\..\src\game\g_spawn.c" />
     <ClCompile Include="..\..\src\game\g_stats.c" />
+    <ClCompile Include="..\..\src\game\g_stats_global.c" />
     <ClCompile Include="..\..\src\game\g_svcmds.c" />
     <ClCompile Include="..\..\src\game\g_syscalls.c" />
     <ClCompile Include="..\..\src\game\g_target.c" />
@@ -245,10 +245,9 @@
     <ClInclude Include="..\..\src\game\bg_public.h" />
     <ClInclude Include="..\..\src\game\botlib.h" />
     <ClInclude Include="..\..\src\game\g_http.h" />
-    <ClInclude Include="..\..\src\game\g_statsUnified.h" />
+    <ClInclude Include="..\..\src\game\g_stats.h" />
     <ClInclude Include="..\..\src\game\g_local.h" />
     <ClInclude Include="..\..\src\game\g_public.h" />
-    <ClInclude Include="..\..\src\game\g_stats.h" />
     <ClInclude Include="..\..\src\game\g_team.h" />
     <ClInclude Include="..\..\src\game\g_threads.h" />
     <ClInclude Include="..\..\src\game\q_shared.h" />

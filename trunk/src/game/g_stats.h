@@ -31,7 +31,7 @@ int statNumber;
 
 /*
 ============
-MOD Conversions
+MOD and WP_ Conversions
 ============
 */
 typedef enum {
@@ -118,16 +118,16 @@ typedef struct {
 	int		flagCapture;
 	int		flagReclaim;
 
-	// Non-mapped - Here for OSPx 
-/*
-	int wShotsFired[STATS_MAX];
+	// These are mapped on their own
+	int wShotsFired[STATS_MAX];	
 	int wShotsHit[STATS_MAX];
+	int wShotsRec[STATS_MAX];
 	int wHeadshots[STATS_MAX];
+	int wHeadshotsRec[STATS_MAX];
 	int wDmgGvn[STATS_MAX];
 	int wDmgRcv[STATS_MAX];
 	int wTDmgGvn[STATS_MAX];
 	int wTDmgRcv[STATS_MAX];
-*/
 } statsClientData_t;
 
 typedef struct {

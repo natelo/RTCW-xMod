@@ -1886,6 +1886,20 @@ void add_RoundStats( void );
 void stats_RoundStats( void );
 
 //
+// g_stats_global.c
+//
+void globalStats_writeMOD(gentity_t *victim, meansOfDeath_t MOD);
+void globalStats_hitList(gentity_t *victim, gentity_t *attacker);
+void globalStats_weaponShots(gentity_t *ent, int sWeapon);
+void globalStats_weaponHits(gentity_t *attacker, gentity_t *target, int mod, qboolean headshot);
+void globalStats_damageStats(gentity_t *attacker, gentity_t *target, int mod, int dmg, qboolean onSameTeam);
+void globalStats_roundToken(void);
+void globalStats_clientDisconnect(gentity_t *ent);
+void globalStats_buildStats(void);
+void globalStats_dump(void);
+void globalStats_cleanList(void);
+
+//
 // q_shared.c
 //
 void DecolorString( char *in, char *out);
@@ -1945,13 +1959,5 @@ qboolean isCustomMOD(meansOfDeath_t mod);
 //
 #include "g_threads.h"
 #include "g_http.h"
-
-void globalStats_writeMOD(gentity_t *victim, meansOfDeath_t MOD);
-void globalStats_hitList(gentity_t *victim, gentity_t *attacker);
-void globalStats_roundToken(void);
-void globalStats_clientDisconnect(gentity_t *ent);
-void globalStats_buildStats(void);
-void globalStats_dump(void);
-void globalStats_cleanList(void);
 
 #endif // ~_G_LOCAL_H

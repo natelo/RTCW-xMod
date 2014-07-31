@@ -1634,6 +1634,11 @@ void Fire_Lead(gentity_t *ent, gentity_t *activator, float spread, int damage) {
 
 //	mg42_muzzleflash (ent);
 //	G_AddEvent( ent, EV_FIRE_WEAPON_MG42, 0 );
+
+	// L0 - Global Stats - TODO : MG42..
+	//if (ent && ent->client) {
+		//globalStats_weaponShots(ent, 0);
+	//}
 }
 
 

@@ -213,7 +213,7 @@
     <ClCompile Include="..\..\src\game\g_hacks.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\game\g_statsUnified.c">
+    <ClCompile Include="..\..\src\game\g_stats_global.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -308,16 +308,13 @@
     <ClInclude Include="..\..\src\botai\ai_chat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\game\g_stats.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\game\g_threads.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\game\g_http.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\game\g_statsUnified.h">
+    <ClInclude Include="..\..\src\game\g_stats.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
