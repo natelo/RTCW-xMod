@@ -313,13 +313,3 @@ char *getTime( qboolean raw) {
 		);
 }
 
-// Returns SQL Friendly format
-char *SQLtime( void ) {
-	qtime_t		ct;
-	trap_RealTime(&ct);
-	
-	return va("%d-%d-%d %d:%d:%d",
-		1900 + ct.tm_year, ct.tm_mon, ct.tm_mday,
-		ct.tm_hour, ct.tm_min, ct.tm_sec
-	);
-}
