@@ -287,7 +287,7 @@ char *buildRound( void ) {
 	trap_Cvar_VariableStringBuffer("mapname", mapName, sizeof(mapName));
 
 	return va("round\\%s\\%s\\%i\\%i\\%i\\%s\\%s\\%s\\%s\\%s\\%s",
-		level.roundID,
+		SQLtime(),
 		mapName,
 		g_currentRound.integer,
 		g_gametype.integer,
@@ -427,10 +427,9 @@ Builds client general info
 */
 char *client_buildGeneral(gentity_t *ent) {
 
-	return va("client\\%i\\%s\\%s\\%s\\%d\\%d\\%d\\%d",
+	return va("client\\%i\\%s\\%s\\%d\\%d\\%d\\%d",
 		ent->client->ps.clientNum,
-		ent->client->sess.guid,		
-		level.roundID,
+		ent->client->sess.guid,
 		ent->client->pers.netname,
 		ent->client->sess.sessionTeam,
 		ent->client->ps.stats[STAT_PLAYER_CLASS],

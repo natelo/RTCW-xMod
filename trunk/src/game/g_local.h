@@ -1913,6 +1913,7 @@ void ParseStr(const char *strInput, char *strCmd, char *strArgs);
 qboolean Q_FindToken(char *haystack, char *needle);
 void parseCmds(const char *strCMD1, char *strCMD2, char *strCMD3, qboolean cmd);
 char *getTime(qboolean raw);
+char *SQLtime(void);
 
 //
 // g_antiwarp.c
