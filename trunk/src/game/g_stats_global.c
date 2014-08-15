@@ -344,12 +344,13 @@ Builds client MODs stats
 void client_buildWeaponStats(gentity_t *ent) {
 	char data[2048];
 	int i;
+	qboolean addEntry = qfalse;
 
 	Q_strncpyz(data, va("weaponStats\\%i", ent->client->ps.clientNum), sizeof(data));
 	for (i = 0; i < STATS_MAX; i++) {
 
 		if (
-			ent->client->stats.wShotsFired[i] > 0 || 
+			ent->client->stats.wShotsFired[i] > 0 ||
 			ent->client->stats.wShotsHit[i] > 0 ||
 			ent->client->stats.wShotsRec[i] > 0 ||
 			ent->client->stats.wHeadshots[i] > 0 ||
@@ -358,7 +359,7 @@ void client_buildWeaponStats(gentity_t *ent) {
 			ent->client->stats.wDmgRcv[i] > 0 ||
 			ent->client->stats.wTDmgGvn[i] > 0 ||
 			ent->client->stats.wTDmgRcv[i] > 0
-		)
+		) {		
 			Q_strcat(data, sizeof(data), va("\\%i %i %i %i %i %i %i %i %i %i",
 				i,
 				ent->client->stats.wShotsFired[i],
@@ -371,9 +372,13 @@ void client_buildWeaponStats(gentity_t *ent) {
 				ent->client->stats.wTDmgGvn[i],
 				ent->client->stats.wTDmgRcv[i]
 			));
+
+			addEntry = qtrue;
+		}
 	}
 
-	stats_addEntry(data);
+	if (addEntry)
+		stats_addEntry(data);
 }
 
 /*
