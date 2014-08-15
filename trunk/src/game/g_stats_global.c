@@ -286,8 +286,9 @@ char *buildRound( void ) {
 
 	trap_Cvar_VariableStringBuffer("mapname", mapName, sizeof(mapName));
 
-	return va("round\\%s\\%s\\%i\\%i\\%i\\%s\\%s\\%s\\%s\\%s\\%s",
+	return va("round\\%s\\%s\\%s\\%i\\%i\\%i\\%s\\%s\\%s\\%s\\%s\\%s",
 		getTime(qfalse),
+		GAMEVERSION,
 		mapName,
 		g_currentRound.integer,
 		g_gametype.integer,
