@@ -39,7 +39,6 @@ Convert MODs
 ============
 */
 statsMODs MODtoStats(meansOfDeath_t mod) {
-
 	switch (mod) {
 	case MOD_MP40:
 		return STATS_MP40;
@@ -149,6 +148,8 @@ statsMODs weaponStats(weapon_t weapon) {
 		return STATS_DYNAMITE;
 	case WP_AMMO:
 	case WP_MEDKIT:
+	case 48: // Manually forced (FYI: 47 = max..)
+		return STATS_MG42;
 	default:
 		return STATS_MAX;
 	}
@@ -191,28 +192,27 @@ Track weapon shots  per weapon
 void globalStats_weaponShots(gentity_t *ent, int sWeapon) {
 	statsMODs weapon;
 
-	weapon = weaponStats(sWeapon);
-	
+	weapon = weaponStats(sWeapon);	
 	if (weapon < STATS_MAX)
-		ent->client->stats.wShotsFired[sWeapon]++;
+		ent->client->stats.wShotsFired[weapon]++;
 }
 
 /*
 ============
-Track weapon hits  per weapon
+Track weapon hits per weapon
 ============
 */
 void globalStats_weaponHits(gentity_t *attacker, gentity_t *target, int mod, qboolean headshot) {
 	statsMODs weapon;
 	
-	weapon = weaponStats(mod);
+	weapon = MODtoStats(mod);
 	if (weapon < STATS_MAX) {
-		attacker->client->stats.wShotsHit[mod]++;
-		target->client->stats.wShotsRec[mod]++;
+		attacker->client->stats.wShotsHit[weapon]++;
+		target->client->stats.wShotsRec[weapon]++;
 
 		if (headshot) {
-			attacker->client->stats.wHeadshots[mod]++;
-			target->client->stats.wHeadshotsRec[mod]++;
+			attacker->client->stats.wHeadshots[weapon]++;
+			target->client->stats.wHeadshotsRec[weapon]++;
 		}		
 	}
 }
@@ -223,18 +223,22 @@ Track damage stats per weapon
 ============
 */
 void globalStats_damageStats(gentity_t *attacker, gentity_t *target, int mod, int dmg, qboolean onSameTeam) {
+	statsMODs weapon;
 
-	if (onSameTeam) {
-		if (attacker->client)
-			attacker->client->stats.wTDmgGvn[mod] += dmg;
-		if (target->client)
-			target->client->stats.wTDmgRcv[mod] += dmg;
-	}
-	else {
-		if (attacker->client)
-			attacker->client->stats.wDmgGvn[mod] += dmg;
-		if (target->client)
-			target->client->stats.wDmgRcv[mod] += dmg;
+	weapon = MODtoStats(mod);
+	if (weapon < STATS_MAX) {
+		if (onSameTeam) {
+			if (attacker->client)
+				attacker->client->stats.wTDmgGvn[weapon] += dmg;
+			if (target->client)
+				target->client->stats.wTDmgRcv[weapon] += dmg;
+		}
+		else {
+			if (attacker->client)
+				attacker->client->stats.wDmgGvn[weapon] += dmg;
+			if (target->client)
+				target->client->stats.wDmgRcv[weapon] += dmg;
+		}
 	}
 }
 /*
@@ -349,7 +353,6 @@ void client_buildWeaponStats(gentity_t *ent) {
 
 	Q_strncpyz(data, va("weaponStats\\%i", ent->client->ps.clientNum), sizeof(data));
 	for (i = 0; i < STATS_MAX; i++) {
-
 		if (
 			ent->client->stats.wShotsFired[i] > 0 ||
 			ent->client->stats.wShotsHit[i] > 0 ||
@@ -374,11 +377,12 @@ void client_buildWeaponStats(gentity_t *ent) {
 				ent->client->stats.wTDmgRcv[i]
 			));
 
-			addEntry = qtrue;
+			if (!addEntry)
+				addEntry = qtrue;
 		}
 	}
 
-	if (addEntry)
+	//if (addEntry)
 		stats_addEntry(data);
 }
 

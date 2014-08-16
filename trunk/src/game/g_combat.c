@@ -1213,6 +1213,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	int			take;
 //	int			asave; // L0 - Armor is out..
 	int			knockback;
+	qboolean	isHeadshot = qfalse; // L0 - Global Stats
 
 	if (!targ->takedamage) {
 		return;
@@ -1437,6 +1438,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			G_AddEvent( targ, EV_LOSE_HAT, DirToByte(dir) );
 
 		targ->client->ps.eFlags |= EF_HEADSHOT;
+		isHeadshot = qtrue; // L0 - Store it for Global Stats
 
 		// L0 - Hitsounds (head)
 		Hitsounds( targ, attacker, qfalse);
@@ -1464,9 +1466,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// L0 - Weapon stats
-	globalStats_damageStats(attacker, targ, take, mod, OnSameTeam(attacker, targ));
-	if (attacker && attacker->client) {
-		void globalStats_weaponHits(attacker, targ, take, isHeadshot);
+	globalStats_damageStats(attacker, targ, mod, take, OnSameTeam(attacker, targ));
+	if (attacker && attacker->client && targ && targ->client) {
+		globalStats_weaponHits(attacker, targ, mod, isHeadshot);
 	} // ~L0
 
 	// add to the damage inflicted on a player this frame

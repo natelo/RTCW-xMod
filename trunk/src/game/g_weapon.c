@@ -1768,10 +1768,11 @@ void Bullet_Fire_Extended(gentity_t *source, gentity_t *attacker, vec3_t start, 
 		tent->s.eventParm = traceEnt->s.number;
 		if( LogAccuracyHit( traceEnt, attacker ) ) {
 			attacker->client->ps.persistant[PERS_ACCURACY_HITS]++;
-			// L0 - Stats			
-			attacker->client->stats.shotsHit++;
-			attacker->client->pers.lifeAcc_hits++;
 		}
+
+		// L0 - Stats			
+		attacker->client->stats.shotsHit++;
+		attacker->client->pers.lifeAcc_hits++;
 
 //----(SA)	added
 		if(g_debugBullets.integer >= 2) {	// show hit player bb
