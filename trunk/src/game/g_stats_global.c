@@ -383,9 +383,11 @@ void client_buildWeaponStats(gentity_t *ent) {
 			ent->client->pers.stats.wDmgGvn[i] > 0 ||
 			ent->client->pers.stats.wDmgRcv[i] > 0 ||
 			ent->client->pers.stats.wTDmgGvn[i] > 0 ||
-			ent->client->pers.stats.wTDmgRcv[i] > 0
+			ent->client->pers.stats.wTDmgRcv[i] > 0 || 
+			ent->client->pers.stats.wGibs[i] > 0 ||
+			ent->client->pers.stats.wGibsBy[i] > 0
 		) {		
-			Q_strcat(data, sizeof(data), va("\\%i %i %i %i %i %i %i %i %i %i",
+			Q_strcat(data, sizeof(data), va("\\%i %i %i %i %i %i %i %i %i %i %i %i",
 				i,
 				ent->client->pers.stats.wShotsFired[i],
 				ent->client->pers.stats.wShotsHit[i],
@@ -395,7 +397,9 @@ void client_buildWeaponStats(gentity_t *ent) {
 				ent->client->pers.stats.wDmgGvn[i],
 				ent->client->pers.stats.wDmgRcv[i],
 				ent->client->pers.stats.wTDmgGvn[i],
-				ent->client->pers.stats.wTDmgRcv[i]
+				ent->client->pers.stats.wTDmgRcv[i],
+				ent->client->pers.stats.wGibs[i],
+				ent->client->pers.stats.wGibsBy[i]
 			));
 
 			if (!addEntry)
@@ -403,7 +407,7 @@ void client_buildWeaponStats(gentity_t *ent) {
 		}
 	}
 
-	//if (addEntry)
+	if (addEntry)
 		stats_addEntry(data);
 }
 

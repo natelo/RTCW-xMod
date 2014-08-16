@@ -377,8 +377,6 @@ void Weapon_Syringe(gentity_t *ent) {
 					traceEnt->poisonEnt = ent->s.number;
 					traceEnt->poisoned = qtrue;
 					usedSyringe = qtrue;
-
-					//ent->client->pers.stats.wShotsFired[STATS_POISON]++;
 				}
 			} // end
 		}
