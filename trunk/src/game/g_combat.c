@@ -1467,7 +1467,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// L0 - Weapon stats
 	globalStats_damageStats(attacker, targ, mod, take, OnSameTeam(attacker, targ));
-	if (attacker && attacker->client && targ && targ->client) {
+	if (attacker && attacker->client && targ && targ->client && !OnSameTeam(attacker, targ)) {
 		globalStats_weaponHits(attacker, targ, mod, isHeadshot);
 	} // ~L0
 
