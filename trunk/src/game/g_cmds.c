@@ -3014,26 +3014,6 @@ void ClientCommand( int clientNum ) {
 	}
 // End	
 
-	if (Q_stricmp(cmd, "test") == 0) {
-		int i;
-		
-		for (i = 0; i < STATS_MAX; i++) {
-			AP(va("print \"[Shots]: W:%d F:%d H:%d Rec:%d HS:%d HSr:%d Dg:%d Dr:%d tDg:%d tDr:%d\n",
-			i,
-			ent->client->stats.wShotsFired[i],
-			ent->client->stats.wShotsHit[i],
-			ent->client->stats.wShotsRec[i],
-			ent->client->stats.wHeadshots[i],
-			ent->client->stats.wHeadshotsRec[i],
-			ent->client->stats.wDmgGvn[i],
-			ent->client->stats.wDmgRcv[i],
-			ent->client->stats.wTDmgGvn[i],
-			ent->client->stats.wTDmgRcv[i]
-			));
-		}
-
-	}
-
 	// ignore all other commands when at intermission
 	if (level.intermissiontime) {
 //		Cmd_Say_f (ent, qfalse, qtrue);			// NERVE - SMF - we don't want to spam the clients with this.
