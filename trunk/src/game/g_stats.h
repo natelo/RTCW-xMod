@@ -127,6 +127,7 @@ typedef struct {
 	int wTDmgRcv[STATS_MAX];
 } statsClientData_t;
 
+/**** Killing Sprees ****/
 typedef struct {
 	char *msg;
 	char *snd;

@@ -160,7 +160,7 @@ Store client's MOD (means of death)
 
 NOTE:
 - Called from g_combat.c
-- Main structure resides in g_local.h
+- Main structure resides in g_stats.h
 ============
 */
 void globalStats_writeMOD(gentity_t *victim, meansOfDeath_t MOD) {	

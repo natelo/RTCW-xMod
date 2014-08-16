@@ -552,51 +552,7 @@ typedef struct {
 
 	// Bypassing Max Lives
 	qboolean evadingMaxLives;
-/*
-	// Stats	
-	int		kills;
-	int		deaths;
-	int		teamKills;	// Note that SB uses it as well!
-	int		headshots;
-	int		revives;
-	int		medPacks;
-	int		ammoPacks;
-	int		acc_shots;
-	int		acc_hits;
-	int		dmgGiven;
-	int		dmgReceived;
-	int		dmgTeam;
-	int		gibs;
-	int		suicides;
-	int		goomba;
-	int		poison;
-	int		chicken;
-	int		knifeKills;	
-	int		fastStabs;
 
-	// Web Stats (on top of existing ones)
-	int		stabs;
-	int		AScalled;
-	int		ASthrown;
-	int		ASblocked;
-	int		dynoPlanted;
-	int		dynoDisarmed;
-	int		mgRepair;
-
-	// Death Spree
-	int		spreeDeaths;
-
-	// Life Stats
-	int		lifeKills;
-	int		lifeRevives;
-	int		lifeAcc_shots;
-	int		lifeAcc_hits;
-	int		lifeHeadshots;
-
-	// Map Stats
-	int		lifeKillsPeak;
-	int		lifeDeathsPeak;
-*/
 	// Death Spree
 	int		spreeDeaths;
 
@@ -608,7 +564,7 @@ typedef struct {
 	int		lifeHeadshots;
 
 	// Global Stats
-	web_MODs_s MODs[STATS_MAX];				// Mods
+	web_MODs_s MODs[STATS_MAX];				// MODs (Means Of Death)
 	web_deathList_s hitList[MAX_CLIENTS];	// Clients that killed the player	
 
 	// HTTP (Web Stats)
