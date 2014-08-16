@@ -352,8 +352,7 @@ void Weapon_Syringe(gentity_t *ent) {
 				ent->client->pers.lifeRevives++;
 				ent->client->pers.stats.revives++;	
 				traceEnt->client->pers.stats.revivesRec++;
-
-				write_RoundStats(ent->client->pers.netname, ent->client->pers.stats.revives, ROUND_REVIVES);
+				write_RoundStats(ent->client->pers.netname, ent->client->pers.stats.revives, ROUND_REVIVES);			
 
 				if (g_mapStats.integer == 5)
 					write_MapStats(ent, ent->client->pers.stats.revives, MAP_REVIVES);
@@ -378,6 +377,8 @@ void Weapon_Syringe(gentity_t *ent) {
 					traceEnt->poisonEnt = ent->s.number;
 					traceEnt->poisoned = qtrue;
 					usedSyringe = qtrue;
+
+					//ent->client->pers.stats.wShotsFired[STATS_POISON]++;
 				}
 			} // end
 		}

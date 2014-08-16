@@ -147,6 +147,9 @@ void Cmd_ThrowKnives( gentity_t *ent ) {
 	}
 
 	ent->thrownKnifeTime = level.time;  
+
+	// Global Stats - Count it
+	ent->client->pers.stats.wShotsFired[STATS_KNIFETHROW]++;
 }
 
 /*

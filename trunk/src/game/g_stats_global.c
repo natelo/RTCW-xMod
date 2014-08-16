@@ -148,7 +148,8 @@ statsMODs weaponStats(weapon_t weapon) {
 		return STATS_DYNAMITE;
 	case WP_AMMO:
 	case WP_MEDKIT:
-	case 48: // Manually forced (FYI: 47 = max..)
+	// Manually forced stuff (FYI: default = 47 max..)
+	case 48: 
 		return STATS_MG42;
 	default:
 		return STATS_MAX;
