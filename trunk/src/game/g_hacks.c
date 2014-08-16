@@ -40,7 +40,7 @@ qboolean isCustomMOD(meansOfDeath_t mod) {
 
 		return qtrue;
 	}
-	else if (mod != MOD_SWITCHTEAM) {
+	else if (mod != MOD_SWITCHTEAM) {		
 		return qtrue;
 	}
 	return qfalse;

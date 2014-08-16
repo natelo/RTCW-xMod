@@ -664,9 +664,11 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	// Add team bonuses
 	Team_FragBonuses(self, inflictor, attacker);
 
-	// L0 - AB low score
-	// TODO: Add mod_switchteam check..
-	SB_minLowScore(self);
+	// L0 - AB low score	
+	if (meansOfDeath != MOD_SWITCHTEAM)
+		SB_minLowScore(self);
+	else // Ignore death on team switch..
+		self->client->pers.stats.deaths--;
 
 	// if client is in a nodrop area, don't drop anything
 // JPW NERVE new drop behavior
