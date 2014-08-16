@@ -1952,8 +1952,8 @@ void ClientBegin( int clientNum ) {
 	client->pers.lastrevive_client = -1;
 	client->pers.lastkiller_client = -1;
 	// Stats
-	client->stats.dmgGiv = 0;
-	client->stats.dmgRec = 0;
+	client->pers.stats.dmgGiv = 0;
+	client->pers.stats.dmgRec = 0;
 	client->pers.spreeDeaths = 0;
 
 	// Spies
@@ -2202,8 +2202,8 @@ void ClientSpawn(gentity_t *ent, qboolean revived) {
 	ent->poisoned = qfalse;		// Poison
 	ent->lastPoisonTime = 0;	// Poison
 	// L0 - mapstats / Store Life kills Peak for map stats if enabled
-	if (ent->client->pers.lifeKills > ent->client->stats.killPeak)
-		ent->client->stats.killPeak = ent->client->pers.lifeKills;
+	if (ent->client->pers.lifeKills > ent->client->pers.stats.killPeak)
+		ent->client->pers.stats.killPeak = ent->client->pers.lifeKills;
 	// Life Stats
 	ent->client->pers.lifeKills = 0;
 	ent->client->pers.lifeRevives = 0;

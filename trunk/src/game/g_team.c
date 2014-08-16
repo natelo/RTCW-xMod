@@ -581,7 +581,7 @@ int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, int team ) {
 			te->s.teamNum = cl->sess.sessionTeam;
 
 			// Stats - Only if it's stolen and not tossed..
-			other->client->stats.objSteals++;
+			other->client->pers.stats.objSteals++;
 		}
 
 		// L0 - spies		
@@ -1484,7 +1484,7 @@ void checkpoint_spawntouch (gentity_t *self, gentity_t *other, trace_t *trace) {
 			if (self->s.frame == WCP_ANIM_NOFLAG) {
 				AddScore(other, WOLF_SP_CAPTURE);	
 				// L0 - Stats
-				other->client->stats.flagCapture++;
+				other->client->pers.stats.flagCapture++;
 			} else {
 				// If limit was reached deny retake..
 				if ( level.flagTaken >= g_flagRetake.integer && g_flagRetake.integer != -1){ 					
@@ -1495,7 +1495,7 @@ void checkpoint_spawntouch (gentity_t *self, gentity_t *other, trace_t *trace) {
 					level.flagTaken++; // mark that flag was taken				
 
 					// L0 - Stats
-					other->client->stats.flagReclaim++;
+					other->client->pers.stats.flagReclaim++;
 				}
 			}
 	} else {
@@ -1503,11 +1503,11 @@ void checkpoint_spawntouch (gentity_t *self, gentity_t *other, trace_t *trace) {
 		if ( self->s.frame == WCP_ANIM_NOFLAG ) {
 			AddScore( other, WOLF_SP_CAPTURE );
 			// L0 - Stats
-			other->client->stats.flagCapture++;
+			other->client->pers.stats.flagCapture++;
 		} else {
 			AddScore( other, WOLF_SP_RECOVER );
 			// L0 - Stats
-			other->client->stats.flagReclaim++;
+			other->client->pers.stats.flagReclaim++;
 		}
 	} 
 // L0 - End

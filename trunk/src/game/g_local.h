@@ -566,6 +566,7 @@ typedef struct {
 	// Global Stats
 	web_MODs_s MODs[STATS_MAX];				// MODs (Means Of Death)
 	web_deathList_s hitList[MAX_CLIENTS];	// Clients that killed the player	
+	statsClientData_t stats;
 
 	// HTTP (Web Stats)
 	int		httpCmdIssued;					// debounce time
@@ -704,9 +705,6 @@ struct gclient_s {
 	int cmdcount;							// antiwarp command queue # valid commands
 	float cmddelta;							// antiwarp command queue # valid commands
 	usercmd_t cmds[LAG_MAX_COMMANDS];       // antiwarp command queue
-
-	// Global stats
-	statsClientData_t stats;	
 	// End
 };
 

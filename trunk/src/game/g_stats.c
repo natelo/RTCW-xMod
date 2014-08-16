@@ -205,7 +205,7 @@ Killing sprees
 ===========
 */
 void stats_KillingSprees ( gentity_t *ent, int score ) {
-	int killRatio = ent->client->stats.kills; 	
+	int killRatio = ent->client->pers.stats.kills; 	
 	int snd_idx;
 	
 	if (!g_killingSprees.integer || g_gamestate.integer != GS_PLAYING) 
@@ -216,7 +216,7 @@ void stats_KillingSprees ( gentity_t *ent, int score ) {
 		snd_idx = (killRatio / 5) - 1;
 
 		AP(va("chat \"^4%s ^4(^7%dK %dhs^4): ^7%s\n\"", 
-			killingSprees[snd_idx <= 20 ? snd_idx : 19].msg, killRatio, ent->client->stats.headshots, ent->client->pers.netname));
+			killingSprees[snd_idx <= 20 ? snd_idx : 19].msg, killRatio, ent->client->pers.stats.headshots, ent->client->pers.netname));
 
 		APS(va("xmod/sound/game/sprees/Sprees/%s", killingSprees[snd_idx < 20 ? snd_idx : 19].snd));
 	}	
@@ -224,7 +224,7 @@ void stats_KillingSprees ( gentity_t *ent, int score ) {
 	else if ( killRatio > 100 && killRatio >= 10 && (killRatio % 10) == 0 ) {
 		snd_idx = (killRatio / 10) - 1;
 
-		AP(va("chat \"^4HOLY SHIT ^4(^7%dK %dhs^4): ^7%s\n\"", killRatio, ent->client->stats.headshots, ent->client->pers.netname));		
+		AP(va("chat \"^4HOLY SHIT ^4(^7%dK %dhs^4): ^7%s\n\"", killRatio, ent->client->pers.stats.headshots, ent->client->pers.netname));		
 		APS("xmod/sound/game/sprees/Sprees/holyshit_alt.wav");
 	}
 
@@ -371,19 +371,19 @@ void stats_MatchInfo(void) {
 			n2[15] = 0;
 
 			ref = "^7";
-			tot_kills += cl->stats.kills;
-			tot_deaths += cl->stats.deaths;
-			tot_sui += cl->stats.suicides;
-			tot_tk += cl->stats.teamKills;
-			tot_hs += cl->stats.headshots;
-			tot_dg += cl->stats.dmgGiv;
-			tot_dr += cl->stats.dmgRec;
-			tot_td += cl->stats.dmgTeam;
+			tot_kills += cl->pers.stats.kills;
+			tot_deaths += cl->pers.stats.deaths;
+			tot_sui += cl->pers.stats.suicides;
+			tot_tk += cl->pers.stats.teamKills;
+			tot_hs += cl->pers.stats.headshots;
+			tot_dg += cl->pers.stats.dmgGiv;
+			tot_dr += cl->pers.stats.dmgRec;
+			tot_td += cl->pers.stats.dmgTeam;
 			tot_gp += cl->ps.persistant[PERS_SCORE];
-			tot_hits += cl->stats.shotsHit;
-			tot_shots += cl->stats.shotsFired;
+			tot_hits += cl->pers.stats.shotsHit;
+			tot_shots += cl->pers.stats.shotsFired;
 
-			eff = (cl->stats.deaths + cl->stats.kills == 0) ? 0 : 100 * cl->stats.kills / (cl->stats.deaths + cl->stats.kills);
+			eff = (cl->pers.stats.deaths + cl->pers.stats.kills == 0) ? 0 : 100 * cl->pers.stats.kills / (cl->pers.stats.deaths + cl->pers.stats.kills);
 			if (eff < 0) {
 				eff = 0;
 			}
@@ -392,17 +392,17 @@ void stats_MatchInfo(void) {
 			AP(va("print \"%s%-15s^3%4d^7%4d%4d%4d%s^5%4d %6.2f^2%4d%6d%6d%6d^7%7d\n\"",
 				ref,
 				n2,
-				cl->stats.kills,
-				cl->stats.deaths,
-				cl->stats.suicides,
-				cl->stats.teamKills,
+				cl->pers.stats.kills,
+				cl->pers.stats.deaths,
+				cl->pers.stats.suicides,
+				cl->pers.stats.teamKills,
 				ref,
 				eff,
-				((cl->stats.shotsFired == 0) ? 0.00 : ((float)cl->stats.shotsHit / (float)cl->stats.shotsFired) * 100.00f),
-				cl->stats.headshots,
-				cl->stats.dmgGiv,
-				cl->stats.dmgRec,
-				cl->stats.dmgTeam,
+				((cl->pers.stats.shotsFired == 0) ? 0.00 : ((float)cl->pers.stats.shotsHit / (float)cl->pers.stats.shotsFired) * 100.00f),
+				cl->pers.stats.headshots,
+				cl->pers.stats.dmgGiv,
+				cl->pers.stats.dmgRec,
+				cl->pers.stats.dmgTeam,
 				cl->ps.persistant[PERS_SCORE]));
 		}
 
@@ -629,10 +629,10 @@ void sort_RoundStats( void ) {
 
 	for (i = 0 ; i < g_maxclients.integer; i++) 
 	{
-		int shots = level.clients[i].stats.shotsFired;
-		int hits = level.clients[i].stats.shotsHit;
-		int kills = level.clients[i].stats.kills;
-		int deaths = level.clients[i].stats.deaths;
+		int shots = level.clients[i].pers.stats.shotsFired;
+		int hits = level.clients[i].pers.stats.shotsHit;
+		int kills = level.clients[i].pers.stats.kills;
+		int deaths = level.clients[i].pers.stats.deaths;
 		float kr = 0.00f;
 		float eff = 0.00f;
 		float acc = 0.00f;

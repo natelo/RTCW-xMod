@@ -586,13 +586,13 @@ Kicks for teamkills
 ===========
 */
 void SB_maxTeamKill( gentity_t *ent ) {	
-	int count = ent->client->stats.teamKills+1 - ent->client->pers.sb_TKforgiven;
+	int count = ent->client->pers.stats.teamKills+1 - ent->client->pers.sb_TKforgiven;
 
 	if (level.warmupTime || !sb_system.integer || sb_maxTKs.integer == (-1))
 	{
 		// Just count it for stats
 		if (!level.warmupTime)
-			ent->client->stats.teamKills++;
+			ent->client->pers.stats.teamKills++;
 		return;
 	}
 
@@ -604,7 +604,7 @@ void SB_maxTeamKill( gentity_t *ent ) {
 
 	// Give them some time to make it up.. (ie tk-revive)
 	ent->client->pers.sb_TKkillTime = level.time + 10000;
-	ent->client->stats.kills++;
+	ent->client->pers.stats.kills++;
 	return;
 }
 

@@ -584,18 +584,18 @@ void Cmd_Stats_f(gentity_t *ent) {
 	gclient_t *client = ent->client;
 	qtime_t ct;
 	int eff;
-	int deaths = client->stats.deaths;	
-	float killRatio = client->stats.kills;
-	int shots = client->stats.shotsFired;
+	int deaths = client->pers.stats.deaths;	
+	float killRatio = client->pers.stats.kills;
+	int shots = client->pers.stats.shotsFired;
 	float acc = 0.0f;
 
 	if (deaths > 0)
-		killRatio = (float)client->stats.kills / (float)deaths;
+		killRatio = (float)client->pers.stats.kills / (float)deaths;
 	
 	if (shots > 0)
-		acc = ((float)client->stats.shotsHit / (float)shots) * 100.0f;
+		acc = ((float)client->pers.stats.shotsHit / (float)shots) * 100.0f;
 
-	eff = ( client->stats.deaths + client->stats.kills == 0 ) ? 0 : 100 * client->stats.kills / ( client->stats.deaths + client->stats.kills );
+	eff = ( client->pers.stats.deaths + client->pers.stats.kills == 0 ) ? 0 : 100 * client->pers.stats.kills / ( client->pers.stats.deaths + client->pers.stats.kills );
 	if ( eff < 0 ) {
 		eff = 0;
 	}	
@@ -622,14 +622,14 @@ void Cmd_Stats_f(gentity_t *ent) {
 		sv_hostname.string,
 		ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, aMonths[ct.tm_mon], 1900+ct.tm_year,
 		client->pers.netname,
-		client->stats.kills, client->stats.teamKills, client->stats.poison,
-		deaths, client->stats.suicides,
-		client->stats.headshots, client->stats.gibs, client->stats.revives,
-		client->stats.medGiv, client->stats.ammoGiv,
-		acc, client->stats.shotsHit, shots,
-		client->stats.dmgGiv, client->stats.dmgRec, client->stats.dmgTeam,
+		client->pers.stats.kills, client->pers.stats.teamKills, client->pers.stats.poison,
+		deaths, client->pers.stats.suicides,
+		client->pers.stats.headshots, client->pers.stats.gibs, client->pers.stats.revives,
+		client->pers.stats.medGiv, client->pers.stats.ammoGiv,
+		acc, client->pers.stats.shotsHit, shots,
+		client->pers.stats.dmgGiv, client->pers.stats.dmgRec, client->pers.stats.dmgTeam,
 		killRatio, eff,
-		client->stats.killPeak, client->stats.deathPeak
+		client->pers.stats.killPeak, client->pers.stats.deathPeak
 	));
 }
 

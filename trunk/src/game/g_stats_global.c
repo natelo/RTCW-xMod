@@ -194,7 +194,7 @@ void globalStats_weaponShots(gentity_t *ent, int sWeapon) {
 
 	weapon = weaponStats(sWeapon);	
 	if (weapon < STATS_MAX)
-		ent->client->stats.wShotsFired[weapon]++;
+		ent->client->pers.stats.wShotsFired[weapon]++;
 }
 
 /*
@@ -207,12 +207,12 @@ void globalStats_weaponHits(gentity_t *attacker, gentity_t *target, int mod, qbo
 	
 	weapon = MODtoStats(mod);
 	if (weapon < STATS_MAX) {
-		attacker->client->stats.wShotsHit[weapon]++;
-		target->client->stats.wShotsRec[weapon]++;
+		attacker->client->pers.stats.wShotsHit[weapon]++;
+		target->client->pers.stats.wShotsRec[weapon]++;
 
 		if (headshot) {
-			attacker->client->stats.wHeadshots[weapon]++;
-			target->client->stats.wHeadshotsRec[weapon]++;
+			attacker->client->pers.stats.wHeadshots[weapon]++;
+			target->client->pers.stats.wHeadshotsRec[weapon]++;
 		}		
 	}
 }
@@ -229,15 +229,15 @@ void globalStats_damageStats(gentity_t *attacker, gentity_t *target, int mod, in
 	if (weapon < STATS_MAX) {
 		if (onSameTeam) {
 			if (attacker->client)
-				attacker->client->stats.wTDmgGvn[weapon] += dmg;
+				attacker->client->pers.stats.wTDmgGvn[weapon] += dmg;
 			if (target->client)
-				target->client->stats.wTDmgRcv[weapon] += dmg;
+				target->client->pers.stats.wTDmgRcv[weapon] += dmg;
 		}
 		else {
 			if (attacker->client)
-				attacker->client->stats.wDmgGvn[weapon] += dmg;
+				attacker->client->pers.stats.wDmgGvn[weapon] += dmg;
 			if (target->client)
-				target->client->stats.wDmgRcv[weapon] += dmg;
+				target->client->pers.stats.wDmgRcv[weapon] += dmg;
 		}
 	}
 }
@@ -354,27 +354,27 @@ void client_buildWeaponStats(gentity_t *ent) {
 	Q_strncpyz(data, va("weaponStats\\%i", ent->client->ps.clientNum), sizeof(data));
 	for (i = 0; i < STATS_MAX; i++) {
 		if (
-			ent->client->stats.wShotsFired[i] > 0 ||
-			ent->client->stats.wShotsHit[i] > 0 ||
-			ent->client->stats.wShotsRec[i] > 0 ||
-			ent->client->stats.wHeadshots[i] > 0 ||
-			ent->client->stats.wHeadshotsRec[i] > 0 ||
-			ent->client->stats.wDmgGvn[i] > 0 ||
-			ent->client->stats.wDmgRcv[i] > 0 ||
-			ent->client->stats.wTDmgGvn[i] > 0 ||
-			ent->client->stats.wTDmgRcv[i] > 0
+			ent->client->pers.stats.wShotsFired[i] > 0 ||
+			ent->client->pers.stats.wShotsHit[i] > 0 ||
+			ent->client->pers.stats.wShotsRec[i] > 0 ||
+			ent->client->pers.stats.wHeadshots[i] > 0 ||
+			ent->client->pers.stats.wHeadshotsRec[i] > 0 ||
+			ent->client->pers.stats.wDmgGvn[i] > 0 ||
+			ent->client->pers.stats.wDmgRcv[i] > 0 ||
+			ent->client->pers.stats.wTDmgGvn[i] > 0 ||
+			ent->client->pers.stats.wTDmgRcv[i] > 0
 		) {		
 			Q_strcat(data, sizeof(data), va("\\%i %i %i %i %i %i %i %i %i %i",
 				i,
-				ent->client->stats.wShotsFired[i],
-				ent->client->stats.wShotsHit[i],
-				ent->client->stats.wShotsRec[i],
-				ent->client->stats.wHeadshots[i],
-				ent->client->stats.wHeadshotsRec[i],
-				ent->client->stats.wDmgGvn[i],
-				ent->client->stats.wDmgRcv[i],
-				ent->client->stats.wTDmgGvn[i],
-				ent->client->stats.wTDmgRcv[i]
+				ent->client->pers.stats.wShotsFired[i],
+				ent->client->pers.stats.wShotsHit[i],
+				ent->client->pers.stats.wShotsRec[i],
+				ent->client->pers.stats.wHeadshots[i],
+				ent->client->pers.stats.wHeadshotsRec[i],
+				ent->client->pers.stats.wDmgGvn[i],
+				ent->client->pers.stats.wDmgRcv[i],
+				ent->client->pers.stats.wTDmgGvn[i],
+				ent->client->pers.stats.wTDmgRcv[i]
 			));
 
 			if (!addEntry)
@@ -393,40 +393,40 @@ Builds client stats
 */
 char *client_buildStats(gentity_t *ent) {	
 	return va("\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d",
-		ent->client->stats.kills,
-		ent->client->stats.deaths,
-		ent->client->stats.headshots,
-		ent->client->stats.teamKills,
-		ent->client->stats.poison,
-		ent->client->stats.revives,
-		ent->client->stats.revivesRec,
-		ent->client->stats.ammoGiv,
-		ent->client->stats.medGiv,
-		ent->client->stats.medRec,
-		ent->client->stats.ammoRec,
-		ent->client->stats.gibs,
-		ent->client->stats.suicides,
-		ent->client->stats.goomba,
-		ent->client->stats.knife,
-		ent->client->stats.knifeStealth,
-		ent->client->stats.knifeThrow,
-		ent->client->stats.killPeak,
-		ent->client->stats.deathPeak,
-		ent->client->stats.shotsFired,
-		ent->client->stats.shotsHit,
-		ent->client->stats.dynoPlanted,
-		ent->client->stats.dynoDisarmed,
-		ent->client->stats.mgsRepaired,
-		ent->client->stats.ASCalled,
-		ent->client->stats.ASThrown,
-		ent->client->stats.ASBlocked,
-		ent->client->stats.chickenRun,
-		ent->client->stats.dmgTeam,
-		ent->client->stats.dmgGiv,
-		ent->client->stats.dmgRec,
-		ent->client->stats.objSteals,
-		ent->client->stats.flagCapture,
-		ent->client->stats.flagReclaim
+		ent->client->pers.stats.kills,
+		ent->client->pers.stats.deaths,
+		ent->client->pers.stats.headshots,
+		ent->client->pers.stats.teamKills,
+		ent->client->pers.stats.poison,
+		ent->client->pers.stats.revives,
+		ent->client->pers.stats.revivesRec,
+		ent->client->pers.stats.ammoGiv,
+		ent->client->pers.stats.medGiv,
+		ent->client->pers.stats.medRec,
+		ent->client->pers.stats.ammoRec,
+		ent->client->pers.stats.gibs,
+		ent->client->pers.stats.suicides,
+		ent->client->pers.stats.goomba,
+		ent->client->pers.stats.knife,
+		ent->client->pers.stats.knifeStealth,
+		ent->client->pers.stats.knifeThrow,
+		ent->client->pers.stats.killPeak,
+		ent->client->pers.stats.deathPeak,
+		ent->client->pers.stats.shotsFired,
+		ent->client->pers.stats.shotsHit,
+		ent->client->pers.stats.dynoPlanted,
+		ent->client->pers.stats.dynoDisarmed,
+		ent->client->pers.stats.mgsRepaired,
+		ent->client->pers.stats.ASCalled,
+		ent->client->pers.stats.ASThrown,
+		ent->client->pers.stats.ASBlocked,
+		ent->client->pers.stats.chickenRun,
+		ent->client->pers.stats.dmgTeam,
+		ent->client->pers.stats.dmgGiv,
+		ent->client->pers.stats.dmgRec,
+		ent->client->pers.stats.objSteals,
+		ent->client->pers.stats.flagCapture,
+		ent->client->pers.stats.flagReclaim
 	);
 }
 
