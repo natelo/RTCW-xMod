@@ -121,6 +121,8 @@ typedef struct {
 	int wShotsRec[STATS_MAX];
 	int wHeadshots[STATS_MAX];
 	int wHeadshotsRec[STATS_MAX];
+	int wGibs[STATS_MAX];
+	int wGibsBy[STATS_MAX];
 	int wDmgGvn[STATS_MAX];
 	int wDmgRcv[STATS_MAX];
 	int wTDmgGvn[STATS_MAX];

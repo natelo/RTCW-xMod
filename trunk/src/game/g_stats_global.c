@@ -225,8 +225,12 @@ Track damage stats per weapon
 void globalStats_damageStats(gentity_t *attacker, gentity_t *target, int mod, int dmg, qboolean onSameTeam) {
 	statsMODs weapon;
 
+	// Fix door..gives 10k damage.. 
+	if (mod == MOD_TELEFRAG)
+		dmg = 100;
+
 	weapon = MODtoStats(mod);
-	if (weapon < STATS_MAX) {
+	if (weapon < STATS_MAX && target && target->client && target->health > 0) {
 		if (onSameTeam) {
 			if (attacker->client)
 				attacker->client->pers.stats.wTDmgGvn[weapon] += dmg;
@@ -241,6 +245,22 @@ void globalStats_damageStats(gentity_t *attacker, gentity_t *target, int mod, in
 		}
 	}
 }
+
+/*
+============
+Track Gibs for weapons
+============
+*/
+void globalStats_gibStats(gentity_t *attacker, gentity_t *target, int uWeapon) {
+	statsMODs weapon;
+
+	weapon = MODtoStats(uWeapon);
+	if (weapon < STATS_MAX) {
+		attacker->client->pers.stats.wGibs[weapon]++;
+		target->client->pers.stats.wGibsBy[weapon]++;
+	}
+}
+
 /*
 ============
 Dumps in file that will be later send to web (stats) server

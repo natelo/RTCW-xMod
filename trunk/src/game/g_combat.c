@@ -1465,7 +1465,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		return;
 	}
 
-	// L0 - Weapon stats
+	// L0 - Weapon stats	
 	globalStats_damageStats(attacker, targ, mod, take, OnSameTeam(attacker, targ));
 	if (attacker && attacker->client && targ && targ->client && !OnSameTeam(attacker, targ)) {
 		globalStats_weaponHits(attacker, targ, mod, isHeadshot);
@@ -1543,6 +1543,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 							{
 								attacker->client->pers.stats.gibs++;
 								write_RoundStats(attacker->client->pers.netname, attacker->client->pers.stats.gibs, ROUND_GIBS);
+
+								// Global stats
+								globalStats_gibStats(attacker, targ, mod);
 							}
 
 							// L0 - Gib reports

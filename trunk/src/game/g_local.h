@@ -1847,6 +1847,7 @@ void globalStats_hitList(gentity_t *victim, gentity_t *attacker);
 void globalStats_weaponShots(gentity_t *ent, int sWeapon);
 void globalStats_weaponHits(gentity_t *attacker, gentity_t *target, int mod, qboolean headshot);
 void globalStats_damageStats(gentity_t *attacker, gentity_t *target, int mod, int dmg, qboolean onSameTeam);
+void globalStats_gibStats(gentity_t *attacker, gentity_t *target, int uWeapon);
 void globalStats_roundToken(void);
 void globalStats_clientDisconnect(gentity_t *ent);
 void globalStats_buildStats(void);
