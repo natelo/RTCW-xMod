@@ -485,7 +485,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			if (g_mapStats.integer == 1)
 				write_MapStats(attacker, attacker->client->pers.stats.kills, MAP_KILLER);
 			else if (g_mapStats.integer == 2)
-				write_MapStats(attacker, attacker->client->pers.stats.kills, MAP_KILLING_SPREE);
+				write_MapStats(attacker, attacker->client->pers.lifeKills, MAP_KILLING_SPREE);
 
 		// Count teamkill
 		} else {
@@ -532,7 +532,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if (g_mapStats.integer == 3)
 		write_MapStats(self, self->client->pers.stats.deaths, MAP_VICTIM);
 	else if (g_mapStats.integer == 4)
-		write_MapStats(self, self->client->pers.stats.deaths, MAP_DEATH_SPREE);
+		write_MapStats(self, self->client->pers.spreeDeaths, MAP_DEATH_SPREE);
 	// End
 
 	// L0 - spies
@@ -627,7 +627,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			if (g_showLastBlood.integer)
 			{
 				Q_strncpyz ( level.lastKiller, attacker->client->pers.netname, sizeof( level.lastKiller ) );
-
 				Q_strncpyz ( level.lastVictim, self->client->pers.netname, sizeof( level.lastVictim ) );
 			}
 
@@ -1457,7 +1456,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			write_RoundStats(attacker->client->pers.netname, attacker->client->pers.stats.headshots, ROUND_HEADSHOTS);
 
 			if (g_mapStats.integer == 6)
-				write_MapStats(attacker, attacker->client->pers.stats.deaths, MAP_HEADSHOTS);
+				write_MapStats(attacker, attacker->client->pers.stats.headshots, MAP_HEADSHOTS);
 		}
 	}
 	// L0 - Headshots only mode..

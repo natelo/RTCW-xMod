@@ -588,6 +588,7 @@ void stats_MapStats(void) {
 	handle_MapStats(mapName, suffix);
 	level.mapStatsPrinted = qtrue;
 }
+
 /*
 ===========
 Round Stats
