@@ -19,7 +19,7 @@ Linked list
 ============
 */
 struct statEntry {
-	char info[2048]; 
+	char info[4096]; 
 	struct statEntry *next; 
 };
 

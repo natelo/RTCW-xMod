@@ -334,14 +334,20 @@ Builds client hit list (players who killed him)
 */
 void client_hitList(gentity_t *ent) {
 	int i;
-	char *data = NULL;
+	char data[2048];
+	qboolean addEntry = qfalse;
 
+	Q_strncpyz(data, va("hitlist\\%i", ent->client->ps.clientNum), sizeof(data));
 	for (i = 0; i < MAX_CLIENTS; i++) {
-		if (ent->client->pers.hitList[i].count > 0)
-			data = va("%s\\%d:%d", (!data ? va("hitlist\\%s", ent->client->sess.guid) : data), i, ent->client->pers.hitList[i].count);
+		if (ent->client->pers.hitList[i].count > 0) {
+			Q_strcat(data, sizeof(data), va("\\%d:%d", i, ent->client->pers.hitList[i].count));
+
+			if (!addEntry)
+				addEntry = qtrue;
+		}
 	}
 
-	if (data)
+	if (addEntry)
 		stats_addEntry(data);
 }
 
@@ -352,13 +358,20 @@ Builds client MODs stats
 */
 void client_buildMODList(gentity_t *ent) {
 	int i;
-	char *data=NULL;
+	char data[2048];
+	qboolean addEntry = qfalse;
 
+	Q_strncpyz(data, va("mods\\%i", ent->client->ps.clientNum), sizeof(data));
 	for (i = 0; i < STATS_MAX; i++) {
-		if (ent->client->pers.MODs[i].count > 0)
-			data = va("%s\\%d:%d", (!data ? va("mods\\%s", ent->client->sess.guid) : data), i, ent->client->pers.MODs[i].count);
+		if (ent->client->pers.MODs[i].count > 0) {
+			Q_strcat(data, sizeof(data), va("\\%d:%d", i, ent->client->pers.MODs[i].count));
+
+			if (!addEntry)
+				addEntry = qtrue;
+		}
 	}
-	if (data)
+	
+	if (addEntry)
 		stats_addEntry(data);
 }
 
