@@ -1844,6 +1844,7 @@ void stats_RoundStats( void );
 //
 void globalStats_writeMOD(gentity_t *victim, meansOfDeath_t MOD);
 void globalStats_hitList(gentity_t *victim, gentity_t *attacker);
+void globalStats_rename(gclient_t *client, char *name);
 void globalStats_weaponShots(gentity_t *ent, int sWeapon);
 void globalStats_weaponHits(gentity_t *attacker, gentity_t *target, int mod, qboolean headshot);
 void globalStats_damageStats(gentity_t *attacker, gentity_t *target, int mod, int dmg, qboolean onSameTeam);

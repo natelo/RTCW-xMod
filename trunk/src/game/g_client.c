@@ -1583,6 +1583,9 @@ void ClientUserinfoChanged( int clientNum ) {
 		if ( strcmp( oldname, client->pers.netname ) ) {
 			trap_SendServerCommand( -1, va("print \"[lof]%s" S_COLOR_WHITE " [lon]renamed to[lof] %s\n\"", oldname, 
 				client->pers.netname) );
+
+			// L0 - Global Stats - Track name change..
+			globalStats_rename(client, client->pers.netname);
 		}
 	}
 

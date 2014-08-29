@@ -187,6 +187,21 @@ void globalStats_hitList(gentity_t *victim, gentity_t *attacker) {
 
 /*
 ============
+Dump rename directly to structure
+============
+*/
+void globalStats_rename(gclient_t *client, char *name) {
+	char *data;
+
+	data = va("rename\\%s\\%s", client->sess.guid, name);
+
+	// We do not care which round or when as we trap
+	// server id on web part and build alias list on it's own..
+	stats_addEntry(data);
+}
+
+/*
+============
 Track weapon shots  per weapon
 ============
 */
