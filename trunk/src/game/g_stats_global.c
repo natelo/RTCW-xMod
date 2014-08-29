@@ -187,11 +187,31 @@ void globalStats_hitList(gentity_t *victim, gentity_t *attacker) {
 
 /*
 ============
+Tracks client's classes (how many spawns)
+============
+*/
+void globalStats_playerClass(int client, int type) {
+	gentity_t *ent = &g_entities[client];
+	int seconds = (level.time / 1000);	
+
+	if (ent->client->sess.sessionTeam == TEAM_SPECTATOR || 
+		g_gamestate.integer != GS_PLAYING)
+		return;
+
+	ent->client->pers.playerClass[type].count++;
+}
+
+/*
+============
 Dump rename directly to structure
 ============
 */
 void globalStats_rename(gclient_t *client, char *name) {
 	char *data;
+
+	// Warmup renames are usually tied to animation spam fest...
+	if (g_gamestate.integer != GS_PLAYING)
+		return;
 
 	data = va("rename\\%s\\%s", client->sess.guid, name);
 
@@ -490,13 +510,16 @@ Builds client general info
 */
 char *client_buildGeneral(gentity_t *ent) {
 
-	return va("client\\%i\\%s\\%d.%d.%d.%d\\%s\\%d\\%d\\%d\\%d",
+	return va("client\\%i\\%s\\%d.%d.%d.%d\\%s\\%d\\%d\\%d\\%d\\%d\\%d\\%d",
 		ent->client->ps.clientNum,
 		ent->client->sess.guid,
 		ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], ent->client->sess.ip[3],
 		ent->client->pers.netname,
 		ent->client->sess.sessionTeam,
-		ent->client->ps.stats[STAT_PLAYER_CLASS],
+		(ent->client->pers.playerClass[0].count > 0 ? ent->client->pers.playerClass[0].count : 0),
+		(ent->client->pers.playerClass[1].count > 0 ? ent->client->pers.playerClass[1].count : 0),
+		(ent->client->pers.playerClass[2].count > 0 ? ent->client->pers.playerClass[2].count : 0),
+		(ent->client->pers.playerClass[3].count > 0 ? ent->client->pers.playerClass[3].count : 0),
 		ent->client->ps.ping,
 		ent->client->ps.persistant[PERS_SCORE]
 	);
@@ -535,7 +558,7 @@ void globalStats_clientDisconnect(gentity_t *ent) {
 	// Build HitList
 	client_hitList(ent);
 	// Weapon Stats
-	client_buildWeaponStats(ent);
+	client_buildWeaponStats(ent);	
 
 	// Build all the data..
 	data = va("%s%s",

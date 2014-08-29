@@ -77,6 +77,13 @@ typedef struct {
 } web_deathList_s;
 
 //
+// Class time
+//
+typedef struct {
+	int count;
+} web_classTime_s;
+
+//
 // Stats
 //
 typedef struct {

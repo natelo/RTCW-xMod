@@ -2311,6 +2311,9 @@ void ClientSpawn(gentity_t *ent, qboolean revived) {
 		
 		// End Xian
 		SetWolfSpawnWeapons( client ); // JPW NERVE -- increases stats[STAT_MAX_HEALTH] based on # of medics in game
+
+		// L0 - Global Stats - Player class
+		globalStats_playerClass(client->ps.clientNum, client->sess.playerType);
 	}
 	// dhm - end
 

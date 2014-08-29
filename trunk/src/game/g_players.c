@@ -495,6 +495,9 @@ void Cmd_Spy( gentity_t *ent ) {
     if(ent->client->ps.weapon == WP_SNIPERRIFLE)
         return;
 
+	if (ent->client->ps.isSpy)
+		return;
+
 	if (ent->client->ps.stats[STAT_PLAYER_CLASS] == PC_MEDIC)
 		charge = g_medicChargeTime.integer * 0.75;
 	else if (ent->client->ps.stats[STAT_PLAYER_CLASS] == PC_LT)

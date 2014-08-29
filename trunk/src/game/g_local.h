@@ -566,6 +566,7 @@ typedef struct {
 	// Global Stats
 	web_MODs_s MODs[STATS_MAX];				// MODs (Means Of Death)
 	web_deathList_s hitList[MAX_CLIENTS];	// Clients that killed the player	
+	web_classTime_s playerClass[3];			// Count for player classes
 	statsClientData_t stats;
 
 	// HTTP (Web Stats)
@@ -1844,6 +1845,7 @@ void stats_RoundStats( void );
 //
 void globalStats_writeMOD(gentity_t *victim, meansOfDeath_t MOD);
 void globalStats_hitList(gentity_t *victim, gentity_t *attacker);
+void globalStats_playerClass(int client, int type);
 void globalStats_rename(gclient_t *client, char *name);
 void globalStats_weaponShots(gentity_t *ent, int sWeapon);
 void globalStats_weaponHits(gentity_t *attacker, gentity_t *target, int mod, qboolean headshot);
