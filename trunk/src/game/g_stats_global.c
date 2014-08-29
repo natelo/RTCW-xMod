@@ -475,9 +475,10 @@ Builds client general info
 */
 char *client_buildGeneral(gentity_t *ent) {
 
-	return va("client\\%i\\%s\\%s\\%d\\%d\\%d\\%d",
+	return va("client\\%i\\%s\\%d.%d.%d.%d\\%s\\%d\\%d\\%d\\%d",
 		ent->client->ps.clientNum,
 		ent->client->sess.guid,
+		ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], ent->client->sess.ip[3],
 		ent->client->pers.netname,
 		ent->client->sess.sessionTeam,
 		ent->client->ps.stats[STAT_PLAYER_CLASS],
