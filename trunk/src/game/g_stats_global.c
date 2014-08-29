@@ -203,6 +203,58 @@ void globalStats_playerClass(int client, int type) {
 
 /*
 ============
+Timers for clients class/team
+============
+*/
+void globalStats_playerTimers(gclient_t *client) {
+	int team = client->sess.sessionTeam;
+	int cClass = client->sess.playerType;
+
+	if (client->ps.isSpy)
+		cClass = 4;
+
+	client->pers.playerClass[cClass].time++;
+}
+
+/*
+============
+Timers for clients class/team
+============
+*/
+void globalStats_statsTimers(gclient_t *client) {	
+	client->pers.statsTimers.time++;
+
+	if (client->pers.statsTimers.time > client->pers.statsTimers.alivePeak)
+		client->pers.statsTimers.alivePeak = client->pers.statsTimers.time;
+}
+
+/*
+============
+Record overall playing time..
+============
+*/
+void globalStats_overallTimer(void) {
+	int i;
+
+	for (i = 0; i < level.maxclients; i++){
+		if (level.clients[i].pers.connected != CON_CONNECTED)
+			continue;
+
+		if ((level.clients[i].sess.sessionTeam == TEAM_RED || level.clients[i].sess.sessionTeam == TEAM_BLUE)
+			&& level.time > level.oneSecActions) 
+		{
+			level.clients[i].pers.statsTimers.overall++;
+			// Team Timers
+			if (level.clients[i].sess.sessionTeam == TEAM_RED)
+				level.clients[i].pers.statsTimers.axisTeam++;
+			else
+				level.clients[i].pers.statsTimers.alliedTeam++;
+		}
+	}
+}
+
+/*
+============
 Dump rename directly to structure
 ============
 */
@@ -505,23 +557,49 @@ char *client_buildStats(gentity_t *ent) {
 
 /*
 ============
+Builds client timer stats
+============
+*/
+char *client_buildTimerStats(gentity_t *ent) {
+
+	return va("\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d",
+		// Class Stats
+		(ent->client->pers.playerClass[0].count > 0 ? ent->client->pers.playerClass[0].count : 0),
+		(ent->client->pers.playerClass[0].time > 0 ? ent->client->pers.playerClass[0].time : 0),
+		(ent->client->pers.playerClass[1].count > 0 ? ent->client->pers.playerClass[1].count : 0),
+		(ent->client->pers.playerClass[1].time > 0 ? ent->client->pers.playerClass[1].time : 0),
+		(ent->client->pers.playerClass[2].count > 0 ? ent->client->pers.playerClass[2].count : 0),
+		(ent->client->pers.playerClass[2].time > 0 ? ent->client->pers.playerClass[2].time : 0),
+		(ent->client->pers.playerClass[3].count > 0 ? ent->client->pers.playerClass[3].count : 0),
+		(ent->client->pers.playerClass[3].time > 0 ? ent->client->pers.playerClass[3].time : 0),
+		// Note: Spy counter will always be 0..(BUG: FIXME)
+		(ent->client->pers.playerClass[4].count > 0 ? ent->client->pers.playerClass[4].count : 0),
+		(ent->client->pers.playerClass[4].time > 0 ? ent->client->pers.playerClass[4].time : 0),
+		// Team stats
+		(ent->client->pers.statsTimers.axisTeam > 0 ? ent->client->pers.statsTimers.axisTeam : 0),
+		(ent->client->pers.statsTimers.alliedTeam > 0 ? ent->client->pers.statsTimers.alliedTeam : 0),
+		// General stats
+		(ent->client->pers.statsTimers.overall > 0 ? ent->client->pers.statsTimers.overall : 0),
+		(ent->client->pers.statsTimers.alivePeak > 0 ? ent->client->pers.statsTimers.alivePeak : 0)
+	);
+}
+
+/*
+============
 Builds client general info
 ============
 */
 char *client_buildGeneral(gentity_t *ent) {
 
-	return va("client\\%i\\%s\\%d.%d.%d.%d\\%s\\%d\\%d\\%d\\%d\\%d\\%d\\%d",
+	return va("client\\%i\\%s\\%d.%d.%d.%d\\%s\\%d\\%d\\%d%s",
 		ent->client->ps.clientNum,
 		ent->client->sess.guid,
 		ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], ent->client->sess.ip[3],
 		ent->client->pers.netname,
 		ent->client->sess.sessionTeam,
-		(ent->client->pers.playerClass[0].count > 0 ? ent->client->pers.playerClass[0].count : 0),
-		(ent->client->pers.playerClass[1].count > 0 ? ent->client->pers.playerClass[1].count : 0),
-		(ent->client->pers.playerClass[2].count > 0 ? ent->client->pers.playerClass[2].count : 0),
-		(ent->client->pers.playerClass[3].count > 0 ? ent->client->pers.playerClass[3].count : 0),
 		ent->client->ps.ping,
-		ent->client->ps.persistant[PERS_SCORE]
+		ent->client->ps.persistant[PERS_SCORE],
+		client_buildTimerStats(ent)
 	);
 }
 

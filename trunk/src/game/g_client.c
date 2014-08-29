@@ -1958,6 +1958,8 @@ void ClientBegin( int clientNum ) {
 	client->pers.stats.dmgGiv = 0;
 	client->pers.stats.dmgRec = 0;
 	client->pers.spreeDeaths = 0;
+	// Global Stats
+	client->pers.statsTimers.time = 0;
 
 	// Spies
 	if ( client->ps.isSpy )
@@ -2044,7 +2046,6 @@ void ClientBegin( int clientNum ) {
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
-
 }
 
 /*

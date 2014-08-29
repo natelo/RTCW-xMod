@@ -564,9 +564,10 @@ typedef struct {
 	int		lifeHeadshots;
 
 	// Global Stats
-	web_MODs_s MODs[STATS_MAX];				// MODs (Means Of Death)
-	web_deathList_s hitList[MAX_CLIENTS];	// Clients that killed the player	
-	web_classTime_s playerClass[3];			// Count for player classes
+	web_MODs_s MODs[STATS_MAX];							// MODs (Means Of Death)
+	web_deathList_s hitList[MAX_CLIENTS];				// Clients that killed the player	
+	web_classTime_s playerClass[4];						// Count for player classes
+	web_statsTimers_s statsTimers;						// Just some timers for statistics..
 	statsClientData_t stats;
 
 	// HTTP (Web Stats)
@@ -884,6 +885,8 @@ typedef struct {
 	char		lastBloodVictim[PB_GUID_LENGTH];
 	int			gsTime;
 	int			gsStepping;
+
+	int			oneSecActions;
 } level_locals_t;
 
 extern 	qboolean	reloading;				// loading up a savegame
@@ -1846,6 +1849,9 @@ void stats_RoundStats( void );
 void globalStats_writeMOD(gentity_t *victim, meansOfDeath_t MOD);
 void globalStats_hitList(gentity_t *victim, gentity_t *attacker);
 void globalStats_playerClass(int client, int type);
+void globalStats_playerTimers(gclient_t *client);
+void globalStats_statsTimers(gclient_t *client);
+void globalStats_overallTimer(void);
 void globalStats_rename(gclient_t *client, char *name);
 void globalStats_weaponShots(gentity_t *ent, int sWeapon);
 void globalStats_weaponHits(gentity_t *attacker, gentity_t *target, int mod, qboolean headshot);

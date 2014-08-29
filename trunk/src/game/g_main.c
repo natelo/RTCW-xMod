@@ -3427,4 +3427,12 @@ void G_RunFrame( int levelTime ) {
 			level.gsStepping = 4;
 		}
 	}
+
+	// L0 - Global Stats - Overall playing time
+	if (level.time > level.oneSecActions) {
+		globalStats_overallTimer();
+		level.oneSecActions = level.time + 1000;
+
+		// Add more &| Centralize to a single function and dump stuff there..
+	}
 }

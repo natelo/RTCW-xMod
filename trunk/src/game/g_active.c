@@ -617,6 +617,10 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 		if ( client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH] ) {
 			client->ps.stats[STAT_ARMOR]--;
 		}
+
+		// L0 - Global Stats - Track time on team/class
+		globalStats_playerTimers(client);
+		globalStats_statsTimers(client);
 	}
 }
 

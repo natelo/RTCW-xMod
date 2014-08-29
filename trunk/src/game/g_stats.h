@@ -81,7 +81,19 @@ typedef struct {
 //
 typedef struct {
 	int count;
+	int time;
 } web_classTime_s;
+
+//
+// Stats Time
+//
+typedef struct {
+	int alivePeak;
+	int time;
+	int overall;
+	int axisTeam;
+	int alliedTeam;
+} web_statsTimers_s;
 
 //
 // Stats

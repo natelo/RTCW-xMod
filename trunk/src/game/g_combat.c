@@ -472,6 +472,9 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	// L0 - Death Sprees
 	stats_DeathSpree( self ); 		
 
+	// L0 - Global Stats - Alive Peak..
+	self->client->pers.statsTimers.time = 0;
+
 	// L0 - Stats
 	if (attacker && attacker->client && g_gamestate.integer == GS_PLAYING) {
 		// Life kills & death spress
