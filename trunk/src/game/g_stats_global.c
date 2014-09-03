@@ -261,7 +261,7 @@ void globalStats_rename(gclient_t *client, char *name) {
 	if (g_gamestate.integer != GS_PLAYING)
 		return;
 
-	data = va("rename\\%s\\%s", client->sess.guid, name);
+	data = va("rename\\%s\\%s", client->sess.guid, Q_CharReplace(name, '&', '~'));
 
 	// We do not care which round or when as we trap
 	// server id on web part and build alias list on it's own..
@@ -595,7 +595,7 @@ char *client_buildGeneral(gentity_t *ent) {
 		ent->client->ps.clientNum,
 		ent->client->sess.guid,
 		ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], ent->client->sess.ip[3],
-		ent->client->pers.netname,
+		Q_CharReplace(ent->client->pers.netname, '&', '~'),
 		ent->client->sess.sessionTeam,
 		ent->client->ps.ping,
 		ent->client->ps.persistant[PERS_SCORE],
