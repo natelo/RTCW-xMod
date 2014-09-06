@@ -1387,6 +1387,7 @@ extern vmCvar_t		g_spectatorAllowDemo;
 extern vmCvar_t		g_antiWarp;
 
 // Game
+extern vmCvar_t		g_dropReload;
 extern vmCvar_t		g_unlockWeapons;
 extern vmCvar_t		g_flagRetake;
 extern vmCvar_t		g_balanceFlagRetake;

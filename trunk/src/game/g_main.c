@@ -189,6 +189,7 @@ vmCvar_t	g_spectatorInactivity;	// Drop spectators after some time..
 vmCvar_t	g_spectatorAllowDemo;	// Basically ignores any client that's following other players when g_spectatorInactivity is set.
 
 // Game
+vmCvar_t	g_dropReload;			// Enable / Disable Drop reload
 vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
 vmCvar_t	g_flagRetake;			// How many times flag can be retaken
 vmCvar_t	g_balanceFlagRetake;	// Checks if flag can be taken..it always allows team with less to claim it last and then locks till even.
@@ -498,6 +499,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_antiWarp, "g_antiWarp", "1", CVAR_ARCHIVE, 0, qfalse },
 
 	// Game
+	{ &g_dropReload, "g_dropReload", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &g_flagRetake, "g_flagRetake", "-1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_balanceFlagRetake, "g_balanceFlagRetake", "0", CVAR_ARCHIVE, 0, qtrue },
