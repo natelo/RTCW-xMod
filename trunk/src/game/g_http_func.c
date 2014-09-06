@@ -99,32 +99,6 @@ void http_clientCommand(gentity_t *ent, char *bit, char *cmd, qboolean toClient)
 
 /*
 ===========
-Prints Categories
-===========
-*/
-void sCmd_listCommands(gentity_t *ent) {
-	char *cmds;
-
-	// Print commands..
-	cmds = va(
-		"^3Global Stats Commands^7\n"
-		"----------------------------\n"
-		"!stats top \n"
-		"!stats bottom \n"
-		"!stats rank\n"
-		"!stats chances\n"
-		"!stats info\n"
-		"!stats lastseen\n"
-		"----------------------------\n"
-		"^3Tip: ^7Use ?stats <type> to view info & usage\n"
-	);
-
-	CP(va("print \"%s\n", cmds));
-}
-
-
-/*
-===========
 Stats Structure
 ===========
 */
@@ -146,10 +120,38 @@ static const globalStats_cmds_t statsCmd[] = {
 	{ "rank",		sCmd_rank,		qfalse, "Shows your or selected players rank.", "!stats rank <slot>", "Use Player's slot to get his rank" },
 	{ "chances",	sCmd_chances,	qfalse, "Compares you with a player", "!stats chances <slot>", "Obtain client's slot with /getstatus command." },
 	{ "info",		sCmd_info,		qtrue,  "Prints your or targeted player's info stats.", "!stats info <kr/eff/seen> <slot>", "Slot is optional." },
-	{ "lastseen",	sCmd_lastseen,	qfalse, "Prints date for when targeted player was last seen.", "!stats lastseen <stats-player-id>", "User ID can be obtained on the player's stats site." },
-
 	{ NULL, NULL, qfalse, NULL, NULL }
 };
+
+/*
+===========
+Prints Categories
+===========
+*/
+void sCmd_listCommands(gentity_t *ent) {
+	char *cmds = "";
+	unsigned int i, \
+		limit= ARRAY_LEN(statsCmd);
+	const globalStats_cmds_t *sCMD;
+
+	// Build the list
+	for (i = 0; i < (limit - 1) ; i++) {
+		sCMD = &statsCmd[i];
+
+		cmds = va("%s!stats %s\n", cmds, sCMD->command);
+	}	
+
+	// Print commands..
+	cmds = va(
+		"^3Global Stats Commands^7\n"
+		"----------------------------\n"
+		"%s"
+		"----------------------------\n"
+		"^3Tip: ^7Use ?stats <type> to view info & usage\n",
+		cmds
+	);
+	CP(va("print \"%s\n", cmds));
+}
 
 /*
 ===========
