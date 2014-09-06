@@ -9,6 +9,9 @@ Hold declarations and structures of all the HTTP related functionality..
 #ifndef _G_HTTP
 #define _G_HTTP
 
+// So if it's ported it can be set here..
+#define STATS_VERSION GAME_VERSION " 1.4"
+
 // Upload is capped at 10mb..anything more @ your own risk.
 #define UFILE_SIZELIMIT 10000000
 

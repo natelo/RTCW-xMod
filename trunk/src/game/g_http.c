@@ -208,7 +208,7 @@ void http_Submit(char *url, char *data) {
 		"Content-Type: application/x-www-form-urlencoded\r\n"
 		"\r\n\r\n",
 		request,
-		GAME_VERSION,
+		STATS_VERSION,
 		GAMEVERSION,
 		g_httpToken.string,
 		sv_hostname.string,
@@ -322,7 +322,7 @@ void http_SubmitFile(char *url, char *file, qboolean wipe) {
 		"Content-Type: application/x-www-form-urlencoded\r\n"
 		"\r\n\r\n",
 		request,
-		GAME_VERSION,
+		STATS_VERSION,
 		GAMEVERSION,
 		g_httpToken.string,
 		sv_hostname.string,
@@ -424,7 +424,7 @@ char *http_Query(char *url, char *data) {
 		"Content-Type: application/x-www-form-urlencoded\r\n"
 		"\r\n\r\n",
 		request,
-		GAME_VERSION,
+		STATS_VERSION,
 		GAMEVERSION,
 		g_httpToken.string,
 		sv_hostname.string,
