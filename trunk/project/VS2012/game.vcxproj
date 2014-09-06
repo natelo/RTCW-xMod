@@ -187,7 +187,7 @@
     <ClCompile Include="..\..\src\game\g_combat.c" />
     <ClCompile Include="..\..\src\game\g_hacks.c" />
     <ClCompile Include="..\..\src\game\g_http.c" />
-    <ClCompile Include="..\..\src\game\g_http_cmds.c" />
+    <ClCompile Include="..\..\src\game\g_http_func.c" />
     <ClCompile Include="..\..\src\game\g_http_stats.c" />
     <ClCompile Include="..\..\src\game\g_items.c" />
     <ClCompile Include="..\..\src\game\g_main.c" />

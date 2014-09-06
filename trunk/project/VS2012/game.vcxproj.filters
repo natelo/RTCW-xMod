@@ -207,13 +207,13 @@
     <ClCompile Include="..\..\src\game\g_http.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\game\g_http_cmds.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\game\g_hacks.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\game\g_stats_global.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\g_http_func.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

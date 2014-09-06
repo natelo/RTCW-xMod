@@ -1259,13 +1259,20 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	   return;
 	}
 
+	// FIXME: Unify HTTP & Admin commands..
+
 	// HTTP Stats come before anything	
 	if (text[0] == '!' || text[0] == '?') {
+		char alt[128];
+		char tCmd[128];
+
 		ParseAdmStr(text, cmd1, arg);
 		ParseAdmStr(arg, cmd2, cmd3);
+		parseCmds(cmd1, alt, tCmd, ((text[0] == '!') ? qfalse : qtrue));
 
-		if (isHttpCommand(ent, va("%s", cmd1), va("%s", cmd2), va("%s", cmd3)))
-			return;
+		if (!Q_stricmp(tCmd, PSTATS_GLOBAL))
+			if (isHttpCommand(ent, va("%s", cmd2), va("%s", cmd3), ((text[0] == '?') ? qtrue : qfalse) ))
+				return;
 	}
 
 	// Admin commands
@@ -1279,6 +1286,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 			Q_strncpyz ( ent->client->pers.cmd3, cmd3, sizeof( ent->client->pers.cmd3 ) );
 
 			// Sort Command | Help
+			// FIXME: Set it to boolean so "!" can stand on it's own..
 			cmds_admin(((text[0] != '?') ? "!" : "?"), ent);
 			return;
 		}

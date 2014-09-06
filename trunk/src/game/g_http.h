@@ -12,8 +12,8 @@ Hold declarations and structures of all the HTTP related functionality..
 // Upload is capped at 10mb..anything more @ your own risk.
 #define UFILE_SIZELIMIT 10000000
 
-// HTTP Commands for invoking functionality thru a wrapper
-#define HTTP_CLIENT_STATS	"stats"
+// Player stats commands
+#define PSTATS_GLOBAL "stats"
 
 /*
 ============
@@ -47,6 +47,6 @@ void globalStats_submit(void);
 // g_http_cmds.c
 //
 void *http_sendQuery(void *args);
-qboolean isHttpCommand(gentity_t *ent, char *cmd1, char *cmd2, char *cmd3);
+qboolean isHttpCommand(gentity_t *ent, char *cmd, char *param, qboolean help);
 
 #endif // _G_HTTP
