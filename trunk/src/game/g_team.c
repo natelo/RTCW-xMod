@@ -1482,7 +1482,10 @@ void checkpoint_spawntouch (gentity_t *self, gentity_t *other, trace_t *trace) {
 			}
 
 			if (self->s.frame == WCP_ANIM_NOFLAG) {
-				AddScore(other, WOLF_SP_CAPTURE);	
+				// L0 - Not in dm
+				if (!g_deathMatch.integer)
+					AddScore(other, WOLF_SP_CAPTURE);	
+
 				// L0 - Stats
 				other->client->pers.stats.flagCapture++;
 			} else {
@@ -1490,8 +1493,11 @@ void checkpoint_spawntouch (gentity_t *self, gentity_t *other, trace_t *trace) {
 				if ( level.flagTaken >= g_flagRetake.integer && g_flagRetake.integer != -1){ 					
 					CPx(other->client->ps.clientNum, va("cp \"Flag Retake limit ^1%d ^7has been reached^1!\n\"2", g_flagRetake.integer));
 				return;
-				}				
-					AddScore(other, WOLF_SP_RECOVER);
+				}	
+					// L0 - Not in dm
+					if (!g_deathMatch.integer)
+						AddScore(other, WOLF_SP_RECOVER);
+
 					level.flagTaken++; // mark that flag was taken				
 
 					// L0 - Stats
@@ -1501,11 +1507,15 @@ void checkpoint_spawntouch (gentity_t *self, gentity_t *other, trace_t *trace) {
 	} else {
 		// Act as default in CP mode.
 		if ( self->s.frame == WCP_ANIM_NOFLAG ) {
-			AddScore( other, WOLF_SP_CAPTURE );
+			// L0 - Not in dm
+			if (!g_deathMatch.integer)
+				AddScore( other, WOLF_SP_CAPTURE );
 			// L0 - Stats
 			other->client->pers.stats.flagCapture++;
 		} else {
-			AddScore( other, WOLF_SP_RECOVER );
+			// L0 - Not in dm
+			if (!g_deathMatch.integer)
+				AddScore( other, WOLF_SP_RECOVER );
 			// L0 - Stats
 			other->client->pers.stats.flagReclaim++;
 		}

@@ -746,6 +746,10 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 	if (g_headshotsOnly.integer)
 		CPx(clientNum, "chat \"console: ^3Headshots Only ^7mode is enabled.\n\"");
 
+	// L0 - Notify them it's DM
+	if (g_deathMatch.integer)
+		CPx(ent - g_entities, "chat \"console: This server is running in ^3DeathMatch ^7mode.\n\"");
+
 	// get and distribute relevent paramters
 	ClientUserinfoChanged( clientNum );
 

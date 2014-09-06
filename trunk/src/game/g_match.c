@@ -345,7 +345,8 @@ void checkEvenTeams( void ) {
 	if (!g_teamAutoBalance.integer ||		
 		(g_gamestate.integer != GS_PLAYING) ||		
 		!g_teamForceBalance.integer ||	
-		g_needBalance.integer)
+		g_needBalance.integer ||
+		g_deathMatch.integer)
 	return;
 
 	sortedActivePlayers();

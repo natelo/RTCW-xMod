@@ -369,7 +369,10 @@ Get any custom gametype (deathmatch, goldrush..)
 ============
 */
 int altGameType(void) {
-	return 0;
+	if (g_deathMatch.integer)
+		return 1;
+	else
+		return 0;
 }
 
 /*

@@ -1386,6 +1386,9 @@ extern vmCvar_t		g_spectatorInactivity;
 extern vmCvar_t		g_spectatorAllowDemo;
 extern vmCvar_t		g_antiWarp;
 
+// Modes
+extern vmCvar_t		g_deathMatch;
+
 // Game
 extern vmCvar_t		g_dropReload;
 extern vmCvar_t		g_unlockWeapons;

@@ -188,6 +188,9 @@ vmCvar_t	g_antiWarp;				// Enable Anti warp..
 vmCvar_t	g_spectatorInactivity;	// Drop spectators after some time..
 vmCvar_t	g_spectatorAllowDemo;	// Basically ignores any client that's following other players when g_spectatorInactivity is set.
 
+// Modes
+vmCvar_t	g_deathMatch;			// Death Match
+
 // Game
 vmCvar_t	g_dropReload;			// Enable / Disable Drop reload
 vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
@@ -497,6 +500,9 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_spectatorInactivity, "g_spectatorInactivity", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_spectatorAllowDemo, "g_spectatorAllowDemo", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_antiWarp, "g_antiWarp", "1", CVAR_ARCHIVE, 0, qfalse },
+
+	// Modes
+	{ &g_deathMatch, "g_deathMatch", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },
 
 	// Game
 	{ &g_dropReload, "g_dropReload", "0", CVAR_ARCHIVE, 0, qfalse },
@@ -2548,7 +2554,8 @@ void CheckExitRules( void ) {
 		return;
 	}
 
-	if ( g_timelimit.value && !level.warmupTime ) {
+											   // L0 - Not in DM
+	if (g_timelimit.value && !level.warmupTime && !g_deathMatch.integer) {
 		if ( level.timeCurrent - level.startTime >= g_timelimit.value*60000 ) {
 
 			// check for sudden death 
