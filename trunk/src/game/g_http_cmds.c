@@ -53,7 +53,7 @@ void sCmd_rank(gentity_t *ent, qboolean fParam) {
 	else {
 		gentity_t *target = &g_entities[atoi(cmd)];
 
-		if (target->client && target->client->sess.guid)
+		if (target->client && target->client->sess.guid && target->client->pers.connected == CON_CONNECTED)
 			cmd = va("%s", target->client->sess.guid);
 		else {
 			CP("print \"^1Error! ^7Could not locate targeted client!\n");
@@ -84,7 +84,7 @@ void sCmd_chances(gentity_t *ent, qboolean fParam) {
 	else {
 		gentity_t *target = &g_entities[atoi(cmd)];
 
-		if (target->client && target->client->sess.guid)
+		if (target->client && target->client->sess.guid && target->client->pers.connected == CON_CONNECTED)
 			cmd = va("%s\\%s", ent->client->sess.guid, target->client->sess.guid);
 		else {
 			CP("print \"^1Error! ^7Could not locate targeted client!\n");
@@ -114,9 +114,6 @@ void sCmd_info(gentity_t *ent, qboolean fParam) {
 	else if (_CMD(cmd, "kr")) {
 		cmd = "kr";
 	}
-	else if (_CMD(cmd, "seen")) {
-		cmd = "seen";
-	}
 
 	if (_CMD(ent->client->pers.cmd2, "")) {
 		cmd = va("%s\\%s", cmd, ent->client->sess.guid);
@@ -131,7 +128,7 @@ void sCmd_info(gentity_t *ent, qboolean fParam) {
 		else {
 			gentity_t *target = &g_entities[atoi(tCmd)];
 
-			if (target->client && target->client->sess.guid)
+			if (target->client && target->client->sess.guid && target->client->pers.connected == CON_CONNECTED)
 				cmd = va("%s\\%s", cmd, target->client->sess.guid);
 			else {
 				CP("print \"^1Error! ^7Could not locate targeted client!\n");
@@ -140,21 +137,4 @@ void sCmd_info(gentity_t *ent, qboolean fParam) {
 		}
 	}
 	http_clientCommand(ent, "info", cmd, fParam);
-}
-
-/*
-===========
-Get time when player was last seen
-
-@format	cmd=ID
-@url	url/lastseen
-===========
-*/
-void sCmd_lastseen(gentity_t *ent, qboolean fParam) {	
-	char *cmd = ent->client->pers.cmd1;
-	if (!is_numeric(cmd)) {
-		CP("print \"^1Error! ^7This command only accepts numeric values!\n");
-		return;
-	}
-	http_clientCommand(ent, "lastseen", "", fParam);
 }

@@ -419,7 +419,7 @@ char *http_Query(char *url, char *data) {
 		"Mod: %s\r\n"
 		"Signature: %s\r\n"
 		"Server: %s\r\n"
-		"Content-Length: %d \r\n"
+		"Content-Length: %d\r\n"
 		"Host: %s\r\n"
 		"Content-Type: application/x-www-form-urlencoded\r\n"
 		"\r\n\r\n",
