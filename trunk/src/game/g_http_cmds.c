@@ -56,7 +56,7 @@ void sCmd_rank(gentity_t *ent, qboolean fParam) {
 		if (target->client && target->client->sess.guid && target->client->pers.connected == CON_CONNECTED)
 			cmd = va("%s", target->client->sess.guid);
 		else {
-			CP("print \"^1Error! ^7Could not locate targeted client!\n");
+			CP(va("print \"^1Error! ^7Slot %s is not active!\n", cmd));
 			return;
 		}
 	}
@@ -75,19 +75,28 @@ void sCmd_chances(gentity_t *ent, qboolean fParam) {
 	char *cmd = ent->client->pers.cmd1;
 
 	if (_CMD(cmd, "")) {
-		cmd = ent->client->sess.guid;
-	}
+		CP("print \"^1Error: ^7Enter a slot of a player!\n");
+		return;
+	}	
 	else if (!is_numeric(cmd) || (is_numeric(cmd) && (atoi(cmd) > g_maxclients.integer || atoi(cmd) < 0))) {
 		CP("print \"^1Error! ^7Invalid Input...use a valid slot number!\n");
 		return;
 	}
+	else if (ent->client->ps.clientNum == atoi(cmd)) {
+		CP("print \"^7[^4Blue Screen Of Death^7]\nSchizophrenia is not supported in this mod - Try a different slot.\n");
+		return;
+	}
 	else {
 		gentity_t *target = &g_entities[atoi(cmd)];
-
-		if (target->client && target->client->sess.guid && target->client->pers.connected == CON_CONNECTED)
+		
+		if (target->client && 
+			target->client->sess.guid && 
+			target->client->pers.connected == CON_CONNECTED &&
+			target->client->ps.clientNum != ent->client->ps.clientNum
+		)
 			cmd = va("%s\\%s", ent->client->sess.guid, target->client->sess.guid);
 		else {
-			CP("print \"^1Error! ^7Could not locate targeted client!\n");
+			CP(va("print \"^1Error! ^7Slot %s is not active!\n", cmd));
 			return;
 		}
 	}
@@ -131,7 +140,7 @@ void sCmd_info(gentity_t *ent, qboolean fParam) {
 			if (target->client && target->client->sess.guid && target->client->pers.connected == CON_CONNECTED)
 				cmd = va("%s\\%s", cmd, target->client->sess.guid);
 			else {
-				CP("print \"^1Error! ^7Could not locate targeted client!\n");
+				CP(va("print \"^1Error! ^7Slot %s is not active!\n", cmd));
 				return;
 			}
 		}
