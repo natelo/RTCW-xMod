@@ -142,12 +142,12 @@ typedef struct {
 	Commands..
 */
 static const globalStats_cmds_t statsCmd[] = {
-	{ "top",		NULL, qfalse, "Shows top player on this server. Use @ to show overall top player.", "!stats top", "Use @ to show overall- !stats top @"},
-	{ "bottom",		NULL, qfalse, "Shows worst player on this server. Use @ to show overall worst player.", "!stats top", "" },
-	{ "rank",		NULL, qfalse, "Shows your or selected players rank.", "!stats rank or !stats rank", "" },
-	{ "chances",	NULL, qfalse, "Compares you with a player and calculcates your chances to prevail in a dog fight.", "!stats chances <slot>", ""},
-	{ "info",		NULL, qfalse, "Prints your or targeted player's info stats.", "!stats info <kr|eff|seen> <slot>", "" },
-	{ "lastseen",	NULL, qfalse, "Prints date for when targeted player was last seen.", "!stats lastseen <stats-player-id>", ""},
+	{ "top",		sCmd_top,		qfalse, "Shows top player on this server. Use @ to show overall top player.", "!stats top", "Use @ to show overall- !stats top @" },
+	{ "bottom",		sCmd_bottom,	qfalse, "Shows worst player on this server. Use @ to show overall worst player.", "!stats top", "" },
+	{ "rank",		sCmd_rank,		qfalse, "Shows your or selected players rank.", "!stats rank or !stats rank", "" },
+	{ "chances",	sCmd_chances,	qfalse, "Compares you with a player and calculcates your chances to prevail in a dog fight.", "!stats chances <slot>", "" },
+	{ "info",		sCmd_info,		qfalse, "Prints your or targeted player's info stats.", "!stats info <kr|eff|seen> <slot>", "" },
+	{ "lastseen",	sCmd_lastseen,	qfalse, "Prints date for when targeted player was last seen.", "!stats lastseen <stats-player-id>", "" },
 
 	{ NULL, NULL, qfalse, NULL, NULL }
 };

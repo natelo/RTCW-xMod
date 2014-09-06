@@ -44,9 +44,19 @@ char *http_Query(char *url, char *data);
 void globalStats_submit(void);
 
 //
-// g_http_cmds.c
+// g_http_func.c
 //
 void *http_sendQuery(void *args);
 qboolean isHttpCommand(gentity_t *ent, char *cmd, char *param, qboolean help);
+
+//
+// g_http_cmds.c
+//
+void sCmd_top(gentity_t *end, qboolean fParam);
+void sCmd_bottom(gentity_t *end, qboolean fParam);
+void sCmd_rank(gentity_t *end, qboolean fParam);
+void sCmd_chances(gentity_t *end, qboolean fParam);
+void sCmd_info(gentity_t *end, qboolean fParam);
+void sCmd_lastseen(gentity_t *end, qboolean fParam);
 
 #endif // _G_HTTP
