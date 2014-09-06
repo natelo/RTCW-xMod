@@ -162,6 +162,10 @@ Wrapper for client commands
 ===========
 */
 qboolean isHttpCommand(gentity_t *ent, char *cmd, char *param, qboolean help) {
+	char cmd1[128];
+	char cmd2[128];
+	char cmd3[128];
+	char arg[MAX_SAY_TEXT];
 	unsigned int i, \
 		cmds = ARRAY_LEN(statsCmd);
 	const globalStats_cmds_t *sCMD;
@@ -184,6 +188,13 @@ qboolean isHttpCommand(gentity_t *ent, char *cmd, char *param, qboolean help) {
 	if (level.warmupTime && level.time > level.warmupTime - 2400 || level.intermissiontime) {
 		return qtrue;
 	}
+
+	// Sort commands
+	ParseAdmStr(param, cmd1, arg);
+	ParseAdmStr(arg, cmd2, cmd3);
+	Q_strncpyz(ent->client->pers.cmd1, cmd1, sizeof(ent->client->pers.cmd1));
+	Q_strncpyz(ent->client->pers.cmd2, cmd2, sizeof(ent->client->pers.cmd2));
+	Q_strncpyz(ent->client->pers.cmd3, cmd3, sizeof(ent->client->pers.cmd3));
 
 	// Command itself is a helper..
 	if (_CMD(cmd, "")) {
