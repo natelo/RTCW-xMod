@@ -15,6 +15,9 @@ Hold declarations and structures of all the HTTP related functionality..
 // Player stats commands
 #define PSTATS_GLOBAL "stats"
 
+// So it's little easier..
+#define _CMD(x, y) !Q_stricmp(x, y)
+
 /*
 ============
 Client commands structure

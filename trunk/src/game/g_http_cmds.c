@@ -10,66 +10,151 @@ All http client related commands.
 
 /*
 ===========
-Stats Structure
+Get top player on the server
+
+@format	cmd=dummy
+@url	url/TOP
 ===========
 */
 void sCmd_top(gentity_t *ent, qboolean fParam) {
-
-	AP(va("chat \"Cmd1: %s - Cmd2: %s - Cmd3: %s \n",
-		ent->client->pers.cmd1,	
-		ent->client->pers.cmd2,
-		ent->client->pers.cmd3
-	));
-
-	http_clientCommand(ent, "top", "", fParam);
+	http_clientCommand(ent, "top", "dummy", fParam);
 }
 
 /*
 ===========
-Stats Structure
+Get worst player on the server
+
+@format	cmd=dummy
+@url	url/bottom
 ===========
 */
-void sCmd_bottom(gentity_t *ent, qboolean fParam) {
-
-	http_clientCommand(ent, "bottom", "", fParam);
+void sCmd_bottom(gentity_t *ent, qboolean fParam) {	
+	http_clientCommand(ent, "bottom", "dummy", fParam);
 }
 
 /*
 ===========
-Stats Structure
+Get rank of a player/targeted player
+
+@format	cmd=guid
+@url	url/rank
 ===========
 */
 void sCmd_rank(gentity_t *ent, qboolean fParam) {
+	char *cmd = ent->client->pers.cmd1;
 
-	http_clientCommand(ent, "rank", "", fParam);
+	if (_CMD(cmd, "")) {
+		cmd = ent->client->sess.guid;
+	}
+	else if (!is_numeric(cmd) || (is_numeric(cmd) && (atoi(cmd) > g_maxclients.integer || atoi(cmd) < 0) )) {
+		CP("print \"^1Error! ^7Invalid Input...use a valid slot number!\n");
+		return;
+	}
+	else {
+		gentity_t *target = &g_entities[atoi(cmd)];
+
+		if (target->client && target->client->sess.guid)
+			cmd = va("%s", target->client->sess.guid);
+		else {
+			CP("print \"^1Error! ^7Could not locate targeted client!\n");
+			return;
+		}
+	}
+	http_clientCommand(ent, "rank", cmd, fParam);
 }
 
 /*
 ===========
-Stats Structure
+Calcuate win probability in a dog fight between two players
+
+@format	cmd=guid\\target-guid
+@url	url/chances
 ===========
 */
 void sCmd_chances(gentity_t *ent, qboolean fParam) {
+	char *cmd = ent->client->pers.cmd1;
 
-	http_clientCommand(ent, "chances", "", fParam);
+	if (_CMD(cmd, "")) {
+		cmd = ent->client->sess.guid;
+	}
+	else if (!is_numeric(cmd) || (is_numeric(cmd) && (atoi(cmd) > g_maxclients.integer || atoi(cmd) < 0))) {
+		CP("print \"^1Error! ^7Invalid Input...use a valid slot number!\n");
+		return;
+	}
+	else {
+		gentity_t *target = &g_entities[atoi(cmd)];
+
+		if (target->client && target->client->sess.guid)
+			cmd = va("%s\\%s", ent->client->sess.guid, target->client->sess.guid);
+		else {
+			CP("print \"^1Error! ^7Could not locate targeted client!\n");
+			return;
+		}
+	}
+	http_clientCommand(ent, "chances", cmd, fParam);
 }
 
 /*
 ===========
-Stats Structure
+Get Info of player/targeted player
+
+@format	cmd=type\\guid
+@url	url/info
 ===========
 */
 void sCmd_info(gentity_t *ent, qboolean fParam) {
+	char *cmd = ent->client->pers.cmd1;
 
-	http_clientCommand(ent, "info", "", fParam);
+	if (_CMD(cmd, "")) {
+		cmd = "skill";
+	}
+	else if (_CMD(cmd, "eff")) {
+		cmd = "eff";
+	}
+	else if (_CMD(cmd, "kr")) {
+		cmd = "kr";
+	}
+	else if (_CMD(cmd, "seen")) {
+		cmd = "seen";
+	}
+
+	if (_CMD(ent->client->pers.cmd2, "")) {
+		cmd = va("%s\\%s", cmd, ent->client->sess.guid);
+	}
+	else {
+		char *tCmd = ent->client->pers.cmd2;
+
+		if (!is_numeric(tCmd) || (is_numeric(tCmd) && (atoi(tCmd) > g_maxclients.integer || atoi(tCmd) < 0))) {
+			CP("print \"^1Error! ^7Invalid Input...use a valid slot number!\n");
+			return;
+		}
+		else {
+			gentity_t *target = &g_entities[atoi(tCmd)];
+
+			if (target->client && target->client->sess.guid)
+				cmd = va("%s\\%s", cmd, target->client->sess.guid);
+			else {
+				CP("print \"^1Error! ^7Could not locate targeted client!\n");
+				return;
+			}
+		}
+	}
+	http_clientCommand(ent, "info", cmd, fParam);
 }
 
 /*
 ===========
-Stats Structure
+Get time when player was last seen
+
+@format	cmd=ID
+@url	url/lastseen
 ===========
 */
-void sCmd_lastseen(gentity_t *ent, qboolean fParam) {
-
+void sCmd_lastseen(gentity_t *ent, qboolean fParam) {	
+	char *cmd = ent->client->pers.cmd1;
+	if (!is_numeric(cmd)) {
+		CP("print \"^1Error! ^7This command only accepts numeric values!\n");
+		return;
+	}
 	http_clientCommand(ent, "lastseen", "", fParam);
 }

@@ -9,9 +9,6 @@ All http client related commands.
 */
 #include "g_local.h"
 
-// So it's little easier..
-#define _CMD(x, y) !Q_stricmp(x, y)
-
 /*
 ===========
 http_processMessage
@@ -144,12 +141,12 @@ typedef struct {
 	Commands..
 */
 static const globalStats_cmds_t statsCmd[] = {
-	{ "top",		sCmd_top,		qfalse, "Shows top player on this server. Use @ to show overall top player.", "!stats top", "Use @ to show overall- !stats top @" },
-	{ "bottom",		sCmd_bottom,	qfalse, "Shows worst player on this server. Use @ to show overall worst player.", "!stats top", "" },
-	{ "rank",		sCmd_rank,		qfalse, "Shows your or selected players rank.", "!stats rank or !stats rank", "" },
-	{ "chances",	sCmd_chances,	qfalse, "Compares you with a player and calculcates your chances to prevail in a dog fight.", "!stats chances <slot>", "" },
-	{ "info",		sCmd_info,		qfalse, "Prints your or targeted player's info stats.", "!stats info <kr|eff|seen> <slot>", "" },
-	{ "lastseen",	sCmd_lastseen,	qfalse, "Prints date for when targeted player was last seen.", "!stats lastseen <stats-player-id>", "" },
+	{ "top",		sCmd_top,		qfalse, "Shows top player on this server", "!stats top", "" },
+	{ "bottom",		sCmd_bottom,	qfalse, "Shows worst player on this server.", "!stats top", "" },
+	{ "rank",		sCmd_rank,		qfalse, "Shows your or selected players rank.", "!stats rank <slot>", "Use Player's slot to get his rank" },
+	{ "chances",	sCmd_chances,	qfalse, "Compares you with a player", "!stats chances <slot>", "Obtain client's slot with /getstatus command." },
+	{ "info",		sCmd_info,		qtrue,  "Prints your or targeted player's info stats.", "!stats info <kr/eff/seen> <slot>", "Slot is optional." },
+	{ "lastseen",	sCmd_lastseen,	qfalse, "Prints date for when targeted player was last seen.", "!stats lastseen <stats-player-id>", "User ID can be obtained on the player's stats site." },
 
 	{ NULL, NULL, qfalse, NULL, NULL }
 };
@@ -212,7 +209,12 @@ qboolean isHttpCommand(gentity_t *ent, char *cmd, char *param, qboolean help) {
 					help = qtrue;
 
 				if (help) {				
-						CP(va("print \"^3Command: ^7%s\n^3Info: ^7%s\n^3Usage: ^7%s\n^3Extra: ^7%s\n", cmd, sCMD->help, sCMD->usage, sCMD->extra));
+						CP(va("print \"\n^3Command: ^7%s\n-------------------\n^3Info : ^7%s\n^3Usage: ^7%s\n%s-------------------\n\n", 
+							cmd, 
+							sCMD->help, 
+							sCMD->usage, 
+							(_CMD(sCMD->extra, "") ? "" : va("^3Extra: ^7%s\n", sCMD->extra))
+						));
 				}
 				else {
 					sCMD->pCommand(ent, sCMD->fParam);
