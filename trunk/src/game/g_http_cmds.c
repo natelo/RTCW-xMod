@@ -123,6 +123,15 @@ void sCmd_info(gentity_t *ent, qboolean fParam) {
 	else if (_CMD(cmd, "kr")) {
 		cmd = "kr";
 	}
+	else if (_CMD(cmd, "acc")) {
+		cmd = "acc";
+	}
+	else if (_CMD(cmd, "hs")) {
+		cmd = "acc";
+	}
+	else if (_CMD(cmd, "skill")) {
+		cmd = "skill";
+	}
 	else {
 		CP(va("print \"^1Error! ^7%s is not a valid command!\n", cmd));
 		return;

@@ -19,9 +19,9 @@ Prints message back to public/client.
 void http_processMessage(int clientNum, char *msg, qboolean toClient) {
 
 	if (toClient)
-		CPx(clientNum, va("print \"^5WebStats^7: %s\n", msg));
+		CPx(clientNum, va("print \"^5WebStats^7:%s\n", msg));
 	else {
-		AP(va("chat \"^5WebStats^7: %s", &g_entities[clientNum].client->pers.netname));
+		AP(va("chat \"^5WebStats^7 requested by %s", &g_entities[clientNum].client->pers.netname));
 		AP(va("chat \"^7%s\n", msg));
 	}
 	return;
@@ -120,7 +120,7 @@ static const globalStats_cmds_t statsCmd[] = {
 	{ "bottom",		sCmd_bottom,	qfalse, "Shows worst player on this server.", "!stats top", "" },
 	{ "rank",		sCmd_rank,		qfalse, "Shows your or selected players rank.", "!stats rank <slot>", "Use Player's slot to get his rank" },
 	{ "chances",	sCmd_chances,	qfalse, "Compares you with a player", "!stats chances <slot>", "Obtain client's slot with /getstatus command." },
-	{ "info",		sCmd_info,		qtrue,  "Prints your or targeted player's info stats.", "!stats info <kr/eff/skill> <slot>", "Slot is optional." },
+	{ "info",		sCmd_info,		qfalse,  "Prints your or targeted player's info stats.", "!stats info <kr/eff/acc/hs/skill> <slot>", "Slot is optional." },
 	{ NULL, NULL, qfalse, NULL, NULL }
 };
 
