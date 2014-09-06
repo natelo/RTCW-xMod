@@ -47,7 +47,7 @@ void sCmd_rank(gentity_t *ent, qboolean fParam) {
 		cmd = ent->client->sess.guid;
 	}
 	else if (!is_numeric(cmd) || (is_numeric(cmd) && (atoi(cmd) > g_maxclients.integer || atoi(cmd) < 0) )) {
-		CP("print \"^1Error! ^7Invalid Input...use a valid slot number!\n");
+		CP("print \"^1Error! ^7Invalid input...use a valid slot number!\n");
 		return;
 	}
 	else {
@@ -79,7 +79,7 @@ void sCmd_chances(gentity_t *ent, qboolean fParam) {
 		return;
 	}	
 	else if (!is_numeric(cmd) || (is_numeric(cmd) && (atoi(cmd) > g_maxclients.integer || atoi(cmd) < 0))) {
-		CP("print \"^1Error! ^7Invalid Input...use a valid slot number!\n");
+		CP("print \"^1Error! ^7Invalid input...use a valid slot number!\n");
 		return;
 	}
 	else if (ent->client->ps.clientNum == atoi(cmd)) {
@@ -135,7 +135,7 @@ void sCmd_info(gentity_t *ent, qboolean fParam) {
 		char *tCmd = ent->client->pers.cmd2;
 
 		if (!is_numeric(tCmd) || (is_numeric(tCmd) && (atoi(tCmd) > g_maxclients.integer || atoi(tCmd) < 0))) {
-			CP("print \"^1Error! ^7Invalid Input...use a valid slot number!\n");
+			CP("print \"^1Error! ^7Invalid input...use a valid slot number!\n");
 			return;
 		}
 		else {
