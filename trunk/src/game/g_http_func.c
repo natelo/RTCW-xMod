@@ -19,10 +19,11 @@ Prints message back to public/client.
 void http_processMessage(int clientNum, char *msg, qboolean toClient) {
 
 	if (toClient)
-		CPx(clientNum, va("chat \"^5webStats^7: %s\n", msg));
-	else
-		AP(va("chat \"^5webStats^7: %s\n", msg));
-	
+		CPx(clientNum, va("print \"^5WebStats^7: %s\n", msg));
+	else {
+		AP(va("chat \"^5WebStats^7: %s", &g_entities[clientNum].client->pers.netname));
+		AP(va("chat \"^7%s\n", msg));
+	}
 	return;
 }
 
