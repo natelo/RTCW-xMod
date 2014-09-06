@@ -89,7 +89,11 @@ void ParseURL(char* url, char* protocol, int lprotocol,
 	*protocol = *host = *request = 0;
 	*port = 80;
 
+#ifdef WIN32
 	work = _strdup(url);
+#else
+	work = strdup(url);
+#endif
 
 	strupr2(work);
 
@@ -154,11 +158,12 @@ Submits data and doesn't care about any replies and simply bails out..
 void http_Submit(char *url, char *data) {
 #ifdef WIN32
 	WSADATA WsaData;
+	int err;
 #endif
 	struct  sockaddr_in sin;
 	int sock;
 	char protocol[20], host[256], request[1024];
-	int port, err;
+	int port;
 	char *header;
 
 	ParseURL(url, protocol, sizeof(protocol), host, sizeof(host), request, sizeof(request), &port);
@@ -256,11 +261,12 @@ Submits file to a web server
 void http_SubmitFile(char *url, char *file, qboolean wipe) {
 #ifdef WIN32
 	WSADATA WsaData;
+	int err;
 #endif
 	struct  sockaddr_in sin;
 	int sock;
 	char protocol[20], host[256], request[1024];
-	int port, err;
+	int port; 
 	char *header;
 	FILE *fh;
 	char buf[256];
@@ -371,12 +377,13 @@ Note: POST field is already appanded (cmd=) and accounted for.
 char *http_Query(char *url, char *data) {
 #ifdef WIN32
 	WSADATA WsaData;
+	int err;
 #endif
 	struct  sockaddr_in sin;
 	int sock;
 	char buffer[512];
 	char protocol[20], host[256], request[1024];
-	int l, port, chars, err, done;
+	int l, port, chars, done;
 	char *header;
 	char *out = NULL;
 	
