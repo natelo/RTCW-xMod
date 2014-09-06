@@ -605,7 +605,7 @@ cvarTable_t		gameCvarTable[] = {
 	// HTTP Stats
 	{ &g_httpToken, "g_httpToken", "test", 0 },
 	{ &g_httpStatsUrl, "g_httpStatsUrl", "http://localhost/stats/api/post", 0 },
-	{ &g_httpStatsAPI, "g_httpStatsAPI", "http://localhost/stats/api/reply", 0 },
+	{ &g_httpStatsAPI, "g_httpStatsAPI", "http://localhost/stats/api", 0 },
 	{ &g_httpDebug, "g_httpDebug", "1", 0, 0, qfalse },
 	{ &g_httpUseThreads, "g_httpUseThreads", "1", 0, 0, qfalse },
 	{ &g_httpFlushFile, "g_httpFlushFile", "1", 0, 0, qfalse },

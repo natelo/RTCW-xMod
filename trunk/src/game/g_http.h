@@ -21,6 +21,7 @@ Client commands structure
 ============
 */
 typedef struct {
+	char *bit;
 	char *cmd;
 	unsigned int id;
 	qboolean toClient;
@@ -46,7 +47,7 @@ void globalStats_submit(void);
 //
 // g_http_func.c
 //
-void *http_sendQuery(void *args);
+void http_clientCommand(gentity_t *ent, char *bit, char *cmd, qboolean toClient);
 qboolean isHttpCommand(gentity_t *ent, char *cmd, char *param, qboolean help);
 
 //

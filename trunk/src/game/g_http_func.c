@@ -39,9 +39,10 @@ Sends client query and reads reply.
 void *http_sendQuery(void *args) {
 	g_http_cmd_t *cmdSt = (g_http_cmd_t *)args;
 	char  *out = NULL;
+	char *url = va("%s/%s", g_httpStatsAPI.string, cmdSt->bit);
 		
 	if (g_httpStatsAPI.string) {
-		out = http_Query(g_httpStatsAPI.string, cmdSt->cmd);
+		out = http_Query(url, cmdSt->cmd);
 	}
 
 	if (g_httpDebug.integer > 1)
@@ -69,7 +70,7 @@ http_clientCommand
 Entry point for client commands
 ===========
 */
-void http_clientCommand(gentity_t *ent, char *cmd, qboolean toClient) {
+void http_clientCommand(gentity_t *ent, char *bit, char *cmd, qboolean toClient) {
 	g_http_cmd_t *post_cmd = (g_http_cmd_t*)malloc(sizeof(g_http_cmd_t));
 
 	// A cheap flood protection
@@ -85,7 +86,8 @@ void http_clientCommand(gentity_t *ent, char *cmd, qboolean toClient) {
 	}
 
 	// Client Stats	
-	post_cmd->cmd = va("stats||%s", cmd);		
+	post_cmd->bit = va("%s", bit);
+	post_cmd->cmd = va("%s", cmd);		
 	
 
 	// Fill the generic data..	

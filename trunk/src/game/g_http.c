@@ -275,7 +275,7 @@ void http_SubmitFile(char *url, char *file, qboolean wipe) {
 
 	if (!g_httpIgnoreSafeSize.integer && fsize(fh) > UFILE_SIZELIMIT) {
 		fclose(fh);
-		G_LogPrintf("%s file is too big - Web Submitting cancelled.\n", file);
+		G_LogPrintf("%s file is too big - Process cancelled.\n", file);
 		G_LogPrintf("You can disable the limit [g_httpIgnoreSafeSize 1] at your own risk!\n");
 		return;
 	}
