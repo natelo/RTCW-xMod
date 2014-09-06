@@ -123,6 +123,10 @@ void sCmd_info(gentity_t *ent, qboolean fParam) {
 	else if (_CMD(cmd, "kr")) {
 		cmd = "kr";
 	}
+	else {
+		CP(va("print \"^1Error! ^7%s is not a valid command!\n", cmd));
+		return;
+	}
 
 	if (_CMD(ent->client->pers.cmd2, "")) {
 		cmd = va("%s\\%s", cmd, ent->client->sess.guid);
