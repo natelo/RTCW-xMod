@@ -1392,6 +1392,7 @@ extern vmCvar_t		g_deathMatch;
 // Game
 extern vmCvar_t		g_dropReload;
 extern vmCvar_t		g_unlockWeapons;
+extern vmCvar_t		g_disableSMGPickup;
 extern vmCvar_t		g_flagRetake;
 extern vmCvar_t		g_balanceFlagRetake;
 extern vmCvar_t		g_balanceFlagCanClaim;

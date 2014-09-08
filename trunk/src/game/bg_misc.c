@@ -3307,10 +3307,13 @@ qboolean	BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps 
 	int		ammoweap,weapbank; // JPW NERVE
 // L0 - unlockWeapons
 #if defined( GAMEDLL )
-		extern vmCvar_t g_unlockWeapons;	
-		int unlockWeapons = g_unlockWeapons.integer;		
+		extern vmCvar_t g_unlockWeapons;
+		extern vmCvar_t g_disableSMGPickup;
+		int unlockWeapons = g_unlockWeapons.integer;
+		int disableSMGPickup = g_disableSMGPickup.integer;
 #else
 		int unlockWeapons = 0;
+		int disableSMGPickup = 0;
 #endif
 
 	if ( ent->modelindex < 1 || ent->modelindex >= bg_numItems ) {
@@ -3321,6 +3324,20 @@ qboolean	BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps 
 
 	switch( item->giType ) {
 	case IT_WEAPON:
+// L0 - disable SMG Pickup if client already has a SMG
+		if (disableSMGPickup)
+		{
+			// We only check for SMG's
+			if ((item->giTag == WP_MP40) ||
+				(item->giTag == WP_THOMPSON) ||
+				(item->giTag == WP_STEN))
+			{
+				// If client has it, do not pick it up..
+				if (COM_BitCheck(ps->weapons, item->giTag))
+					return qfalse;
+			}
+		}
+// End
 // JPW NERVE -- medics & engineers can only pick up same weapon type
 		if (item->giTag == WP_AMMO) // magic ammo for any two-handed weapon
 			return qtrue;

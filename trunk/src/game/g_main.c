@@ -194,6 +194,7 @@ vmCvar_t	g_deathMatch;			// Death Match
 // Game
 vmCvar_t	g_dropReload;			// Enable / Disable Drop reload
 vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
+vmCvar_t	g_disableSMGPickup;		// If enabled, client can't pickup SMG if they already have one.
 vmCvar_t	g_flagRetake;			// How many times flag can be retaken
 vmCvar_t	g_balanceFlagRetake;	// Checks if flag can be taken..it always allows team with less to claim it last and then locks till even.
 vmCvar_t	g_balanceFlagCanClaim;	// If enabled team will be able to claim (not reclaim!) the flag regardless if they're the team with more..
@@ -507,6 +508,7 @@ cvarTable_t		gameCvarTable[] = {
 	// Game
 	{ &g_dropReload, "g_dropReload", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_unlockWeapons, "g_unlockWeapons", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
+	{ &g_disableSMGPickup, "g_disableSMGPickup", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_flagRetake, "g_flagRetake", "-1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_balanceFlagRetake, "g_balanceFlagRetake", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_balanceFlagCanClaim, "g_balanceFlagCanClaim", "0", CVAR_ARCHIVE, 0, qtrue },
