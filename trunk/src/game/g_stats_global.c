@@ -192,7 +192,6 @@ Tracks client's classes (how many spawns)
 */
 void globalStats_playerClass(int client, int type) {
 	gentity_t *ent = &g_entities[client];
-	int seconds = (level.time / 1000);	
 
 	if (ent->client->sess.sessionTeam == TEAM_SPECTATOR || 
 		g_gamestate.integer != GS_PLAYING)

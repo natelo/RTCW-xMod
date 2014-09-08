@@ -611,10 +611,10 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
 
 	// HTTP Stats
-	{ &g_httpToken, "g_httpToken", "test", 0 },
-	{ &g_httpStatsUrl, "g_httpStatsUrl", "http://localhost/stats/api/post", 0 },
-	{ &g_httpStatsAPI, "g_httpStatsAPI", "http://localhost/stats/api", 0 },
-	{ &g_httpDebug, "g_httpDebug", "1", 0, 0, qfalse },
+	{ &g_httpToken, "g_httpToken", "none", 0 },
+	{ &g_httpStatsUrl, "g_httpStatsUrl", "http://stats.rtcwmp.com/api/post", 0 },
+	{ &g_httpStatsAPI, "g_httpStatsAPI", "http://stats.rtcwmp.com/api", 0 },
+	{ &g_httpDebug, "g_httpDebug", "0", 0, 0, qfalse },
 	{ &g_httpUseThreads, "g_httpUseThreads", "1", 0, 0, qfalse },
 	{ &g_httpFlushFile, "g_httpFlushFile", "1", 0, 0, qfalse },
 	{ &g_httpIgnoreSafeSize, "g_httpIgnoreSafeSize", "0", 0, 0, qfalse },
