@@ -750,6 +750,18 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 	if (g_deathMatch.integer)
 		CPx(ent - g_entities, "chat \"console: This server is running in ^3DeathMatch ^7mode.\n\"");
 
+	// L0 - Notify them that stuff is forced..
+	if (g_forceClass.integer != -1) {
+		if (g_forceClass.integer == 0)
+			CPx(ent - g_entities, "print \"^3Info^7: Server is forcing everyone to play as Soldier!\n\"");
+		else if (g_forceClass.integer == 1)
+			CPx(ent - g_entities, "print \"^3Info^7: Server is forcing everyone to play as Medic!\n\"");
+		else if (g_forceClass.integer == 2)
+			CPx(ent - g_entities, "print \"^3Info^7: Server is forcing everyone to play as Engineer!\n\"");
+		else if (g_forceClass.integer == 3)
+			CPx(ent - g_entities, "print \"^3Info^7: Server is forcing everyone to play as Leut!\n\"");
+	}
+
 	// get and distribute relevent paramters
 	ClientUserinfoChanged( clientNum );
 

@@ -187,6 +187,7 @@ vmCvar_t	g_handleLateJoiners;	// Tracks lives and deals with reconnecting client
 vmCvar_t	g_antiWarp;				// Enable Anti warp..
 vmCvar_t	g_spectatorInactivity;	// Drop spectators after some time..
 vmCvar_t	g_spectatorAllowDemo;	// Basically ignores any client that's following other players when g_spectatorInactivity is set.
+vmCvar_t	g_forceClass;			// If enabled, everyone will spawn as class set here [0-3]..mainly for 1.0 alike DM..NOTE: -1 = disabled..
 
 // Modes
 vmCvar_t	g_deathMatch;			// Death Match
@@ -501,6 +502,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_spectatorInactivity, "g_spectatorInactivity", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_spectatorAllowDemo, "g_spectatorAllowDemo", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_antiWarp, "g_antiWarp", "1", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_forceClass, "g_forceClass", "-1", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },
 
 	// Modes
 	{ &g_deathMatch, "g_deathMatch", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },

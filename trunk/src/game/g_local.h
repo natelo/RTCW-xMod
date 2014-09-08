@@ -1385,6 +1385,7 @@ extern vmCvar_t		g_handleLateJoiners;
 extern vmCvar_t		g_spectatorInactivity;
 extern vmCvar_t		g_spectatorAllowDemo;
 extern vmCvar_t		g_antiWarp;
+extern vmCvar_t		g_forceClass;
 
 // Modes
 extern vmCvar_t		g_deathMatch;

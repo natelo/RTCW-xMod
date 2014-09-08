@@ -673,6 +673,7 @@ SetWolfUserVars
 void SetWolfUserVars( gentity_t *ent, char *wolfinfo ) {
 	gclient_t *client;
 	int mask, team;
+	int forceType;	// L0 - Force class if needed
 
 	client = ent->client;
 	if ( !client )
@@ -685,11 +686,19 @@ void SetWolfUserVars( gentity_t *ent, char *wolfinfo ) {
 	if ( !team )
 		return;
 
-	// set player class
+	// set player class (L0 - Moved up..)
 	mask = MP_CLASS_MASK;
-	client->sess.latchPlayerType = ( client->pers.cmd.mpSetup & mask ) >> MP_CLASS_OFFSET;
 
-	// set weapon
+	// L0 - Figure out what class should it be
+	if (g_forceClass.integer != -1 && g_forceClass.integer >= PC_SOLDIER && g_forceClass.integer <= PC_LT)
+		forceType = g_forceClass.integer;
+	else
+		forceType = (client->pers.cmd.mpSetup & mask) >> MP_CLASS_OFFSET;
+
+	// set player class	
+	client->sess.latchPlayerType = forceType;
+
+	// set weapon (L0 - Note: They'll sort them self out in a force type scenario so leaving default..)
 	mask = MP_WEAPON_MASK;
 	client->sess.latchPlayerWeapon = ( client->pers.cmd.mpSetup & mask ) >> MP_WEAPON_OFFSET;
 }
