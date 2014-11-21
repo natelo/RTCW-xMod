@@ -184,7 +184,7 @@ qboolean isHttpCommand(gentity_t *ent, char *cmd, char *param, qboolean help) {
 		return qtrue;
 	}
 
-	// Do not allow any web commands right before restart as it will crash due theads & unloading of dll..
+	// Do not allow any web commands right before restart as it will crash due threads & unloading of dll..
 	if (level.warmupTime && level.time > level.warmupTime - 2400 || level.intermissiontime) {
 		return qtrue;
 	}
