@@ -2385,13 +2385,7 @@ void LogExit( const char *string ) {
 		trap_GetConfigstring(CS_MULTI_MAPWINNER, cs, sizeof(cs));
 		buf = Info_ValueForKey(cs, "winner");
 		level.winningTeam = atoi(buf);
-
-#ifdef HTTP_STATS_OLD
-		// Kick start it now
-		
-#endif
 	}
-
 }
 
 

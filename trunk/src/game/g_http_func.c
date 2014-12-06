@@ -228,8 +228,3 @@ qboolean isHttpCommand(gentity_t *ent, char *cmd, char *param, qboolean help) {
 	}
 	return wasUsed;
 }
-
-
-
-
-
