@@ -74,6 +74,7 @@ typedef struct {
 //
 typedef struct {	
 	int count;
+	char guid[PB_GUID_LENGTH];
 } web_deathList_s;
 
 //

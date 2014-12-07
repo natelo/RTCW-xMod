@@ -177,12 +177,33 @@ void globalStats_writeMOD(gentity_t *victim, meansOfDeath_t MOD) {
 /*
 ============
 Store Client's "hit list"
+
+NOTE: Index is client slot, we keep a track of their (per slot) guid
+	  so we can compare it with new entry. If entry doesn't match
+	  we flush it to a file and start from zero. This approach is
+	  prone to collisions in "NO_GUID" scenarios but we really
+	  do not want to run mod with no guid support anyway..
 ============
 */
+extern void client_flushHitList(gentity_t *ent, int slot);
 void globalStats_hitList(gentity_t *victim, gentity_t *attacker) {
 	int killer = attacker->client->ps.clientNum;
 
-	victim->client->pers.hitList[killer].count = victim->client->pers.hitList[killer].count + 1;
+	if (victim->client->pers.hitList[killer].count > 0) {
+		if (!Q_stricmp(victim->client->pers.hitList[killer].guid, attacker->client->sess.guid)) {
+			victim->client->pers.hitList[killer].count = victim->client->pers.hitList[killer].count + 1;
+		}
+		else {
+			client_flushHitList(victim, killer);
+
+			victim->client->pers.hitList[killer].count = victim->client->pers.hitList[killer].count + 1;
+			Q_strncpyz(victim->client->pers.hitList[killer].guid, attacker->client->sess.guid, sizeof(victim->client->pers.hitList[killer].guid));
+		}
+	}
+	else {
+		victim->client->pers.hitList[killer].count = victim->client->pers.hitList[killer].count + 1;		
+		Q_strncpyz(victim->client->pers.hitList[killer].guid, attacker->client->sess.guid, sizeof(victim->client->pers.hitList[killer].guid));
+	}
 }
 
 /*
@@ -415,6 +436,25 @@ char *buildRound( void ) {
 
 /*
 ============
+Flushes single hitList entry 
+
+Called when guid (per slot) doesn't match so we 
+need to start a new count
+============
+*/
+void client_flushHitList(gentity_t *ent, int slot) {
+	char data[2048];
+
+	Q_strncpyz(data, va("hitlist\\%s", ent->client->sess.guid), sizeof(data));
+	Q_strcat(data, sizeof(data), va("\\%s:%d", ent->client->pers.hitList[slot].guid, ent->client->pers.hitList[slot].count));
+
+	stats_addEntry(data);
+
+	memset(&ent->client->pers.hitList[slot], 0, sizeof(ent->client->pers.hitList[slot]));
+}
+
+/*
+============
 Builds client hit list (players who killed him)
 ============
 */
@@ -423,10 +463,10 @@ void client_hitList(gentity_t *ent) {
 	char data[2048];
 	qboolean addEntry = qfalse;
 
-	Q_strncpyz(data, va("hitlist\\%i", ent->client->ps.clientNum), sizeof(data));
+	Q_strncpyz(data, va("hitlist\\%s", ent->client->sess.guid), sizeof(data));
 	for (i = 0; i < MAX_CLIENTS; i++) {
 		if (ent->client->pers.hitList[i].count > 0) {
-			Q_strcat(data, sizeof(data), va("\\%d:%d", i, ent->client->pers.hitList[i].count));
+			Q_strcat(data, sizeof(data), va("\\%s:%d", ent->client->pers.hitList[i].guid, ent->client->pers.hitList[i].count));
 
 			if (!addEntry)
 				addEntry = qtrue;
@@ -447,7 +487,7 @@ void client_buildMODList(gentity_t *ent) {
 	char data[2048];
 	qboolean addEntry = qfalse;
 
-	Q_strncpyz(data, va("mods\\%i", ent->client->ps.clientNum), sizeof(data));
+	Q_strncpyz(data, va("mods\\%s", ent->client->sess.guid), sizeof(data));
 	for (i = 0; i < STATS_MAX; i++) {
 		if (ent->client->pers.MODs[i].count > 0) {
 			Q_strcat(data, sizeof(data), va("\\%d:%d", i, ent->client->pers.MODs[i].count));
@@ -471,7 +511,7 @@ void client_buildWeaponStats(gentity_t *ent) {
 	int i;
 	qboolean addEntry = qfalse;
 
-	Q_strncpyz(data, va("weaponStats\\%i", ent->client->ps.clientNum), sizeof(data));
+	Q_strncpyz(data, va("weaponStats\\%s", ent->client->sess.guid), sizeof(data));
 	for (i = 0; i < STATS_MAX; i++) {
 		if (
 			ent->client->pers.stats.wShotsFired[i] > 0 ||
@@ -594,8 +634,7 @@ Builds client general info
 */
 char *client_buildGeneral(gentity_t *ent) {
 
-	return va("client\\%i\\%s\\%d.%d.%d.%d\\%s\\%d\\%d\\%d%s",
-		ent->client->ps.clientNum,
+	return va("client\\%s\\%d.%d.%d.%d\\%s\\%d\\%d\\%d%s",
 		ent->client->sess.guid,
 		ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], ent->client->sess.ip[3],
 		Q_CharReplace(ent->client->pers.netname, '&', '~'),

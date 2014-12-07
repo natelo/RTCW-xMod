@@ -2375,7 +2375,6 @@ void LogExit( const char *string ) {
 	}
 	// -NERVE - SMF
 
-
 	// L0 - Global Stats
 	{
 		char	*buf;
