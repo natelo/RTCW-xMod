@@ -1602,6 +1602,38 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	G_RemapTeamShaders();
 
+	// L0 - Clamp stuff if needed
+	// TODO: Move this if into it's own function if more is introduced (i.e. Duel mode..)
+	{
+		char *info = NULL;
+
+		if (g_medicClips.integer > 18) {
+			trap_Cvar_Set("g_medicClips", "18");
+			info = "g_medicClips - Clamping to 18\n";
+		}
+
+		if (g_engineerClips.integer > 18) {
+			trap_Cvar_Set("g_engineerClips", "18");
+			info = va("%sg_engineerClips - Clamping to 18\n", info);
+		}
+
+		if (g_soldierClips.integer > 18) {
+			trap_Cvar_Set("g_soldierClips", "18");
+			info = va("%sg_soldierClips - Clamping to 18\n", info);
+		}
+
+		if (g_leutClips.integer > 18) {
+			trap_Cvar_Set("g_leutClips", "18");
+			info = va("%sg_leutClips - Clamping to 18\n", info);
+		}
+		
+		if (info) {
+			G_Printf(
+				"Following Cvars are set too high:\n%s-----------------------------------\n", info
+			);
+		}
+	}
+
 	// L0 - Create round Token
 	if (g_gamestate.integer == GS_PLAYING)		
 		globalStats_roundToken();
