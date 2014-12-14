@@ -606,7 +606,7 @@ Builds client timer stats
 */
 char *client_buildTimerStats(gentity_t *ent) {
 
-	return va("\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d",
+	return va("\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%d\\%i\\%d\\%d\\%d\\%d",
 		// Class Stats
 		(ent->client->pers.playerClass[0].count > 0 ? ent->client->pers.playerClass[0].count : 0),
 		(ent->client->pers.playerClass[0].time > 0 ? ent->client->pers.playerClass[0].time : 0),
@@ -616,7 +616,8 @@ char *client_buildTimerStats(gentity_t *ent) {
 		(ent->client->pers.playerClass[2].time > 0 ? ent->client->pers.playerClass[2].time : 0),
 		(ent->client->pers.playerClass[3].count > 0 ? ent->client->pers.playerClass[3].count : 0),
 		(ent->client->pers.playerClass[3].time > 0 ? ent->client->pers.playerClass[3].time : 0),
-		(ent->client->pers.playerClass[4].time > 0 ? ent->client->pers.playerClass[4].time : 0),		
+		/*(ent->client->pers.playerClass[4].time > 0 ? ent->client->pers.playerClass[4].time : 0),*/
+		0,	// FIXME - SPY Stats are wrong...
 		// Team stats
 		(ent->client->pers.statsTimers.axisTeam > 0 ? ent->client->pers.statsTimers.axisTeam : 0),
 		(ent->client->pers.statsTimers.alliedTeam > 0 ? ent->client->pers.statsTimers.alliedTeam : 0),
