@@ -308,7 +308,6 @@ vmCvar_t	g_httpUseThreads;		// Uses threads or fires a normal packet..
 vmCvar_t	g_httpFlushFile;		// Flushes file on submit
 vmCvar_t	g_httpIgnoreSafeSize;	// Will submit files larger then 10mb..at your own risk..
 vmCvar_t	g_httpEvent;			// Current event
-vmCvar_t	g_httpAllowEvents;		// Allows Events
 vmCvar_t	g_httpEventPaused;		// Allows Pausing of event so restart is not required
 
 // Stats
@@ -626,7 +625,6 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_httpFlushFile, "g_httpFlushFile", "1", 0, 0, qfalse },
 	{ &g_httpIgnoreSafeSize, "g_httpIgnoreSafeSize", "0", 0, 0, qfalse },
 	{ &g_httpEvent, "g_httpEvent", "", CVAR_ARCHIVE, 0, qfalse },
-	{ &g_httpAllowEvents, "g_httpAllowEvents", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_httpEventPaused, "g_httpEventPaused", "0", 0, 0, qfalse },
 
 	// Stats

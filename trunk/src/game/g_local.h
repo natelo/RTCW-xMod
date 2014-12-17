@@ -1489,7 +1489,6 @@ extern vmCvar_t		g_httpUseThreads;
 extern vmCvar_t		g_httpFlushFile;
 extern vmCvar_t		g_httpIgnoreSafeSize;
 extern vmCvar_t		g_httpEvent;
-extern vmCvar_t		g_httpAllowEvents;
 extern vmCvar_t		g_httpEventPaused;
 
 // Stats

@@ -402,6 +402,16 @@ int altGameType(void) {
 
 /*
 ============
+Dumps event into file so it can be parsed on Web side of things..
+============
+*/
+void globalStats_logEvent(void) {
+	if (g_httpEvent.string && !g_httpEventPaused.integer)
+		stats_addEntry(va("event\\%s", Q_CharReplace(g_httpEvent.string, '&', '~')));
+}
+
+/*
+============
 Generates unique round token so clients can be remaped..
 ============
 */
@@ -726,4 +736,7 @@ void globalStats_buildStats(void) {
 		client_hitList(&g_entities[i]);
 		client_buildWeaponStats(&g_entities[i]);
 	}
+
+	// Dump (any) Event info
+	globalStats_logEvent();
 }
