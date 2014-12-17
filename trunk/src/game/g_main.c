@@ -307,6 +307,9 @@ vmCvar_t	g_httpDebug;			// Prints more details info
 vmCvar_t	g_httpUseThreads;		// Uses threads or fires a normal packet..
 vmCvar_t	g_httpFlushFile;		// Flushes file on submit
 vmCvar_t	g_httpIgnoreSafeSize;	// Will submit files larger then 10mb..at your own risk..
+vmCvar_t	g_httpEvent;			// Current event
+vmCvar_t	g_httpAllowEvents;		// Allows Events
+vmCvar_t	g_httpEventPaused;		// Allows Pausing of event so restart is not required
 
 // Stats
 vmCvar_t	g_doubleKills;			// Double, tripple & quad kills
@@ -622,6 +625,9 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_httpUseThreads, "g_httpUseThreads", "1", 0, 0, qfalse },
 	{ &g_httpFlushFile, "g_httpFlushFile", "1", 0, 0, qfalse },
 	{ &g_httpIgnoreSafeSize, "g_httpIgnoreSafeSize", "0", 0, 0, qfalse },
+	{ &g_httpEvent, "g_httpEvent", "", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_httpAllowEvents, "g_httpAllowEvents", "0", CVAR_ARCHIVE, 0, qfalse },
+	{ &g_httpEventPaused, "g_httpEventPaused", "0", 0, 0, qfalse },
 
 	// Stats
 	{ &g_doubleKills, "g_doubleKills", "0", CVAR_ARCHIVE, 0, qfalse },
@@ -1485,11 +1491,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	memset( &level, 0, sizeof( level ) );
 	level.time = levelTime;
 	level.startTime = levelTime;
-
-	// L0 - Global Stats
-#ifdef HTTP_STATS_OLD
-	cleanGlobalStats();
-#endif
 
 	level.snd_fry = G_SoundIndex("sound/player/fry.wav");	// FIXME standing in lava / slime
 	level.bulletRicochetSound = G_SoundIndex("bulletRicochet");

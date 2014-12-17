@@ -1695,6 +1695,57 @@ void cmd_addIp(gentity_t *ent) {
 
 /*
 ===========
+Event handling
+
+Pauses or Resumes current (global stats) event
+===========
+*/
+void cmd_Event(gentity_t *ent) {
+	char *tag, *log, *cmd;
+
+	tag = sortTag(ent);
+	cmd = va("%s", ent->client->pers.cmd2);
+
+	if (!g_httpEvent.string)
+	{
+		CP("print \"There is no Event set on this server.\n\"");
+		return;
+	}
+
+	if (!Q_stricmp(cmd, "resume")) {
+		if (!g_httpEventPaused.integer) {
+			CP("print \"Event is already in progress!\n");
+			return;
+		}
+
+		trap_Cvar_Set("g_httpEventPaused", "0");
+		AP(va("chat \"console: %s has Resumed the %s ^7Event.\n", tag, g_httpEvent.string));		
+	}
+	else if (!Q_stricmp(cmd, "pause")) {
+		if (g_httpEventPaused.integer) {
+			CP("print \"Event is already paused!\n");
+			return;
+		}
+
+		trap_Cvar_Set("g_httpEventPaused", "1");
+		AP(va("chat \"console: %s has Paused the %s ^7Event.\n", tag, g_httpEvent.string));
+	}
+	else {
+		CP("print \"Unknown Event Command..Use !event for info..\n");
+		return;
+	}
+
+	// Log it
+	log = va("Player %s (IP:%i.%i.%i.%i) has %s the event.",
+		ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2],
+		ent->client->sess.ip[3], ent->client->pers.cmd2);
+	logEntry(ADMACT, log);
+
+	return;
+}
+
+/*
+===========
 Getstatus
 
 Prints IP's, GUIDs and some match info..
@@ -1819,7 +1870,7 @@ void cmd_listCmds(gentity_t *ent) {
 		   "slap kill specs axis allied exec nextmap map vstr cpa "
 		   "cp warn chat cancelvote passvote restart reset swap shuffle "
 		   "@shuffle specs999 whereis rename ignore unignore clientignore clientunignore permignore "	
-		   "permunignore permclientignore permclientunignore ban banclient tempban banip tempbanip addip *"
+		   "permunignore permclientignore permclientunignore ban banclient tempban banip tempbanip addip event *"
 		;
 
 	if (ent->client->sess.admin == ADM_1)
@@ -1857,9 +1908,9 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd,"clientkick"))		{ if (canUse(ent, qtrue)) cmd_clientkick(ent);	else cantUse(ent); return qtrue;}
 	else if (!strcmp(cmd,"slap"))			{ if (canUse(ent, qtrue)) cmd_slap(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"kill"))			{ if (canUse(ent, qtrue)) cmd_kill(ent); else cantUse(ent); return qtrue;} 
-	else if (!strcmp(cmd, "fling"))			{ if (canUse(ent, qtrue)) cmd_fling(ent, 0); else cantUse(ent); return qtrue; }
-	else if (!strcmp(cmd, "throw"))			{ if (canUse(ent, qtrue)) cmd_fling(ent, 1); else cantUse(ent); return qtrue; }
-	else if (!strcmp(cmd, "launch"))		{ if (canUse(ent, qtrue)) cmd_fling(ent, 2); else cantUse(ent); return qtrue; }	
+	else if (!strcmp(cmd,"fling"))			{ if (canUse(ent, qtrue)) cmd_fling(ent, 0); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd,"throw"))			{ if (canUse(ent, qtrue)) cmd_fling(ent, 1); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd,"launch"))			{ if (canUse(ent, qtrue)) cmd_fling(ent, 2); else cantUse(ent); return qtrue; }	
 	else if (!strcmp(cmd,"specs"))			{ if (canUse(ent, qtrue)) cmd_specs(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"axis"))			{ if (canUse(ent, qtrue)) cmd_axis(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"allies"))			{ if (canUse(ent, qtrue)) cmd_allied(ent); else cantUse(ent); return qtrue;} 
@@ -1893,7 +1944,8 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd,"tempban"))		{ if (canUse(ent, qtrue)) cmd_tempbanGuid(ent); else cantUse(ent); return qtrue;}	
 	else if (!strcmp(cmd,"banip"))			{ if (canUse(ent, qtrue)) cmd_banIp(ent); else cantUse(ent); return qtrue;}		
 	else if (!strcmp(cmd,"tempbanip"))		{ if (canUse(ent, qtrue)) cmd_tempBanIp(ent); else cantUse(ent); return qtrue;}		
-	else if (!strcmp(cmd,"addip"))			{ if (canUse(ent, qtrue)) cmd_addIp(ent); else cantUse(ent); return qtrue;}		
+	else if (!strcmp(cmd,"addip"))			{ if (canUse(ent, qtrue)) cmd_addIp(ent); else cantUse(ent); return qtrue;}
+	else if (!strcmp(cmd,"event"))			{ if (canUse(ent, qtrue)) cmd_Event(ent); else cantUse(ent); return qtrue; }
 
 	// Any other command (server cvars..)
 	else if (canUse(ent, qfalse))			{ cmdCustom(ent, cmd); return qtrue; }	
@@ -1970,6 +2022,7 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("banip", "Bans player by IP.", "!banip <unique part of name>")
 	_HELP("tempbanip", "Temporarily Bans player by IP.", "!tempbanip <unique part of name> <mins>")
 	_HELP("addip", "Adds IP to banned file. You can use wildcards for subrange bans.", "example - !addip 100.*.*.*")
+	_HELP("event", "Pauses or Resumes event", "!event <pause/resume>")
 	_HELP("*", "Any default command that's allowed per Admin level can be executed accordingly. Note that adding @ at the end will execute it silently otherwise it will be printed to all.", "!g_allowVote 1 or !g_allowVote 1 @ for silent change")
 	// --> Add new ones after this line..
 

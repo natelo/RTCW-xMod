@@ -325,6 +325,7 @@ void http_SubmitFile(char *url, char *file, qboolean wipe) {
 		"Server: %s\r\n"
 		"Content-Length: %i\r\n"
 		"Host: %s\r\n"
+		"Event: %s"
 		"Content-Type: application/x-www-form-urlencoded\r\n"
 		"\r\n\r\n",
 		request,
@@ -333,7 +334,8 @@ void http_SubmitFile(char *url, char *file, qboolean wipe) {
 		g_httpToken.string,
 		sv_hostname.string,
 		fsize(fh) + 9, // FYI[9]: data= \r\n
-		host
+		host,
+		((strlen(g_httpEvent.string) > 1 && !g_httpEventPaused.integer) ? g_httpEvent.string : "none")
 	);
 
 	// Header
