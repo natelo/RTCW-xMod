@@ -15,7 +15,7 @@ gameclean:
 	rm -rf *.o ../botai/*.o
 
 qagame.mp.i386.so: $(MODULES)
-	$(CC) -shared -ldl -lm -o $@ $?
+	$(CC) -s -shared -ldl -lm -o $@ $?
 
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $@
