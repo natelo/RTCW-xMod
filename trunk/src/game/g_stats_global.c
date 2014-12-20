@@ -406,7 +406,7 @@ Dumps event into file so it can be parsed on Web side of things..
 ============
 */
 void globalStats_logEvent(void) {
-	if (g_httpEvent.string && !g_httpEventPaused.integer)
+	if (Q_stricmp(g_httpEvent.string, "") && Q_stricmp(g_httpEvent.string, "none") && !g_httpEventPaused.integer)
 		stats_addEntry(va("event\\%s", Q_CharReplace(g_httpEvent.string, '&', '~')));
 }
 
