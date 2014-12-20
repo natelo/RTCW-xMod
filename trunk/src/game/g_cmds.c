@@ -3052,13 +3052,20 @@ void ClientCommand( int clientNum ) {
 		Cmd_Nofatigue_f (ent);
 	else if (Q_stricmp (cmd, "notarget") == 0)
 		Cmd_Notarget_f (ent);
-	else if (Q_stricmp (cmd, "noclip") == 0)
+	else if (Q_stricmp (cmd, "noclip") == 0)	
 		Cmd_Noclip_f (ent);
+	// L0 - New stuff
+#ifndef RETAIL_MOD
 	else if (Q_stricmp (cmd, "kill") == 0)
 		Cmd_Kill_f (ent);
-// L0 - New stuff
 	else if (Q_stricmp (cmd, "sui") == 0)
 		Cmd_SoftKill_f (ent);
+#else
+	else if (Q_stricmp(cmd, "gib") == 0)
+		Cmd_Kill_f(ent);
+	else if (Q_stricmp(cmd, "kill") == 0)
+		Cmd_SoftKill_f(ent);
+#endif
 	else if (Q_stricmp (cmd, "mp40") == 0)
 		setCustomMG(ent, 1);
 	else if (Q_stricmp (cmd, "thompson") == 0)

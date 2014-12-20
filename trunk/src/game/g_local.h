@@ -9,6 +9,9 @@
 #include "g_public.h"
 #include "g_stats.h" // L0 - Global stats
 
+// L0 - 1.4 has some stuff different so let's control 
+#define RETAIL_MOD // If uncommented it's builded for 1.0
+
 //==================================================================
 
 // the "gameversion" client command will print this plus compile date
