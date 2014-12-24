@@ -1530,7 +1530,13 @@ void ClientUserinfoChanged( int clientNum ) {
 	s = Info_ValueForKey( userinfo, "ip" );
 	if( s[0] != 0 ){
 		SaveIP_f( client, s );
-	} 
+	}
+
+	// Check for "" GUID..
+	if (!Q_stricmp(Info_ValueForKey(userinfo, "cl_guid"), "D41D8CD98F00B204E9800998ECF8427E") ||
+		!Q_stricmp(Info_ValueForKey(userinfo, "cl_guid"), "d41d8cd98f00b204e9800998ecf8427e")) {
+		trap_DropClient(clientNum, "(Known bug) Corrupted GUID^3! ^7Restart your game..");
+	}
 
 /*	
 	// Spoofs
