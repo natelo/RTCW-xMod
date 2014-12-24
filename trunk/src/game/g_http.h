@@ -69,5 +69,6 @@ void sCmd_rank(gentity_t *ent, qboolean fParam);
 void sCmd_chances(gentity_t *ent, qboolean fParam);
 void sCmd_info(gentity_t *ent, qboolean fParam);
 void sCmd_lastseen(gentity_t *ent, qboolean fParam);
+void sCmd_aliases(gentity_t *ent, qboolean fParam);
 
 #endif // _G_HTTP

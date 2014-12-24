@@ -120,7 +120,9 @@ static const globalStats_cmds_t statsCmd[] = {
 	{ "bottom",		sCmd_bottom,	qfalse, "Shows worst player on this server.", "!stats top", "" },
 	{ "rank",		sCmd_rank,		qfalse, "Shows your or selected players rank.", "!stats rank <slot>", "Use Player's slot to get his rank" },
 	{ "chances",	sCmd_chances,	qfalse, "Compares you with a player", "!stats chances <slot>", "Obtain client's slot with /getstatus command." },
-	{ "info",		sCmd_info,		qfalse,  "Prints your or targeted player's info stats.", "!stats info <kr/eff/acc/hs/skill> <slot>", "Slot is optional." },
+	{ "info",		sCmd_info,		qfalse, "Prints your or targeted player's info stats.", "!stats info <kr/eff/acc/hs/skill> <slot>", "Slot is optional." },
+	//{ "lastseen",	sCmd_lastseen,	qfalse, "Prints info when player was last seen.", "!stats lastseen <unique part of name>", "" }, // TODO: Has to be cleaned/filtered in DB..
+	{ "whois",		sCmd_aliases,	qtrue,	"Prints last 10 known names of targeted client", "!stats whois <slot>", "" },
 	{ NULL, NULL, qfalse, NULL, NULL }
 };
 
