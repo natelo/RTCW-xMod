@@ -1771,11 +1771,16 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		value = Info_ValueForKey (userinfo, "ip");	
 		if (!Q_stricmp(value, ""))
 			return "^1Socket/IP Spoof- ^7Entrance refused^1!";
-/*
+
 		// Basic sanity check..
 		if (strlen(Info_ValueForKey( userinfo, "cl_guid" )) != 32)  
 			return "^7Your GUID is corrupted^1!";
-*/
+
+		// "" Guid hash..
+		if (!Q_stricmp(Info_ValueForKey(userinfo, "cl_guid"), "D41D8CD98F00B204E9800998ECF8427E") || 
+			!Q_stricmp(Info_ValueForKey(userinfo, "cl_guid"), "d41d8cd98f00b204e9800998ecf8427e"))
+			return "^7Corrupted GUID^1! ^7- Restart your game.";
+
 		// Only bother with this if IP handling is enabled..
 		if (IP_handling.integer) {	
 
