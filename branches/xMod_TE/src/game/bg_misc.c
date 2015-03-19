@@ -11,7 +11,7 @@
 
 // JPW NERVE -- added because I need to check single/multiplayer instances and branch accordingly
 #ifdef CGAMEDLL
-	extern vmCvar_t			cg_gameType;
+	extern vmCvar_t		cg_gameType;
 #endif
 #ifdef GAMEDLL
 	extern	vmCvar_t	g_gametype;

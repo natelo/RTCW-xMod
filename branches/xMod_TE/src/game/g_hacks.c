@@ -15,6 +15,8 @@ Last Updated: /
 /*
 ===============
 Figure out if it's a custom MOD
+
+TODO: Remap this to client...
 ===============
 */
 qboolean isCustomMOD(meansOfDeath_t mod) {
