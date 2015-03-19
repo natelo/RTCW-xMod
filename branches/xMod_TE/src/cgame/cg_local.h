@@ -1753,6 +1753,9 @@ typedef struct {
 	int noChat;
 	int noVoice;
 	qboolean freezeDemo;
+
+	// L0
+	tournamentMode_t tournamentMode;
 } cgs_t;
 
 //==============================================================================

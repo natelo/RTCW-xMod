@@ -191,6 +191,7 @@ vmCvar_t	g_forceClass;			// If enabled, everyone will spawn as class set here [0
 
 // Modes
 vmCvar_t	g_deathMatch;			// Death Match
+vmCvar_t	g_tournamentMode;		// Tournament - 0 = off, 1 = on, 2 = on with forcing stuff (auto speclock..)
 
 // Game
 vmCvar_t	g_dropReload;			// Enable / Disable Drop reload
@@ -508,6 +509,7 @@ cvarTable_t		gameCvarTable[] = {
 
 	// Modes
 	{ &g_deathMatch, "g_deathMatch", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },
+	{ &g_tournamentMode, "g_tournamentMode", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },
 
 	// Game
 	{ &g_dropReload, "g_dropReload", "0", CVAR_ARCHIVE, 0, qfalse },

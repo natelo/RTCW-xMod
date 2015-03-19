@@ -190,6 +190,14 @@ typedef enum {
 	GSKILL_MAX		// must always be last
 } gameskill_t;
 
+// L0 - TE
+typedef enum {
+	TE_NONE,
+	TE_BASIC,
+	TE_FULL
+} tournamentMode_t;
+// ~L0
+
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
 /*

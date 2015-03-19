@@ -1392,6 +1392,7 @@ extern vmCvar_t		g_forceClass;
 
 // Modes
 extern vmCvar_t		g_deathMatch;
+extern vmCvar_t		g_tournamentMode;
 
 // Game
 extern vmCvar_t		g_dropReload;
