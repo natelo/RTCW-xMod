@@ -1227,6 +1227,14 @@ void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, const char 
 		return;
 	}
 
+	// L0 - Stupid way of doing things..but ok ..
+	if (g_tournamentMode.integer > TOURNY_BASIC &&
+		ent->client->sess.sessionTeam == TEAM_SPECTATOR &&
+		ent->client->sess.admin == ADM_NONE &&
+		mode != SAY_TEAM) {
+		return;
+	}
+
 	// L0 - Admin chat is visible only to admins..
 	if ( mode == SAY_ADMIN ) {
 		if ( !ent->client->sess.admin != (other->client->sess.admin == ADM_NONE) )

@@ -209,6 +209,24 @@ void Cmd_Pmsg( gentity_t *ent )
 		return;
 	}
 
+	// L0 - Stupid way of doing things..but ok ..
+	if (g_tournamentMode.integer > TOURNY_NONE &&
+		ent->client->sess.sessionTeam == TEAM_SPECTATOR &&
+		ent->client->sess.admin == ADM_NONE) 
+	{
+		CP("print \"Specs cannot send PMs in tournament mode^1!\n\"");
+		return;
+	}
+
+	// L0 - Stupid way of doing things..but ok ..
+	if (g_ignoreSpecs.integer &&
+		ent->client->sess.sessionTeam == TEAM_SPECTATOR &&
+		ent->client->sess.admin == ADM_NONE ) 
+	{
+		CP("print \"Specs cannot send PMs in tournament mode^1!\n\"");
+		return;
+	}
+
 	if (trap_Argc() < 3) {
 		trap_Argv(0, cmd, sizeof(cmd));			
 		CP(va("print \"^3Usage:^7  %s <match> <message>\n\"", cmd));

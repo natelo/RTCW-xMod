@@ -192,9 +192,9 @@ typedef enum {
 
 // L0 - TE
 typedef enum {
-	TE_NONE,
-	TE_BASIC,
-	TE_FULL
+	TOURNY_NONE,
+	TOURNY_BASIC,
+	TOURNY_FULL
 } tournamentMode_t;
 // ~L0
 
