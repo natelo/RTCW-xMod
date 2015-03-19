@@ -1,13 +1,41 @@
+/*
+===========================================================================
+
+Return to Castle Wolfenstein multiplayer GPL Source Code
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+
+This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).  
+
+RTCW MP Source Code is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+RTCW MP Source Code is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with RTCW MP Source Code.  If not, see <http://www.gnu.org/licenses/>.
+
+In addition, the RTCW MP Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the RTCW MP Source Code.  If not, please request a copy in writing from id Software at the address below.
+
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+
+===========================================================================
+*/
 
 
-#define	CMD_BACKUP			64	
-#define	CMD_MASK			(CMD_BACKUP - 1)
+
+#define CMD_BACKUP          64
+#define CMD_MASK            ( CMD_BACKUP - 1 )
 // allow a lot of command backups for very fast systems
 // multiple commands may be combined into a single packet, so this
 // needs to be larger than PACKET_BACKUP
 
 
-#define	MAX_ENTITIES_IN_SNAPSHOT	256
+#define MAX_ENTITIES_IN_SNAPSHOT    256
 
 // snapshots are a view of the server at a given time
 
@@ -15,27 +43,28 @@
 // but they may not be sent if a client's rate level is exceeded, or
 // they may be dropped by the network.
 typedef struct {
-	int				snapFlags;			// SNAPFLAG_RATE_DELAYED, etc
-	int				ping;
+	int snapFlags;                      // SNAPFLAG_RATE_DELAYED, etc
+	int ping;
 
-	int				serverTime;		// server time the message is valid for (in msec)
+	int serverTime;                 // server time the message is valid for (in msec)
 
-	byte			areamask[MAX_MAP_AREA_BYTES];		// portalarea visibility bits
+	byte areamask[MAX_MAP_AREA_BYTES];                  // portalarea visibility bits
 
-	playerState_t	ps;						// complete information about the current player at this time
+	playerState_t ps;                       // complete information about the current player at this time
 
-	int				numEntities;			// all of the entities that need to be presented
-	entityState_t	entities[MAX_ENTITIES_IN_SNAPSHOT];	// at the time of this snapshot
+	int numEntities;                        // all of the entities that need to be presented
+	entityState_t entities[MAX_ENTITIES_IN_SNAPSHOT];   // at the time of this snapshot
 
-	int				numServerCommands;		// text based server commands to execute when this
-	int				serverCommandSequence;	// snapshot becomes current
+	int numServerCommands;                  // text based server commands to execute when this
+	int serverCommandSequence;              // snapshot becomes current
 } snapshot_t;
 
 enum {
-  CGAME_EVENT_NONE,
-  CGAME_EVENT_TEAMMENU,
-  CGAME_EVENT_SCOREBOARD,
-  CGAME_EVENT_EDITHUD
+	CGAME_EVENT_NONE,
+	CGAME_EVENT_TEAMMENU,
+	CGAME_EVENT_SCOREBOARD,
+	CGAME_EVENT_EDITHUD,
+	CGAME_EVENT_DEMO
 };
 
 
@@ -47,7 +76,7 @@ functions imported from the main executable
 ==================================================================
 */
 
-#define	CGAME_IMPORT_API_VERSION	3
+#define CGAME_IMPORT_API_VERSION    3
 
 typedef enum {
 	CG_PRINT,
@@ -84,7 +113,7 @@ typedef enum {
 // done.
 	CG_CM_MARKFRAGMENTS,
 	CG_S_STARTSOUND,
-	CG_S_STARTSOUNDEX,	//----(SA)	added
+	CG_S_STARTSOUNDEX,  //----(SA)	added
 	CG_S_STARTLOCALSOUND,
 	CG_S_CLEARLOOPINGSOUNDS,
 	CG_S_ADDLOOPINGSOUND,
@@ -101,8 +130,8 @@ typedef enum {
 	CG_R_REGISTERSKIN,
 	CG_R_REGISTERSHADER,
 
- 	CG_R_GETSKINMODEL,		// client allowed to view what the .skin loaded so they can set their model appropriately
-	CG_R_GETMODELSHADER,	// client allowed the shader handle for given model/surface (for things like debris inheriting shader from explosive)
+	CG_R_GETSKINMODEL,      // client allowed to view what the .skin loaded so they can set their model appropriately
+	CG_R_GETMODELSHADER,    // client allowed the shader handle for given model/surface (for things like debris inheriting shader from explosive)
 
 	CG_R_REGISTERFONT,
 	CG_R_CLEARSCENE,
@@ -120,7 +149,7 @@ typedef enum {
 	CG_R_RENDERSCENE,
 	CG_R_SETCOLOR,
 	CG_R_DRAWSTRETCHPIC,
-	CG_R_DRAWSTRETCHPIC_GRADIENT,	//----(SA)	added
+	CG_R_DRAWSTRETCHPIC_GRADIENT,   //----(SA)	added
 	CG_R_MODELBOUNDS,
 	CG_R_LERPTAG,
 	CG_GETGLCONFIG,
@@ -131,7 +160,7 @@ typedef enum {
 	CG_GETCURRENTCMDNUMBER,
 	CG_GETUSERCMD,
 	CG_SETUSERCMDVALUE,
-	CG_SETCLIENTLERPORIGIN,			// DHM - Nerve
+	CG_SETCLIENTLERPORIGIN,         // DHM - Nerve
 	CG_R_REGISTERSHADERNOMIP,
 	CG_MEMORY_REMAINING,
 
@@ -140,7 +169,7 @@ typedef enum {
 	CG_KEY_SETCATCHER,
 	CG_KEY_GETKEY,
 
- 	CG_PC_ADD_GLOBAL_DEFINE,
+	CG_PC_ADD_GLOBAL_DEFINE,
 	CG_PC_LOAD_SOURCE,
 	CG_PC_FREE_SOURCE,
 	CG_PC_READ_TOKEN,
@@ -180,7 +209,7 @@ typedef enum {
 	CG_TESTPRINTFLOAT,
 	CG_ACOS,
 
-	CG_INGAME_POPUP,		//----(SA)	added
+	CG_INGAME_POPUP,        //----(SA)	added
 
 	// NERVE - SMF
 	CG_INGAME_CLOSEPOPUP,
@@ -192,8 +221,14 @@ typedef enum {
 	CG_KEY_SETBINDING,
 	CG_KEY_KEYNUMTOSTRINGBUF,
 
-	CG_TRANSLATE_STRING
+	CG_TRANSLATE_STRING,
 	// -NERVE - SMF
+
+	// L0 - New stuff
+	CG_REQ_SS,
+	CG_HTTP_SUBMIT_CMD,		// Just Submits and bails out
+	CG_HTTP_POST_CMD,		// Submits and waits for reply
+	CG_HTTP_QUERY_CMD		// Just sends a inquiry
 } cgameImport_t;
 
 
@@ -237,7 +272,7 @@ typedef enum {
 	CG_LAST_ATTACKER,
 //	int (*CG_LastAttacker)( void );
 
-	CG_KEY_EVENT, 
+	CG_KEY_EVENT,
 //	void	(*CG_KeyEvent)( int key, qboolean down );
 
 	CG_MOUSE_EVENT,

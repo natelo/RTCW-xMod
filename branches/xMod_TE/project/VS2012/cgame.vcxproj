@@ -149,6 +149,7 @@
     <ClCompile Include="..\..\src\cgame\cg_ents.c" />
     <ClCompile Include="..\..\src\cgame\cg_event.c" />
     <ClCompile Include="..\..\src\cgame\cg_flamethrower.c" />
+    <ClCompile Include="..\..\src\cgame\cg_http_cmds.c" />
     <ClCompile Include="..\..\src\cgame\cg_info.c" />
     <ClCompile Include="..\..\src\cgame\cg_localents.c" />
     <ClCompile Include="..\..\src\cgame\cg_main.c" />
@@ -167,6 +168,7 @@
     <ClCompile Include="..\..\src\cgame\cg_trails.c" />
     <ClCompile Include="..\..\src\cgame\cg_view.c" />
     <ClCompile Include="..\..\src\cgame\cg_weapons.c" />
+    <ClCompile Include="..\..\src\cgame\cg_window.c" />
     <ClCompile Include="..\..\src\game\bg_animation.c" />
     <ClCompile Include="..\..\src\game\bg_lib.c" />
     <ClCompile Include="..\..\src\game\bg_misc.c" />

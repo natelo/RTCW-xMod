@@ -1,15 +1,43 @@
+/*
+===========================================================================
+
+Return to Castle Wolfenstein multiplayer GPL Source Code
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+
+This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).  
+
+RTCW MP Source Code is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+RTCW MP Source Code is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with RTCW MP Source Code.  If not, see <http://www.gnu.org/licenses/>.
+
+In addition, the RTCW MP Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the RTCW MP Source Code.  If not, please request a copy in writing from id Software at the address below.
+
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+
+===========================================================================
+*/
+
 #ifndef __UI_PUBLIC_H__
 #define __UI_PUBLIC_H__
 
-#define UI_API_VERSION	4
+#define UI_API_VERSION  4
 
 typedef struct {
-	connstate_t		connState;
-	int				connectPacketCount;
-	int				clientNum;
-	char			servername[MAX_STRING_CHARS];
-	char			updateInfoString[MAX_STRING_CHARS];
-	char			messageString[MAX_STRING_CHARS];
+	connstate_t connState;
+	int connectPacketCount;
+	int clientNum;
+	char servername[MAX_STRING_CHARS];
+	char updateInfoString[MAX_STRING_CHARS];
+	char messageString[MAX_STRING_CHARS];
 } uiClientState_t;
 
 typedef enum {
@@ -42,13 +70,13 @@ typedef enum {
 	// JOSEPH 12-6-99
 	UI_R_ADDLIGHTTOSCENE,
 	// END JOSEPH
-	//----(SA)	
+	//----(SA)
 	UI_R_ADDCORONATOSCENE,
 	//----(SA)
 	UI_R_RENDERSCENE,
 	UI_R_SETCOLOR,
 	UI_R_DRAWSTRETCHPIC,
-	UI_UPDATESCREEN,		// 30
+	UI_UPDATESCREEN,        // 30
 	UI_CM_LERPTAG,
 	UI_CM_LOADMODEL,
 	UI_S_REGISTERSOUND,
@@ -68,7 +96,7 @@ typedef enum {
 	UI_GETCONFIGSTRING,
 	UI_LAN_GETLOCALSERVERCOUNT,
 	UI_LAN_GETLOCALSERVERADDRESSSTRING,
-	UI_LAN_GETGLOBALSERVERCOUNT,		// 50
+	UI_LAN_GETGLOBALSERVERCOUNT,        // 50
 	UI_LAN_GETGLOBALSERVERADDRESSSTRING,
 	UI_LAN_GETPINGQUEUECOUNT,
 	UI_LAN_CLEARPING,
@@ -78,8 +106,6 @@ typedef enum {
 	UI_CVAR_UPDATE,
 	UI_MEMORY_REMAINING,
 
-	UI_GET_CDKEY,
-	UI_SET_CDKEY,
 	UI_R_REGISTERFONT,
 	UI_R_MODELBOUNDS,
 	UI_PC_ADD_GLOBAL_DEFINE,
@@ -106,18 +132,17 @@ typedef enum {
 	UI_CIN_DRAWCINEMATIC,
 	UI_CIN_SETEXTENTS,
 	UI_R_REMAP_SHADER,
-	UI_VERIFY_CDKEY,
 	UI_LAN_SERVERSTATUS,
 	UI_LAN_GETSERVERPING,
 	UI_LAN_SERVERISVISIBLE,
 	UI_LAN_COMPARESERVERS,
-	UI_CL_GETLIMBOSTRING,			// NERVE - SMF
-	UI_SET_PBCLSTATUS,				// DHM - Nerve
-	UI_CHECKAUTOUPDATE,				// DHM - Nerve
-	UI_GET_AUTOUPDATE,				// DHM - Nerve
+	UI_CL_GETLIMBOSTRING,           // NERVE - SMF
+	UI_SET_PBCLSTATUS,              // DHM - Nerve
+	UI_CHECKAUTOUPDATE,             // DHM - Nerve
+	UI_GET_AUTOUPDATE,              // DHM - Nerve
 	UI_CL_TRANSLATE_STRING,
 	UI_OPENURL,
-	UI_SET_PBSVSTATUS,				// TTimo
+	UI_SET_PBSVSTATUS,              // TTimo
 
 	UI_MEMSET = 100,
 	UI_MEMCPY,
@@ -142,26 +167,26 @@ typedef enum {
 	UIMENU_NOTEBOOK,
 	UIMENU_CLIPBOARD,
 	UIMENU_HELP,
-	UIMENU_BOOK1,			//----(SA)	added
-	UIMENU_BOOK2,			//----(SA)	added
-	UIMENU_BOOK3,			//----(SA)	added
-	UIMENU_WM_PICKTEAM,			// NERVE - SMF
-	UIMENU_WM_PICKPLAYER,		// NERVE - SMF
-	UIMENU_WM_QUICKMESSAGE,		// NERVE - SMF
-	UIMENU_WM_QUICKMESSAGEALT,	// NERVE - SMF
-	UIMENU_WM_LIMBO,			// NERVE - SMF
-	UIMENU_WM_AUTOUPDATE		// NERVE - DHM
+	UIMENU_BOOK1,           //----(SA)	added
+	UIMENU_BOOK2,           //----(SA)	added
+	UIMENU_BOOK3,           //----(SA)	added
+	UIMENU_WM_PICKTEAM,         // NERVE - SMF
+	UIMENU_WM_PICKPLAYER,       // NERVE - SMF
+	UIMENU_WM_QUICKMESSAGE,     // NERVE - SMF
+	UIMENU_WM_QUICKMESSAGEALT,  // NERVE - SMF
+	UIMENU_WM_LIMBO,            // NERVE - SMF
+	UIMENU_WM_AUTOUPDATE        // NERVE - DHM
 } uiMenuCommand_t;
 
-#define SORT_HOST			0
-#define SORT_MAP			1
-#define SORT_CLIENTS		2
-#define SORT_GAME			3
-#define SORT_PING			4
-#define SORT_PUNKBUSTER		5
+#define SORT_HOST           0
+#define SORT_MAP            1
+#define SORT_CLIENTS        2
+#define SORT_GAME           3
+#define SORT_PING           4
+#define SORT_PUNKBUSTER     5
 
 typedef enum {
-	UI_GETAPIVERSION = 0,	// system reserved
+	UI_GETAPIVERSION = 0,   // system reserved
 
 	UI_INIT,
 //	void	UI_Init( void );
@@ -196,7 +221,7 @@ typedef enum {
 // if !overlay, the background will be drawn, otherwise it will be
 // overlayed over whatever the cgame has drawn.
 // a GetClientState syscall will be made to get the current strings
-	UI_CHECKEXECKEY		// NERVE - SMF
+	UI_CHECKEXECKEY     // NERVE - SMF
 } uiExport_t;
 
 #endif

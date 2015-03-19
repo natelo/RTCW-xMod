@@ -1,7 +1,10 @@
 CC = gcc
-CFLAGS = -pipe -fsigned-char -DNDEBUG -O6 -mcpu=pentiumpro -march=pentium \
--fomit-frame-pointer -ffast-math -malign-loops=2 -malign-jumps=2 \
--malign-functions=2 -fno-strict-aliasing -fstrength-reduce -fPIC
+CFLAGS = -Wall -fno-strict-aliasing -Wimplicit -Wstrict-prototypes \
+-Wformat=2 -Wno-format-zero-length -Wformat-security -Wno-format-nonliteral \
+-Wstrict-aliasing=2 -Wmissing-format-attribute -Wdisabled-optimization \
+-Werror-implicit-function-declaration -MMD -DNDEBUG -O3 -march=i586 \
+-fno-omit-frame-pointer -falign-loops=2 -funroll-loops -falign-jumps=2 \
+-falign-functions=2 -fstrength-reduce -ffast-math
 
 SOURCES = $(shell ls ui_*.c ../game/bg_misc.c ../game/q_math.c ../game/q_shared.c)
 MODULES = $(SOURCES:.c=.o)
@@ -12,7 +15,7 @@ gameclean:
 	rm -rf ../game/*.o
 
 ui.mp.i386.so: $(MODULES)
-	$(CC) -shared -ldl -lm -o $@ $?
+	$(CC) -s -shared -ldl -lm -o $@ $?
 
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $@

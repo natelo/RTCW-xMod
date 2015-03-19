@@ -1,3 +1,31 @@
+/*
+===========================================================================
+
+Return to Castle Wolfenstein multiplayer GPL Source Code
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+
+This file is part of the Return to Castle Wolfenstein multiplayer GPL Source Code (RTCW MP Source Code).  
+
+RTCW MP Source Code is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+RTCW MP Source Code is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with RTCW MP Source Code.  If not, see <http://www.gnu.org/licenses/>.
+
+In addition, the RTCW MP Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the RTCW MP Source Code.  If not, please request a copy in writing from id Software at the address below.
+
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+
+===========================================================================
+*/
+
 // cg_snapshot.c -- things that happen on snapshot transition,
 // not necessarily every single rendered frame
 
@@ -27,8 +55,8 @@ static void CG_ResetEntity( centity_t *cent ) {
 	cent->headJuncIndex2 = 0;
 	// done.
 
-	VectorCopy (cent->currentState.origin, cent->lerpOrigin);
-	VectorCopy (cent->currentState.angles, cent->lerpAngles);
+	VectorCopy( cent->currentState.origin, cent->lerpOrigin );
+	VectorCopy( cent->currentState.angles, cent->lerpAngles );
 	if ( cent->currentState.eType == ET_PLAYER ) {
 		CG_ResetPlayerEntity( cent );
 	}
@@ -46,7 +74,7 @@ cent->nextState is moved to cent->currentState and events are fired
 static void CG_TransitionEntity( centity_t *cent ) {
 
 	// Ridah, update the fireDir if it's on fire
-	if (CG_EntOnFire(cent)) {
+	if ( CG_EntOnFire( cent ) ) {
 		vec3_t newDir, newPos, oldPos;
 		float adjust;
 		//
@@ -56,22 +84,22 @@ static void CG_TransitionEntity( centity_t *cent ) {
 		VectorSubtract( oldPos, newPos, newDir );
 		// fire should go upwards if travelling slow
 		newDir[2] += 2;
-		if (VectorNormalize( newDir ) < 1) {
+		if ( VectorNormalize( newDir ) < 1 ) {
 			VectorClear( newDir );
 			newDir[2] = 1;
 		}
 		// now move towards the newDir
 		adjust = 0.3;
 		VectorMA( cent->fireRiseDir, adjust, newDir, cent->fireRiseDir );
-		if (VectorNormalize( cent->fireRiseDir ) <= 0.1) {
+		if ( VectorNormalize( cent->fireRiseDir ) <= 0.1 ) {
 			VectorCopy( newDir, cent->fireRiseDir );
 		}
 	}
 
 	//----(SA)	the ent lost or gained some part(s), do any necessary effects
-	//TODO: check for ai first 
-	if(cent->currentState.dmgFlags != cent->nextState.dmgFlags) {
-		CG_AttachedPartChange(cent);
+	//TODO: check for ai first
+	if ( cent->currentState.dmgFlags != cent->nextState.dmgFlags ) {
+		CG_AttachedPartChange( cent );
 	}
 
 
@@ -96,16 +124,16 @@ static void CG_TransitionEntity( centity_t *cent ) {
 CG_SetInitialSnapshot
 
 This will only happen on the very first snapshot, or
-on tourney restarts.  All other times will use 
+on tourney restarts.  All other times will use
 CG_TransitionSnapshot instead.
 
 FIXME: Also called by map_restart?
 ==================
 */
 void CG_SetInitialSnapshot( snapshot_t *snap ) {
-	int				i;
-	centity_t		*cent;
-	entityState_t	*state;
+	int i;
+	centity_t       *cent;
+	entityState_t   *state;
 
 	cg.snap = snap;
 
@@ -124,7 +152,7 @@ void CG_SetInitialSnapshot( snapshot_t *snap ) {
 		state = &cg.snap->entities[ i ];
 		cent = &cg_entities[ state->number ];
 
-		memcpy(&cent->currentState, state, sizeof(entityState_t));
+		memcpy( &cent->currentState, state, sizeof( entityState_t ) );
 		//cent->currentState = *state;
 		cent->interpolate = qfalse;
 		cent->currentValid = qtrue;
@@ -156,6 +184,12 @@ void CG_SetInitialSnapshot( snapshot_t *snap ) {
 		}
 	}
 	// -NERVE - SMF
+
+	// OSPx - Demo
+	if (cg.demoPlayback) {
+		trap_Key_SetCatcher(KEYCATCH_CGAME);
+		CG_EventHandling(CGAME_EVENT_DEMO, qtrue);
+	}
 }
 
 
@@ -167,9 +201,9 @@ The transition point from snap to nextSnap has passed
 ===================
 */
 static void CG_TransitionSnapshot( void ) {
-	centity_t			*cent;
-	snapshot_t			*oldFrame;
-	int					i;
+	centity_t           *cent;
+	snapshot_t          *oldFrame;
+	int i;
 
 	if ( !cg.snap ) {
 		CG_Error( "CG_TransitionSnapshot: NULL cg.snap" );
@@ -182,8 +216,8 @@ static void CG_TransitionSnapshot( void ) {
 	CG_ExecuteNewServerCommands( cg.nextSnap->serverCommandSequence );
 
 	// if we had a map_restart, set everthing with initial
-	
-	if ( !(cg.snap) || !(cg.nextSnap) ) {
+
+	if ( !( cg.snap ) || !( cg.nextSnap ) ) {
 		return;
 	}
 
@@ -209,19 +243,19 @@ static void CG_TransitionSnapshot( void ) {
 
 	// check for playerstate transition events
 	if ( oldFrame ) {
-		playerState_t	*ops, *ps;
+		playerState_t   *ops, *ps;
 
 		ops = &oldFrame->ps;
 		ps = &cg.snap->ps;
 		// teleporting checks are irrespective of prediction
 		if ( ( ps->eFlags ^ ops->eFlags ) & EF_TELEPORT_BIT ) {
-			cg.thisFrameTeleport = qtrue;	// will be cleared by prediction code
+			cg.thisFrameTeleport = qtrue;   // will be cleared by prediction code
 		}
 
 		// if we are not doing client side movement prediction for any
 		// reason, then the client events and view changes will be issued now
-		if ( cg.demoPlayback || (cg.snap->ps.pm_flags & PMF_FOLLOW)
-			|| cg_nopredict.integer || cg_synchronousClients.integer ) {
+		if ( cg.demoPlayback || ( cg.snap->ps.pm_flags & PMF_FOLLOW )
+			 || cg_nopredict.integer || cg_synchronousClients.integer ) {
 			CG_TransitionPlayerState( ps, ops );
 		}
 	}
@@ -237,9 +271,9 @@ A new snapshot has just been read in from the client system.
 ===================
 */
 static void CG_SetNextSnap( snapshot_t *snap ) {
-	int					num;
-	entityState_t		*es;
-	centity_t			*cent;
+	int num;
+	entityState_t       *es;
+	centity_t           *cent;
 
 	cg.nextSnap = snap;
 
@@ -251,7 +285,7 @@ static void CG_SetNextSnap( snapshot_t *snap ) {
 		es = &snap->entities[num];
 		cent = &cg_entities[ es->number ];
 
-		memcpy(&cent->nextState, es, sizeof(entityState_t));
+		memcpy( &cent->nextState, es, sizeof( entityState_t ) );
 		//cent->nextState = *es;
 
 		// if this frame is a teleport, or the entity wasn't in the
@@ -297,12 +331,12 @@ valid snapshot.
 ========================
 */
 static snapshot_t *CG_ReadNextSnapshot( void ) {
-	qboolean	r;
-	snapshot_t	*dest;
+	qboolean r;
+	snapshot_t  *dest;
 
 	if ( cg.latestSnapshotNum > cgs.processedSnapshotNum + 1000 ) {
-		CG_Printf( "[skipnotify]WARNING: CG_ReadNextSnapshot: way out of range, %i > %i\n", 
-			cg.latestSnapshotNum, cgs.processedSnapshotNum );
+		CG_Printf( "[skipnotify]WARNING: CG_ReadNextSnapshot: way out of range, %i > %i\n",
+				   cg.latestSnapshotNum, cgs.processedSnapshotNum );
 	}
 
 	while ( cgs.processedSnapshotNum < cg.latestSnapshotNum ) {
@@ -398,8 +432,8 @@ of an interpolating one)
 ============
 */
 void CG_ProcessSnapshots( void ) {
-	snapshot_t		*snap;
-	int				n;
+	snapshot_t      *snap;
+	int n;
 
 	// see what the latest snapshot the client system has is
 	trap_GetCurrentSnapshotNumber( &n, &cg.latestSnapshotTime );
