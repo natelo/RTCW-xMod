@@ -10,7 +10,7 @@
 #include "g_stats.h" // L0 - Global stats
 
 // L0 - 1.4 has some stuff different so let's control 
-#define RETAIL_MOD // If uncommented it's builded for 1.0
+#define RETAIL_MOD // If uncommented it's builded for 1.0 - NOTE: TE is build as 1.4 since it's client-server..
 
 //==================================================================
 

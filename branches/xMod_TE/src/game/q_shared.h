@@ -4,11 +4,11 @@
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
-#define	Q3_VERSION		"Wolf 1.41-MP"
-// 1.4-MP : (== 1.34)
-// 1.3-MP : final for release
-// 1.1b - TTimo SP linux release (+ MP updates)
-// 1.1b5 - Mac update merge in
+#define Q3_VERSION      "WolfMP.com 1.0/x01"
+
+// L0 - Guid
+#define GUID_LEN 33
+
 
 #define NEW_ANIMS
 #define	MAX_TEAMNAME	32
@@ -43,7 +43,12 @@
 
 #if defined(ppc) || defined(__ppc) || defined(__ppc__) || defined(__POWERPC__)
 #define idppc 1 
-#endif 
+#endif
+
+// L0 - Fix DirectX
+#ifndef DIRECTINPUT_VERSION
+#define DIRECTINPUT_VERSION 0x0800
+#endif
 
 /**********************************************************************
   VM Considerations
@@ -97,14 +102,6 @@
 
 #define	QDECL
 
-// bani
-//======================= GNUC DEFINES ==================================
-#ifdef __GNUC__
-#define _attribute(x) __attribute__(x)
-#else
-#define _attribute(x)  
-#endif
-
 //======================= WIN32 DEFINES =================================
 
 #ifdef WIN32
@@ -157,8 +154,9 @@ static inline float idSqrt(float x) {
     float B, y0, y1;
 
     // This'll NaN if it hits frsqrte. Handle both +0.0 and -0.0
-    if (fabs(x) == 0.0)
-        return x;
+	if ( Q_fabs( x ) == 0.0 ) {
+		return x;
+	}
     B = x;
     
 #ifdef __GNUC__
@@ -195,6 +193,37 @@ static inline float idSqrt(float x) {
 #define	PATH_SEP ':'
 
 void Sys_PumpEvents( void );
+
+static inline float idSqrt(float x) {
+	const float half = 0.5;
+	const float one = 1.0;
+	float B, y0, y1;
+
+	// This'll NaN if it hits frsqrte. Handle both +0.0 and -0.0
+	if (Q_fabs(x) == 0.0) {
+		return x;
+	}
+	B = x;
+
+#ifdef __GNUC__
+	asm("frsqrte %0,%1" : "=f" (y0) : "f" (B));
+#else
+	y0 = __frsqrte(B);
+#endif
+	/* First refinement step */
+
+	y1 = y0 + half * y0 * (one - B * y0 * y0);
+
+	/* Second refinement step -- copy the output of the last step to the input of this step */
+
+	y0 = y1;
+	y1 = y0 + half * y0 * (one - B * y0 * y0);
+
+	/* Get sqrt(x) from x * 1/sqrt(x) */
+	return x * y1;
+}
+#define sqrt idSqrt
+
 
 #endif
 
@@ -244,6 +273,10 @@ typedef int		clipHandle_t;
 
 #define	MAX_QINT			0x7fffffff
 #define	MIN_QINT			(-MAX_QINT-1)
+
+// L0 - Ported this
+#define ARRAY_LEN(x)			(sizeof(x) / sizeof(*(x)))
+#define STRARRAY_LEN(x)			(ARRAY_LEN(x) - 1)
 
 // TTimo gcc: was missing, added from Q3 source
 #ifndef max
@@ -432,37 +465,81 @@ extern	vec4_t		colorBlue;
 extern	vec4_t		colorYellow;
 extern	vec4_t		colorMagenta;
 extern	vec4_t		colorCyan;
+extern	vec4_t		colorOrange;
 extern	vec4_t		colorWhite;
 extern	vec4_t		colorLtGrey;
 extern	vec4_t		colorMdGrey;
 extern	vec4_t		colorDkGrey;
+// L0 - New colors
+extern	vec4_t		colorMdRed;
+extern	vec4_t		colorMdGreen;
+extern	vec4_t		colorDkGreen;
+extern	vec4_t		colorMdCyan;
+extern	vec4_t		colorMdYellow;
+extern	vec4_t		colorMdOrange;
+extern	vec4_t		colorMdBlue;
+// End
 
 #define Q_COLOR_ESCAPE	'^'
-#define Q_IsColorString(p)	( p && *(p) == Q_COLOR_ESCAPE && *((p)+1) && *((p)+1) != Q_COLOR_ESCAPE )
+#define Q_IsColorString(p)	((p) && *(p) == Q_COLOR_ESCAPE && *((p)+1) && isalnum(*((p)+1))) // ^[0-9a-zA-Z]
 
-#define COLOR_BLACK		'0'
-#define COLOR_RED		'1'
-#define COLOR_GREEN		'2'
-#define COLOR_YELLOW	'3'
-#define COLOR_BLUE		'4'
-#define COLOR_CYAN		'5'
-#define COLOR_MAGENTA	'6'
-#define COLOR_WHITE		'7'
-#define ColorIndex(c)	( ( (c) - '0' ) & 7 )
+#define COLOR_BLACK     '0'
+#define COLOR_RED       '1'
+#define COLOR_GREEN     '2'
+#define COLOR_YELLOW    '3'
+#define COLOR_BLUE      '4'
+#define COLOR_CYAN      '5'
+#define COLOR_MAGENTA   '6'
+#define COLOR_WHITE     '7'
+// L0 - colors
+#define COLOR_ORANGE	'8'
+#define COLOR_MDGREY	'9'
+#define COLOR_LTGREY	':'
+#define COLOR_MDGREEN	'<'
+#define COLOR_MDYELLOW	'='
+#define COLOR_MDBLUE	'>'
+#define COLOR_MDRED		'?'
+#define COLOR_LTORANGE	'A'
+#define COLOR_MDCYAN	'B'
+#define COLOR_MDPURPLE	'C'
+#define COLOR_NULL		'*'
+#define COLOR_BITS	31
+#define ColorIndex(c)	( ( (c) - '0' ) & COLOR_BITS )
+// End
 
-#define S_COLOR_BLACK	"^0"
-#define S_COLOR_RED		"^1"
-#define S_COLOR_GREEN	"^2"
-#define S_COLOR_YELLOW	"^3"
-#define S_COLOR_BLUE	"^4"
-#define S_COLOR_CYAN	"^5"
-#define S_COLOR_MAGENTA	"^6"
-#define S_COLOR_WHITE	"^7"
+#define S_COLOR_BLACK   "^0"
+#define S_COLOR_RED     "^1"
+#define S_COLOR_GREEN   "^2"
+#define S_COLOR_YELLOW  "^3"
+#define S_COLOR_BLUE    "^4"
+#define S_COLOR_CYAN    "^5"
+#define S_COLOR_MAGENTA "^6"
+#define S_COLOR_WHITE   "^7"
+// L0 - Colors
+#define S_COLOR_ORANGE		"^8"
+#define S_COLOR_MDGREY		"^9"
+#define S_COLOR_LTGREY		"^z"
+#define S_COLOR_MDGREEN		"^<"
+#define S_COLOR_MDYELLOW	"^="
+#define S_COLOR_MDBLUE		"^>"
+#define S_COLOR_MDRED		"^j"
+#define S_COLOR_LTORANGE	"^A"
+#define S_COLOR_MDCYAN		"^B"
+#define S_COLOR_MDPURPLE	"^C"
+#define S_COLOR_NULL		"^*"
+// End
 
-extern vec4_t	g_color_table[8];
+extern vec4_t	g_color_table[32];
 
 #define	MAKERGB( v, r, g, b ) v[0]=r;v[1]=g;v[2]=b
 #define	MAKERGBA( v, r, g, b, a ) v[0]=r;v[1]=g;v[2]=b;v[3]=a
+
+// L0 - Crosshairs
+#define gethex( ch ) ( ( ch ) > '9' ? ( ( ch ) >= 'a' ? ( ( ch ) - 'a' + 10 ) : ( ( ch ) - '7' ) ) : ( ( ch ) - '0' ) )
+#define ishex( ch )  ( ( ch ) && ( ( ( ch ) >= '0' && ( ch ) <= '9' ) || ( ( ch ) >= 'A' && ( ch ) <= 'F' ) || ( ( ch ) >= 'a' && ( ch ) <= 'f' ) ) )
+#define Q_IsHexColorString( p ) ( ishex( *( p ) ) && ishex( *( ( p ) + 1 ) ) && ishex( *( ( p ) + 2 ) ) && ishex( *( ( p ) + 3 ) ) && ishex( *( ( p ) + 4 ) ) && ishex( *( ( p ) + 5 ) ) )
+#define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )
+// End
 
 #define DEG2RAD( a ) ( ( (a) * M_PI ) / 180.0F )
 #define RAD2DEG( a ) ( ( (a) * 180.0f ) / M_PI )
@@ -617,6 +694,7 @@ float Com_Clamp( float min, float max, float value );
 
 char	*COM_SkipPath( char *pathname );
 void	COM_StripExtension( const char *in, char *out );
+void    COM_StripExtension2(const char *in, char *out, int destsize);
 void	COM_StripFilename(char *in, char *out);
 void	COM_DefaultExtension( char *path, int maxSize, const char *extension );
 
@@ -660,7 +738,8 @@ typedef struct pc_token_s
 void	COM_MatchToken( char**buf_p, char *match );
 
 void SkipBracedSection (char **program);
-void SkipRestOfLine ( char **data );
+void SkipBracedSection_Depth(char **program, int depth); // start at given depth if already matching stuff
+void SkipRestOfLine(char **data);
 
 void Parse1DMatrix (char **buf_p, int x, float *m);
 void Parse2DMatrix (char **buf_p, int y, int x, float *m);
@@ -698,9 +777,30 @@ char	*Q_strlwr( char *s1 );
 char	*Q_strupr( char *s1 );
 char	*Q_strrchr( const char* string, int c );
 
+#ifdef _WIN32
+#define Q_putenv _putenv
+#else
+#define Q_putenv putenv
+#endif
+
 // buffer size safe library replacements
 void	Q_strncpyz( char *dest, const char *src, int destsize );
 void	Q_strcat( char *dest, int size, const char *src );
+int		Q_strnicmp(const char *string1, const char *string2, int n);  // L0 - IRC
+
+// L0 - IRC
+#define ID_INLINE __inline
+
+#ifndef __attribute__
+# if !defined(__GNUC__)
+#  define __attribute__(A)
+# elif GCC_VERSION < 2008
+#  define __attribute__(A)
+# elif defined(__cplusplus) && GCC_VERSION < 3004
+#  define __attribute__(A)
+# endif
+#endif
+// ~L0
 
 // strlen that discounts Quake color sequences
 int Q_PrintStrlen( const char *string );
@@ -844,8 +944,7 @@ COLLISION DETECTION
 #define	PLANE_X			0
 #define	PLANE_Y			1
 #define	PLANE_Z			2
-#define	PLANE_NON_AXIAL	3
-
+#define PLANE_NON_PLANAR    4 // L0 - ET Port
 
 /*
 =================
@@ -853,7 +952,7 @@ PlaneTypeForNormal
 =================
 */
 
-#define PlaneTypeForNormal(x) (x[0] == 1.0 ? PLANE_X : (x[1] == 1.0 ? PLANE_Y : (x[2] == 1.0 ? PLANE_Z : PLANE_NON_AXIAL) ) )
+#define PlaneTypeForNormal( x ) ( x[0] == 1.0 ? PLANE_X : ( x[1] == 1.0 ? PLANE_Y : ( x[2] == 1.0 ? PLANE_Z : ( x[0] == 0.f && x[1] == 0.f && x[2] == 0.f ? PLANE_NON_PLANAR : PLANE_NON_AXIAL ) ) ) )
 
 // plane_t structure
 // !!! if this is changed, it must be changed in asm code too !!!
@@ -1410,6 +1509,15 @@ typedef enum {
 	CA_CINEMATIC		// playing a cinematic or a static pic, not connected to a server
 } connstate_t;
 
+// L0 
+// Tracks client state (for renderer: mainly to fix Bloom bug)
+// This header is tied all over the code so you can use it anywhere you want to..
+//
+// FYI - Rationality:
+// - Only time this is set to true is in SCR_DrawScreenField (case at CA_CONNECTED) in cl_scrn.c
+// - Additionally: It gets set as false in cl_disconnect (cl_main.c) thus it's always off if not stated otherwise
+qboolean CLIENT_IS_CONNECTED;
+
 // font support 
 
 #define GLYPH_START 0
@@ -1529,5 +1637,15 @@ typedef enum {
 #define VOTEFLAGS_TYPE			(1<<5)
 #define VOTEFLAGS_KICK			(1<<6)
 #define VOTEFLAGS_MAP			(1<<7)
+
+// L0 
+
+// Cpu info
+#define lengthof( a ) (sizeof( (a) ) / sizeof( (a)[0] ))
+// Misc
+int Q_CountChar(const char *string, char tocount);
+char *Q_CleanDirName(char *dirname);
+
+// ~L0
 
 #endif	// __Q_SHARED_H
