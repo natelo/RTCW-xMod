@@ -944,6 +944,7 @@ COLLISION DETECTION
 #define	PLANE_X			0
 #define	PLANE_Y			1
 #define	PLANE_Z			2
+#define PLANE_NON_AXIAL		3
 #define PLANE_NON_PLANAR    4 // L0 - ET Port
 
 /*
