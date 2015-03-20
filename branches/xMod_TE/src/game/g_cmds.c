@@ -709,10 +709,24 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 	client->pers.teamState.state = TEAM_BEGIN;
 	if ( oldTeam != TEAM_SPECTATOR ) {
 		if ( !(ent->client->ps.pm_flags & PMF_LIMBO) ) {
+			int i;
+
 			// Kill him (makes sure he loses flags, etc)
 			ent->flags &= ~FL_GODMODE;
 			ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
 			player_die(ent, ent, ent, 100000, MOD_SWITCHTEAM);
+
+			// L0 - Remove any spectators if speclock is on	
+			for (i = 0; i < level.maxclients; i++) {
+				if (level.clients[i].sess.sessionTeam == TEAM_SPECTATOR
+					&& level.clients[i].sess.spectatorState == SPECTATOR_FOLLOW
+					&& level.clients[i].sess.spectatorClient == clientNum &&
+					teamInfo[team].spec_lock &&
+					ent->client->sess.specInvited != team)
+				{
+					StopFollowing(&g_entities[i]);
+				}
+			}
 		}
 	}
 	// they go to the end of the line for tournements

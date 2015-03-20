@@ -945,7 +945,7 @@ void Cmd_specInvite(gentity_t *ent) {
 		player->client->sess.specInvited |= team;
 
 		// Notify sender/recipient
-		CP(va("print \"%s^7 has been sent a spectator invitation.\n\"", player->client->pers.netname));
+		CP(va("print \"%s^7 sent a spectator invitation to %s^7.\n\"", ent->client->pers.netname, player->client->pers.netname));
 		CPx(player - g_entities, va("cp \"%s ^7invited you to spec the %s team.\n\"2",
 			ent->client->pers.netname, aTeams[team]));
 	}
@@ -1009,7 +1009,7 @@ void Cmd_specUnInvite(gentity_t *ent) {
 		G_updateSpecLock(team, qtrue);
 
 		// Notify sender/recipient
-		CP(va("print \"%s^7 can't any longer spectate your team.\n\"", player->client->pers.netname));
+		CP(va("print \"%s^7 revoked spectate invitation from %s^7.\n\"", ent->client->pers.netname, player->client->pers.netname));
 		CPx(player->client->ps.clientNum, va("print \"%s ^7has revoked your ability to spectate the %s team.\n\"",
 			ent->client->pers.netname, aTeams[team]));
 
@@ -1041,6 +1041,7 @@ void Cmd_uninviteAll(gentity_t *ent) {
 
 		// Notify that team only that specs lost privilage
 		TP(team, va("chat \"^3TEAM NOTICE: ^7%s ^7has revoked ALL spec's invites for your team.\n\"", ent->client->pers.netname));
+
 		// Inform specs..
 		TP(TEAM_SPECTATOR, va("print \"%s ^7revoked ALL spec invites from %s team.\n\"", ent->client->pers.netname, aTeams[team]));
 	}
@@ -1068,7 +1069,8 @@ void Cmd_speclock(gentity_t *ent, qboolean lock) {
 		}
 
 		G_updateSpecLock(team, lock);
-		AP(va("cp \"%s is now ^3SPEC%s\"2", aTeams[team], (lock ? "LOCKED" : "UNLOCKED")));
+		AP(va("print \"%s^7 ^nSPEC%s ^7team %s\"2", ent->client->pers.netname, (lock ? "LOCKED" : "UNLOCKED"), aTeams[team]));
+		AP(va("cp \"%s is now ^nSPEC%s\"2", aTeams[team], (lock ? "LOCKED" : "UNLOCKED")));
 
 		if (lock) {
 			CP("print \"Use ^3specinvite^7 to invite people to spectate.\n\"");
@@ -1138,6 +1140,19 @@ void Cmd_help(gentity_t *ent) {
 		CP("print \"^7-----------------------------------------------\n\n\"");
 		CP("print \"^3Usage^7: /<command>\n\"");
 	}
+	// Tournament
+	else if (!Q_stricmp(about, "tournament")) {
+		CP("print \"^7\n\"");
+		CP("print \"^3Available Commands:\n\"");
+		CP("print \"^7-----------------------------------------------\n\"");
+		CP("print \"^7speclock             ^3>> Spec Locks your team\n\"");
+		CP("print \"^7specunlock           ^3>> Speck Unlocks your team\n\"");
+		CP("print \"^7specinvite <slot>    ^3>> Invites player to spec your team\n\"");
+		CP("print \"^7specuninvite <slot>  ^3>> Revokes spec invitation from player\n\"");
+		CP("print \"^7specuninviteall      ^3>> Revokes all spec invitations for your team\n\"");
+		CP("print \"^7-----------------------------------------------\n\n\"");
+		CP("print \"^3Usage^7: /<command>\n\"");
+	}
 	// Nothing specific..list all categories
 	else {
 		CP("print \"^7\n\"");
@@ -1146,6 +1161,8 @@ void Cmd_help(gentity_t *ent) {
 		CP("print \"^3- about\n\"");
 		CP("print \"^3- bitflags\n\"");
 		CP("print \"^3- list\n\"");
+		if (g_tournamentMode.integer > TOURNY_NONE)
+			CP("print \"^3- tournament\n\"");
 		CP("print \"^7--------------------\n\"");
 		CP("print \"^3Usage^7: /commands <category>\n\n\"");
 	}

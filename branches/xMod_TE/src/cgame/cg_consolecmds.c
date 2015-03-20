@@ -768,6 +768,7 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand("mp40");
 	trap_AddCommand("thompson");
 	trap_AddCommand("sten");
+	trap_AddCommand("commands");
 
 	// Speclock
 	trap_AddCommand("speclock");
