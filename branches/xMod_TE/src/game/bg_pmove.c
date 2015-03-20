@@ -475,7 +475,7 @@ PM_CheckJump
 */
 static qboolean PM_CheckJump( void ) {
 // L0 - Bunny Jump
-#if defined( GAMEDLL )
+#ifdef GAMEDLL
 	extern vmCvar_t g_bunnyJump;
 	int bunny = g_bunnyJump.integer;
 #else

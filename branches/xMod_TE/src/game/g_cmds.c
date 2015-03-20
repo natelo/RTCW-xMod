@@ -720,6 +720,7 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 		client->sess.spectatorTime = level.time;
 	}
 
+	client->sess.specLocked = 0;	// L0 - Speclocked
 	client->sess.sessionTeam = team;
 	client->sess.spectatorState = specState;
 	client->sess.spectatorClient = specClient;
@@ -899,9 +900,47 @@ void Cmd_Follow_f( gentity_t *ent ) {
 		return;
 	}
 
+	// OSPx - Et port..
+	if (ent->client->ps.pm_flags & PMF_LIMBO) {
+		CP("print \"Can't issue a follow command while in limbo.\n\"");
+		CP("print \"Hit FIRE to switch between teammates.\n\"");
+		return;
+	}
+
 	trap_Argv( 1, arg, sizeof( arg ) );
 	i = ClientNumberFromString( ent, arg );
 	if ( i == -1 ) {
+		// OSPx - Account for speclock & empty teams
+		if (!Q_stricmp(arg, "allies")) {
+			i = TEAM_BLUE;
+		}
+		else if (!Q_stricmp(arg, "axis")) {
+			i = TEAM_RED;
+		}
+		else { return; }
+
+		if (!TeamCount(ent - g_entities, i)) {
+			CP(va("print \"The %s team %s empty! Follow command ignored.\n\"", aTeams[i],
+				((ent->client->sess.sessionTeam != i) ? "is" : "would be")));
+			return;
+		}
+
+		// Allow for simple toggle
+		if (ent->client->sess.specLocked != i) {
+			if (teamInfo[i].spec_lock && !(ent->client->sess.specInvited & i)) {
+				CP(va("print \"Sorry, the %s team is locked from spectators.\n\"", aTeams[i]));
+			}
+			else {
+				ent->client->sess.specLocked = i;
+				CP(va("print \"Spectator follow is now locked on the %s team.\n\"", aTeams[i]));
+				Cmd_FollowCycle_f(ent, 1);
+			}
+		}
+		else {
+			ent->client->sess.specLocked = 0;
+			CP(va("print \"%s team spectating is now disabled.\n\"", aTeams[i]));
+		}
+		// -OSPx
 		return;
 	}
 
@@ -923,6 +962,12 @@ void Cmd_Follow_f( gentity_t *ent ) {
 	// if they are playing a tournement game, count as a loss
 	if ( g_gametype.integer == GT_TOURNAMENT && ent->client->sess.sessionTeam == TEAM_FREE ) {
 		ent->client->sess.losses++;
+	}
+
+	// OSP - can't follow a player on a speclocked team, unless allowed
+	if (!G_allowFollow(ent, level.clients[i].sess.sessionTeam)) {
+		CP(va("print \"Sorry, the %s team is locked from spectators.\n\"", aTeams[level.clients[i].sess.sessionTeam]));
+		return;
 	}
 
 	// first set them to spectator
@@ -989,6 +1034,11 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 		if ( g_gametype.integer >= GT_WOLF ) {
 			if (level.clients[clientnum].ps.pm_flags & PMF_LIMBO)
 				continue;
+		}
+
+		// OSPx - Speclock
+		if (!G_desiredFollow(ent, level.clients[clientnum].sess.sessionTeam)) {
+			continue;
 		}
 
 		// this is good, we can use it

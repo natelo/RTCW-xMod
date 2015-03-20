@@ -10,13 +10,13 @@
 #include "g_stats.h" // L0 - Global stats
 
 // L0 - 1.4 has some stuff different so let's control 
-#define RETAIL_MOD // If uncommented it's builded for 1.0 - NOTE: TE is build as 1.4 since it's client-server..
+//#define RETAIL_MOD // If uncommented it's builded for 1.0 - NOTE: TE is build as 1.4 since it's client-server..
 
 //==================================================================
 
 // the "gameversion" client command will print this plus compile date
 //----(SA) Wolfenstein
-#define MODVERSION "0.4.1"
+#define MODVERSION "0.4.1 TE"
 #define	GAMEVERSION	"^7x^3M^7od " MODVERSION
 // done.
 
@@ -481,6 +481,8 @@ typedef struct {
 	int			ignored;			// Ignored clients
 	int			selectedWeapon;		// If enabled allows mp40, sten, thompson..
 	int			clientFlags;		// Sort some stuff based upon user settings
+	int			specInvited;
+	int			specLocked;
 	// End
 } clientSession_t;
 
@@ -892,6 +894,15 @@ typedef struct {
 	int			oneSecActions;
 } level_locals_t;
 
+// OSPx - Team extras
+typedef struct {
+	qboolean spec_lock;
+	qboolean team_lock;
+	char team_name[24];
+	int timeouts;
+} team_info;
+// -OSP
+
 extern 	qboolean	reloading;				// loading up a savegame
 // JPW NERVE
 extern char testid1[];
@@ -1163,7 +1174,16 @@ void G_RunClient( gentity_t *ent );
 // g_team.c
 //
 qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
-
+// L0
+extern char *aTeams[TEAM_NUM_TEAMS];
+extern team_info teamInfo[TEAM_NUM_TEAMS];
+void G_swapTeamLocks(void);
+int G_blockoutTeam(gentity_t *ent, int nTeam);
+qboolean G_allowFollow(gentity_t *ent, int nTeam);
+qboolean G_desiredFollow(gentity_t *ent, int nTeam);
+void G_updateSpecLock(int nTeam, qboolean fLock);
+void G_setClientSpeclock(gentity_t *ent);
+//~ L0
 
 //
 // g_mem.c

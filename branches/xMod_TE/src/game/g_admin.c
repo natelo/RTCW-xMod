@@ -141,8 +141,15 @@ void cmd_do_logout(gentity_t *ent) {
 
 		// Log them out now
 		ent->client->sess.admin = ADM_NONE;
+
 		// Set incognito to visible..
 		ent->client->sess.incognito = 0;
+
+		// Clear speclock		
+		ent->client->sess.specInvited = 0;
+
+		// Black out client if needed
+		G_setClientSpeclock(ent);
 
 	return;
 	}
@@ -1745,6 +1752,94 @@ void cmd_Event(gentity_t *ent) {
 }
 
 /*
+==================
+Speclock/unlock
+==================
+*/
+qboolean specAlready(int team, qboolean lock) {
+	if (team > 0 && team < 3) {
+		if (teamInfo[team].spec_lock == lock)
+			return qtrue;
+		else
+			return qfalse;
+	}
+	else if (team == 3) {
+		if ((teamInfo[TEAM_RED].spec_lock == lock) &&
+			(teamInfo[TEAM_BLUE].spec_lock == lock))
+			return qtrue;
+		else
+			return qfalse;
+	}
+	return qfalse;
+}
+
+void cmd_specHandle(gentity_t *ent, qboolean lock) {
+	int team;
+	char *act = ((lock) ? "locked" : "unlocked");
+	char *log;
+
+	if (!ent->client->pers.cmd2) {
+		CP(va("print \"^1Error: ^7You need to specify a team!\nUse ^3?spec%s ^7for help.\n\"", (lock ? "lock" : "unlock")));
+		return;
+	}
+
+#define STM(x) !(strcmp(ent->client->pers.cmd2,x))
+
+	if (STM("both")) {
+		team = 3;
+	}
+	else if (STM("red") || STM("axis"))	{
+		team = TEAM_RED;
+	}
+	else if (STM("blue") || STM("allied") || STM("allies")) {
+		team = TEAM_BLUE;
+	}
+	else {
+		CP(va("print \"^1Error: ^7Unknown argument ^1%s^7!\nUse ^1?spec%s ^7for help.\n\"",
+			ent->client->pers.cmd2, (lock ? "lock" : "unlock")));
+		return;
+	}
+
+	if (specAlready(team, lock)) {
+		CP(va("print \"^1Error^7: %s already spec%s!\n\"",
+			((team == 3) ? "^3Both ^7teams are" : va("Team %s is", aTeams[team])), act));
+		return;
+	}
+
+	// Sanity check
+	if (lock) {
+		if (team == TEAM_BLUE && !level.alliedPlayers) {
+			CP(va("print \"^1Error^7: %s team has no players!\n\"", aTeams[team]));
+			return;
+		}
+		else if (team == TEAM_RED && !level.axisPlayers) {
+			CP(va("print \"^1Error^7: %s team has no players!\n\"", aTeams[team]));
+			return;
+		}
+		else if (team == TEAM_SPECTATOR && (!level.axisPlayers || !level.alliedPlayers)) {
+			CP("print \"^1Error^7: Not all teams have players!\n\"");
+			return;
+		}
+	}
+
+	if (team != 3) {
+		G_updateSpecLock(team, lock);
+	}
+	else {
+		G_updateSpecLock(TEAM_RED, lock);
+		G_updateSpecLock(TEAM_BLUE, lock);
+	}
+
+	aTeams[team] = (team == 3) ? "^3Both^7" : aTeams[team];
+	AP(va("chat \"console: ^7%s has spec%s %s team%s\"", sortTag(ent), act, aTeams[team], ((team == 3) ? "s" : "")));
+
+	log = va("Player %s (IP: %d.%d.%d.%d) has %s team(%s).",
+		ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2],
+		ent->client->sess.ip[3], act, aTeams[team]);
+	logEntry(ADMACT, log);
+}
+
+/*
 ===========
 Getstatus
 
@@ -1946,6 +2041,8 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd,"tempbanip"))		{ if (canUse(ent, qtrue)) cmd_tempBanIp(ent); else cantUse(ent); return qtrue;}		
 	else if (!strcmp(cmd,"addip"))			{ if (canUse(ent, qtrue)) cmd_addIp(ent); else cantUse(ent); return qtrue;}
 	else if (!strcmp(cmd,"event"))			{ if (canUse(ent, qtrue)) cmd_Event(ent); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd,"speclock"))		{ if (canUse(ent, qtrue)) cmd_specHandle(ent, qtrue); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd,"specunlock"))		{ if (canUse(ent, qtrue)) cmd_specHandle(ent, qfalse); else cantUse(ent); return qtrue; }
 
 	// Any other command (server cvars..)
 	else if (canUse(ent, qfalse))			{ cmdCustom(ent, cmd); return qtrue; }	
@@ -2023,6 +2120,8 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("tempbanip", "Temporarily Bans player by IP.", "!tempbanip <unique part of name> <mins>")
 	_HELP("addip", "Adds IP to banned file. You can use wildcards for subrange bans.", "example - !addip 100.*.*.*")
 	_HELP("event", "Pauses or Resumes event", "!event <pause/resume>")
+	_HELP("speclock", "Locks a player's team from spectators.", "!speclock <team>")
+	_HELP("specunlock", "Unocks a player's team for spectators.", "!speclock <team>")
 	_HELP("*", "Any default command that's allowed per Admin level can be executed accordingly. Note that adding @ at the end will execute it silently otherwise it will be printed to all.", "!g_allowVote 1 or !g_allowVote 1 @ for silent change")
 	// --> Add new ones after this line..
 
