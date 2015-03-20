@@ -1943,8 +1943,12 @@ void cmd_getstatus(gentity_t *ent) {
 	int mins = (secs / 60) % 60;
 	int hours = (secs / 3600) % 24;
 	int days = (secs / (3600 * 24));
+	qboolean teamSpecLocked = qfalse;
 	qtime_t ct;
 	trap_RealTime(&ct);	
+
+	if (teamInfo[TEAM_RED].spec_lock || teamInfo[TEAM_BLUE].spec_lock)
+		teamSpecLocked = qtrue;
 
 	CP(va("print \"\n^7Server: %s    ^7%02d:%02d:%02d ^3(^7%02d %s %d^3)\n\"", sv_hostname.string, ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, cMonths[ct.tm_mon], 1900+ct.tm_year));
 	// N/c..
@@ -2023,7 +2027,22 @@ void cmd_getstatus(gentity_t *ent) {
 					tag = (g_entities[j].client->sess.admin != ADM_NONE && !g_entities[j].client->sess.incognito) ? sortTag : extra;
 				} else if (ent->client->sess.admin != ADM_NONE) {
 					tag = (g_entities[j].client->sess.admin == ADM_NONE && g_entities[j].client->sess.ignored) ? "^1Ignored" : sortTag;
-				}	
+				}
+
+				// Specing speclocked team (This will override ignored tag but so be it..).
+				if (g_entities[j].client->sess.sessionTeam == TEAM_SPECTATOR &&
+					!g_entities[j].client->sess.admin && teamSpecLocked) 
+				{
+					if (g_entities[j].client->sess.specInvited == 1)
+						tag = "Spec. Axis";
+					else if (g_entities[j].client->sess.specInvited == 2)
+						tag = "Spec. Allies";
+					else if (g_entities[j].client->sess.specInvited == 3)
+						tag = "Spec. Both";
+					else if (teamSpecLocked > 0 && !g_entities[j].client->sess.specInvited)
+						tag = "^3Speclocked";
+					// Hidden admins
+				}
 
 				// Guid
 				stripChars(g_entities[j].client->sess.guid, guid, 12);
