@@ -483,6 +483,7 @@ typedef struct {
 	int			clientFlags;		// Sort some stuff based upon user settings
 	int			specInvited;
 	int			specLocked;
+	unsigned int uci;				// Country Flags
 	// End
 } clientSession_t;
 
@@ -1189,9 +1190,11 @@ void G_setClientSpeclock(gentity_t *ent);
 //
 // g_mem.c
 //
-void *G_Alloc( int size );
-void G_InitMemory( void );
-void Svcmd_GameMem_f( void );
+qboolean G_CanAlloc(unsigned int size);
+void *G_Alloc(unsigned int size);
+void G_Free(void *ptr);
+void G_InitMemory(void);
+void Svcmd_GameMem_f(void);
 
 //
 // g_session.c
@@ -1410,6 +1413,7 @@ extern vmCvar_t		g_spectatorInactivity;
 extern vmCvar_t		g_spectatorAllowDemo;
 extern vmCvar_t		g_antiWarp;
 extern vmCvar_t		g_forceClass;
+extern vmCvar_t		g_showFlags;
 
 // Modes
 extern vmCvar_t		g_deathMatch;
@@ -1926,6 +1930,22 @@ void DoClientThinks(gentity_t *ent);
 // g_hacks.c
 //
 qboolean isCustomMOD(meansOfDeath_t mod);
+
+//
+// g_geoip.c
+//
+typedef struct GeoIPTag {
+	fileHandle_t GeoIPDatabase;
+	unsigned char * cache;
+	unsigned int memsize;
+} GeoIP;
+
+unsigned long GeoIP_addr_to_num(const char *addr);
+unsigned int GeoIP_seek_record(GeoIP *gi, unsigned long ipnum);
+void GeoIP_open(void);
+void GeoIP_close(void);
+extern GeoIP * gidb;
+void G_ReadIP(gclient_t *client);
 
 //
 // Logs

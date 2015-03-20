@@ -188,6 +188,7 @@ vmCvar_t	g_antiWarp;				// Enable Anti warp..
 vmCvar_t	g_spectatorInactivity;	// Drop spectators after some time..
 vmCvar_t	g_spectatorAllowDemo;	// Basically ignores any client that's following other players when g_spectatorInactivity is set.
 vmCvar_t	g_forceClass;			// If enabled, everyone will spawn as class set here [0-3]..mainly for 1.0 alike DM..NOTE: -1 = disabled..
+vmCvar_t	g_showFlags;			// Shows country flags (if client has them enabled..
 
 // Modes
 vmCvar_t	g_deathMatch;			// Death Match
@@ -506,6 +507,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_spectatorAllowDemo, "g_spectatorAllowDemo", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_antiWarp, "g_antiWarp", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_forceClass, "g_forceClass", "-1", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },
+	{ &g_showFlags, "g_showFlags", "1", 0, qfalse, qfalse },
 
 	// Modes
 	{ &g_deathMatch, "g_deathMatch", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },
@@ -1595,6 +1597,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 		G_Printf ("-----------------------------------\n");
 	}
 
+	// OSPx - Country Flags
+	GeoIP_open();
+
 	if ( trap_Cvar_VariableIntegerValue( "bot_enable" ) ) {
 		BotAISetup( restart );
 		BotAILoadMap( restart );
@@ -1669,6 +1674,9 @@ void G_ShutdownGame( int restart ) {
 		// done.
 	}
 	// done.
+
+	// OSPx - Country Flags
+	GeoIP_close();
 
 	// write all the client session data so we can get it back
 	G_WriteSessionData();

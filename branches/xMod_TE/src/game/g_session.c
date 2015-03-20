@@ -22,7 +22,7 @@ void G_WriteClientSessionData( gclient_t *client ) {
 	const char	*s;
 	const char	*var;
 
-	s = va("%i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %s %i %i %i %i %i",		// DHM - Nerve
+	s = va("%i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %s %i %i %i %i %i %i",		// DHM - Nerve
 		client->sess.sessionTeam,
 		client->sess.spectatorTime,
 		client->sess.spectatorState,
@@ -52,7 +52,8 @@ void G_WriteClientSessionData( gclient_t *client ) {
 		client->sess.selectedWeapon,
 		client->sess.clientFlags,
 		client->sess.specInvited,
-		client->sess.specLocked
+		client->sess.specLocked,
+		client->sess.uci
 
 		);
 
@@ -115,7 +116,7 @@ void G_ReadSessionData( gclient_t *client ) {
 	var = va( "session%i", client - level.clients );
 	trap_Cvar_VariableStringBuffer( var, s, sizeof(s) );
 
-	sscanf( s, "%i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %s %i %i %i %i",		// DHM - Nerve
+	sscanf( s, "%i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %s %i %i %i %i %i",		// DHM - Nerve
 		(int *)&client->sess.sessionTeam,
 		&client->sess.spectatorTime,
 		(int *)&client->sess.spectatorState,
@@ -144,7 +145,8 @@ void G_ReadSessionData( gclient_t *client ) {
 		&client->sess.selectedWeapon,
 		&client->sess.clientFlags,
 		&client->sess.specInvited,
-		&client->sess.specLocked
+		&client->sess.specLocked,
+		&client->sess.uci
 
 		);
 
@@ -241,6 +243,7 @@ void G_InitSessionData( gclient_t *client, char *userinfo ) {
 	sess->clientFlags = 0;		// Will be overwritten in clientConnect..
 	sess->specInvited = 0;
 	sess->specLocked = 0;
+	sess->uci = 255;
 	// End
 
 	G_WriteClientSessionData( client );

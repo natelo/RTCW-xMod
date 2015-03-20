@@ -1530,6 +1530,16 @@ void ClientUserinfoChanged( int clientNum ) {
 	s = Info_ValueForKey( userinfo, "ip" );
 	if( s[0] != 0 ){
 		SaveIP_f( client, s );
+	} // OSPx - Country Flags
+	else if (!(ent->r.svFlags & SVF_BOT) && !strlen(s)) {
+		// To solve the IP bug..
+		s = va("%i.%i.%i.%i",
+			client->sess.ip[0],
+			client->sess.ip[1],
+			client->sess.ip[2],
+			client->sess.ip[3]
+			);
+		sscanf(s, "%[^z]s:%*s", s);
 	}
 
 	// Check for "" GUID..
@@ -1701,14 +1711,14 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	if ( ent->r.svFlags & SVF_BOT ) {
 		
-		s = va("n\\%s\\t\\%i\\model\\%s\\head\\%s\\c1\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s",
+		s = va("n\\%s\\t\\%i\\model\\%s\\head\\%s\\c1\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\country\\%i",
 			client->pers.netname, client->sess.sessionTeam, model, head, c1,
 			client->pers.maxHealth, client->sess.wins, client->sess.losses,
-			Info_ValueForKey( userinfo, "skill" ) );
+			Info_ValueForKey(userinfo, "skill"), client->sess.uci);
 	} else {
-		s = va("n\\%s\\t\\%i\\model\\%s\\head\\%s\\c1\\%s\\hc\\%i\\w\\%i\\l\\%i",
+		s = va("n\\%s\\t\\%i\\model\\%s\\head\\%s\\c1\\%s\\hc\\%i\\w\\%i\\l\\%i\\country\\%i",
 			client->pers.netname, client->sess.sessionTeam, model, head, c1,
-			client->pers.maxHealth, client->sess.wins, client->sess.losses );
+			client->pers.maxHealth, client->sess.wins, client->sess.losses, client->sess.uci);
 	}
 
 //----(SA) end
@@ -1725,8 +1735,8 @@ void ClientUserinfoChanged( int clientNum ) {
 		
 		// Print essentials and skip garbage
 		// TODO : Do VSP stats expect cl_guid or guid?
-		s = va( "name\\%s\\team\\%s\\IP\\%s\\guid\\%s", 
-			client->pers.netname, team, GetParsedIP(Info_ValueForKey( userinfo, "ip" )), Info_ValueForKey( userinfo, "cl_guid" ));
+		s = va( "name\\%s\\team\\%s\\IP\\%s\\guid\\%s\\country\\%i", 
+			client->pers.netname, team, GetParsedIP(Info_ValueForKey(userinfo, "ip")), Info_ValueForKey(userinfo, "cl_guid"), client->sess.uci);
 	}
 
 	// this is not the userinfo actually, it's the config string
@@ -1871,6 +1881,39 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 			return "BotConnectfailed";
 		}
 	}
+
+	// OSPx - Country Flags
+	if (gidb != NULL) {
+		value = Info_ValueForKey(userinfo, "ip");
+
+		if (!strcmp(value, "localhost")) {
+			client->sess.uci = 0;
+		}
+		else {
+			unsigned long ip = GeoIP_addr_to_num(value);
+
+			if (((ip & 0xFF000000) == 0x0A000000) ||
+				((ip & 0xFFF00000) == 0xAC100000) ||
+				((ip & 0xFFFF0000) == 0xC0A80000)) {
+
+				client->sess.uci = 0;
+			}
+			else {
+				unsigned int ret = GeoIP_seek_record(gidb, ip);
+
+				if (ret > 0) {
+					client->sess.uci = ret;
+				}
+				else {
+					client->sess.uci = 246;
+					G_LogPrintf("GeoIP: This IP:%s cannot be located\n", value);
+				}
+			}
+		}
+	}
+	else {
+		client->sess.uci = 255;
+	} // -OSPx
 
 	// get and distribute relevent paramters
 	G_LogPrintf( "ClientConnect: %i\n", clientNum );
