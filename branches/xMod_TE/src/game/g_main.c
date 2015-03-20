@@ -196,6 +196,7 @@ vmCvar_t	g_tournamentMode;		// Tournament - 0 = off, 1 = on, 2 = on with forcing
 
 // Tournament
 vmCvar_t	team_nocontrols;		// In tourny mode 2 it is forced but otherwise left on owners discretion..
+vmCvar_t	team_maxplayers;		// Maximum amount of players per team..
 
 // Game
 vmCvar_t	g_dropReload;			// Enable / Disable Drop reload
@@ -518,6 +519,7 @@ cvarTable_t		gameCvarTable[] = {
 
 	// Tournament
 	{ &team_nocontrols, "team_nocontrols", "1", CVAR_ARCHIVE, 0, qfalse },
+	{ &team_maxplayers, "team_maxplayers", "0", 0, 0, qfalse, qfalse },
 
 	// Game
 	{ &g_dropReload, "g_dropReload", "0", CVAR_ARCHIVE, 0, qfalse },
@@ -1643,6 +1645,18 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 			G_Printf(
 				"Following Cvars are set too high:\n%s-----------------------------------\n", info
 			);
+		}
+	}
+
+	// L0 - Tournament sanity stuff
+	if (g_tournamentMode.integer == TOURNY_FULL && !team_maxplayers.integer) {
+		if (g_deathMatch.integer) {
+			trap_Cvar_Set("g_tournamentMode", "3");
+			G_Printf("Warning: Tournament mode 2 is enabled but team_maxPlayers is not set!\n..Setting team_maxPlayers to 3 per team.\n");
+		}
+		else {
+			trap_Cvar_Set("g_tournamentMode", "6");
+			G_Printf("Warning: Tournament mode 2 is enabled but team_maxPlayers is not set!\n..Setting team_maxPlayers to 6 per team.\n");
 		}
 	}
 

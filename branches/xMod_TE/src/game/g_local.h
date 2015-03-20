@@ -1185,6 +1185,8 @@ qboolean G_desiredFollow(gentity_t *ent, int nTeam);
 void G_updateSpecLock(int nTeam, qboolean fLock);
 void G_removeSpecInvite(int team);
 void G_setClientSpeclock(gentity_t *ent);
+qboolean G_teamJoinCheck(int team_num, gentity_t *ent);
+void G_verifyMatchState(int nTeam);
 //~ L0
 
 //
@@ -1421,6 +1423,7 @@ extern vmCvar_t		g_tournamentMode;
 
 // tournament
 extern vmCvar_t		team_nocontrols;
+extern vmCvar_t		team_maxplayers;
 
 // Game
 extern vmCvar_t		g_dropReload;

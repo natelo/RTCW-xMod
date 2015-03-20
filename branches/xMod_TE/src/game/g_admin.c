@@ -1845,6 +1845,92 @@ void cmd_specHandle(gentity_t *ent, qboolean lock) {
 
 /*
 ===========
+Lock/Unlock team
+
+NOTE: Somewhat messy due verbosity
+TODO: Clean this eventually..
+===========
+*/
+qboolean canTeamBeLocked(int team)
+{
+	if (team == TEAM_RED && level.axisPlayers < 1)
+		return qfalse;
+	else if (team == TEAM_BLUE && level.alliedPlayers < 1)
+		return qfalse;
+	else
+		return qtrue;
+}
+// Lock/Unlock
+void cmd_handleTeamLock(gentity_t *ent, qboolean tLock) {
+	char *tag = sortTag(ent);
+	char *cmd = ent->client->pers.cmd2;
+	char *action = (tLock ? "Lock" : "Unlock");
+	int team = TEAM_NUM_TEAMS;
+	char *teamTag = "^3Both^7";
+	char *log;
+
+	if (g_tournamentMode.integer == TOURNY_FULL) {
+		CP("print \"^1Error: ^7Tournament mode 2 is enabled, teams are auto (un)locked..\n\"");
+		return;
+	}
+
+	if (!Q_stricmp(cmd, "")) {
+		CP(va("print \"^1Error: ^7Please select which team you wish to %s!\n\"", action));
+		return;
+	}
+
+	// Axis
+	if (!Q_stricmp(cmd, "red") || !Q_stricmp(cmd, "axis") || !Q_stricmp(cmd, "r")) {
+		team = TEAM_RED;
+		teamTag = "^1Axis^7";
+	}
+	// Allies
+	else if (!Q_stricmp(cmd, "blue") || !Q_stricmp(cmd, "allies") || !Q_stricmp(cmd, "allied") || !Q_stricmp(cmd, "b"))	{
+		team = TEAM_BLUE;
+		teamTag = "^4Allied^7";
+	}
+	// Both
+	else if (!(Q_stricmp(cmd, "both") == 0)) {
+		CP(va("print \"^1Error^7: ^7Please select which team you wish to %s!\n\"", action));
+		return;
+	}
+
+	if (team != TEAM_NUM_TEAMS) {
+		if (teamInfo[team].team_lock == tLock) {
+			CP(va("print \"^1Error^7: %s team is already %sed!  \n\"", teamTag, action));
+			return;
+		}
+		else {
+			if (!canTeamBeLocked(team)) {
+				CP(va("print \"^1Error^7: %s team is empty!\n\"", teamTag));
+				return;
+			}
+			AP(va("chat \"console: %s has %sed %s team!\n\"", tag, action, teamTag));
+			teamInfo[team].team_lock = tLock;
+		}
+	}
+	else {
+		if (teamInfo[TEAM_RED].team_lock != tLock || teamInfo[TEAM_BLUE].team_lock != tLock) {
+			teamInfo[TEAM_RED].team_lock = tLock;
+			teamInfo[TEAM_BLUE].team_lock = tLock;
+			AP(va("chat \"console: %s has %sed %s teams!\n\"", tag, action, teamTag));
+		}
+		else
+			CP(va("print \"Error: Both teams are already %sed!  \n\"", action));
+		return;
+	}
+
+	log = va("Player %s (IP: %d.%d.%d.%d) has issued %s for %s",
+		ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2],
+		ent->client->sess.ip[3], action,
+		(team == TEAM_RED ? "Axis team" : (team == TEAM_BLUE ? "Allied team" : "Both teams")));
+
+	logEntry(ADMACT, log);
+	return;
+}
+
+/*
+===========
 Getstatus
 
 Prints IP's, GUIDs and some match info..
@@ -1861,6 +1947,17 @@ void cmd_getstatus(gentity_t *ent) {
 	trap_RealTime(&ct);	
 
 	CP(va("print \"\n^7Server: %s    ^7%02d:%02d:%02d ^3(^7%02d %s %d^3)\n\"", sv_hostname.string, ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, cMonths[ct.tm_mon], 1900+ct.tm_year));
+	// N/c..
+	if (teamInfo[TEAM_BLUE].spec_lock || teamInfo[TEAM_RED].spec_lock)
+		CP(va("print \"Speclocked: %s^7\n\"",
+			((teamInfo[TEAM_BLUE].spec_lock && teamInfo[TEAM_RED].spec_lock) ? "^3Both" :
+			((teamInfo[TEAM_BLUE].spec_lock ? "^3Allied" : "^1Axis"))
+		)));
+	if (teamInfo[TEAM_BLUE].team_lock || teamInfo[TEAM_RED].team_lock)
+		CP(va("print \"Teamlocked: %s^7\n\"",
+			((teamInfo[TEAM_BLUE].team_lock && teamInfo[TEAM_RED].team_lock) ? "^3Both" :
+			((teamInfo[TEAM_BLUE].team_lock ? "^3Allied" : "^1Axis"))
+		)));
 	CP("print \"^3--------------------------------------------------------------------------\n\"");	
 	CP("print \"^7Slot : Team : Name       : ^3IP              ^7: ^3Guid         ^7: Status \n\"");
 	CP("print \"^3--------------------------------------------------------------------------\n\"");
@@ -1969,7 +2066,8 @@ void cmd_listCmds(gentity_t *ent) {
 		   "slap kill specs axis allied exec nextmap map vstr cpa "
 		   "cp warn chat cancelvote passvote restart reset swap shuffle "
 		   "@shuffle specs999 whereis rename ignore unignore clientignore clientunignore permignore "	
-		   "permunignore permclientignore permclientunignore ban banclient tempban banip tempbanip addip event *"
+		   "permunignore permclientignore permclientunignore ban banclient tempban banip tempbanip addip event "
+		   "speclock specunlock lock unlock *"
 		;
 
 	if (ent->client->sess.admin == ADM_1)
@@ -2047,6 +2145,8 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd,"event"))			{ if (canUse(ent, qtrue)) cmd_Event(ent); else cantUse(ent); return qtrue; }
 	else if (!strcmp(cmd,"speclock"))		{ if (canUse(ent, qtrue)) cmd_specHandle(ent, qtrue); else cantUse(ent); return qtrue; }
 	else if (!strcmp(cmd,"specunlock"))		{ if (canUse(ent, qtrue)) cmd_specHandle(ent, qfalse); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "lock"))			{ if (canUse(ent, qtrue)) cmd_handleTeamLock(ent, qtrue); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "unlock"))		{ if (canUse(ent, qtrue)) cmd_handleTeamLock(ent, qfalse); else cantUse(ent); return qtrue; }
 
 	// Any other command (server cvars..)
 	else if (canUse(ent, qfalse))			{ cmdCustom(ent, cmd); return qtrue; }	
@@ -2124,8 +2224,10 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("tempbanip", "Temporarily Bans player by IP.", "!tempbanip <unique part of name> <mins>")
 	_HELP("addip", "Adds IP to banned file. You can use wildcards for subrange bans.", "example - !addip 100.*.*.*")
 	_HELP("event", "Pauses or Resumes event", "!event <pause/resume>")
-	_HELP("speclock", "Locks a player's team from spectators.", "!speclock <team>")
-	_HELP("specunlock", "Unocks a player's team for spectators.", "!speclock <team>")
+	_HELP("speclock", "Locks a player's team from spectators.", "!speclock <team/both>")
+	_HELP("specunlock", "Unlocks a player's team for spectators.", "!speclock <team/both>")
+	_HELP("lock", "Locks team from joining.", "!lock <team/both>")
+	_HELP("unlock", "Unlocks team for joining.", "!speclock <team/both>")
 	_HELP("*", "Any default command that's allowed per Admin level can be executed accordingly. Note that adding @ at the end will execute it silently otherwise it will be printed to all.", "!g_allowVote 1 or !g_allowVote 1 @ for silent change")
 	// --> Add new ones after this line..
 

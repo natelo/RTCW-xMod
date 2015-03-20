@@ -1810,3 +1810,86 @@ void G_setClientSpeclock(gentity_t *ent) {
 		G_updateSpecLock(ent->client->sess.specInvited, qtrue);
 	}
 }
+
+/*
+===========
+OSPx - G_teamReset (et port)
+
+Resets a team's settings
+===========
+*/
+void G_teamReset(int team_num, qboolean fClearSpecLock) {
+	teamInfo[team_num].team_lock = (g_gamestate.integer == GS_PLAYING);
+	teamInfo[team_num].team_name[0] = 0;
+	teamInfo[team_num].timeouts = /*match_timeoutcount.integer*/ 0;
+
+	if (fClearSpecLock) {
+		teamInfo[team_num].spec_lock = qfalse;
+	}
+}
+
+/*
+===========
+OSPx - G_teamJoinCheck (et port)
+
+Checks to see if a specified team is allowing players to join.
+===========
+*/
+qboolean G_teamJoinCheck(int team_num, gentity_t *ent) {
+	int cnt = TeamCount(-1, team_num);
+
+	// Sanity check
+	if (cnt == 0) {
+		G_teamReset(team_num, qtrue);
+		teamInfo[team_num].team_lock = qfalse;
+	}
+
+	// Check for locked teams
+	if ((team_num == TEAM_RED || team_num == TEAM_BLUE)) {
+		if (ent->client->sess.sessionTeam == team_num) {
+			return(qtrue);
+		}
+
+		// Check for full teams
+		if (team_maxplayers.integer > 0 && team_maxplayers.integer <= cnt) {
+			CP(va("cp \"The %s team is ^nFULL^7!\n\"2", aTeams[team_num]));
+			return(qfalse);
+
+		} // Check for locked teams
+		else if (teamInfo[team_num].team_lock /*&& (!(ent->client->pers.invite & team_num))*/) {
+			CP(va("cp \"The %s team is ^nLOCKED^7!\n\"2", aTeams[team_num]));
+			return(qfalse);
+		}
+	}
+	return(qtrue);
+}
+
+/*
+=================
+G_verifyMatchState
+
+Check if we need to reset the game state due to an empty team..
+=================
+*/
+void G_verifyMatchState(int nTeam) {
+	gamestate_t gs = g_gamestate.integer;
+
+	if ((level.lastRestartTime + 1000) < level.time && (nTeam == TEAM_RED || nTeam == TEAM_BLUE) &&
+		(gs == GS_PLAYING || gs == GS_WARMUP_COUNTDOWN || gs == GS_INTERMISSION)) {
+		if (TeamCount(-1, nTeam) == 0) {
+			if (g_doWarmup.integer > 0) {
+				level.lastRestartTime = level.time;
+				if (g_gametype.integer == GT_WOLF_STOPWATCH) {
+					trap_Cvar_Set("g_currentRound", "0");
+					trap_Cvar_Set("g_nextTimeLimit", "0");
+				}
+				trap_SendConsoleCommand(EXEC_APPEND, va("map_restart 0 %i\n", GS_WARMUP));
+			}
+			else {
+				teamInfo[nTeam].team_lock = qfalse;
+			}
+			G_teamReset(nTeam, qtrue);
+		}
+	}
+}
+
