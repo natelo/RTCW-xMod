@@ -899,8 +899,8 @@ void Cmd_specInvite(gentity_t *ent) {
 	char arg[MAX_TOKEN_CHARS];
 	int team = ent->client->sess.sessionTeam;
 
-	if (g_tournamentMode.integer == TOURNY_NONE) {
-		CP("print \"Team commands only work in Tournament mode.\n\"");
+	if (g_tournamentMode.integer < TOURNY_FULL && !team_nocontrols.integer) {
+		CP("print \"Team commands are disabled on this server.\n\"");
 		return;
 	}
 
@@ -963,8 +963,8 @@ void Cmd_specUnInvite(gentity_t *ent) {
 	char arg[MAX_TOKEN_CHARS];
 	int team = ent->client->sess.sessionTeam;
 
-	if (g_tournamentMode.integer == TOURNY_NONE) {
-		CP("print \"Team commands only work in Tournament mode.\n\"");
+	if (g_tournamentMode.integer < TOURNY_FULL && !team_nocontrols.integer) {
+		CP("print \"Team commands are disabled on this server.\n\"");
 		return;
 	}
 
@@ -1025,8 +1025,8 @@ Revoke ability from all players to spectate
 void Cmd_uninviteAll(gentity_t *ent) {
 	int team = ent->client->sess.sessionTeam;
 
-	if (g_tournamentMode.integer == TOURNY_NONE) {
-		CP("print \"Team commands only work in Tournament mode.\n\"");
+	if (g_tournamentMode.integer < TOURNY_FULL && !team_nocontrols.integer) {
+		CP("print \"Team commands are disabled on this server.\n\"");
 		return;
 	}
 
@@ -1056,8 +1056,8 @@ Spec lock/unlock team
 void Cmd_speclock(gentity_t *ent, qboolean lock) {
 	int team = ent->client->sess.sessionTeam;
 
-	if (g_tournamentMode.integer == TOURNY_NONE) {
-		CP("print \"Team commands only work in Tournament mode.\n\"");
+	if (g_tournamentMode.integer < TOURNY_FULL && !team_nocontrols.integer) {
+		CP("print \"Team commands are disabled on this server.\n\"");
 		return;
 	}
 

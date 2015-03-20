@@ -1419,6 +1419,9 @@ extern vmCvar_t		g_showFlags;
 extern vmCvar_t		g_deathMatch;
 extern vmCvar_t		g_tournamentMode;
 
+// tournament
+extern vmCvar_t		team_nocontrols;
+
 // Game
 extern vmCvar_t		g_dropReload;
 extern vmCvar_t		g_unlockWeapons;

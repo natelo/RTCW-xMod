@@ -194,6 +194,9 @@ vmCvar_t	g_showFlags;			// Shows country flags (if client has them enabled..
 vmCvar_t	g_deathMatch;			// Death Match
 vmCvar_t	g_tournamentMode;		// Tournament - 0 = off, 1 = on, 2 = on with forcing stuff (auto speclock..)
 
+// Tournament
+vmCvar_t	team_nocontrols;		// In tourny mode 2 it is forced but otherwise left on owners discretion..
+
 // Game
 vmCvar_t	g_dropReload;			// Enable / Disable Drop reload
 vmCvar_t	g_unlockWeapons;		// Gives ability to drop weapon to all classes..
@@ -512,6 +515,9 @@ cvarTable_t		gameCvarTable[] = {
 	// Modes
 	{ &g_deathMatch, "g_deathMatch", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },
 	{ &g_tournamentMode, "g_tournamentMode", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },
+
+	// Tournament
+	{ &team_nocontrols, "team_nocontrols", "1", CVAR_ARCHIVE, 0, qfalse },
 
 	// Game
 	{ &g_dropReload, "g_dropReload", "0", CVAR_ARCHIVE, 0, qfalse },
