@@ -16,7 +16,7 @@
 
 // the "gameversion" client command will print this plus compile date
 //----(SA) Wolfenstein
-#define MODVERSION "0.4.1 TE"
+#define MODVERSION "0.4.1 ^3TE"
 #define	GAMEVERSION	"^7x^3M^7od " MODVERSION
 // done.
 
@@ -1182,6 +1182,7 @@ int G_blockoutTeam(gentity_t *ent, int nTeam);
 qboolean G_allowFollow(gentity_t *ent, int nTeam);
 qboolean G_desiredFollow(gentity_t *ent, int nTeam);
 void G_updateSpecLock(int nTeam, qboolean fLock);
+void G_removeSpecInvite(int team);
 void G_setClientSpeclock(gentity_t *ent);
 //~ L0
 
@@ -1857,6 +1858,10 @@ void Cmd_Stats_f(gentity_t *ent);
 void Cmd_hitsounds(gentity_t *ent);
 void Cmd_GiveAmmo(gentity_t* ent);
 void Cmd_help(gentity_t *ent);
+void Cmd_specInvite(gentity_t *ent);
+void Cmd_specUnInvite(gentity_t *ent);
+void Cmd_uninviteAll(gentity_t *ent);
+void Cmd_speclock(gentity_t *ent, qboolean lock);
 
 //
 // g_stats.c
@@ -1938,6 +1943,7 @@ qboolean isCustomMOD(meansOfDeath_t mod);
 #define AP(x) trap_SendServerCommand(-1, x)					// Print to all
 #define CP(x) trap_SendServerCommand(ent-g_entities, x)		// Print to an ent
 #define CPx(x, y) trap_SendServerCommand(x, y)				// Print to id = x
+#define TP( x, y ) G_TeamCommand( x, y)						// Sends team command
 #define APS(x) APSound(x)									// Global sound 
 #define APRS(x, y) APRSound(x, y)							// Global sound with limited (radius) range
 #define CPS(x, y) CPSound(x, y)								// Client sound only

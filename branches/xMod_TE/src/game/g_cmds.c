@@ -3145,6 +3145,16 @@ void ClientCommand( int clientNum ) {
 		Cmd_help(ent);
 	else if (Q_stricmp(cmd, "giveammo") == 0)
 		Cmd_GiveAmmo(ent);
+	else if (Q_stricmp(cmd, "speclock") == 0)
+		Cmd_speclock(ent, qtrue);
+	else if (Q_stricmp(cmd, "specunlock") == 0)
+		Cmd_speclock(ent, qfalse);
+	else if (Q_stricmp(cmd, "specinvite") == 0)
+		Cmd_specInvite(ent);
+	else if (Q_stricmp(cmd, "specuninvite") == 0)
+		Cmd_specUnInvite(ent);
+	else if (Q_stricmp(cmd, "specuninviteall") == 0)
+		Cmd_uninviteAll(ent);
 // End
 	else if (Q_stricmp (cmd, "levelshot") == 0)
 		Cmd_LevelShot_f (ent);

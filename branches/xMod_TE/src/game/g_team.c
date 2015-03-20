@@ -1775,6 +1775,27 @@ void G_updateSpecLock(int nTeam, qboolean fLock) {
 	}
 }
 
+// Removes everyone's specinvite for a particular team.
+void G_removeSpecInvite(int team) {
+	int i;
+	gentity_t *cl;
+	qboolean update = qfalse;
+
+	for (i = 0; i < level.numConnectedClients; i++) {
+		cl = g_entities + level.sortedClients[i];
+		if (!cl->inuse || cl->client->sess.admin) {
+			continue;
+		}
+
+		if (cl->client->sess.specInvited >= team) {
+			cl->client->sess.specInvited &= ~team;
+			update = qtrue;
+		}
+	}
+	if (update)
+		G_updateSpecLock(team, qtrue);
+}
+
 // Set player's spec status after logout/voted out..
 void G_setClientSpeclock(gentity_t *ent) {
 	if (ent->client->sess.sessionTeam == TEAM_SPECTATOR &&

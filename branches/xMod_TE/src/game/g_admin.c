@@ -66,8 +66,8 @@ void cmd_do_login (gentity_t *ent, qboolean silent) {
 			|| (Q_stricmp(str, a2_pass.string) == 0) 
 			|| (Q_stricmp(str, a3_pass.string) == 0) 
 			|| (Q_stricmp(str, a4_pass.string) == 0) 
-			|| (Q_stricmp(str, a5_pass.string) == 0) ) {
-			
+			|| (Q_stricmp(str, a5_pass.string) == 0) ) 
+		{	
 			// Always start with lower level as if owner screws it up and sets the same passes for more levels, the lowest is the safest bet.
 			if (Q_stricmp(str, a1_pass.string) == 0) {
 				ent->client->sess.admin = ADM_1;			
@@ -82,34 +82,38 @@ void cmd_do_login (gentity_t *ent, qboolean silent) {
 			} else {
 				error = qtrue;
 			} 
-				// Something went to hell..
-				if (error == qtrue) {
-					// User shouldn't be anything but regular so make sure..
-					ent->client->sess.admin = ADM_NONE;						
-						CP("print \"Error has occured while trying to log you in^1!\n\"");
-				return;
-				}
+			// Something went to hell..
+			if (error == qtrue) {
+				// User shouldn't be anything but regular so make sure..
+				ent->client->sess.admin = ADM_NONE;						
+					CP("print \"Error has occured while trying to log you in^1!\n\"");
+			return;
+			}
 
-				// We came so far so go with it..
-				if (silent) {						
-					CP("print \"Silent Login successful^2!\n\"");
-					ent->client->sess.incognito = 1; // Hide them
+			// We came so far so go with it..
+			if (silent) {						
+				CP("print \"Silent Login successful^2!\n\"");
+				ent->client->sess.incognito = 1; // Hide them
 
-					// Log it
-					log =va("Player %s (IP:%i.%i.%i.%i) has silently logged in as %s.", 
-					ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
-					ent->client->sess.ip[3], sortTag(ent));
-					logEntry (ADMLOG, log);
-				} else {					
-					AP(va("chat \"console:^7 %s ^7has logged in as %s^3!\n\"", ent->client->pers.netname, sortTag(ent)));
+				// Log it
+				log =va("Player %s (IP:%i.%i.%i.%i) has silently logged in as %s.", 
+				ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
+				ent->client->sess.ip[3], sortTag(ent));
+				logEntry (ADMLOG, log);
+			} else {					
+				AP(va("chat \"console:^7 %s ^7has logged in as %s^3!\n\"", ent->client->pers.netname, sortTag(ent)));
 
-					// Log it
-					log =va("Player %s (IP:%i.%i.%i.%i) has logged in as %s.", 
-					ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
-					ent->client->sess.ip[3], sortTag(ent));
-					logEntry (ADMLOG, log);
-				}				
-		return;
+				// Log it
+				log =va("Player %s (IP:%i.%i.%i.%i) has logged in as %s.", 
+				ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
+				ent->client->sess.ip[3], sortTag(ent));
+				logEntry (ADMLOG, log);
+			}
+
+			// Make sure logged in user bypasses any spec lock instantly.
+			ent->client->sess.specInvited = 3;
+
+			return;
 		// No match..
 		} else {			
 			CP("print \"Incorrect password^1!\n\"");
