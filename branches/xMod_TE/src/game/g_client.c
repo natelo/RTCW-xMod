@@ -2398,7 +2398,7 @@ void ClientSpawn(gentity_t *ent, qboolean revived) {
 		trap_LinkEntity (ent);
 	}
 
-	client->respawnTime = level.time;
+	client->respawnTime = level.timeCurrent;
 	// L0 - Sort spec's differently otherwise problems occur when inactivity is lower than spectator inactivity..
 	client->inactivityTime = level.time + 
 		((ent->client->sess.sessionTeam != TEAM_SPECTATOR) ? g_inactivity.integer : g_spectatorInactivity.integer) * 1000;
