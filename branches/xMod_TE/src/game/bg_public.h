@@ -196,6 +196,11 @@ typedef enum {
 	TOURNY_BASIC,
 	TOURNY_FULL
 } tournamentMode_t;
+
+typedef enum {
+	CGT_NONE,
+	CGT_DM
+} customGameType_t;
 // ~L0
 
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;

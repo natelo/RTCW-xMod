@@ -514,8 +514,8 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_showFlags, "g_showFlags", "1", 0, qfalse, qfalse },
 
 	// Modes
-	{ &g_deathMatch, "g_deathMatch", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },
-	{ &g_tournamentMode, "g_tournamentMode", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue },
+	{ &g_deathMatch, "g_deathMatch", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SERVERINFO, 0, qtrue },
+	{ &g_tournamentMode, "g_tournamentMode", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SERVERINFO, 0, qtrue },
 
 	// Tournament
 	{ &team_nocontrols, "team_nocontrols", "1", CVAR_ARCHIVE, 0, qfalse },

@@ -1759,6 +1759,7 @@ typedef struct {
 
 	// L0
 	tournamentMode_t tournamentMode;
+	customGameType_t coustomGameType;
 } cgs_t;
 
 //==============================================================================

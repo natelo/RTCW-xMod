@@ -3234,6 +3234,10 @@ void CG_DrawObjectiveIcons() {
 	if (cgs.gamestate != GS_PLAYING) {
 		fade = Q_fabs(sin(cg.time * 0.002)) * cg_hudAlpha.value;
 		s = va("^3Warmup");
+	}
+	else if (cgs.coustomGameType > CGT_NONE) {
+		s = va("^nDM %s", (cgs.tournamentMode > TOURNY_NONE ? "Tourney" : ""));
+		fade = Q_fabs(sin(cg.time * 0.002)) * cg_hudAlpha.value;
 	} else if (msec < 0) {
 		fade = Q_fabs( sin( cg.time * 0.002 ) ) * cg_hudAlpha.value;
 		s = va( "0:00" );

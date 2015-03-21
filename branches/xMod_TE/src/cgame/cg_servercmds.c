@@ -167,6 +167,11 @@ void CG_ParseServerinfo( void ) {
 
 	// TTimo - make this available for ingame_callvote
 	trap_Cvar_Set( "cg_ui_voteFlags", Info_ValueForKey( info, "g_voteFlags" ) );
+
+// L0
+	cgs.tournamentMode = atoi( Info_ValueForKey( info, "g_tournamentMode" ) );
+	cgs.coustomGameType = atoi( Info_ValueForKey( info, "g_deathMatch" ) ); // TODO: Address this if new game types are added as this is just a fast hack..
+// ~L0
 }
 
 /*

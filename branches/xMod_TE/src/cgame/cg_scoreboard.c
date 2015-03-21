@@ -355,6 +355,15 @@ int WM_DrawObjectives( int x, int y, int width, float fade ) {
 		}
 		// -NERVE - SMF
 
+		// L0 - Death Match mod
+		if (cgs.tournamentMode > TOURNY_NONE)
+		{
+			int w;
+			w = CG_DrawStrlen(s) * SMALLCHAR_WIDTH; // Sloppy.. would need to translate string and calculate offset..
+			CG_DrawSmallString(494, 9, "^nTOURNAMENT MODE", (Q_fabs(sin(cg.time * 0.002)) * cg_hudAlpha.value));
+		}
+		// end
+
 		y = tempy;
 	}
 // jpw
