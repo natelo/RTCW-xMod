@@ -1616,6 +1616,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	G_RemapTeamShaders();
 
+	// OSPx - Reinforcements offset
+	G_loadMatchGame();
+
 	// L0 - Clamp stuff if needed
 	// TODO: Move this if into it's own function if more is introduced (i.e. Duel mode..)
 	{

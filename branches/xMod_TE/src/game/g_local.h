@@ -893,6 +893,10 @@ typedef struct {
 	int			gsStepping;
 
 	int			oneSecActions;
+
+	// Reinforcements offset
+	int			dwBlueReinfOffset;
+	int			dwRedReinfOffset;
 } level_locals_t;
 
 // OSPx - Team extras
@@ -1850,6 +1854,8 @@ void TrackMaxLivesGUID( char *guid, int lives, int team );
 void ClearMaxLivesGUID ( void );
 int CalculateLives(gentity_t *ent);
 qboolean canJoinMaxLives( gentity_t *ent );
+// Match stuff
+void G_loadMatchGame(void);
 
 //
 // g_players.c

@@ -278,30 +278,52 @@ static void CG_ParseFog( void ) {
 
 /*
 ================
+OSPx
+
+Parse reinforcement offsets
+================
+*/
+void CG_ParseReinforcementTimes(const char *pszReinfSeedString) {
+	const char *tmp = pszReinfSeedString, *tmp2;
+	unsigned int i, j, dwDummy, dwOffset[TEAM_NUM_TEAMS];
+
+#define GETVAL( x,y ) if ( ( tmp = strchr( tmp, ' ' ) ) == NULL ) {return;} x = atoi( ++tmp ) / y;
+
+	dwOffset[TEAM_BLUE] = atoi(pszReinfSeedString) >> REINF_BLUEDELT;
+	GETVAL(dwOffset[TEAM_RED], (1 << REINF_REDDELT));
+	tmp2 = tmp;
+
+	for (i = TEAM_RED; i <= TEAM_BLUE; i++) {
+		tmp = tmp2;
+		for (j = 0; j < MAX_REINFSEEDS; j++) {
+			if (j == dwOffset[i]) {
+				GETVAL(cgs.aReinfOffset[i], aReinfSeeds[j]);
+				cgs.aReinfOffset[i] *= 1000;
+				break;
+			}
+			GETVAL(dwDummy, 1);
+		}
+	}
+}
+
+/*
+================
 CG_SetConfigValues
 
 Called on load to set the initial values from configure strings
 ================
 */
 void CG_SetConfigValues( void ) {
-#ifdef MISSIONPACK
-	const char *s;
-#endif
 
 	cgs.scores1 = atoi( CG_ConfigString( CS_SCORES1 ) );
 	cgs.scores2 = atoi( CG_ConfigString( CS_SCORES2 ) );
 	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
-#ifdef MISSIONPACK
-	if ( cgs.gametype == GT_CTF ) {
-		s = CG_ConfigString( CS_FLAGSTATUS );
-		cgs.redflag = s[0] - '0';
-		cgs.blueflag = s[1] - '0';
-	} else if ( cgs.gametype == GT_1FCTF )    {
-		s = CG_ConfigString( CS_FLAGSTATUS );
-		cgs.flagStatus = s[0] - '0';
-	}
-#endif
 	cg.warmup = atoi( CG_ConfigString( CS_WARMUP ) );
+
+// OSPx
+	// Reinforcements
+	CG_ParseReinforcementTimes(CG_ConfigString(CS_REINFSEEDS));
+// -OSPx
 }
 
 /*
@@ -376,6 +398,11 @@ static void CG_ConfigStringModified( void ) {
 		cgs.scores1 = atoi( str );
 	} else if ( num == CS_SCORES2 ) {
 		cgs.scores2 = atoi( str );
+// OSPx 
+	// Set reinforcement times for each team
+	} else if (num == CS_REINFSEEDS) {
+		CG_ParseReinforcementTimes(str);;
+// OSPx
 	} else if ( num == CS_LEVEL_START_TIME ) {
 		cgs.levelStartTime = atoi( str );
 	} else if ( num == CS_VOTE_TIME ) {

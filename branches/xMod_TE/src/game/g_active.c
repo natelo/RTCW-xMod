@@ -968,6 +968,7 @@ If "g_synchronousClients 1" is set, this will be called exactly
 once for each server frame, which makes for smooth demo recording.
 ==============
 */
+int teamRespawnTime(int team, qboolean warmup); // OSPx
 void ClientThink_real( gentity_t *ent ) {
 	gclient_t	*client;
 	pmove_t		pm;
@@ -1604,6 +1605,31 @@ void G_RunClient( gentity_t *ent ) {
 
 /*
 ==================
+OSPx - Respawn check
+
+Moved this here so it can be reused..
+==================
+*/
+int teamRespawnTime(int team, qboolean warmup) {
+	int time = 0;
+
+	if (team == TEAM_RED) {
+		if (warmup)
+			time = level.time % 3000;
+		else
+			time = (level.dwRedReinfOffset + level.time - level.startTime) % g_redlimbotime.integer;
+	}
+	else {
+		if (warmup)
+			time = level.time % 3000;
+		else
+			time = (level.dwBlueReinfOffset + level.time - level.startTime) % g_bluelimbotime.integer;
+	}
+	return time;
+}
+
+/*
+==================
 SpectatorClientEndFrame
 
 ==================
@@ -1622,11 +1648,13 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 		int		clientNum;
 
 		if (ent->client->sess.sessionTeam == TEAM_RED) {
-			testtime = level.time%g_redlimbotime.integer;
+			// OSPx - Reinforcements Offset (patched)
+			testtime = teamRespawnTime(TEAM_RED, qfalse);
 
 			// L0 - If warmup damage is on, respawn instantly
 			if ( g_warmupDamage.integer ) {
 				if ( g_gamestate.integer != GS_PLAYING ) {
+					testtime = teamRespawnTime(TEAM_RED, qtrue);
 					do_respawn = 1;
 				}
 			} // End
@@ -1637,11 +1665,13 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 			ent->client->pers.lastReinforceTime = testtime;
 		}
 		else if (ent->client->sess.sessionTeam == TEAM_BLUE) {
-			testtime = level.time%g_bluelimbotime.integer;
+			// OSPx - Reinforcements Offset (patched)
+			testtime = teamRespawnTime(TEAM_BLUE, qfalse);
 
 			// L0 - If warmup damage is on, respawn instantly
 			if ( g_warmupDamage.integer ) {
 				if ( g_gamestate.integer != GS_PLAYING ) {
+					testtime = teamRespawnTime(TEAM_BLUE, qtrue);
 					do_respawn = 1;
 				}
 			} // End

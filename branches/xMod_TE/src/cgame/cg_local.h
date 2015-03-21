@@ -1757,9 +1757,12 @@ typedef struct {
 	int noVoice;
 	qboolean freezeDemo;
 
-	// L0
+// L0
 	tournamentMode_t tournamentMode;
 	customGameType_t coustomGameType;
+
+	// Reinforcements
+	int aReinfOffset[TEAM_NUM_TEAMS];
 } cgs_t;
 
 //==============================================================================
@@ -2458,6 +2461,7 @@ void CG_SendMoveSpeed( animation_t *animList, int numAnims, char *modelName );
 void CG_LoadVoiceChats();               // NERVE - SMF
 void CG_PlayBufferedVoiceChats();       // NERVE - SMF
 void CG_AddToNotify( const char *str );
+void CG_ParseReinforcementTimes(const char *pszReinfSeedString);	// OSPx
 
 //
 // cg_playerstate.c
@@ -2733,3 +2737,8 @@ void trap_ReqSS( int quality );
 void trap_HTTP_Submit_cmd(char *url, char *cmd);	
 void trap_HTTP_Post_cmd(char *url, char *cmd);
 void trap_HTTP_Query_cmd(char *url);	
+
+// - Reinforcement offset
+int CG_CalculateReinfTime(void);
+float CG_CalculateReinfTime_Float(void);
+
