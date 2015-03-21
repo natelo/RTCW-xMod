@@ -1645,13 +1645,13 @@ int teamRespawnTime(int team, qboolean warmup) {
 		if (warmup)
 			time = level.time % 3000;
 		else
-			time = (level.dwRedReinfOffset + level.time - level.startTime) % g_redlimbotime.integer;
+			time = (level.dwRedReinfOffset + level.timeCurrent - level.startTime) % g_redlimbotime.integer;
 	}
 	else {
 		if (warmup)
 			time = level.time % 3000;
 		else
-			time = (level.dwBlueReinfOffset + level.time - level.startTime) % g_bluelimbotime.integer;
+			time = (level.dwBlueReinfOffset + level.timeCurrent - level.startTime) % g_bluelimbotime.integer;
 	}
 	return time;
 }
