@@ -829,9 +829,9 @@ void G_delayPrint(gentity_t *dpent) {
 				}
 			}
 			else {
-				level.match_pause = PAUSE_UNPAUSING;
-				G_spawnPrintf(DP_UNPAUSING, level.time + 7.4, NULL);
 				APS("xmod/sound/scenaric/countdown/prepare.wav");
+				level.match_pause = PAUSE_UNPAUSING;
+				G_spawnPrintf(DP_UNPAUSING, level.time + 7.2, NULL);
 			}
 		}
 		break;

@@ -3273,11 +3273,6 @@ void PM_UpdateLean(playerState_t *ps, usercmd_t *cmd, pmove_t *tpm) {
 		return;
 	}
 
-	// OSPx - Don't bother with this..
-	if (ps->pm_type == PM_FREEZE) {
-		return;
-	}
-
 	if( (cmd->wbuttons & (WBUTTON_LEANLEFT|WBUTTON_LEANRIGHT))  && !cmd->forwardmove && cmd->upmove <= 0 ) {
 		// if both are pressed, result is no lean
 		if(cmd->wbuttons & WBUTTON_LEANLEFT)
@@ -3381,6 +3376,11 @@ void PM_UpdateViewAngles( playerState_t *ps, usercmd_t *cmd, void (trace)( trace
 	// DHM - Nerve :: Added support for PMF_TIME_LOCKPLAYER
 	if ( ps->pm_type == PM_INTERMISSION || ps->pm_flags & PMF_TIME_LOCKPLAYER ) {
 		return;		// no view changes at all
+	}
+
+	// OSPx - Don't bother with this..
+	if (ps->pm_type == PM_FREEZE) {
+		return;
 	}
 
 	if ( ps->pm_type != PM_SPECTATOR && ps->stats[STAT_HEALTH] <= 0 ) {

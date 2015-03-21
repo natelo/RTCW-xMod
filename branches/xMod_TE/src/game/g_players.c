@@ -1094,6 +1094,11 @@ void Cmd_pauseHandle(gentity_t *ent, qboolean dPause) {
 		return;
 	}
 
+	if (ent->client->sess.sessionTeam == TEAM_SPECTATOR) {
+		CP("print \"Spectators cannot use team commands.\n\"");
+		return;
+	}
+
 	if ((!level.alliedPlayers || !level.axisPlayers) && dPause) {
 		CP("print \"^1Error^7: Pause can only be used when both teams have players!\n\"");
 		return;
@@ -1118,7 +1123,7 @@ void Cmd_pauseHandle(gentity_t *ent, qboolean dPause) {
 			G_spawnPrintf(DP_PAUSEINFO, level.time + 15000, NULL);
 			AP(va("chat \"console: %s ^3Paused ^7the match.\n\"", tName));
 			AP(va("cp \"[%s^7] %d Timeouts Remaining\n\"3", aTeams[team], teamInfo[team].timeouts));
-
+			AP(va("@print \"%s ^7has ^3PAUSED^7 the match!\n\"", ent->client->pers.netname));
 		}
 	}
 	else if (team + 128 != level.match_pause) {
@@ -1129,6 +1134,7 @@ void Cmd_pauseHandle(gentity_t *ent, qboolean dPause) {
 		AP(va("chat \"console: %s ^7have ^3UNPAUSED^7 the match!\n\"", tName));
 		level.match_pause = PAUSE_UNPAUSING;
 		G_spawnPrintf(DP_UNPAUSING, level.time + 10, NULL);
+		AP(va("@print \"%s ^7has ^3UNPAUSED^7 the match!\n\"", ent->client->pers.netname));
 	}
 }
 
