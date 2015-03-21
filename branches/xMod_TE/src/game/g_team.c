@@ -1821,7 +1821,7 @@ Resets a team's settings
 void G_teamReset(int team_num, qboolean fClearSpecLock) {
 	teamInfo[team_num].team_lock = (g_gamestate.integer == GS_PLAYING);
 	teamInfo[team_num].team_name[0] = 0;
-	teamInfo[team_num].timeouts = /*match_timeoutcount.integer*/ 0;
+	teamInfo[team_num].timeouts = match_timeoutcount.integer;
 
 	if (fClearSpecLock) {
 		teamInfo[team_num].spec_lock = qfalse;

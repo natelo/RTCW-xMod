@@ -1080,6 +1080,59 @@ void Cmd_speclock(gentity_t *ent, qboolean lock) {
 }
 
 /*
+===================
+Pause/Unpause
+===================
+*/
+void Cmd_pauseHandle(gentity_t *ent, qboolean dPause) {
+	int team = ent->client->sess.sessionTeam;
+	char *status[2] = { "^nUN", "^n" };
+	char tName[MAX_NETNAME];
+
+	if (g_tournamentMode.integer < TOURNY_FULL && !team_nocontrols.integer) {
+		CP("print \"Team commands are disabled on this server.\n\"");
+		return;
+	}
+
+	if ((!level.alliedPlayers || !level.axisPlayers) && dPause) {
+		CP("print \"^1Error^7: Pause can only be used when both teams have players!\n\"");
+		return;
+	}
+
+	if ((PAUSE_UNPAUSING >= level.match_pause && !dPause) || (PAUSE_NONE != level.match_pause && dPause)) {
+		CP(va("print \"The match is already %sPAUSED^7!\n\"", status[dPause]));
+		return;
+	}
+
+	DecolorString(aTeams[team], tName);
+
+	// Trigger the auto-handling of pauses
+	if (dPause) {
+		if (!teamInfo[team].timeouts) {
+			CP("print \"^3Denied^7: Your team has no more timeouts remaining!\n\"");
+			return;
+		}
+		else {
+			teamInfo[team].timeouts--;
+			level.match_pause = team + 128;
+			G_spawnPrintf(DP_PAUSEINFO, level.time + 15000, NULL);
+			AP(va("chat \"console: %s ^3Paused ^7the match.\n\"", tName));
+			AP(va("cp \"[%s^7] %d Timeouts Remaining\n\"3", aTeams[team], teamInfo[team].timeouts));
+
+		}
+	}
+	else if (team + 128 != level.match_pause) {
+		CP("print \"^3Denied^7: Your team didn't call the timeout!\n\"");
+		return;
+	}
+	else {
+		AP(va("chat \"console: %s ^7have ^3UNPAUSED^7 the match!\n\"", tName));
+		level.match_pause = PAUSE_UNPAUSING;
+		G_spawnPrintf(DP_UNPAUSING, level.time + 10, NULL);
+	}
+}
+
+/*
 =================
 User help..
 
@@ -1150,6 +1203,8 @@ void Cmd_help(gentity_t *ent) {
 		CP("print \"^7specinvite <slot>    ^3>> Invites player to spec your team\n\"");
 		CP("print \"^7specuninvite <slot>  ^3>> Revokes spec invitation from player\n\"");
 		CP("print \"^7specuninviteall      ^3>> Revokes all spec invitations for your team\n\"");
+		CP("print \"^7pause/timeout        ^3>> Pauses the match\n\"");		
+		CP("print \"^7unpause/timein       ^3>> Resumes the match\n\"");		
 		CP("print \"^7-----------------------------------------------\n\n\"");
 		CP("print \"^3Usage^7: /<command>\n\"");
 	}

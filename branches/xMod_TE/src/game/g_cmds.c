@@ -470,14 +470,15 @@ Cmd_Kill_f
 =================
 */
 void Cmd_Kill_f( gentity_t *ent ) {
-	gentity_t *attacker;
+	gentity_t *attacker;	
 
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+	// OSPx - Account for pause as well..
+	if (ent->client->sess.sessionTeam == TEAM_SPECTATOR ||
+		(ent->client->ps.pm_flags & PMF_LIMBO) ||
+		ent->health <= 0 || level.match_pause != PAUSE_NONE) {
 		return;
-	}	
-	if ( g_gametype.integer >= GT_WOLF && ent->client->ps.pm_flags & PMF_LIMBO ) {
-		return;
-	}	
+	}
+
 
 	// L0 - Chicken
 	attacker = G_FearCheck(ent);
@@ -512,13 +513,14 @@ Cmd_SoftKill_f
 */
 void Cmd_SoftKill_f( gentity_t *ent ) {
 	gentity_t *attacker;
+	
+	// OSPx - Account for pause as well..
+	if (ent->client->sess.sessionTeam == TEAM_SPECTATOR ||
+		(ent->client->ps.pm_flags & PMF_LIMBO) ||
+		ent->health <= 0 || level.match_pause != PAUSE_NONE) {
+		return;
+	}
 
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-		return;
-	}
-	if ( g_gametype.integer >= GT_WOLF && ent->client->ps.pm_flags & PMF_LIMBO ) {
-		return;
-	}
 
 	// L0 - Chicken
 	attacker = G_FearCheck(ent);
@@ -607,6 +609,13 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 
 	// OSPx - New way of handling..
 	G_TeamDataForString(s, client - level.clients, &team, &specState, &specClient);
+
+	// OSPx - Pause check 
+	// NOTE: Admin can still force user/self. but has to be explicitly requested...
+	if (level.match_pause != PAUSE_NONE && !forced) {
+		CPx(clientNum, "cp \"You cannot switch teams while Match is Paused!\n\"");
+		return; // ignore the request
+	}
 
 	// OSPx - New way ..
 	if (team != TEAM_SPECTATOR && !forced) {
@@ -3187,6 +3196,14 @@ void ClientCommand( int clientNum ) {
 		Cmd_specUnInvite(ent);
 	else if (Q_stricmp(cmd, "specuninviteall") == 0)
 		Cmd_uninviteAll(ent);
+	else if (Q_stricmp(cmd, "pause") == 0)
+		Cmd_pauseHandle(ent, qtrue);
+	else if (Q_stricmp(cmd, "timeout") == 0)
+		Cmd_pauseHandle(ent, qtrue);
+	else if (Q_stricmp(cmd, "unpause") == 0)
+		Cmd_pauseHandle(ent, qfalse);
+	else if (Q_stricmp(cmd, "timein") == 0)
+		Cmd_pauseHandle(ent, qfalse);
 // End
 	else if (Q_stricmp (cmd, "levelshot") == 0)
 		Cmd_LevelShot_f (ent);

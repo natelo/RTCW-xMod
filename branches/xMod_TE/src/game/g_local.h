@@ -849,7 +849,7 @@ typedef struct {
 
 	qboolean	latchGametype;			// DHM - Nerve
 
-	// L0 - New stuff
+// L0 - New stuff
 	int			motdTime;			// MOTDs
 	int			flagTaken;			// Flag retaking
 	int			axisPlayers;		// For auto lock and auto team balance
@@ -897,7 +897,17 @@ typedef struct {
 	// Reinforcements offset
 	int			dwBlueReinfOffset;
 	int			dwRedReinfOffset;
+
+	// Pause
+	int match_pause;
+// ~L0
 } level_locals_t;
+
+// OSPx - Pause 
+typedef enum {
+	DP_PAUSEINFO,
+	DP_UNPAUSING
+} enum_t_dp;
 
 // OSPx - Team extras
 typedef struct {
@@ -1189,6 +1199,7 @@ qboolean G_desiredFollow(gentity_t *ent, int nTeam);
 void G_updateSpecLock(int nTeam, qboolean fLock);
 void G_removeSpecInvite(int team);
 void G_setClientSpeclock(gentity_t *ent);
+void G_teamReset(int team_num, qboolean fClearSpecLock);
 qboolean G_teamJoinCheck(int team_num, gentity_t *ent);
 void G_verifyMatchState(int nTeam);
 //~ L0
@@ -1428,6 +1439,8 @@ extern vmCvar_t		g_tournamentMode;
 // tournament
 extern vmCvar_t		team_nocontrols;
 extern vmCvar_t		team_maxplayers;
+extern vmCvar_t		match_timeoutlength;
+extern vmCvar_t		match_timeoutcount;
 
 // Game
 extern vmCvar_t		g_dropReload;
@@ -1856,6 +1869,7 @@ int CalculateLives(gentity_t *ent);
 qboolean canJoinMaxLives( gentity_t *ent );
 // Match stuff
 void G_loadMatchGame(void);
+void G_spawnPrintf(int print_type, int print_time, gentity_t *owner);
 
 //
 // g_players.c
@@ -1878,6 +1892,7 @@ void Cmd_specInvite(gentity_t *ent);
 void Cmd_specUnInvite(gentity_t *ent);
 void Cmd_uninviteAll(gentity_t *ent);
 void Cmd_speclock(gentity_t *ent, qboolean lock);
+void Cmd_pauseHandle(gentity_t *ent, qboolean dPause);
 
 //
 // g_stats.c
@@ -1987,6 +2002,11 @@ void G_ReadIP(gclient_t *client);
 #define CFLAGS_MP40			2
 #define CFLAGS_THOMPSON		8
 #define CFLAGS_STEN			16
+
+// Pause
+#define PAUSE_NONE		0x00	// Match is not paused..
+#define PAUSE_UNPAUSING 0x02    // Pause is about to expire
+
 
 //
 // Include new headers at the bottom so they link correctly

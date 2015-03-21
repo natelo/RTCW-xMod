@@ -1117,6 +1117,9 @@ Shuffle
 void cmd_shuffle(gentity_t *ent) {
 	char  *log;
 
+	G_teamReset(TEAM_RED, qtrue);
+	G_teamReset(TEAM_BLUE, qtrue);
+
 	AP(va("print \"console: %s has ^3shuffled ^7teams.\n\"", sortTag(ent)));
 
 	// Shuffle it...	
@@ -1930,6 +1933,45 @@ void cmd_handleTeamLock(gentity_t *ent, qboolean tLock) {
 }
 
 /*
+==================
+Pause/Unpause
+==================
+*/
+void cmd_pauseHandle(gentity_t *ent, qboolean fPause) {
+	char *status[2] = { "^3UN", "^3" };
+	char *log;
+
+	if ((!level.alliedPlayers || !level.axisPlayers) && fPause) {
+		CP("print \"^1Error^7: Pause can only be used when both teams have players!\n\"");
+		return;
+	}
+
+	if ((PAUSE_UNPAUSING >= level.match_pause && !fPause) || (PAUSE_NONE != level.match_pause && fPause)) {
+		CP(va("print \"^1Error^7: The match is already %sPAUSED!\n\"", status[fPause]));
+		return;
+	}
+
+	// Trigger the auto-handling of pauses
+	if (fPause) {
+		level.match_pause = 100 + ((ent) ? (1 + ent - g_entities) : 0);
+		G_spawnPrintf(DP_PAUSEINFO, level.time + 15000, NULL);
+		AP(va("chat \"console: %s ^3PAUSED^7 the match!\n", sortTag(ent)));
+	}
+	else {
+		AP(va("chat \"console: %s ^3UNPAUSED^7 the match.\n\n\"", sortTag(ent)));
+		level.match_pause = PAUSE_UNPAUSING;
+		G_spawnPrintf(DP_UNPAUSING, level.time + 10, NULL);
+	}
+
+	// Log it
+	log = va("Player %s (IP: %d.%d.%d.%d) has %s a match.",
+		ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2],
+		ent->client->sess.ip[3], (fPause ? "paused" : "resumed"));
+
+	logEntry(ADMACT, log);
+}
+
+/*
 ===========
 Getstatus
 
@@ -2086,7 +2128,7 @@ void cmd_listCmds(gentity_t *ent) {
 		   "cp warn chat cancelvote passvote restart reset swap shuffle "
 		   "@shuffle specs999 whereis rename ignore unignore clientignore clientunignore permignore "	
 		   "permunignore permclientignore permclientunignore ban banclient tempban banip tempbanip addip event "
-		   "speclock specunlock lock unlock *"
+		   "speclock specunlock lock unlock pause unpause *"
 		;
 
 	if (ent->client->sess.admin == ADM_1)
@@ -2166,6 +2208,8 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd,"specunlock"))		{ if (canUse(ent, qtrue)) cmd_specHandle(ent, qfalse); else cantUse(ent); return qtrue; }
 	else if (!strcmp(cmd, "lock"))			{ if (canUse(ent, qtrue)) cmd_handleTeamLock(ent, qtrue); else cantUse(ent); return qtrue; }
 	else if (!strcmp(cmd, "unlock"))		{ if (canUse(ent, qtrue)) cmd_handleTeamLock(ent, qfalse); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "pause"))			{ if (canUse(ent, qtrue)) cmd_pauseHandle(ent, qtrue); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "unpause"))		{ if (canUse(ent, qtrue)) cmd_pauseHandle(ent, qfalse); else cantUse(ent); return qtrue; }
 
 	// Any other command (server cvars..)
 	else if (canUse(ent, qfalse))			{ cmdCustom(ent, cmd); return qtrue; }	
@@ -2247,6 +2291,8 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("specunlock", "Unlocks a player's team for spectators.", "!speclock <team/both>")
 	_HELP("lock", "Locks team from joining.", "!lock <team/both>")
 	_HELP("unlock", "Unlocks team for joining.", "!speclock <team/both>")
+	_HELP("pause", "Pauses a match..", "!pause")
+	_HELP("unpause", "Resumes a match.", "!unpause")
 	_HELP("*", "Any default command that's allowed per Admin level can be executed accordingly. Note that adding @ at the end will execute it silently otherwise it will be printed to all.", "!g_allowVote 1 or !g_allowVote 1 @ for silent change")
 	// --> Add new ones after this line..
 

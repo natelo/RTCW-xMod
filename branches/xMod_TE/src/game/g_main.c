@@ -197,6 +197,8 @@ vmCvar_t	g_tournamentMode;		// Tournament - 0 = off, 1 = on, 2 = on with forcing
 // Tournament
 vmCvar_t	team_nocontrols;		// In tourny mode 2 it is forced but otherwise left on owners discretion..
 vmCvar_t	team_maxplayers;		// Maximum amount of players per team..
+vmCvar_t	match_timeoutlength;	// How long pause lasts - note that players can resume it with /unapuse or /timein
+vmCvar_t	match_timeoutcount;		// How many pauses can a team call
 
 // Game
 vmCvar_t	g_dropReload;			// Enable / Disable Drop reload
@@ -520,6 +522,8 @@ cvarTable_t		gameCvarTable[] = {
 	// Tournament
 	{ &team_nocontrols, "team_nocontrols", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &team_maxplayers, "team_maxplayers", "0", 0, 0, qfalse, qfalse },
+	{ &match_timeoutlength, "match_timeoutlength", "180", 0, 0, qfalse, qtrue },
+	{ &match_timeoutcount, "match_timeoutcount", "3", 0, 0, qfalse, qtrue },
 
 	// Game
 	{ &g_dropReload, "g_dropReload", "0", CVAR_ARCHIVE, 0, qfalse },
@@ -1383,6 +1387,19 @@ void G_RegisterCvars( void ) {
 	// done
 
 	level.warmupModificationCount = g_warmup.modificationCount;
+
+// OSPx
+	// Sanity check (clamps)
+	if (pmove_msec.integer < 8) {
+		trap_Cvar_Set("pmove_msec", "8");
+	}
+	else if (pmove_msec.integer > 33) {
+		trap_Cvar_Set("pmove_msec", "33");
+	}
+	if (match_timeoutcount.integer > 999) {
+		trap_Cvar_Set("match_timeoutcount", "999");
+	}
+// ~OSPx
 }
 
 /*
@@ -1618,6 +1635,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	// OSPx - Reinforcements offset
 	G_loadMatchGame();
+
+	// OSPx - Make sure pause is 0..
+	trap_SetConfigstring(CS_PAUSED, "0");
 
 	// L0 - Clamp stuff if needed
 	// TODO: Move this if into it's own function if more is introduced (i.e. Duel mode..)
@@ -3153,6 +3173,12 @@ Runs thinking code for this frame if necessary
 void G_RunThink (gentity_t *ent) {
 	float	thinktime;
 
+	// OSPx - Pause
+	if (level.match_pause != PAUSE_NONE && (ent - g_entities) >= g_maxclients.integer &&
+		ent->nextthink > level.time && strstr(ent->classname, "DPRINTF_") == NULL) {
+		ent->nextthink += level.time - level.previousTime;
+	}
+
 	// RF, run scripting
 	if (ent->s.number >= MAX_CLIENTS) {
 //----(SA)	this causes trouble in various maps
@@ -3205,6 +3231,30 @@ void sortedActivePlayers( void ) {
 
 /*
 ================
+OSPx - check for team stuff..
+================
+*/
+void handleEmptyTeams(void) {
+	if (g_gamestate.integer == GS_PLAYING) {
+		if (!level.axisPlayers) {
+			G_teamReset(TEAM_RED, qtrue);
+
+			// Reset match if paused with an empty team
+			if (level.match_pause > PAUSE_UNPAUSING)
+				trap_SendConsoleCommand(EXEC_APPEND, va("reset_match"));
+		}
+		else if (!level.alliedPlayers) {
+			G_teamReset(TEAM_BLUE, qtrue);
+
+			// Reset match if paused with an empty team
+			if (level.match_pause > PAUSE_UNPAUSING)
+				trap_SendConsoleCommand(EXEC_APPEND, va("reset_match"));
+		}
+	}
+}
+
+/*
+================
 G_RunFrame
 
 Advances the non-player objects in the world
@@ -3220,8 +3270,17 @@ void G_RunFrame( int levelTime ) {
 		return;
 	}
 
-	// L0 - Match Info (& later maybe pause ^^)	
-	level.timeCurrent = levelTime - level.timeDelta;
+	// OSPx - Handling of pause offsets
+	if (level.match_pause == PAUSE_NONE) {
+		level.timeCurrent = levelTime - level.timeDelta;
+	}
+	else {
+		level.timeDelta = levelTime - level.timeCurrent;
+		if ((level.time % 500) == 0) {
+			// Respawn and time issuses
+			trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime + level.timeDelta));
+		}
+	}
 
 	// L0 - antilag port - Just renamed
 	level.frameStartTime = trap_Milliseconds();
@@ -3321,14 +3380,27 @@ void G_RunFrame( int levelTime ) {
 			continue;
 		}
 
-		if ( ent->s.eType == ET_MISSILE 
-			|| ent->s.eType == ET_FLAMEBARREL 
+		if (ent->s.eType == ET_MISSILE
+			|| ent->s.eType == ET_FLAMEBARREL
 			|| ent->s.eType == ET_FP_PARTS
 			|| ent->s.eType == ET_FIRE_COLUMN
 			|| ent->s.eType == ET_FIRE_COLUMN_SMOKE
 			|| ent->s.eType == ET_EXPLO_PART
 			|| ent->s.eType == ET_RAMJET) {
-			G_RunMissile( ent );
+			// OSPx - pausing
+			if (level.match_pause == PAUSE_NONE) {
+				G_RunMissile(ent);
+			}
+			else {
+				// During a pause, gotta keep track of stuff in the air
+				ent->s.pos.trTime += level.time - level.previousTime;
+				// Keep pulsing right for dynmamite
+				if (ent->methodOfDeath == MOD_DYNAMITE) {
+					ent->s.effect1Time += level.time - level.previousTime;
+				}
+				G_RunThink(ent);
+			}
+			// -OSPx
 			continue;
 		}
 
@@ -3505,4 +3577,7 @@ void G_RunFrame( int levelTime ) {
 
 		// Add more &| Centralize to a single function and dump stuff there..
 	}
+
+	// Track any team stuff..
+	handleEmptyTeams();
 }

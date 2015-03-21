@@ -3269,8 +3269,14 @@ void PM_UpdateLean(playerState_t *ps, usercmd_t *cmd, pmove_t *tpm) {
 	vec3_t		viewangles;
 	trace_t		trace;
 
-	if(ps->aiChar)
+	if (ps->aiChar) {
 		return;
+	}
+
+	// OSPx - Don't bother with this..
+	if (ps->pm_type == PM_FREEZE) {
+		return;
+	}
 
 	if( (cmd->wbuttons & (WBUTTON_LEANLEFT|WBUTTON_LEANRIGHT))  && !cmd->forwardmove && cmd->upmove <= 0 ) {
 		// if both are pressed, result is no lean

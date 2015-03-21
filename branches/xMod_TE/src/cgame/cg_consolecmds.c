@@ -770,12 +770,16 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand("sten");
 	trap_AddCommand("commands");
 
-	// Speclock
+	// Tournament stuff
 	trap_AddCommand("speclock");
 	trap_AddCommand("specunlock");
 	trap_AddCommand("specinvite");
 	trap_AddCommand("specuninvite");
 	trap_AddCommand("specuninviteall");
+	trap_AddCommand("pause");
+	trap_AddCommand("timeout");
+	trap_AddCommand("unpause");
+	trap_AddCommand("timein");
 
 	// Web stuff.. 
 	trap_AddCommand("webbans");	

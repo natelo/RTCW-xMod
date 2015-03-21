@@ -387,6 +387,15 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 		if (client->ps.sprintExertTime)
 			client->ps.speed *= 3;	// (SA) allow sprint in free-cam mode
 
+		// OSPx - Pause
+		if (level.match_pause != PAUSE_NONE) {
+			client->ps.pm_type = PM_FREEZE;
+			ucmd->buttons = 0;
+			ucmd->forwardmove = 0;
+			ucmd->rightmove = 0;
+			ucmd->upmove = 0;
+			ucmd->wbuttons = 0;
+		}
 
 		// set up for pmove
 		memset (&pm, 0, sizeof(pm));
@@ -1115,16 +1124,19 @@ void ClientThink_real( gentity_t *ent ) {
 			SetClientViewAngle(ent,muzzlebounce);		
 		}
 	}
-	if (client->ps.stats[STAT_PLAYER_CLASS] == PC_MEDIC)
-		if (level.time > client->ps.powerups[PW_REGEN]+5000)
+	if (client->ps.stats[STAT_PLAYER_CLASS] == PC_MEDIC) {
+		if (level.time > client->ps.powerups[PW_REGEN] + 5000) {
 			client->ps.powerups[PW_REGEN] = level.time;
-		// also update weapon recharge time
+		}
+	}
+	// also update weapon recharge time
 
 	// JPW drop button drops secondary weapon so new one can be picked up
-  // TTimo explicit braces to avoid ambiguous 'else'
+	// TTimo explicit braces to avoid ambiguous 'else'
 	if (g_gametype.integer != GT_SINGLE_PLAYER) {
 		if (ucmd->wbuttons & WBUTTON_DROP) {
-			if (!client->dropWeaponTime) {
+										// OSPx - Ignore all this if we're under pause..
+			if (!client->dropWeaponTime && level.match_pause == PAUSE_NONE) {
 				client->dropWeaponTime = 1; // just latch it for now
 
 				// L0 - Throw knife & Drop Obj
@@ -1195,20 +1207,30 @@ void ClientThink_real( gentity_t *ent ) {
 
 	// L0 - Admin bot, ping fluxation
 	SB_maxPingFlux(client);
-
-	if (reloading || client->cameraPortal) {
+										  // OSPx - Pause
+	if (reloading || client->cameraPortal || level.match_pause != PAUSE_NONE) {
 		ucmd->buttons = 0;
 		ucmd->forwardmove = 0;
 		ucmd->rightmove = 0;
 		ucmd->upmove = 0;
 		ucmd->wbuttons = 0;
 		ucmd->wolfkick = 0;
+
+		// OSP - Pause
+		if (level.match_pause != PAUSE_NONE)
+		{
+			client->ps.pm_type = PM_FREEZE;
+		} // -OSPx
 		if (client->cameraPortal) {
+			VectorClear(client->ps.velocity);
 			client->ps.pm_type = PM_FREEZE;
 		}
-	} else if ( client->noclip ) {
+	// OSPx - So we don't miss any..
+	} else if (level.match_pause != PAUSE_NONE) {
+		client->ps.pm_type = PM_FREEZE;
+	} else if (client->noclip) {
 		client->ps.pm_type = PM_NOCLIP;
-	} else if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
+	} else if (client->ps.stats[STAT_HEALTH] <= 0) {
 		client->ps.pm_type = PM_DEAD;
 	} else {
 		client->ps.pm_type = PM_NORMAL;
@@ -1389,8 +1411,11 @@ void ClientThink_real( gentity_t *ent ) {
 	ent->waterlevel = pm.waterlevel;
 	ent->watertype = pm.watertype;
 
-	// execute client events
-	ClientEvents( ent, oldEventSequence );
+	// OSPx - Pause wrapper
+	if (level.match_pause == PAUSE_NONE) {
+		// execute client events
+		ClientEvents(ent, oldEventSequence);
+	}
 
 	// link entity now, after any personal teleporters have been used
 	trap_LinkEntity (ent);
@@ -1538,8 +1563,11 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 	}
 
-	// perform once-a-second actions
-	ClientTimerActions( ent, msec );
+	// OSPx - Pause wrapper
+	if (level.match_pause == PAUSE_NONE) {
+		// perform once-a-second actions
+		ClientTimerActions(ent, msec);
+	}
 }
 
 /*
@@ -1938,10 +1966,36 @@ void ClientEndFrame( gentity_t *ent ) {
 				continue;
 			}
 
-			if ( ent->client->ps.powerups[ i ] < level.time ) {
+			// OSPx - Pause
+			if (level.match_pause != PAUSE_NONE &&
+				ent->client->ps.powerups[i] != INT_MAX) {
+				ent->client->ps.powerups[i] += level.time - level.previousTime;
+			}
+
+			if (ent->client->ps.powerups[i] < level.time) {
 				ent->client->ps.powerups[ i ] = 0;
 			}
 		}
+	}
+
+	// OSPx - Pause
+	if (level.match_pause != PAUSE_NONE) {
+		int time_delta = level.time - level.previousTime;
+
+		ent->client->airOutTime += time_delta;
+		ent->client->inactivityTime += time_delta;
+		ent->client->lastBurnTime += time_delta;
+		ent->client->pers.connectTime += time_delta;
+		ent->client->pers.enterTime += time_delta;
+		ent->client->pers.teamState.lastreturnedflag += time_delta;
+		ent->client->pers.teamState.lasthurtcarrier += time_delta;
+		ent->client->pers.teamState.lastfraggedcarrier += time_delta;
+		ent->client->ps.classWeaponTime += time_delta;
+		ent->client->respawnTime += time_delta;
+		ent->client->sniperRifleFiredTime += time_delta;
+		ent->lastHintCheckTime += time_delta;
+		ent->pain_debounce_time += time_delta;
+		ent->s.onFireEnd += time_delta;
 	}
 
 	// save network bandwidth

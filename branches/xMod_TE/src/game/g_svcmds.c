@@ -326,6 +326,9 @@ void doShuffle(void) {
 	int count = 0, tmpCount, i;
 	int players[MAX_CLIENTS];
 
+	G_teamReset(TEAM_RED, qtrue);
+	G_teamReset(TEAM_BLUE, qtrue);
+
 	memset(players, -1, sizeof(players));
 
 	if (g_gamestate.integer == GS_RESET ||

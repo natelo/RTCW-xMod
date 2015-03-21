@@ -1140,6 +1140,14 @@ typedef struct {
 	// Demo
 	qboolean revertToDefaultKeys;
 	qboolean advertisementDone;
+
+	// Pop In prints
+	int popinPrintTime;
+	int popinPrintCharWidth;
+	int popinPrintY;
+	char popinPrint[1024];
+	int popinPrintLines;
+	qboolean popinBlink;
 // -OSPx
 
 	pmoveExt_t pmext;	
@@ -1641,6 +1649,13 @@ typedef struct {
 
 } cgMedia_t;
 
+// OSPx - Pause states
+typedef enum {
+	PAUSE_NONE,
+	PAUSE_ON,
+	PAUSE_RESUMING
+} cPauseSts_t;
+// -OSPx
 
 // The client game static (cgs) structure hold everything
 // loaded or calculated from the gamestate.  It will NOT
@@ -1763,6 +1778,12 @@ typedef struct {
 
 	// Reinforcements
 	int aReinfOffset[TEAM_NUM_TEAMS];
+
+	// Pause
+	cPauseSts_t match_paused;
+	int match_resumes;
+	int match_expired;
+	int match_stepTimer;
 } cgs_t;
 
 //==============================================================================
@@ -2741,4 +2762,7 @@ void trap_HTTP_Query_cmd(char *url);
 // - Reinforcement offset
 int CG_CalculateReinfTime(void);
 float CG_CalculateReinfTime_Float(void);
+
+// PopIn
+void CG_PopinPrint(const char *str, int y, int charWidth, qboolean blink);
 

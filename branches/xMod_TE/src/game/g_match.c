@@ -801,3 +801,104 @@ void G_loadMatchGame(void) {
 
 	trap_SetConfigstring(CS_REINFSEEDS, strReinfSeeds);
 }
+
+/*
+=================
+Pause
+
+Deals with pause related functionality
+=================
+*/
+void G_delayPrint(gentity_t *dpent) {
+	int think_next = 0;
+	qboolean fFree = qtrue;
+
+	switch (dpent->spawnflags) {
+	case DP_PAUSEINFO:
+	{
+		if (level.match_pause > PAUSE_UNPAUSING) {
+			int cSeconds = match_timeoutlength.integer * 1000 - (level.time - dpent->timestamp);
+
+			if (cSeconds > 1000) {
+				think_next = level.time + 1000;
+				fFree = qfalse;
+
+				if (cSeconds > 30000) {
+					AP(va("popin \"Timeouts Available: [^1Axis^7] %d - [^4Allies^7] %d\n\"y",
+						teamInfo[TEAM_RED].timeouts, teamInfo[TEAM_BLUE].timeouts));
+				}
+			}
+			else {
+				level.match_pause = PAUSE_UNPAUSING;
+				G_spawnPrintf(DP_UNPAUSING, level.time + 7.4, NULL);
+				APS("xmod/sound/scenaric/countdown/prepare.wav");
+			}
+		}
+		break;
+	}
+
+	case DP_UNPAUSING:
+	{
+		if (level.match_pause == PAUSE_UNPAUSING) {
+			int cSeconds = 8 * 1000 - (level.time - dpent->timestamp);
+
+			if (cSeconds > 1000) {
+				think_next = level.time + 1000;
+				fFree = qfalse;
+				APS(va("xmod/sound/scenaric/countdown/cn_%d.wav", cSeconds / 1000));
+			}
+			else {
+				level.match_pause = PAUSE_NONE;
+				AP("print \"^1FIGHT!\n\"");
+				APS("xmod/sound/scenaric/countdown/fight.wav");
+				trap_SetConfigstring(CS_PAUSED, "0");
+				trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime + level.timeDelta));
+			}
+		}
+		break;
+	}
+	default:
+		break;
+	}
+
+	dpent->nextthink = think_next;
+	if (fFree) {
+		dpent->think = 0;
+		G_FreeEntity(dpent);
+	}
+}
+
+static char *pszDPInfo[] = {
+	"DPRINTF_PAUSEINFO",
+	"DPRINTF_UNPAUSING",
+	"DPRINTF_CONNECTINFO",
+	"DPRINTF_MVSPAWN",
+	"DPRINTF_UNK1",
+	"DPRINTF_UNK2",
+	"DPRINTF_UNK3",
+	"DPRINTF_UNK4",
+	"DPRINTF_UNK5"
+};
+
+void G_spawnPrintf(int print_type, int print_time, gentity_t *owner) {
+	gentity_t   *ent = G_Spawn();
+
+	ent->classname = pszDPInfo[print_type];
+	ent->clipmask = 0;
+	ent->parent = owner;
+	ent->r.svFlags |= SVF_NOCLIENT;
+	ent->s.eFlags |= EF_NODRAW;
+	ent->s.eType = ET_ITEM;
+
+	ent->spawnflags = print_type;
+	ent->timestamp = level.time;
+
+	ent->nextthink = print_time;
+	ent->think = G_delayPrint;
+
+	// Set it here so client can do it's own magic..
+	if (print_type == DP_PAUSEINFO)
+		trap_SetConfigstring(CS_PAUSED, va("%d", match_timeoutlength.integer));
+	else if (print_type == DP_UNPAUSING)
+		trap_SetConfigstring(CS_PAUSED, "10000");
+}
