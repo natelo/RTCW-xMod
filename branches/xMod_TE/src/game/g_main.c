@@ -1651,11 +1651,11 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	// L0 - Tournament sanity stuff
 	if (g_tournamentMode.integer == TOURNY_FULL && !team_maxplayers.integer) {
 		if (g_deathMatch.integer) {
-			trap_Cvar_Set("g_tournamentMode", "3");
+			trap_Cvar_Set("team_maxPlayers", "3");
 			G_Printf("Warning: Tournament mode 2 is enabled but team_maxPlayers is not set!\n..Setting team_maxPlayers to 3 per team.\n");
 		}
 		else {
-			trap_Cvar_Set("g_tournamentMode", "6");
+			trap_Cvar_Set("team_maxPlayers", "6");
 			G_Printf("Warning: Tournament mode 2 is enabled but team_maxPlayers is not set!\n..Setting team_maxPlayers to 6 per team.\n");
 		}
 	}
