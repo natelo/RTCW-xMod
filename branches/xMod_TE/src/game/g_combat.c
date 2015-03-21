@@ -432,13 +432,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}  
 
 	if ( meansOfDeath == MOD_POISONED && g_gamestate.integer == GS_PLAYING)  {
-		int r = rand() %2; 
-		
-		if (r == 0)
-			AP(va( "print \"%s ^7was poisoned by %s^7.\n\"", self->client->pers.netname, attacker->client->pers.netname)); 
-		else if (r == 1)
-			AP(va( "print \"%s ^7tasted %s^7's poison.\n\"", self->client->pers.netname, attacker->client->pers.netname)); 
-
 		// Stats
 		attacker->client->pers.stats.poison++;
 		write_RoundStats(attacker->client->pers.netname, attacker->client->pers.stats.poison, ROUND_POISON);
@@ -523,7 +516,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
 
 	self->enemy = attacker;
-
 	self->client->ps.persistant[PERS_KILLED]++;
 
 	// L0 - Stats

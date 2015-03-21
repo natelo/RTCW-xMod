@@ -387,8 +387,7 @@ struct gentity_s {
 	int			thrownSmoke;				// Smoke
 	int			selectedSmoke;				// Smoke	
 	int			lastPushTime;				// Shove	
-	int			lastDragTime;				// Drag bodies	
-	qboolean	poisoned;					// Poison
+	int			lastDragTime;				// Drag bodies
 	int			poisonEnt;					// Poison
 	int			lastPoisonTime;				// Poison
 	qboolean	droppedObj;					// Objective dropping	

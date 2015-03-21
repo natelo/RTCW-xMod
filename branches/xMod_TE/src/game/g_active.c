@@ -200,43 +200,33 @@ void P_WorldEffects( gentity_t *ent ) {
 	}	// Flamer end
 	
 	// L0 - poison
-	if (ent->poisoned && ent->client)
+	if (ent->client->ps.eFlags & EF_POISONED && ent->client && level.match_pause == PAUSE_NONE)
 	{
 		// Check if person is under spawn protection before any damange can be done
-		if ( ent->client->ps.powerups[PW_INVULNERABLE] ) {
-			ent->poisoned = qfalse; // if he's under protecion reset poison or it kicks in once protection expires =X
+		if (ent->client->ps.powerups[PW_INVULNERABLE]) {
+			// if he's under protecion reset poison or it kicks in once protection expires =X
+			ent->client->ps.eFlags &= ~EF_POISONED;
 			return;
 		}
 
 		//if the guy isn't dead and it's been a second since the last time we did this
 		if ((level.time >= (ent->lastPoisonTime + 1000)) && (ent->health > 0))
 		{
-			int n = rand() % 4;	
-			gentity_t *attacker = g_entities + ent->poisonEnt;	//the person who poisoned him
-			vec3_t angles;
-		
-			if (n == 0) 
-				G_Sound(ent, G_SoundIndex("sound/beast/gasp1.wav"));			
-			
-			else if (n == 1) 
-				G_Sound(ent, G_SoundIndex("sound/player/bj2/gasp.wav"));				
-			
-			else if (n == 2) 
-				G_Sound(ent, G_SoundIndex("sound/beast/gasp3.wav"));
+			int n = rand() % 3;	//will be 0, 1 or 2
+			gentity_t *attacker = g_entities + ent->poisonEnt;	//the person who poisoned him			
 
-			else if (n == 3)
-				G_Sound(ent, G_SoundIndex("sound/player/bj2/pain50_1.wav"));
+			//play a random pain sound to near by players
+			if (n == 0)
+				G_Sound(ent, G_SoundIndex("sound/beast/gasp1.wav"));
+			else if (n == 1)
+				G_Sound(ent, G_SoundIndex("sound/player/bj2/death2.wav"));
+			else if (n == 2)
+				G_Sound(ent, G_SoundIndex("sound/player/bj2/death3.wav"));
 
-			//make the poisoned guy's view go crazy
-			angles[YAW] = (crandom() * 80);
-			angles[PITCH] = (crandom() * 80);
-			angles[ROLL] = 0;
-			SetClientViewAngle(ent, angles);
-
-			G_Damage(ent, attacker, attacker, NULL, NULL, g_poison.integer, 0, MOD_POISONED);	//hurt him!
-			ent->lastPoisonTime = level.time;
+			G_Damage(ent, attacker, attacker, NULL, NULL, 20, 0, MOD_POISONED);	//hurt him!
+			ent->lastPoisonTime = level.time; //keep track of this so we can time it
 		}
-	} // Poison end
+	} // L0 - end
 }
 
 /*
@@ -1235,6 +1225,11 @@ void ClientThink_real( gentity_t *ent ) {
 	} else {
 		client->ps.pm_type = PM_NORMAL;
 	}
+
+	// L0 - Poison / Reset view when player dies from smth else while being poisoned..	
+	if (ent->health <= 0) {
+		ent->client->ps.eFlags &= ~EF_POISONED;
+	} // end
 
 	// set parachute anim condition flag
 	BG_UpdateConditionValue( ent->s.number, ANIM_COND_PARACHUTE, (ent->flags & FL_PARACHUTE) != 0, qfalse );

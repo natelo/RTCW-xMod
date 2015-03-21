@@ -34,10 +34,6 @@ qboolean isCustomMOD(meansOfDeath_t mod) {
 
 		return qtrue;
 	}
-	else if (mod != MOD_POISONED) {
-
-		return qtrue;
-	}
 	else if (mod != MOD_ARTILLERY) {
 
 		return qtrue;

@@ -1334,6 +1334,9 @@ static void CG_RegisterGraphics( void ) {
 	// OSPx - Country Flags (by mcwf)
 	cgs.media.countryFlags = trap_R_RegisterShaderNoMip("gfx/flags/world_flags");
 
+	// L0 - Poison
+	cgs.media.poisonOverlay = trap_R_RegisterShader("gfx/misc/poisonoverlay");
+
 	// powerup shaders
 //	cgs.media.quadShader = trap_R_RegisterShader("powerups/quad" );
 //	cgs.media.quadWeaponShader = trap_R_RegisterShader("powerups/quadWeapon" );

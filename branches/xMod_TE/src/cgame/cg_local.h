@@ -1647,6 +1647,9 @@ typedef struct {
 	// Country Flags
 	qhandle_t countryFlags;
 
+	// Poison
+	qhandle_t poisonOverlay;
+
 } cgMedia_t;
 
 // OSPx - Pause states

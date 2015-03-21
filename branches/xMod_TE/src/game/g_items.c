@@ -559,8 +559,8 @@ int Pickup_Health (gentity_t *ent, gentity_t *other) {
 		write_RoundStats(ent->parent->client->pers.netname, ent->parent->client->pers.stats.medGiv, ROUND_MEDGIVEN);
 	}
 
-	// L0 - reset poison
-	other->poisoned = qfalse;
+	// L0 - Poison - reset it	
+	other->client->ps.eFlags &= ~EF_POISONED;
 	
 	// small and mega healths will go over the max
 	if ( ent->item->quantity != 5 && ent->item->quantity != 100  ) {

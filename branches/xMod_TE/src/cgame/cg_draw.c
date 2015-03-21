@@ -3165,7 +3165,22 @@ static void CG_DrawFlashLightning( void ) {
 	}
 }
 
+/*
+==============
+L0 - Poison
+CG_DrawFlashPoison
+==============
+*/
+static void CG_DrawFlashPoison(void) {
 
+	if (!cg.snap)
+		return;
+
+	// Maybe I should replace shader for paused state as it obscures chat a little?!
+	if (cg.snap->ps.eFlags & EF_POISONED) {
+		CG_DrawPic(0, 0, 640, 480, cgs.media.poisonOverlay);
+	}
+}
 
 /*
 ==============
@@ -3188,7 +3203,8 @@ static void CG_DrawFlashBlend( void ) {
 	CG_DrawFlashLightning();
 	CG_DrawFlashFire();
 	CG_DrawFlashDamage();
-	CG_DrawFlashFade();
+	CG_DrawFlashFade();	
+	CG_DrawFlashPoison();	// L0 - Poison
 }
 
 // NERVE - SMF

@@ -368,17 +368,19 @@ void Weapon_Syringe(gentity_t *ent) {
 			} 
 
 			// L0 - Poison
-			else if ((traceEnt->client->ps.stats[STAT_HEALTH] > 0) && 
-					(traceEnt->client->sess.sessionTeam != ent->client->sess.sessionTeam) &&
-					!(traceEnt->client->ps.powerups[PW_INVULNERABLE]) &&
-					g_poison.integer)
-			{	
-				if (ent->client->ps.stats[STAT_PLAYER_CLASS] == PC_MEDIC && !g_headshotsOnly.integer ) { 
-					traceEnt->poisonEnt = ent->s.number;
-					traceEnt->poisoned = qtrue;
-					usedSyringe = qtrue;
-				}
-			} // end
+			else if ((traceEnt->client->ps.stats[STAT_HEALTH] > 0) && (traceEnt->client->sess.sessionTeam != ent->client->sess.sessionTeam))
+			{
+				// L0 - headshotsOnly mode
+				if (g_headshotsOnly.integer != 0) {
+					usedSyringe = qfalse;
+					return;
+				} // End
+
+				traceEnt->poisonEnt = ent->s.number;	//record who poisoned this guy
+				traceEnt->client->ps.eFlags |= EF_POISONED;
+				usedSyringe = qtrue;
+
+			} // L0 - end
 		}
 	}
 
@@ -2428,6 +2430,17 @@ void CalcMuzzlePoints(gentity_t *ent, int weapon) {
 		}
 	}
 
+	// L0 - Poison (View ported from NQ)
+	// SYNC WITH THE CG_VIEW.C CODE!!!!
+	if (ent->client && ent->client->ps.eFlags & EF_POISONED && level.match_pause == PAUSE_NONE){
+		float phase;
+
+		phase = level.time / 1000.0 * 0.3 * M_PI; // time / 1000 * frequency * 2pi
+		viewang[ROLL] += 36 * sin(phase); // amplitude * sin
+		viewang[YAW] += 24 * sin(phase); // amplitude * sin
+		viewang[PITCH] += 12 * sin(phase*2.5); // amplitude * sin
+
+	} // End
 
 	// set aiming directions
 	AngleVectors (viewang, forward, right, up);

@@ -2266,8 +2266,8 @@ void ClientSpawn(gentity_t *ent, qboolean revived) {
 
 	// L0 - New stuff
 	ent->thrownSmoke = 0;		// Smoke
-	ent->poisoned = qfalse;		// Poison
-	ent->lastPoisonTime = 0;	// Poison
+	ent->client->ps.eFlags &= ~EF_POISONED; // Poison
+	ent->lastPoisonTime = 0;				// Poison
 	// L0 - mapstats / Store Life kills Peak for map stats if enabled
 	if (ent->client->pers.lifeKills > ent->client->pers.stats.killPeak)
 		ent->client->pers.stats.killPeak = ent->client->pers.lifeKills;

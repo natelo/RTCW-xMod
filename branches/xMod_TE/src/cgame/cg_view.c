@@ -682,6 +682,17 @@ static void CG_OffsetFirstPersonView( void ) {
 
 	CG_ZoomSway();
 
+	// L0 - Poison (View is from NQ)
+	// SYNC WITH THE G_WEAPONS.C CODE!!!
+	if (cg.predictedPlayerState.eFlags & EF_POISONED && cgs.match_paused != PAUSE_ON){
+		float phase;
+
+		phase = cg.time / 1000.0 * 0.3 * M_PI; // cg.time / 1000.0 * 0.5 * M_PI * 2;
+		cg.refdefViewAngles[ROLL] += 36 * sin(phase); // amplitude * sin  cg.refdefViewAngles[ROLL] += 4 * sin( phase )
+		cg.refdefViewAngles[YAW] += 24 * sin(phase); // amplitude * sin  cg.refdefViewAngles[YAW] += 4 * sin( phase )
+		cg.refdefViewAngles[PITCH] += 12 * sin(phase*2.5); // amplitude * sin  cg.refdefViewAngles[YAW] += 4 * sin( phase )
+	}
+
 	// adjust for 'lean'
 	if ( cg.predictedPlayerState.leanf != 0 ) {
 		//add leaning offset
@@ -1107,6 +1118,18 @@ static int CG_CalcFov( void ) {
 	} else {
 		cg.refdef.rdflags &= ~RDF_UNDERWATER;
 	}
+
+	// L0 - Poison									 // Pause handling
+	if (cg.predictedPlayerState.eFlags & EF_POISONED && !cg.snap->ps.pm_type == PM_FREEZE)
+	{
+		phase = cg.time / 1000.0 * 0.3 * M_PI * 2;	//phase = cg.time / 1000.0 * 0.6 * M_PI * 2;
+		v = 12 * sin(phase);	//v = 2 * sin( phase );
+		fov_x += v;
+		fov_y -= v;
+		cg.refdef.rdflags |= RDF_UNDERWATER;
+
+		inwater = qtrue;
+	} // End
 
 	// set it
 	cg.refdef.fov_x = fov_x;
