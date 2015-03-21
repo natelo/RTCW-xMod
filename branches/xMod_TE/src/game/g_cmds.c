@@ -803,8 +803,9 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 
 	// get and distribute relevent paramters
 	ClientUserinfoChanged( clientNum );
-
 	ClientBegin( clientNum );
+	// L0 - Fix immediate respawn that occasionally occurs on a team switch..
+	client->pers.lastReinforceTime = 0;
 
 	// L0 - Track stuff..
 	G_verifyMatchState(oldTeam);
