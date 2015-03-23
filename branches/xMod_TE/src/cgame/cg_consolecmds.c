@@ -782,7 +782,7 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand("timein");
 	trap_AddCommand("ready");
 	trap_AddCommand("notready");
-	trap_AddCommand("readyteam");
+	//trap_AddCommand("readyteam"); // Easy to screw up with autocomplete..
 
 	// Web stuff.. 
 	trap_AddCommand("webbans");	

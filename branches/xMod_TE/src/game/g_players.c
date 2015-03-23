@@ -1206,6 +1206,7 @@ void Cmd_ready(gentity_t *ent, qboolean state) {
 
 			// Doesn't rly matter..score tab will show slow ones..
 			AP(va("popin \"%s ^7is %s%s!\n\"", ent->client->pers.netname, (state ? "^n" : "^z"), status[state]));
+			AP(va("@print \"%s ^7is %s%s.\n\"", ent->client->pers.netname, (state ? "^n" : "^z"), status[state]));
 		}
 	}
 }
@@ -1256,6 +1257,7 @@ void Cmd_teamReady(gentity_t *ent, qboolean ready) {
 	}
 	else {
 		AP(va("popin \"%s ^7team is %s%s!\n\"", aTeams[team], (ready ? "^n" : "^z"), status[ready]));
+		AP(va("@print \"%s ^7set %s team to %s%s.\n\"", ent->client->pers.netname, aTeams[team], (ready ? "^n" : "^z"), status[ready]));
 		level.readyTeam[team] = ready;
 	}
 }
