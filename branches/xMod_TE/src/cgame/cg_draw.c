@@ -959,6 +959,49 @@ static float CG_DrawRespawnTimer(float y) {
 
 /*
 ========================
+L0
+Respawn Timer for Specs in tournament mode
+========================
+CG_CalculateReinfTimeSpecs
+*/
+extern float CG_CalculateReinfTimeSpecs(team_t team);
+static float CG_DrawSpecsRespawnTimer(float y) {
+	char		*str = { 0 };
+	char		*str2 = { 0 };
+	int			w;
+	float		x;
+
+	if (cgs.tournamentMode < TOURNY_BASIC)
+		return y;
+
+	// Don't draw timer if client is checking scoreboard
+	if (CG_DrawScoreboard())
+		return y;
+
+	if (cgs.gamestate != GS_PLAYING) {
+		str = "";
+	}
+	else {
+		str  = va("Re: %-3d", (int)CG_CalculateReinfTimeSpecs(TEAM_RED));
+		str2 = va("Re: %-3d", (int)CG_CalculateReinfTimeSpecs(TEAM_BLUE));
+	}
+
+	w = CG_DrawStrlen(str) * TINYCHAR_WIDTH;
+	x = 68 + 3;
+	y = 480 - 245;
+
+	if (cgs.gamestate != GS_PLAYING) {
+		CG_DrawStringExt((x + 4) - w, y, str, colorYellow, qtrue, qtrue, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
+	}
+	else if (cgs.clientinfo[cg.snap->ps.clientNum].team == TEAM_SPECTATOR){
+		CG_DrawStringExt(x - w, y, str, colorRed, qtrue, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
+		CG_DrawStringExt(x - w, y - 10, str2, colorBlue, qtrue, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
+	}
+	return y += TINYCHAR_HEIGHT;
+}
+
+/*
+========================
 OSPx
 Counts time in
 
@@ -1013,6 +1056,9 @@ static void CG_DrawUpperRight( void ) {
 	if (cg_drawReinforcementTime.integer) {
 		y = CG_DrawRespawnTimer(y);
 	}
+
+	// L0 - Specs Respawn time..
+	y = CG_DrawSpecsRespawnTimer(y);
 
 	// OSPx - Time Counter
 	CG_startCounter();
@@ -2627,6 +2673,20 @@ float CG_CalculateReinfTime_Float(void) {
 
 int CG_CalculateReinfTime(void) {
 	return((int)CG_CalculateReinfTime_Float());
+}
+
+/*
+=================
+L0
+
+Reinforcement Timer for Specs in tournament mode
+=================
+*/
+float CG_CalculateReinfTimeSpecs(team_t team) {
+	int dwDeployTime;
+	
+	dwDeployTime = (team == TEAM_RED) ? cg_redlimbotime.integer : cg_bluelimbotime.integer;
+	return ((1 + (dwDeployTime - ((cgs.aReinfOffset[team] + cg.time - cgs.levelStartTime) % dwDeployTime)) * 0.001f) );
 }
 
 /*
