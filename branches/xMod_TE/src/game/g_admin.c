@@ -1973,6 +1973,47 @@ void cmd_pauseHandle(gentity_t *ent, qboolean fPause) {
 
 /*
 ===========
+Un/Ready all
+
+Ready or unready all..
+===========
+*/
+void cmd_readyHandle(gentity_t *ent, qboolean unready) {
+	char *msg = ((unready) ? "^3UNREADY^7" : "^3READY^7");
+	char *log;
+
+	if (!g_doWarmup.integer) {
+		CP("print \"Tourny mode is disabled! Command ignored..\n\"");
+		return;
+	}
+
+	if (!unready) {
+		if (g_gamestate.integer != GS_WARMUP) {
+			CP("print \"^3ALLREADY ^7command can only be used in warmup!\n\"");
+			return;
+		}
+		G_readyStart();
+		AP(va("chat \"console: ^7%s has %s ALL players..\n\"", sortTag(ent), msg));
+	}
+	else {
+		if (g_gamestate.integer != GS_WARMUP_COUNTDOWN) {
+			CP("print \"^3UNREADYALL ^7command can only be used during countdown!\n\"");
+			return;
+		}
+		G_readyReset(qtrue);
+		AP(va("chat \"console: Countdown has been ^3cancelled ^7by %s..\n\"", sortTag(ent)));
+	}
+
+	// Log it
+	log = va("Player %s (IP: %d.%d.%d.%d) has %s users.",
+		ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], 
+		ent->client->sess.ip[2], ent->client->sess.ip[3], msg);
+	
+	logEntry(ADMACT, log);
+}
+
+/*
+===========
 Getstatus
 
 Prints IP's, GUIDs and some match info..
@@ -2210,6 +2251,8 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd, "unlock"))		{ if (canUse(ent, qtrue)) cmd_handleTeamLock(ent, qfalse); else cantUse(ent); return qtrue; }
 	else if (!strcmp(cmd, "pause"))			{ if (canUse(ent, qtrue)) cmd_pauseHandle(ent, qtrue); else cantUse(ent); return qtrue; }
 	else if (!strcmp(cmd, "unpause"))		{ if (canUse(ent, qtrue)) cmd_pauseHandle(ent, qfalse); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "allready"))		{ if (canUse(ent, qtrue)) cmd_readyHandle(ent, qtrue); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "unreadyall"))	{ if (canUse(ent, qtrue)) cmd_readyHandle(ent, qfalse); else cantUse(ent); return qtrue; }
 
 	// Any other command (server cvars..)
 	else if (canUse(ent, qfalse))			{ cmdCustom(ent, cmd); return qtrue; }	
@@ -2293,6 +2336,8 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("unlock", "Unlocks team for joining.", "!speclock <team/both>")
 	_HELP("pause", "Pauses a match..", "!pause")
 	_HELP("unpause", "Resumes a match.", "!unpause")
+	_HELP("readyall", "Sets status of both teams as Ready and goes to countdown.", "!readyall")
+	_HELP("unreadyall", "Cancels countdown and returns match back in warmup state.", "!unreadyall")
 	_HELP("*", "Any default command that's allowed per Admin level can be executed accordingly. Note that adding @ at the end will execute it silently otherwise it will be printed to all.", "!g_allowVote 1 or !g_allowVote 1 @ for silent change")
 	// --> Add new ones after this line..
 

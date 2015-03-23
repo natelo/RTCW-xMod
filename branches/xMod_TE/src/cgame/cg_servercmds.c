@@ -308,6 +308,17 @@ void CG_ParseReinforcementTimes(const char *pszReinfSeedString) {
 
 /*
 ================
+OSPx - Ready
+
+Parse Ready state
+================
+*/
+void CG_ParseReady(const char *pState) {
+	cgs.readyState = atoi(pState);
+}
+
+/*
+================
 OSPx - Pause
 
 Parse & Sort Pause state so client can work with it..
@@ -360,6 +371,8 @@ void CG_SetConfigValues( void ) {
 // OSPx
 	// Reinforcements
 	CG_ParseReinforcementTimes(CG_ConfigString(CS_REINFSEEDS));
+	// Ready	
+	CG_ParseReady(CG_ConfigString(CS_READY));
 // -OSPx
 }
 
@@ -439,7 +452,10 @@ static void CG_ConfigStringModified( void ) {
 	// Set reinforcement times for each team
 	} else if (num == CS_REINFSEEDS) {
 		CG_ParseReinforcementTimes(str);
-		// Pause
+	// Ready
+	} else if (num == CS_READY) {
+		CG_ParseReady(str);
+	// Pause
 	} else if (num == CS_PAUSED) {
 		CG_ParsePause(str);
 // OSPx

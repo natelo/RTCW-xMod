@@ -780,6 +780,9 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand("timeout");
 	trap_AddCommand("unpause");
 	trap_AddCommand("timein");
+	trap_AddCommand("ready");
+	trap_AddCommand("notready");
+	trap_AddCommand("readyteam");
 
 	// Web stuff.. 
 	trap_AddCommand("webbans");	

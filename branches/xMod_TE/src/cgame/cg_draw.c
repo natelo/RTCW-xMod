@@ -2859,6 +2859,26 @@ static void CG_DrawWarmup( void ) {
 		return;     // (SA) don't bother with this stuff in sp
 	}
 
+	// OSPx - Ready
+	if (cgs.gamestate == GS_WARMUP && cgs.readyState != CREADY_NONE) {
+		cw = 10;
+
+		s = CG_TranslateString(va("^nWARMUP:^7 Waiting on ^n%i ^7%s", cgs.minclients, cgs.minclients == 1 ? "player" : "players"));
+		w = CG_DrawStrlen(s);
+		CG_DrawStringExt(320 - w * 6, 120, s, colorWhite, qfalse, qtrue, 12, 18, 0);
+
+		// Show only to real active clients..
+		if (!cg.demoPlayback && cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR &&
+			(!(cg.snap->ps.pm_flags & PMF_FOLLOW) || (cg.snap->ps.pm_flags & PMF_LIMBO)))
+		{
+			s1 = CG_TranslateString("Type ^n\\ready ^7in the console to start");
+			w = CG_DrawStrlen(s1);
+			CG_DrawStringExt(320 - w * cw / 2, 160, s1, colorWhite,
+				qfalse, qtrue, cw, (int)(cw * 1.5), 0);
+		}
+		return;
+	}
+
 	sec = cg.warmup;
 	if ( !sec ) {
 		if ( cgs.gamestate == GS_WAITING_FOR_PLAYERS ) {
@@ -2893,9 +2913,9 @@ static void CG_DrawWarmup( void ) {
 	}
 
 	if ( cgs.gametype == GT_WOLF_STOPWATCH ) {
-		s = va( "%s %i", CG_TranslateString( "(^3WARMUP^7) Match begins in:^3" ), sec + 1 );
+		s = va( "%s %i", CG_TranslateString( "(^nWARMUP^7) Match begins in:^3" ), sec + 1 );
 	} else {
-		s = va( "%s %i", CG_TranslateString( "(^3WARMUP^7) Match begins in:^3" ), sec + 1 );
+		s = va( "%s %i", CG_TranslateString( "(^nWARMUP^7) Match begins in:^3" ), sec + 1 );
 	}
 
 	w = CG_DrawStrlen( s );
@@ -4013,7 +4033,9 @@ static void CG_Draw2D( void ) {
 			// DHM - Nerve :: Don't draw icon in upper-right when switching weapons
 			//CG_DrawWeaponSelect();
 
-			CG_DrawPickupItem();
+			// OSPx - In warmup we print ready intel there..
+			if (!(cgs.gamestate == GS_WARMUP && cgs.readyState != CREADY_NONE))
+				CG_DrawPickupItem();
 		}
 		if ( cgs.gametype >= GT_TEAM ) {
 			CG_DrawTeamInfo();

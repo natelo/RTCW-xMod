@@ -1787,6 +1787,10 @@ typedef struct {
 	int match_resumes;
 	int match_expired;
 	int match_stepTimer;
+
+	// Ready
+	int readyState;
+// ~L0
 } cgs_t;
 
 //==============================================================================
@@ -2769,3 +2773,13 @@ float CG_CalculateReinfTime_Float(void);
 // PopIn
 void CG_PopinPrint(const char *str, int y, int charWidth, qboolean blink);
 
+// Ready
+#define CREADY_NONE		0x00
+#define CREADY_AWAITING	0x01
+#define CREADY_PENDING	0x02
+
+// Macros
+#define Pri( x ) CG_Printf( "[cgnotify]%s", CG_LocalizeServerCommand( x ) )
+#define CPri( x ) CG_CenterPrint( CG_LocalizeServerCommand( x ), SCREEN_HEIGHT - ( SCREEN_HEIGHT * 0.2 ), SMALLCHAR_WIDTH );
+
+// ~L0

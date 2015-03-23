@@ -11,6 +11,19 @@ Updated:
 */
 #include "g_local.h"
 
+// Debounces cmd request as necessary.
+qboolean G_cmdDebounce(gentity_t *ent, const char *pszCommandName)
+{
+	if (ent->client->pers.cmd_debounce > level.time) {
+		CP(va("print \"Wait another %.1fs to issue ^3%s\n\"", 1.0*(float)(ent->client->pers.cmd_debounce - level.time) / 1000.0,
+			pszCommandName));
+		return(qfalse);
+	}
+
+	ent->client->pers.cmd_debounce = level.time + 3000; // 3 Secs
+	return(qtrue);
+}
+
 /*
 ================
 Throw knives
@@ -1109,6 +1122,11 @@ void Cmd_pauseHandle(gentity_t *ent, qboolean dPause) {
 		return;
 	}
 
+	if (g_gamestate.integer != GS_PLAYING) {
+		CP("print \"^1Error^7: Pause feature can only be used during a match!\n\"");
+		return;
+	}
+
 	DecolorString(aTeams[team], tName);
 
 	// Trigger the auto-handling of pauses
@@ -1135,6 +1153,110 @@ void Cmd_pauseHandle(gentity_t *ent, qboolean dPause) {
 		level.match_pause = PAUSE_UNPAUSING;
 		G_spawnPrintf(DP_UNPAUSING, level.time + 10, NULL);
 		AP(va("@print \"%s ^7has ^3UNPAUSED^7 the match!\n\"", ent->client->pers.netname));
+	}
+}
+
+/*
+===================
+READY / NOTREADY
+===================
+*/
+void Cmd_ready(gentity_t *ent, qboolean state) {
+	char *status[2] = { "NOT READY", "READY" };
+
+	if (!g_doWarmup.integer) {
+		return;
+	}
+
+	// Just swallow it...
+	if (g_gamestate.integer == GS_PLAYING) {		
+		return;
+	}
+
+	if (!G_cmdDebounce(ent, status[state])) return;
+
+	if (!state && g_gamestate.integer == GS_WARMUP_COUNTDOWN) {
+		CP("print \"Countdown started, ^3notready^7 ignored.\n\"");
+		return;
+	}
+	if (ent->client->sess.sessionTeam == TEAM_SPECTATOR) {
+		CP(va("print \"Specs cannot use ^3%s ^7command.\n\"", status[state]));
+		return;
+	}
+	if (level.readyTeam[ent->client->sess.sessionTeam] == qtrue && !state) { // Doesn't cope with unreadyteam but it's out anyway..
+		CP(va("print \"%s ^7ignored. Your team has issued ^3TEAM READY ^7command..\n\"", status[state]));
+		return;
+	}
+
+	// Move them to correct ready state
+	if (ent->client->pers.ready == state) {
+		CP(va("print \"You are already ^3%s^7!\n\"", status[state]));
+	}
+	else {
+		ent->client->pers.ready = state;
+		if (!level.intermissiontime) {
+			if (state) {
+				ent->client->pers.ready = qtrue;
+				ent->client->ps.powerups[PW_READY] = INT_MAX;
+			}
+			else {
+				ent->client->pers.ready = qfalse;
+				ent->client->ps.powerups[PW_READY] = 0;
+			}
+
+			// Doesn't rly matter..score tab will show slow ones..
+			AP(va("popin \"%s ^7is %s%s!\n\"", ent->client->pers.netname, (state ? "^n" : "^z"), status[state]));
+		}
+	}
+}
+
+/*
+===================
+TEAM-READY / NOTREADY
+===================
+*/
+void Cmd_teamReady(gentity_t *ent, qboolean ready) {
+	char *status[2] = { "NOT READY", "READY" };
+	int i, p = { 0 };
+	int team = ent->client->sess.sessionTeam;
+	gentity_t *cl;
+
+	if (!g_doWarmup.integer) {
+		return;
+	}
+	if (ent->client->sess.sessionTeam == TEAM_SPECTATOR) {
+		CP("print \"Specs cannot use ^3TEAM ^7commands.\n\"");
+		return;
+	}
+	if (!ready && g_gamestate.integer == GS_WARMUP_COUNTDOWN) {
+		CP("print \"Countdown started, ^3notready^7 ignored.\n\"");
+		return;
+	}
+
+	for (i = 0; i < level.numConnectedClients; i++) {
+		cl = g_entities + level.sortedClients[i];
+
+		if (!cl->inuse) {
+			continue;
+		}
+
+		if (cl->client->sess.sessionTeam != team) {
+			continue;
+		}
+
+		if ((cl->client->pers.ready != ready) && !level.intermissiontime) {
+			cl->client->pers.ready = ready;
+			cl->client->ps.powerups[PW_READY] = (ready ? INT_MAX : 0);
+			++p;
+		}
+	}
+
+	if (!p) {
+		CP(va("print \"Your team is already ^3%s^7!\n\"", status[ready]));
+	}
+	else {
+		AP(va("popin \"%s ^7team is %s%s!\n\"", aTeams[team], (ready ? "^n" : "^z"), status[ready]));
+		level.readyTeam[team] = ready;
 	}
 }
 
@@ -1210,7 +1332,9 @@ void Cmd_help(gentity_t *ent) {
 		CP("print \"^7specuninvite <slot>  ^3>> Revokes spec invitation from player\n\"");
 		CP("print \"^7specuninviteall      ^3>> Revokes all spec invitations for your team\n\"");
 		CP("print \"^7pause/timeout        ^3>> Pauses the match\n\"");		
-		CP("print \"^7unpause/timein       ^3>> Resumes the match\n\"");		
+		CP("print \"^7unpause/timein       ^3>> Resumes the match\n\"");
+		CP("print \"^7ready/notready       ^3>> Sets your state accordingly\n\"");
+		CP("print \"^7readyteam		       ^3>> Sets your Team as Ready to start\n\"");
 		CP("print \"^7-----------------------------------------------\n\n\"");
 		CP("print \"^3Usage^7: /<command>\n\"");
 	}

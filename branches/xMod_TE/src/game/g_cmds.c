@@ -762,6 +762,7 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 	client->sess.sessionTeam = team;
 	client->sess.spectatorState = specState;
 	client->sess.spectatorClient = specClient;
+	client->pers.ready = qfalse;
 
 	// L0 - redone this and changed to prints..
 	if ( team == TEAM_RED ) {		
@@ -3198,6 +3199,12 @@ void ClientCommand( int clientNum ) {
 		Cmd_pauseHandle(ent, qfalse);
 	else if (Q_stricmp(cmd, "timein") == 0)
 		Cmd_pauseHandle(ent, qfalse);
+	else if (Q_stricmp(cmd, "ready") == 0)
+		Cmd_ready(ent, qtrue);
+	else if (Q_stricmp(cmd, "notready") == 0 || Q_stricmp(cmd, "unready") == 0)
+		Cmd_ready(ent, qfalse);
+	else if (Q_stricmp(cmd, "readyteam") == 0)
+		Cmd_teamReady(ent, qtrue);
 // End
 	else if (Q_stricmp (cmd, "levelshot") == 0)
 		Cmd_LevelShot_f (ent);

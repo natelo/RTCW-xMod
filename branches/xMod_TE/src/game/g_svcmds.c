@@ -282,14 +282,19 @@ void Svcmd_ResetMatch_f(void) {
 		trap_Cvar_Set( "g_nextTimeLimit", "0" );
 	}
 
-
 	if ( !g_noTeamSwitching.integer || ( g_minGameClients.integer > 1 && level.numPlayingClients >= g_minGameClients.integer ) ) {
 		trap_SendConsoleCommand(EXEC_APPEND, va("map_restart 0 %i\n", GS_WARMUP));
 		return;
 	}
 	else {
-		trap_SendConsoleCommand(EXEC_APPEND, va("map_restart 0 %i\n", GS_WAITING_FOR_PLAYERS));
-		return;
+		// OSPx - Ready
+		if (g_doWarmup.integer) {
+			trap_SendConsoleCommand(EXEC_APPEND, va("map_restart 0 %i\n", GS_WARMUP));
+			trap_SetConfigstring(CS_READY, va("%i", READY_PENDING));
+		}
+		else {
+			trap_SendConsoleCommand(EXEC_APPEND, va("map_restart 0 %i\n", GS_WAITING_FOR_PLAYERS));
+		}
 	}
 }
 

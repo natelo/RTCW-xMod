@@ -157,7 +157,8 @@ extern const unsigned int aReinfSeeds[MAX_REINFSEEDS];
 
 // OSPx
 #define CS_REINFSEEDS           37      // Reinforcement seeds
-#define CS_PAUSED				38		// Pause
+#define CS_READY				38		// Ready
+#define CS_PAUSED				39		// Pause
 // -OSPx
 
 #define	CS_MODELS				64
@@ -453,9 +454,10 @@ typedef enum {
 	PW_BLUEFLAG,
 	PW_BALL,
 
-	// OSPx
+// OSPx	
+	PW_READY,			// Ready
 	PW_BLACKOUT = 14,	// Specklock
-	// -OSPx
+// -OSPx
 
 	PW_NUM_POWERUPS
 } powerup_t;

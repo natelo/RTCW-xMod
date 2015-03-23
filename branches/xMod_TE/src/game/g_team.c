@@ -1893,3 +1893,59 @@ void G_verifyMatchState(int nTeam) {
 	}
 }
 
+/*
+=============
+Ready/Not Ready
+=============
+*/
+qboolean G_playersReady(void) {
+	int i, ready = 0, notReady = match_minplayers.integer;
+	gclient_t *cl;
+
+	if (0 == g_doWarmup.integer) {
+		return(qtrue);
+	}
+
+	// Ensure we have enough real players
+	if (level.numPlayingClients > 0 && level.numPlayingClients >= match_minplayers.integer) {
+		// Step through all active clients
+		notReady = 0;
+		for (i = 0; i < level.numConnectedClients; i++) {
+			cl = level.clients + level.sortedClients[i];
+
+			if (cl->pers.connected != CON_CONNECTED || cl->sess.sessionTeam == TEAM_SPECTATOR) {
+				continue;
+			}
+			else if (cl->pers.ready || (g_entities[level.sortedClients[i]].r.svFlags & SVF_BOT)) {
+				ready++;
+			}
+			else { notReady++; }
+		}
+	}
+
+	notReady = (notReady > 0 || ready > 0) ? notReady : match_minplayers.integer;
+	if (g_minGameClients.integer != notReady) {
+		trap_Cvar_Set("g_minGameClients", va("%d", notReady));
+	}
+
+	// Notify them that threshold was reached..
+	if (((ready + notReady > 0) && 100 * ready / (ready + notReady) >= match_readypercent.integer) == qtrue) {
+		AP(va("popin \"Ready [^n%i^7] percent Threshold reached! Starting..", match_readypercent.integer));
+	}		
+
+	return (level.readyAll || ((ready + notReady > 0) && 100 * ready / (ready + notReady) >= match_readypercent.integer));
+}
+
+void G_readyReset(qboolean aForced) {
+	if (g_gamestate.integer == GS_WARMUP_COUNTDOWN && !aForced) {
+		AP("print \"*** INFO: ^3Countdown aborted! Going back to warmup..\n\"2");
+	}
+	level.lastRestartTime = level.time;
+	trap_SendConsoleCommand(EXEC_APPEND, va("map_restart 0 %i\n", GS_WARMUP));
+}
+
+void G_readyStart(void) {
+	level.readyAll = qtrue;
+	level.cnNum = 0; // Resets countdown
+	trap_SetConfigstring(CS_READY, va("%i", READY_NONE));
+}

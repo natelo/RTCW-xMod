@@ -525,8 +525,7 @@ typedef struct {
 	
 	qboolean bAutoReloadAux; // TTimo - auxiliary storage for pmoveExt_t::bAutoReload, to achieve persistance
 
-	// L0 
-
+// L0
 	// Admins
 	char	cmd1[128];	// !command
 	char	cmd2[128];	// !command attribute
@@ -578,7 +577,12 @@ typedef struct {
 	// HTTP (Web Stats)
 	int		httpCmdIssued;					// debounce time
 
-	// L0 - End
+	// Tournament
+	qboolean ready;
+
+	// Debounce commands (mainly ones that are not cheap to call..)
+	int cmd_debounce;
+// ~L0
 } clientPersistant_t;
 
 // L0 - antilag port
@@ -899,6 +903,11 @@ typedef struct {
 
 	// Pause
 	int match_pause;
+
+	// Ready
+	qboolean readyAll;
+	qboolean readyPrint;
+	qboolean readyTeam[TEAM_NUM_TEAMS];
 // ~L0
 } level_locals_t;
 
@@ -1201,6 +1210,9 @@ void G_setClientSpeclock(gentity_t *ent);
 void G_teamReset(int team_num, qboolean fClearSpecLock);
 qboolean G_teamJoinCheck(int team_num, gentity_t *ent);
 void G_verifyMatchState(int nTeam);
+qboolean G_playersReady(void);
+void G_readyReset(qboolean aForced);
+void G_readyStart(void);
 //~ L0
 
 //
@@ -1440,6 +1452,8 @@ extern vmCvar_t		team_nocontrols;
 extern vmCvar_t		team_maxplayers;
 extern vmCvar_t		match_timeoutlength;
 extern vmCvar_t		match_timeoutcount;
+extern vmCvar_t		match_minplayers;
+extern vmCvar_t		match_readypercent;
 
 // Game
 extern vmCvar_t		g_dropReload;
@@ -1873,6 +1887,7 @@ void G_spawnPrintf(int print_type, int print_time, gentity_t *owner);
 //
 // g_players.c
 //
+qboolean G_cmdDebounce(gentity_t *ent, const char *pszCommandName);
 void Cmd_ThrowKnives( gentity_t *ent );
 void Cmd_Smoke_f( gentity_t *ent );
 void weapon_smokeGrenade(gentity_t *ent);
@@ -1892,6 +1907,8 @@ void Cmd_specUnInvite(gentity_t *ent);
 void Cmd_uninviteAll(gentity_t *ent);
 void Cmd_speclock(gentity_t *ent, qboolean lock);
 void Cmd_pauseHandle(gentity_t *ent, qboolean dPause);
+void Cmd_ready(gentity_t *ent, qboolean state);
+void Cmd_teamReady(gentity_t *ent, qboolean ready);
 
 //
 // g_stats.c
@@ -2006,6 +2023,10 @@ void G_ReadIP(gclient_t *client);
 #define PAUSE_NONE		0x00	// Match is not paused..
 #define PAUSE_UNPAUSING 0x02    // Pause is about to expire
 
+// Ready
+#define READY_NONE		0x00	// Countdown, playing..
+#define READY_AWAITING	0x01	// Awaiting all to ready up..
+#define READY_PENDING	0x02	// Awaiting but can start once treshold (minclients) is reached..
 
 //
 // Include new headers at the bottom so they link correctly
