@@ -456,7 +456,7 @@ typedef enum {
 
 // OSPx	
 	PW_READY,			// Ready
-	PW_BLACKOUT = 14,	// Specklock
+	PW_BLACKOUT = 17,	// Specklock
 // -OSPx
 
 	PW_NUM_POWERUPS
@@ -1727,5 +1727,9 @@ int	BG_GetAnimScriptEvent( playerState_t *ps, scriptAnimEventTypes_t event );
 extern animStringItem_t animStateStr[];
 extern animStringItem_t animBodyPartsStr[];
 
-// L0 - Crosshairs
+// L0  
+
+// Crosshairs
 void BG_setCrosshair(char *colString, float *col, float alpha, char *cvarName);
+
+// ~L0
