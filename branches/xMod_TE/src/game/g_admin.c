@@ -885,6 +885,15 @@ void cmd_forceClan(gentity_t *ent) {
 	return;
 }
 
+/*
+===========
+This is just a wrapper to notify about correct way..
+===========
+*/
+void cmd_force(gentity_t *ent) {
+	CP("print \"^3INFO: ^7Use !axis, !specs and !allies to force a player to a desirable team.\n\"");
+	return;
+}
 
 /*
 ===========
@@ -2301,7 +2310,7 @@ void cmd_listCmds(gentity_t *ent) {
 	// Keep an eye on this..so it's not to big..
 	cmds = "incognito list_cmds commands cmds kick clientlick "
 		   "slap kill specs axis allied exec nextmap map vstr cpa "
-		   "cp warn chat cancelvote passvote restart reset swap shuffle "
+		   "cp warn chat cancelvote passvote map_restart reset_match swap_teams shuffle "
 		   "@shuffle specs999 whereis rename ignore unignore clientignore clientunignore permignore "	
 		   "permunignore permclientignore permclientunignore ban banclient tempban banip tempbanip addip event "
 		   "speclock specunlock lock unlock pause unpause start stop forceclan *"
@@ -2357,9 +2366,9 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd,"warn"))			{ if (canUse(ent, qtrue)) cmd_warn(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"no"))				{ if (canUse(ent, qtrue)) cmd_cancelvote(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"yes"))			{ if (canUse(ent, qtrue)) cmd_passvote(ent); else cantUse(ent); return qtrue;} 
-	else if (!strcmp(cmd,"restart"))		{ if (canUse(ent, qtrue)) cmd_restart(ent); else cantUse(ent); return qtrue;} 
-	else if (!strcmp(cmd,"reset"))			{ if (canUse(ent, qtrue)) cmd_resetmatch(ent); else cantUse(ent); return qtrue;} 
-	else if (!strcmp(cmd,"swap"))			{ if (canUse(ent, qtrue)) cmd_swap(ent); else cantUse(ent); return qtrue;} 
+	else if (!strcmp(cmd,"map_restart"))	{ if (canUse(ent, qtrue)) cmd_restart(ent); else cantUse(ent); return qtrue;} 
+	else if (!strcmp(cmd,"reset_match"))	{ if (canUse(ent, qtrue)) cmd_resetmatch(ent); else cantUse(ent); return qtrue;} 
+	else if (!strcmp(cmd,"swap_teams"))		{ if (canUse(ent, qtrue)) cmd_swap(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"shuffle"))		{ if (canUse(ent, qtrue)) cmd_shuffle(ent); else cantUse(ent); return qtrue;}
 	else if (!strcmp(cmd,"spec999"))		{ if (canUse(ent, qtrue)) cmd_specs999(ent); else cantUse(ent); return qtrue;} 	
 	else if (!strcmp(cmd,"whereis"))		{ if (canUse(ent, qtrue)) cmd_revealCamper(ent); else cantUse(ent); return qtrue;}
@@ -2391,6 +2400,7 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd, "start"))			{ if (canUse(ent, qtrue)) cmd_tourney(ent, qtrue); else cantUse(ent); return qtrue; }
 	else if (!strcmp(cmd, "stop"))			{ if (canUse(ent, qtrue)) cmd_tourney(ent, qfalse); else cantUse(ent); return qtrue; }
 	else if (!strcmp(cmd, "forceclan"))		{ if (canUse(ent, qtrue)) cmd_forceClan(ent); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "force"))			{ cmd_force(ent); return qtrue; }
 
 	// Any other command (server cvars..)
 	else if (canUse(ent, qfalse))			{ cmdCustom(ent, cmd); return qtrue; }	
@@ -2445,9 +2455,9 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("warn", "Shows warning message to all in global chat and center print.", "!warn <msg>")
 	_HELP("no", "Cancels any vote in progress.", NULL)
 	_HELP("yes", "Passes any vote in progress.", NULL)
-	_HELP("restart", "Restarts the round.", NULL)
-	_HELP("reset", "Resets the match.", NULL)
-	_HELP("swap", "Swaps the teams.", NULL)
+	_HELP("map_restart", "Restarts the round.", NULL)
+	_HELP("reset_match", "Resets the match.", NULL)
+	_HELP("swap_teams", "Swaps the teams.", NULL)
 	_HELP("shuffle", "Shuffles the teams- Optionally use @ to shuffle without match reset.", "!shuffle @")
 	_HELP("spec999", "Moves all lagged (999) players to spectators.", NULL)
 	_HELP("whereis", "Reveals players location to all.", "Uses client slot number!")
