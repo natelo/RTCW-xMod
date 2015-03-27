@@ -1699,13 +1699,23 @@ team_info teamInfo[TEAM_NUM_TEAMS];
 
 /*
 =============
-Track locked stuff (team/specs)
+Track locked stuff (specs/teams/scores)
 =============
 */
 void G_swapTeamLocks(void) {
 	qboolean fLock = teamInfo[TEAM_RED].spec_lock;
+	int tScore = teamInfo[TEAM_RED].team_score;
+	
 	teamInfo[TEAM_RED].spec_lock = teamInfo[TEAM_BLUE].spec_lock;
 	teamInfo[TEAM_BLUE].spec_lock = fLock;
+
+	fLock = teamInfo[TEAM_RED].team_lock;
+	teamInfo[TEAM_RED].team_lock = teamInfo[TEAM_BLUE].team_lock;
+	teamInfo[TEAM_BLUE].team_lock = fLock;
+
+	// Update scores as well
+	teamInfo[TEAM_RED].team_score = teamInfo[TEAM_BLUE].team_score;
+	teamInfo[TEAM_BLUE].team_score = tScore;
 }
 
 /*
@@ -1820,12 +1830,15 @@ Resets a team's settings
 */
 void G_teamReset(int team_num, qboolean fClearSpecLock) {
 	teamInfo[team_num].team_lock = (g_gamestate.integer == GS_PLAYING);
-	teamInfo[team_num].team_name[0] = 0;
 	teamInfo[team_num].timeouts = match_timeoutcount.integer;
+	teamInfo[team_num].team_score = 0;
 
 	if (fClearSpecLock) {
 		teamInfo[team_num].spec_lock = qfalse;
 	}
+
+	// Something went haywire..reset whole damn thing..
+	//G_TourneyHandle(qtrue, qfalse);
 }
 
 /*
@@ -1930,7 +1943,7 @@ qboolean G_playersReady(void) {
 
 	// Notify them that threshold was reached..
 	if (((ready + notReady > 0) && 100 * ready / (ready + notReady) >= match_readypercent.integer) == qtrue) {
-		AP(va("popin \"Ready [^n%i^7] percent Threshold reached! Starting..", match_readypercent.integer));
+		AP(va("popin \"Ready [^n%i percent^7] Threshold reached! Starting..", match_readypercent.integer));
 	}		
 
 	return (level.readyAll || ((ready + notReady > 0) && 100 * ready / (ready + notReady) >= match_readypercent.integer));

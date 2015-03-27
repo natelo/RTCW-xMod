@@ -2109,6 +2109,9 @@ void ClientBegin( int clientNum ) {
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
+
+	// L0 - Sort any tournament data if it's on
+	G_parseTourneyInfo(qtrue);
 }
 
 /*
@@ -2433,6 +2436,29 @@ void ClientSpawn(gentity_t *ent, qboolean revived) {
 	BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
 }
 
+/*
+================
+OSPx - check for team stuff..
+================
+*/
+void handleEmptyTeams(void) {
+	if (g_gamestate.integer == GS_PLAYING) {
+		if (!level.axisPlayers) {
+			G_teamReset(TEAM_RED, qtrue);
+
+			// Reset match if paused with an empty team
+			if (level.match_pause > PAUSE_UNPAUSING)
+				trap_SendConsoleCommand(EXEC_APPEND, va("reset_match"));
+		}
+		else if (!level.alliedPlayers) {
+			G_teamReset(TEAM_BLUE, qtrue);
+
+			// Reset match if paused with an empty team
+			if (level.match_pause > PAUSE_UNPAUSING)
+				trap_SendConsoleCommand(EXEC_APPEND, va("reset_match"));
+		}
+	}
+}
 
 /*
 ===========
@@ -2572,6 +2598,9 @@ void ClientDisconnect( int clientNum ) {
 	// L0 - sync teams
 	if (g_teamAutoBalance.integer )
 		checkEvenTeams();	
+
+	// L0 - Track any team stuff..
+	handleEmptyTeams();
 
 	if ( ent->r.svFlags & SVF_BOT ) {
 		BotAIShutdownClient( clientNum );

@@ -820,7 +820,18 @@ typedef struct specName_s
 	int         lastInvisibleTime;
 	qboolean    visible;
 	float		alpha;
-}specName_t;
+} specName_t;
+
+// L0 - Tournament info
+typedef struct {
+	int rounds;
+	int timeouts;
+	int timeoutAxis;
+	int timeoutAllied;
+	int resultAxis;
+	int resultAllied;
+	qboolean inProgress;
+} cg_tournamentInfo_t;
 
 typedef struct {
 	int clientFrame;                // incremented each frame
@@ -1148,6 +1159,10 @@ typedef struct {
 	char popinPrint[1024];
 	int popinPrintLines;
 	qboolean popinBlink;
+
+	// Tournament
+	int tourTotalTeam[TEAM_NUM_TEAMS];
+	cg_tournamentInfo_t tournamentInfo;
 // -OSPx
 
 	pmoveExt_t pmext;	
@@ -2002,6 +2017,8 @@ extern vmCvar_t	vp_drawnames;
 extern vmCvar_t	cg_drawNames;
 extern vmCvar_t cg_enemyRadar;
 extern vmCvar_t	cg_showFlags;
+extern vmCvar_t cg_tournamentHUD;
+extern vmCvar_t cg_showPlayingTimer;
 
 // Mappings
 extern vmCvar_t int_ui_blackout;
@@ -2129,6 +2146,8 @@ extern char systemChat[256];
 extern char teamChat1[256];
 extern char teamChat2[256];
 extern char cg_fxflags;  // JPW NERVE
+float CG_CalculateReinfTimeSpecs(team_t team);
+char *CG_CalculateTimeIn(void);
 
 void CG_AddLagometerFrameInfo( void );
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
@@ -2463,10 +2482,12 @@ void CG_DrawInformation( void );
 void CG_DemoClick(int key);
 void CG_createControlsWindow(void);
 void CG_demoView(void);
+void CG_tournamentOverlay(void);
 
 //
 // cg_scoreboard.c
 //
+qboolean cf_draw(float x, float y, float fade, int clientNum);
 qboolean CG_DrawScoreboard( void );
 void CG_DrawTourneyScoreboard( void );
 
@@ -2777,6 +2798,12 @@ void CG_PopinPrint(const char *str, int y, int charWidth, qboolean blink);
 #define CREADY_NONE		0x00
 #define CREADY_AWAITING	0x01
 #define CREADY_PENDING	0x02
+
+// Tournament Overlay
+#define TOURINFO_TEXTSIZE	10
+#define TOURINFO_RIGHT		640 - 3
+#define TOURINFO_TOP		100
+#define TOURINFO_PLAYERS	32	
 
 // Macros
 #define Pri( x ) CG_Printf( "[cgnotify]%s", CG_LocalizeServerCommand( x ) )

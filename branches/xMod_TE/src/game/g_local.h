@@ -450,7 +450,6 @@ typedef enum {
 	ADM_4,	  // Level 4 Admin 
 	ADM_5	  // Level 5 Admin
 } admLvls_t;
-// End
 
 // client data that stays across multiple levels or tournament restarts
 // this is achieved by writing all the data to cvar strings at game shutdown
@@ -908,6 +907,9 @@ typedef struct {
 	qboolean readyAll;
 	qboolean readyPrint;
 	qboolean readyTeam[TEAM_NUM_TEAMS];
+
+	// Tournament
+	qboolean toureyInfoSent;	
 // ~L0
 } level_locals_t;
 
@@ -921,7 +923,7 @@ typedef enum {
 typedef struct {
 	qboolean spec_lock;
 	qboolean team_lock;
-	char team_name[24];
+	int team_score;
 	int timeouts;
 } team_info;
 // -OSP
@@ -1454,6 +1456,7 @@ extern vmCvar_t		match_timeoutlength;
 extern vmCvar_t		match_timeoutcount;
 extern vmCvar_t		match_minplayers;
 extern vmCvar_t		match_readypercent;
+extern vmCvar_t		match_rounds;
 
 // Game
 extern vmCvar_t		g_dropReload;
@@ -1555,6 +1558,9 @@ extern vmCvar_t		g_httpFlushFile;
 extern vmCvar_t		g_httpIgnoreSafeSize;
 extern vmCvar_t		g_httpEvent;
 extern vmCvar_t		g_httpEventPaused;
+
+// Static
+extern vmCvar_t		int_match_started;
 
 // Stats
 extern vmCvar_t		g_doubleKills;
@@ -1883,6 +1889,10 @@ qboolean canJoinMaxLives( gentity_t *ent );
 // Match stuff
 void G_loadMatchGame(void);
 void G_spawnPrintf(int print_type, int print_time, gentity_t *owner);
+// Tourney stuff
+void G_TourneyHandle(qboolean dReset, qboolean dClear);
+void G_TourneyState(void);
+void G_parseTourneyInfo(qboolean refresh);
 
 //
 // g_players.c

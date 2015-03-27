@@ -85,10 +85,26 @@ static void CG_ParseScores( void ) {
 
 		cg.scores[i].team = cgs.clientinfo[cg.scores[i].client].team;
 	}
-#ifdef MISSIONPACK
-	CG_SetScoreSelection( NULL );
-#endif
+}
 
+/*
+=================
+L0 - CG_TourneyInfo
+
+=================
+*/
+void CG_ParseTourneyInfo(void) {
+
+	// L0 - Tourney stuff
+	if (cgs.tournamentMode > TOURNY_NONE) {
+		cg.tournamentInfo.rounds = atoi( CG_Argv(1) );
+		cg.tournamentInfo.timeouts = atoi( CG_Argv(2) );
+		cg.tournamentInfo.timeoutAxis = atoi( CG_Argv(3) );
+		cg.tournamentInfo.timeoutAllied = atoi( CG_Argv(4) );
+		cg.tournamentInfo.resultAxis = atoi( CG_Argv(5) );
+		cg.tournamentInfo.resultAllied = atoi( CG_Argv(6) );
+		cg.tournamentInfo.inProgress = ( atoi( CG_Argv(7) ) ? qtrue : qfalse );
+	}
 }
 
 /*
@@ -1521,6 +1537,12 @@ static void CG_ServerCommand( void ) {
 
 	if ( !strcmp( cmd, "scores" ) ) {
 		CG_ParseScores();
+		return;
+	}
+
+	// L0 - Tournament info
+	if (!strcmp(cmd, "tourneyinfo")) {
+		CG_ParseTourneyInfo();
 		return;
 	}
 

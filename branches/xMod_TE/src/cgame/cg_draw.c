@@ -959,67 +959,36 @@ static float CG_DrawRespawnTimer(float y) {
 
 /*
 ========================
-L0
-Respawn Timer for Specs in tournament mode
-========================
-CG_CalculateReinfTimeSpecs
-*/
-extern float CG_CalculateReinfTimeSpecs(team_t team);
-static float CG_DrawSpecsRespawnTimer(float y) {
-	char		*str = { 0 };
-	char		*str2 = { 0 };
-	int			w;
-	float		x;
-
-	if (cgs.tournamentMode < TOURNY_BASIC)
-		return y;
-
-	// Don't draw timer if client is checking scoreboard
-	if (CG_DrawScoreboard())
-		return y;
-
-	if (cgs.gamestate != GS_PLAYING) {
-		str = "";
-	}
-	else {
-		str  = va("Re: %-3d", (int)CG_CalculateReinfTimeSpecs(TEAM_RED));
-		str2 = va("Re: %-3d", (int)CG_CalculateReinfTimeSpecs(TEAM_BLUE));
-	}
-
-	w = CG_DrawStrlen(str) * TINYCHAR_WIDTH;
-	x = 68 + 3;
-	y = 480 - 245;
-
-	if (cgs.gamestate != GS_PLAYING) {
-		CG_DrawStringExt((x + 4) - w, y, str, colorYellow, qtrue, qtrue, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
-	}
-	else if (cgs.clientinfo[cg.snap->ps.clientNum].team == TEAM_SPECTATOR){
-		CG_DrawStringExt(x - w, y, str, colorRed, qtrue, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
-		CG_DrawStringExt(x - w, y - 10, str2, colorBlue, qtrue, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
-	}
-	return y += TINYCHAR_HEIGHT;
-}
-
-/*
-========================
 OSPx
 Counts time in
-
-NOTE: Don't try to read this mess..it will break you.
 ========================
 */
 void CG_startCounter(void ) {
-	char *seconds = ((cg.timein % 60 < 10) ? va("0%d", cg.timein % 60) : va("%d", cg.timein % 60));
-	int minutes = cg.timein / 60;
-	char *hours = ((minutes / 60 < 10) ? ( minutes / 60 ? va("0%d:", minutes / 60) : "" ) : va("%d:", minutes / 60));
-	char *str = va("^nT: ^7%s%s:%s", (hours ? va("%s", hours) : ""), ( minutes ? (minutes < 10 ? va("0%d", minutes) : va("%d", minutes)): "00" ), seconds);
-
 	// Don't draw timer if client is checking scoreboard
 	if (CG_DrawScoreboard() || !cg.demoPlayback || (cg.demoPlayback && !demo_showTimein.integer))
 		return;
 	
 	// It is aligned under Respawn timer..
-	CG_DrawStringExt(16, 243, str, colorWhite, qfalse, qtrue, SMALLCHAR_WIDTH-3, SMALLCHAR_HEIGHT-4, 0);	
+	CG_DrawStringExt(16, 243, va("^nT: ^7%s", CG_CalculateTimeIn()), colorWhite, qfalse, qtrue, SMALLCHAR_WIDTH - 3, SMALLCHAR_HEIGHT - 4, 0);
+	return;
+}
+
+/*
+========================
+OSPx
+Counts time in but for playing rather than demo (different po
+========================
+*/
+void CG_gameStartCounter(void) {
+	char *str;
+
+	// Don't draw timer if client is checking scoreboard
+	if (CG_DrawScoreboard() || cg.demoPlayback || !cg_showPlayingTimer.integer)
+		return;
+
+	// It is aligned under Respawn timer..
+	str = va("^nTime spent on this Map: ^7%s", CG_CalculateTimeIn());
+	CG_DrawStringExt(TOURINFO_RIGHT - (CG_DrawStrlen(str) * (SMALLCHAR_WIDTH - 4)) - 3, 470, str, colorWhite, qfalse, qtrue, SMALLCHAR_WIDTH - 4, SMALLCHAR_HEIGHT - 7, 0);
 	return;
 }
 
@@ -1056,12 +1025,12 @@ static void CG_DrawUpperRight( void ) {
 	if (cg_drawReinforcementTime.integer) {
 		y = CG_DrawRespawnTimer(y);
 	}
-
-	// L0 - Specs Respawn time..
-	y = CG_DrawSpecsRespawnTimer(y);
-
-	// OSPx - Time Counter
+	
+	// OSPx - Time Counter (demos)
 	CG_startCounter();
+
+	// OSPx - Time Counter (playing)
+	CG_gameStartCounter();
 }
 
 /*
@@ -2691,6 +2660,22 @@ float CG_CalculateReinfTimeSpecs(team_t team) {
 
 /*
 =================
+L0
+
+NOTE: Don't try to read this mess..it will break you.
+=================
+*/
+char *CG_CalculateTimeIn(void) {
+	char *seconds = ((cg.timein % 60 < 10) ? va("0%d", cg.timein % 60) : va("%d", cg.timein % 60));
+	int minutes = cg.timein / 60;
+	char *hours = ((minutes / 60 < 10) ? (minutes / 60 ? va("0%d:", minutes / 60) : "") : va("%d:", minutes / 60));
+	char *str = va("%s%s:%s", (hours ? va("%s", hours) : ""), (minutes ? (minutes < 10 ? va("0%d", minutes) : va("%d", minutes)) : "00"), seconds);
+
+	return str;
+}
+
+/*
+=================
 CG_DrawLimboMessage
 =================
 */
@@ -3490,8 +3475,8 @@ void CG_DrawObjectiveIcons() {
 		s = va("^3Warmup");
 	}
 	else if (cgs.coustomGameType > CGT_NONE) {
-		s = va("^nDM %s", (cgs.tournamentMode > TOURNY_NONE ? "Tourney" : ""));
-		fade = Q_fabs(sin(cg.time * 0.002)) * cg_hudAlpha.value;
+		s = "^nDM";
+		fade = cg_hudAlpha.value;
 	} else if (msec < 0) {
 		fade = Q_fabs( sin( cg.time * 0.002 ) ) * cg_hudAlpha.value;
 		s = va( "0:00" );
@@ -4089,6 +4074,10 @@ static void CG_Draw2D( void ) {
 
 	// OSPx - window updates
 	CG_windowDraw();
+
+	// L0 - Tourney HUD
+	if (cgs.tournamentMode > TOURNY_NONE)
+		CG_tournamentOverlay();
 
 	// Ridah, draw flash blends now
 	CG_DrawFlashBlend();

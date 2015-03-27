@@ -311,6 +311,8 @@ vmCvar_t vp_drawnames;
 vmCvar_t cg_drawNames;
 vmCvar_t cg_enemyRadar;
 vmCvar_t cg_showFlags;
+vmCvar_t cg_tournamentHUD;
+vmCvar_t cg_showPlayingTimer;
 
 // Mappings
 vmCvar_t int_ui_blackout;
@@ -549,6 +551,8 @@ cvarTable_t cvarTable[] = {
 	{ &cg_drawNames, "cg_drawNames", "1", CVAR_ROM },
 	{ &cg_enemyRadar, "cg_enemyRadar", "0", CVAR_ARCHIVE },
 	{ &cg_showFlags, "cg_showFlags", "1", CVAR_ARCHIVE },
+	{ &cg_tournamentHUD, "cg_tournamentHUD", "1", CVAR_ARCHIVE },
+	{ &cg_showPlayingTimer, "cg_showPlayingTimer", "1", CVAR_ARCHIVE },
 
 	{ &int_ui_blackout, "ui_blackout", "0", CVAR_ROM },
 

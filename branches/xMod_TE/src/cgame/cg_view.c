@@ -2166,13 +2166,15 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	DEBUGTIME
 	
 	// OSPx - Count time..
-	if (!cg.timeCounter) {
-		cg.timeCounter = cg.time + 1000;
-		cg.timein++;
-	}
-	else if (cg.timeCounter < cg.time) {
-		cg.timeCounter = cg.time + 1000;
-		cg.timein++;
+	if (cg.demoPlayback || cg.tournamentInfo.inProgress) {
+		if (!cg.timeCounter) {
+			cg.timeCounter = cg.time + 1000;
+			cg.timein++;
+		}
+		else if (cg.timeCounter < cg.time) {
+			cg.timeCounter = cg.time + 1000;
+			cg.timein++;
+		}
 	}
 }
 

@@ -450,7 +450,7 @@ void cmd_kick(gentity_t *ent) {
 		CP("print \"Client not on server^1!\n\"");
 		return;
 	} else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	} 
 		
@@ -639,7 +639,7 @@ void cmd_fling(gentity_t *ent, int type) {
 		return;
 	}
 	else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	}
 
@@ -699,7 +699,7 @@ void cmd_specs(gentity_t *ent) {
 		CP("print \"Client not on server^3!\n\"");
 		return;
 	} else if (count > 1) {		
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	}		
 		
@@ -739,7 +739,7 @@ void cmd_axis(gentity_t *ent) {
 		CP("print \"Client not on server^3!\n\"");
 		return;
 	} else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	}		
 
@@ -779,7 +779,7 @@ void cmd_allied(gentity_t *ent) {
 		CP("print \"Client not on server^3!\n\"");
 		return;
 	 } else if (count > 1) {	
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	}
 
@@ -1265,7 +1265,7 @@ void cmd_ignore(gentity_t *ent, qboolean unignore) {
 		CP("print \"Client not on server^1!\n\"");
 		return;
 	} else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	} 
 		
@@ -1371,7 +1371,7 @@ void cmd_permignore(gentity_t *ent, qboolean unignore) {
 		CP("print \"Client not on server^1!\n\"");
 		return;
 	} else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	} 
 		
@@ -1480,7 +1480,7 @@ void cmd_banGuid(gentity_t *ent) {
 			CP("print \"Client not on server^3!\n\"");
 		return;
 		} else if (count > 1) {			
-			CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+			CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 		} 
 		
@@ -1555,7 +1555,7 @@ void cmd_tempbanGuid(gentity_t *ent) {
 		CP("print \"Client not on server^3!\n\"");
 	return;
 	} else if (count > 1){			
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 	return;
 	} else if (!is_numeric(ent->client->pers.cmd3)) {
 		CPx(ent-g_entities, "print \"^1Error: ^7Invalid syntax used for tempban command. Make sure you use numbers only.\n\"");
@@ -1604,7 +1604,7 @@ void cmd_banIp(gentity_t *ent) {
 		CP("print \"Client not on server^3!\n\"");
 		return;
 	} else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	} 
 		
@@ -1651,7 +1651,7 @@ void cmd_tempBanIp(gentity_t *ent) {
 		CP("print \"Client not on server^3!\n\"");
 		return;
 	} else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	} 
 		
@@ -1790,6 +1790,11 @@ void cmd_specHandle(gentity_t *ent, qboolean lock) {
 		return;
 	}
 
+	if (g_tournamentMode.integer == TOURNY_FULL && !lock) {
+		CP("print \"You cannot unlock team for Spectators in Full Tournament Mode!\n\"");
+		return;
+	}
+
 #define STM(x) !(strcmp(ent->client->pers.cmd2,x))
 
 	if (STM("both")) {
@@ -1872,11 +1877,6 @@ void cmd_handleTeamLock(gentity_t *ent, qboolean tLock) {
 	char *teamTag = "^3Both^7";
 	char *log;
 
-	if (g_tournamentMode.integer == TOURNY_FULL) {
-		CP("print \"^1Error: ^7Tournament mode 2 is enabled, teams are auto (un)locked..\n\"");
-		return;
-	}
-
 	if (!Q_stricmp(cmd, "")) {
 		CP(va("print \"^1Error: ^7Please select which team you wish to %s!\n\"", action));
 		return;
@@ -1941,8 +1941,8 @@ void cmd_pauseHandle(gentity_t *ent, qboolean fPause) {
 	char *status[2] = { "^3UN", "^3" };
 	char *log;
 
-	if ((!level.alliedPlayers || !level.axisPlayers) && fPause) {
-		CP("print \"^1Error^7: Pause can only be used when both teams have players!\n\"");
+	if ((!level.alliedPlayers && !level.axisPlayers) && fPause) {
+		CP("print \"^1Error^7: Pause can only be used when at least 1 team has a player!\n\"");
 		return;
 	}
 
@@ -2014,6 +2014,56 @@ void cmd_readyHandle(gentity_t *ent, qboolean unready) {
 
 /*
 ===========
+Tourney
+
+Starts or stops the tourney 
+===========
+*/
+void cmd_tourney(gentity_t *ent, qboolean start) {	
+	char *tag = sortTag(ent);
+	char *log;
+
+	if (g_tournamentMode.integer != TOURNY_FULL) {
+		CP("print \"Tournament mode 2 has to be enabled for this command to become available.\n");
+		return;
+	}
+
+	if ((!level.alliedPlayers || !level.axisPlayers) && start) {
+		CP("print \"^1Error^7: Tournament can only start when Both teams have players!\n\"");
+		return;
+	}
+
+	if (start) {
+		if (int_match_started.integer) {
+			CP("print \"^1Error^7: Tournament is already in progress!\n");
+			return;
+		}
+		
+		AP(va("chat \"console: %s has ^3STARTED ^7tournament!\n", tag));
+		AP(va("@print \"%s has ^3STARTED ^7tournament!\n", ent->client->pers.netname));
+		G_TourneyHandle(qfalse, qfalse);
+	}
+	else {
+		if (!int_match_started.integer) {
+			CP("print \"^1Error^7: Tournament is not in progress..\n");
+			return;
+		}
+		
+		AP(va("chat  \"console: %s has ^3STOPPED ^7tournament!\n", tag));
+		AP(va("@print \"%s has ^3STOPPED ^7tournament!\n", ent->client->pers.netname));
+		G_TourneyHandle(qtrue, qtrue);
+	}
+
+	// Log it
+	log = va("Player %s (IP: %d.%d.%d.%d) has %s the tournament.",
+		ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1],
+		ent->client->sess.ip[2], ent->client->sess.ip[3], (start ? "started" : "stopped") );
+
+	logEntry(ADMACT, log);
+}
+
+/*
+===========
 Getstatus
 
 Prints IP's, GUIDs and some match info..
@@ -2038,12 +2088,12 @@ void cmd_getstatus(gentity_t *ent) {
 	if (teamInfo[TEAM_BLUE].spec_lock || teamInfo[TEAM_RED].spec_lock)
 		CP(va("print \"Speclocked: %s^7\n\"",
 			((teamInfo[TEAM_BLUE].spec_lock && teamInfo[TEAM_RED].spec_lock) ? "^3Both" :
-			((teamInfo[TEAM_BLUE].spec_lock ? "^3Allied" : "^1Axis"))
+			((teamInfo[TEAM_BLUE].spec_lock ? "^4Allied" : "^1Axis"))
 		)));
 	if (teamInfo[TEAM_BLUE].team_lock || teamInfo[TEAM_RED].team_lock)
 		CP(va("print \"Teamlocked: %s^7\n\"",
 			((teamInfo[TEAM_BLUE].team_lock && teamInfo[TEAM_RED].team_lock) ? "^3Both" :
-			((teamInfo[TEAM_BLUE].team_lock ? "^3Allied" : "^1Axis"))
+			((teamInfo[TEAM_BLUE].team_lock ? "^4Allied" : "^1Axis"))
 		)));
 	CP("print \"^3--------------------------------------------------------------------------\n\"");	
 	CP("print \"^7Slot : Team : Name       : ^3IP              ^7: ^3Guid         ^7: Status \n\"");
@@ -2251,8 +2301,10 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd, "unlock"))		{ if (canUse(ent, qtrue)) cmd_handleTeamLock(ent, qfalse); else cantUse(ent); return qtrue; }
 	else if (!strcmp(cmd, "pause"))			{ if (canUse(ent, qtrue)) cmd_pauseHandle(ent, qtrue); else cantUse(ent); return qtrue; }
 	else if (!strcmp(cmd, "unpause"))		{ if (canUse(ent, qtrue)) cmd_pauseHandle(ent, qfalse); else cantUse(ent); return qtrue; }
-	else if (!strcmp(cmd, "allready"))		{ if (canUse(ent, qtrue)) cmd_readyHandle(ent, qtrue); else cantUse(ent); return qtrue; }
-	else if (!strcmp(cmd, "unreadyall"))	{ if (canUse(ent, qtrue)) cmd_readyHandle(ent, qfalse); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "allready"))		{ if (canUse(ent, qtrue)) cmd_readyHandle(ent, qfalse); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "unreadyall"))	{ if (canUse(ent, qtrue)) cmd_readyHandle(ent, qtrue); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "start"))			{ if (canUse(ent, qtrue)) cmd_tourney(ent, qtrue); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "stop"))			{ if (canUse(ent, qtrue)) cmd_tourney(ent, qfalse); else cantUse(ent); return qtrue; }
 
 	// Any other command (server cvars..)
 	else if (canUse(ent, qfalse))			{ cmdCustom(ent, cmd); return qtrue; }	
@@ -2338,6 +2390,8 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("unpause", "Resumes a match.", "!unpause")
 	_HELP("readyall", "Sets status of both teams as Ready and goes to countdown.", "!readyall")
 	_HELP("unreadyall", "Cancels countdown and returns match back in warmup state.", "!unreadyall")
+	_HELP("start", "Starts the tournament.", "!start")
+	_HELP("stop", "Stops the tournament.", "!stop")
 	_HELP("*", "Any default command that's allowed per Admin level can be executed accordingly. Note that adding @ at the end will execute it silently otherwise it will be printed to all.", "!g_allowVote 1 or !g_allowVote 1 @ for silent change")
 	// --> Add new ones after this line..
 

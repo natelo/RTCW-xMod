@@ -550,50 +550,11 @@ void Cmd_SoftKill_f( gentity_t *ent ) {
 
 /*
 =================
-OSPx - ET Port
-=================
-*/
-void G_TeamDataForString(const char* teamstr, int clientNum, team_t* team, spectatorState_t* sState, int* specClient) {
-	*sState = SPECTATOR_NOT;
-	if (!Q_stricmp(teamstr, "follow1")) {
-		*team = TEAM_SPECTATOR;
-		*sState = SPECTATOR_FOLLOW;
-		if (specClient) {
-			*specClient = -1;
-		}
-	}
-	else if (!Q_stricmp(teamstr, "follow2")) {
-		*team = TEAM_SPECTATOR;
-		*sState = SPECTATOR_FOLLOW;
-		if (specClient) {
-			*specClient = -2;
-		}
-	}
-	else if (!Q_stricmp(teamstr, "spectator") || !Q_stricmp(teamstr, "s")) {
-		*team = TEAM_SPECTATOR;
-		*sState = SPECTATOR_FREE;
-	}
-	else if (!Q_stricmp(teamstr, "red") || !Q_stricmp(teamstr, "r") || !Q_stricmp(teamstr, "axis")) {
-		*team = TEAM_RED;
-	}
-	else if (!Q_stricmp(teamstr, "blue") || !Q_stricmp(teamstr, "b") || !Q_stricmp(teamstr, "allies")) {
-		*team = TEAM_BLUE;
-	}
-	else {
-		*team = PickTeam(clientNum);
-		if (!G_teamJoinCheck(*team, &g_entities[clientNum])) {
-			*team = ((TEAM_RED | TEAM_BLUE) & ~*team);
-		}
-	}
-}
-
-/*
-=================
 SetTeam
 =================
 */
 void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
-	team_t				team, oldTeam;
+	int					team, oldTeam;
 	gclient_t			*client;
 	int					clientNum;
 	spectatorState_t	specState;
@@ -607,9 +568,6 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 	clientNum = client - level.clients;
 	specClient = 0;
 
-	// OSPx - New way of handling..
-	G_TeamDataForString(s, client - level.clients, &team, &specState, &specClient);
-
 	// OSPx - Pause check 
 	// NOTE: Admin can still force user/self. but has to be explicitly requested...
 	if (level.match_pause != PAUSE_NONE && !forced) {
@@ -617,24 +575,48 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 		return; // ignore the request
 	}
 
-	// OSPx - New way ..
-	if (team != TEAM_SPECTATOR && !forced) {
-
-		// OSPx - Ensure the player can join
-		if (!G_teamJoinCheck(team, ent)) {
-			// Leave them where they were before the command was issued			
-			return;
+	specState = SPECTATOR_NOT;
+	if (!Q_stricmp(s, "scoreboard") || !Q_stricmp(s, "score")) {
+		team = TEAM_SPECTATOR;
+		specState = SPECTATOR_SCOREBOARD;
+	}
+	else if (!Q_stricmp(s, "follow1")) {
+		team = TEAM_SPECTATOR;
+		specState = SPECTATOR_FOLLOW;
+		specClient = -1;
+	}
+	else if (!Q_stricmp(s, "follow2")) {
+		team = TEAM_SPECTATOR;
+		specState = SPECTATOR_FOLLOW;
+		specClient = -2;
+	}
+	else if (!Q_stricmp(s, "spectator") || !Q_stricmp(s, "s")) {
+		team = TEAM_SPECTATOR;
+		specState = SPECTATOR_FREE;
+	}
+	else if (g_gametype.integer >= GT_TEAM) {
+		// if running a team game, assign player to one of the teams
+		specState = SPECTATOR_NOT;
+		if (!Q_stricmp(s, "red") || !Q_stricmp(s, "r")) {
+			team = TEAM_RED;
+		}
+		else if (!Q_stricmp(s, "blue") || !Q_stricmp(s, "b")) {
+			team = TEAM_BLUE;
+		}
+		else {
+			// pick the team with the least number of players
+			team = PickTeam(clientNum);
 		}
 
 		// NERVE - SMF
-		if (g_noTeamSwitching.integer && team != ent->client->sess.sessionTeam && g_gamestate.integer == GS_PLAYING) {
+		if (g_noTeamSwitching.integer && team != ent->client->sess.sessionTeam && g_gamestate.integer == GS_PLAYING && !forced) {
 			CPx(clientNum, "cp \"You cannot switch during a match, please wait until the round ends.\n\"");
-			return; // ignore the request
+			return;	// ignore the request
 		}
 
 		// NERVE - SMF - merge from team arena
-		if (g_teamForceBalance.integer) {
-			int counts[TEAM_NUM_TEAMS];
+		if (g_teamForceBalance.integer && !forced) {
+			int		counts[TEAM_NUM_TEAMS];
 
 			counts[TEAM_BLUE] = TeamCount(ent - g_entities, TEAM_BLUE);
 			counts[TEAM_RED] = TeamCount(ent - g_entities, TEAM_RED);
@@ -648,12 +630,21 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 				CPx(clientNum, "cp \"The ^4Allies ^7have too many players.\n\"");
 				return; // ignore the request
 			}
-
 			// It's ok, the team we are switching to has less or same number of players
 		}
+		// -NERVE - SMF 
+
+		// OSPx - Check for team locks or max players..
+		if (!G_teamJoinCheck(team, ent) && !forced) {
+			return;
+		}
+	}
+	else {
+		// force them to spectators if there aren't any spots free
+		team = TEAM_FREE;
 	}
 
-	// OSPx - Maybe I should remove this? - Since team_maxplayers is essentially a same thing..
+	// OSPx - Maybe I should remove this? - Since team_maxplayers is essentially the same thing..
 	if (g_maxGameClients.integer > 0 && level.numNonSpectatorClients >= g_maxGameClients.integer && !forced) {
 		CPx(clientNum, va("cp \"The %s team is full!\n\"2", aTeams[team]));
 		team = TEAM_SPECTATOR;
@@ -669,39 +660,40 @@ void SetTeam( gentity_t *ent, char *s, qboolean forced ) {
 
 	// NERVE - SMF - prevent players from switching to regain deployments
 	if ( g_maxlives.integer > 0 && ent->client->ps.persistant[PERS_RESPAWNS_LEFT] == 0 &&
-		oldTeam != TEAM_SPECTATOR ) {
-		trap_SendServerCommand( clientNum, 
-			"cp \"You can't switch teams because you are out of lives.\n\" 3" );
+		team != TEAM_SPECTATOR && g_gamestate.integer == GS_PLAYING && !forced ) {
+		CPx( clientNum,  "cp \"You can't switch teams because you are out of lives.\n\" 3" );
 		return;	// ignore the request
 	}
 
 	// L0 - in warmup wait 1.2 sec before you allow team switch to fix the team switch nuke
 	// After warmup we have teamswitch cvar that will handle it..
 	if ( g_gametype.integer >= GT_WOLF && team != oldTeam && !level.warmupTime == 0 && (level.time - client->pers.enterTime) < 1200 && !forced ) {
-		trap_SendServerCommand( clientNum, 
-			"cp \"Wait ^31 ^7sec before team switch^3!\n\" 3" );
+		CPx( clientNum, "cp \"Wait ^31 ^7sec before team switch^3!\n\" 3" );
 		return;
 	}
 	// L0 - end
 
 	// DHM - Nerve :: Force players to wait 5 seconds before they can join a new team.
 	if ( g_gametype.integer >= GT_WOLF && team != oldTeam && level.warmupTime == 0 && !client->pers.initialSpawn
-		&& ( (level.time - client->pers.connectTime) > 10000 ) && ( (level.time - client->pers.enterTime) < 5000 ) ) {
-		trap_SendServerCommand( ent-g_entities, 
-			va( "cp \"You must wait ^3%i ^7seconds before joining ^7a new team.\n\" 3", (int)(5 - ((level.time - client->pers.enterTime)/1000))) );
+		&& ( (level.time - client->pers.connectTime) > 10000 ) && ( (level.time - client->pers.enterTime) < 5000 ) && !forced) {
+		CPx( ent-g_entities, va( "cp \"You must wait ^3%i ^7seconds before joining ^7a new team.\n\" 3", 
+			(int)(5 - ((level.time - client->pers.enterTime)/1000))) );
 		return;
 	}
 	// dhm
 
 	// L0 - Max lives evading check
-	if ( ent->client->pers.evadingMaxLives && !forced && oldTeam != TEAM_SPECTATOR)
+	if (ent->client->pers.evadingMaxLives && !forced && oldTeam != TEAM_SPECTATOR && g_gamestate.integer == GS_PLAYING)
 	{	
 		CP("cp \"You can't join the battle because you are out of lives!\n\"2");
 		G_LogPrintf( "[MaxLives] Joining prevented for %s (GUID %s)\n", ent->client->pers.netname, ent->client->sess.guid );
 		return;
 	}
 
-	if ((g_maxlives.integer || g_axismaxlives.integer || g_alliedmaxlives.integer))
+	if ((g_maxlives.integer || g_axismaxlives.integer || g_alliedmaxlives.integer) 
+		&& g_gamestate.integer == GS_PLAYING
+		&& team != TEAM_SPECTATOR
+	)
 	{
 		if (!canJoinMaxLives( ent )) // L0 - Fixme - AXIS/ALLIED count is wrong..needs NEW team check..
 		{

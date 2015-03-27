@@ -1074,6 +1074,11 @@ void Cmd_speclock(gentity_t *ent, qboolean lock) {
 		return;
 	}
 
+	if (g_tournamentMode.integer == TOURNY_FULL) {
+		CP("print \"You cannot use this feature Tournament Mode!\n\"");
+		return;
+	}
+
 	if (team == TEAM_RED || team == TEAM_BLUE) {
 		if ((lock && teamInfo[team].spec_lock) || (!lock && !teamInfo[team].spec_lock)) {
 			CP(va("print \"Your team is already %s spectators!\n\"",
@@ -1112,6 +1117,7 @@ void Cmd_pauseHandle(gentity_t *ent, qboolean dPause) {
 		return;
 	}
 
+	// XXX - For duels this may work against it if one lags out in time frame scenario..
 	if ((!level.alliedPlayers || !level.axisPlayers) && dPause) {
 		CP("print \"^1Error^7: Pause can only be used when both teams have players!\n\"");
 		return;
@@ -1142,6 +1148,8 @@ void Cmd_pauseHandle(gentity_t *ent, qboolean dPause) {
 			AP(va("chat \"console: %s ^3Paused ^7the match.\n\"", tName));
 			AP(va("cp \"[%s^7] %d Timeouts Remaining\n\"3", aTeams[team], teamInfo[team].timeouts));
 			AP(va("@print \"%s ^7has ^3PAUSED^7 the match!\n\"", ent->client->pers.netname));
+
+			G_parseTourneyInfo(qtrue);
 		}
 	}
 	else if (team + 128 != level.match_pause) {

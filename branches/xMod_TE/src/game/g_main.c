@@ -201,6 +201,7 @@ vmCvar_t	match_timeoutlength;	// How long pause lasts - note that players can re
 vmCvar_t	match_timeoutcount;		// How many pauses can a team call
 vmCvar_t	match_minplayers;		// Minimum players in order to start (/ready) a match..
 vmCvar_t	match_readypercent;		// Treshold to start a match (/ready) ..
+vmCvar_t	match_rounds;			// How many rounds will be played. (This can be overriden by admin on runtime..)
 
 // Game
 vmCvar_t	g_dropReload;			// Enable / Disable Drop reload
@@ -305,6 +306,7 @@ vmCvar_t	motdNum;			// To track motds..
 vmCvar_t	g_swapCounter;		// Count times so it auto swaps once it reaches it..
 vmCvar_t	g_needBalance;		// Flag for auto balance check
 vmCvar_t	shuffleTracking;	// Tracks rounds for (auto) shuffle
+vmCvar_t	int_match_started;	// Tracks if Tournament has started
 
 // General
 vmCvar_t	g_screenShake;		// Screenshaking on explosions (4 = default, 2 = half.. etc)
@@ -526,8 +528,9 @@ cvarTable_t		gameCvarTable[] = {
 	{ &team_maxplayers, "team_maxplayers", "0", 0, 0, qfalse, qfalse },
 	{ &match_timeoutlength, "match_timeoutlength", "180", 0, 0, qfalse, qtrue },
 	{ &match_timeoutcount, "match_timeoutcount", "3", 0, 0, qfalse, qtrue },
-	{ &match_minplayers, "match_minplayers", "4", 0, 0, qfalse, qfalse },
+	{ &match_minplayers, "match_minplayers", "2", 0, 0, qfalse, qfalse },
 	{ &match_readypercent, "match_readypercent", "100", 0, 0, qfalse, qtrue },
+	{ &match_rounds, "match_rounds", "3", CVAR_ARCHIVE, 0, qfalse, qtrue },
 
 	// Game
 	{ &g_dropReload, "g_dropReload", "0", CVAR_ARCHIVE, 0, qfalse },
@@ -632,6 +635,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_swapCounter, "g_swapCounter", "1", 0, 0, qfalse },
 	{ &g_needBalance, "g_needBalance", "0", CVAR_CHEAT, qfalse },
 	{ &shuffleTracking, "shuffleTracking", "0", 0, 0, qfalse },
+	{ &int_match_started, "int_match_started", "0", 0, 0, qfalse },
 
 	// General
 	{ &g_screenShake, "g_screenShake", "2", CVAR_ARCHIVE, 0, qfalse },
@@ -1522,8 +1526,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	// Xian enforcemaxlives stuff	
 	/*
-	we need to clear the list even if enforce maxlives is not active
-	in case the g_maxlives was changed, and a map_restart happened
+		we need to clear the list even if enforce maxlives is not active
+		in case the g_maxlives was changed, and a map_restart happened
 	*/
 	ClearMaxLivesGUID();
 	
@@ -1706,18 +1710,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 				"Following Cvars are set too high:\n%s-----------------------------------\n", info
 			);
 		}
-	}
 
-	// L0 - Tournament sanity stuff
-	if (g_tournamentMode.integer == TOURNY_FULL && !team_maxplayers.integer) {
-		if (g_deathMatch.integer) {
-			trap_Cvar_Set("team_maxPlayers", "3");
-			G_Printf("Warning: Tournament mode 2 is enabled but team_maxPlayers is not set!\n..Setting team_maxPlayers to 3 per team.\n");
-		}
-		else {
-			trap_Cvar_Set("team_maxPlayers", "6");
-			G_Printf("Warning: Tournament mode 2 is enabled but team_maxPlayers is not set!\n..Setting team_maxPlayers to 6 per team.\n");
-		}
+		// This sometimes goes off so make sure..
+		teamInfo[TEAM_RED].timeouts = match_timeoutcount.integer;
+		teamInfo[TEAM_BLUE].timeouts = match_timeoutcount.integer;
 	}
 
 	// L0 - Create round Token
@@ -2505,6 +2501,17 @@ void LogExit( const char *string ) {
 		trap_GetConfigstring(CS_MULTI_MAPWINNER, cs, sizeof(cs));
 		buf = Info_ValueForKey(cs, "winner");
 		level.winningTeam = atoi(buf);
+
+		// Store for tourney as well
+		if (g_tournamentMode.integer == TOURNY_FULL &&
+			int_match_started.integer)
+		{
+			int team = (atoi(buf) == 1 ? TEAM_BLUE : TEAM_RED);
+			teamInfo[team].team_score = teamInfo[team].team_score + 1;
+
+			// Now check where we're at
+			G_TourneyState();
+		}
 	}
 }
 
@@ -3306,30 +3313,6 @@ void sortedActivePlayers( void ) {
 
 /*
 ================
-OSPx - check for team stuff..
-================
-*/
-void handleEmptyTeams(void) {
-	if (g_gamestate.integer == GS_PLAYING) {
-		if (!level.axisPlayers) {
-			G_teamReset(TEAM_RED, qtrue);
-
-			// Reset match if paused with an empty team
-			if (level.match_pause > PAUSE_UNPAUSING)
-				trap_SendConsoleCommand(EXEC_APPEND, va("reset_match"));
-		}
-		else if (!level.alliedPlayers) {
-			G_teamReset(TEAM_BLUE, qtrue);
-
-			// Reset match if paused with an empty team
-			if (level.match_pause > PAUSE_UNPAUSING)
-				trap_SendConsoleCommand(EXEC_APPEND, va("reset_match"));
-		}
-	}
-}
-
-/*
-================
 G_RunFrame
 
 Advances the non-player objects in the world
@@ -3652,7 +3635,4 @@ void G_RunFrame( int levelTime ) {
 
 		// Add more &| Centralize to a single function and dump stuff there..
 	}
-
-	// Track any team stuff..
-	handleEmptyTeams();
 }

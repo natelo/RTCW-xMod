@@ -271,21 +271,20 @@ void G_InitWorldSession( void ) {
 	}
 	// OSPx - Stats
 	else {
-		char *tmp = s;
+		char *data[256];
 		qboolean test = (g_altStopwatchMode.integer != 0 || g_currentRound.integer == 1);
 
-#define GETVAL( x ) if ( ( tmp = strchr( tmp, ' ' ) ) == NULL ) {return; \
-				} x = atoi(++tmp);
+		Q_Tokenize(s, data, " ");
 
-		// Get team lock stuff
-		GETVAL(gt);
-		teamInfo[TEAM_RED].spec_lock = (gt & TEAM_RED) ? qtrue : qfalse;
-		teamInfo[TEAM_BLUE].spec_lock = (gt & TEAM_BLUE) ? qtrue : qfalse;
+		// Get team stuff		
+		teamInfo[TEAM_RED].spec_lock = atoi(data[1]) ? qtrue : qfalse;
+		teamInfo[TEAM_BLUE].spec_lock = atoi(data[2]) ? qtrue : qfalse;
 
-		if ((tmp = strchr(va("%s", tmp), ' ')) != NULL) {
-			tmp++;
-			trap_GetServerinfo(s, sizeof(s));			
-		}
+		teamInfo[TEAM_RED].team_lock = atoi(data[3]) ? qtrue : qfalse;
+		teamInfo[TEAM_BLUE].team_lock = atoi(data[4]) ? qtrue : qfalse;
+
+		teamInfo[TEAM_RED].team_score = atoi(data[5]);
+		teamInfo[TEAM_BLUE].team_score = atoi(data[6]);
 
 		// Make sure spec locks follow the right teams
 		if (g_gametype.integer == GT_WOLF_STOPWATCH && g_gamestate.integer != GS_PLAYING && test) {
@@ -310,9 +309,14 @@ void G_WriteSessionData( void ) {
 
 	// OSPx - Speclock
 	trap_Cvar_Set("session",
-		va("%i %i",
+		va("%i %i %i %i %i %i %i",
 			g_gametype.integer,
-			(teamInfo[TEAM_RED].spec_lock * TEAM_RED | teamInfo[TEAM_BLUE].spec_lock * TEAM_BLUE)
+			(teamInfo[TEAM_RED].spec_lock ? 1 : 0),
+			(teamInfo[TEAM_BLUE].spec_lock ? 1 : 0),
+			(teamInfo[TEAM_RED].team_lock ? 1 : 0),
+			(teamInfo[TEAM_BLUE].team_lock ? 1 : 0),
+			teamInfo[TEAM_RED].team_score,
+			teamInfo[TEAM_BLUE].team_score
 		)
 	);
 

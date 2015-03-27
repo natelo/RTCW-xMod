@@ -455,7 +455,7 @@ void CountDown( void ) {
 		{ index = "fight.wav"; AP( "print \"^2Fight!\n\""); }	
 
 	// Prepare to fight takes 2 seconds..
-	if(level.cnNum == 0){
+	if(level.cnNum == 0) {
 		level.cnPush = level.time+2000;
 
 		// Auto shuffle if enabled and treshhold is reached
@@ -476,6 +476,17 @@ void CountDown( void ) {
 					AP(("chat \"^3Notice: ^7Teams will be ^3Auto Shuffled ^7next round^3!\n\""));
 				}
 			}
+		}
+
+		// Ensure this is always set in Tournament..
+		if (g_tournamentMode.integer == TOURNY_FULL && int_match_started.integer) {
+			// Spec Lock
+			teamInfo[TEAM_RED].spec_lock = qtrue;
+			teamInfo[TEAM_BLUE].spec_lock = qtrue;
+
+			// Team Lock
+			teamInfo[TEAM_RED].team_lock = qtrue;
+			teamInfo[TEAM_BLUE].team_lock = qtrue;
 		}
 
 	// Just enough to fix the bug and skip to action..
@@ -901,4 +912,103 @@ void G_spawnPrintf(int print_type, int print_time, gentity_t *owner) {
 		trap_SetConfigstring(CS_PAUSED, va("%d", match_timeoutlength.integer));
 	else if (print_type == DP_UNPAUSING)
 		trap_SetConfigstring(CS_PAUSED, "10000");
+}
+
+
+/*
+=================
+Tournament handling..
+
+This will auto sort stuff if we are running tourney mode at 2..
+NOTE: Will also handle web stats data later on..
+=================
+*/
+void G_TourneyHandle(qboolean dReset, qboolean dClear) {
+
+	if (g_tournamentMode.integer != TOURNY_FULL) {
+		return;
+	}
+
+	if (dReset) {
+		trap_Cvar_Set("int_match_started", "0");		
+		trap_Cvar_Set("g_ignoreSpecs", "0");
+
+		if (dClear) {
+			G_teamReset(TEAM_BLUE, qtrue);
+			G_teamReset(TEAM_RED, qtrue);
+		}
+
+		if (!teamInfo[TEAM_RED].team_score && !teamInfo[TEAM_BLUE].team_score)
+			return;		
+		else if (teamInfo[TEAM_RED].team_score > teamInfo[TEAM_BLUE].team_score)
+			AP("chat \"^1AXIS ^7have ^3WON ^7the Match!\n");
+		else
+			AP("chat \"^4ALLIES ^7have ^3WON ^7the Match!\n");
+	}
+	else {
+		// This is only used to start it...
+		if (int_match_started.integer) {
+			return;
+		}
+
+		trap_Cvar_Set("int_match_started", "1");
+		trap_Cvar_Set("g_ignoreSpecs", "1");
+		trap_Cvar_Set("g_doWarmup", "1");
+
+		// Reset it
+		G_teamReset(TEAM_BLUE, qtrue);
+		G_teamReset(TEAM_RED, qtrue);
+
+		// Set it now..
+		trap_SendConsoleCommand(EXEC_APPEND, va("reset_match"));
+	}
+}
+
+/*
+=================
+Checks current state of the tournament..
+=================
+*/
+void G_TourneyState(void) {
+	// We're done..
+	if (match_rounds.integer <= (teamInfo[TEAM_RED].team_score + teamInfo[TEAM_BLUE].team_score)) {
+		G_TourneyHandle(qtrue, qtrue);
+	}
+	else {
+		G_parseTourneyInfo(qtrue);
+	}
+}
+
+/*
+=================
+Send score to client so they can refresh HUD info when needed..
+=================
+*/
+void G_parseTourneyInfo(qboolean refresh) {
+	char *tourney;
+
+	if (!g_tournamentMode.integer || 
+		(level.toureyInfoSent && !refresh) 
+	) {
+		return;
+	}
+	else {
+		level.toureyInfoSent = qtrue;
+	}
+
+	// L0 - Tourney stuff
+	tourney = (va("%d %d %d %d %d %d %i",
+			match_rounds.integer,
+			match_timeoutcount.integer,
+			teamInfo[TEAM_RED].timeouts,
+			teamInfo[TEAM_BLUE].timeouts,
+			teamInfo[TEAM_RED].team_score,
+			teamInfo[TEAM_BLUE].team_score,
+			int_match_started.integer
+			/* Add more if needed */
+		)
+	); // ~L0
+	
+	// Specs and players will sort stuff on their side..
+	AP(va("tourneyinfo %s", tourney));
 }
