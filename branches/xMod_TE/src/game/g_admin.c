@@ -2270,8 +2270,8 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd,"cp"))			    { if (canUse(ent, qtrue)) cmd_cp(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"chat"))			{ if (canUse(ent, qtrue)) cmd_chat(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"warn"))			{ if (canUse(ent, qtrue)) cmd_warn(ent); else cantUse(ent); return qtrue;} 
-	else if (!strcmp(cmd,"cancelvote"))		{ if (canUse(ent, qtrue)) cmd_cancelvote(ent); else cantUse(ent); return qtrue;} 
-	else if (!strcmp(cmd,"passvote"))		{ if (canUse(ent, qtrue)) cmd_passvote(ent); else cantUse(ent); return qtrue;} 
+	else if (!strcmp(cmd,"no"))				{ if (canUse(ent, qtrue)) cmd_cancelvote(ent); else cantUse(ent); return qtrue;} 
+	else if (!strcmp(cmd,"yes"))			{ if (canUse(ent, qtrue)) cmd_passvote(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"restart"))		{ if (canUse(ent, qtrue)) cmd_restart(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"reset"))			{ if (canUse(ent, qtrue)) cmd_resetmatch(ent); else cantUse(ent); return qtrue;} 
 	else if (!strcmp(cmd,"swap"))			{ if (canUse(ent, qtrue)) cmd_swap(ent); else cantUse(ent); return qtrue;} 
@@ -2357,8 +2357,8 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("cp", "Center Prints Admin message to selected user.", "Uses client slot number!")
 	_HELP("chat", "Shows warning message to all in global chat.", "!chat <msg>")
 	_HELP("warn", "Shows warning message to all in global chat and center print.", "!warn <msg>")
-	_HELP("cancelvote", "Cancels any vote in progress.", NULL)
-	_HELP("passvote", "Passes any vote in progress.", NULL)
+	_HELP("no", "Cancels any vote in progress.", NULL)
+	_HELP("yes", "Passes any vote in progress.", NULL)
 	_HELP("restart", "Restarts the round.", NULL)
 	_HELP("reset", "Resets the match.", NULL)
 	_HELP("swap", "Swaps the teams.", NULL)
