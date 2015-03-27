@@ -439,7 +439,7 @@ void cmd_kick(gentity_t *ent) {
 		CP("print \"Client not on server^1!\n\"");
 		return;
 	} else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	} 
 		
@@ -628,7 +628,7 @@ void cmd_fling(gentity_t *ent, int type) {
 		return;
 	}
 	else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	}
 
@@ -688,7 +688,7 @@ void cmd_specs(gentity_t *ent) {
 		CP("print \"Client not on server^3!\n\"");
 		return;
 	} else if (count > 1) {		
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	}		
 		
@@ -728,7 +728,7 @@ void cmd_axis(gentity_t *ent) {
 		CP("print \"Client not on server^3!\n\"");
 		return;
 	} else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	}		
 
@@ -768,7 +768,7 @@ void cmd_allied(gentity_t *ent) {
 		CP("print \"Client not on server^3!\n\"");
 		return;
 	 } else if (count > 1) {	
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	}
 
@@ -1251,7 +1251,7 @@ void cmd_ignore(gentity_t *ent, qboolean unignore) {
 		CP("print \"Client not on server^1!\n\"");
 		return;
 	} else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	} 
 		
@@ -1357,7 +1357,7 @@ void cmd_permignore(gentity_t *ent, qboolean unignore) {
 		CP("print \"Client not on server^1!\n\"");
 		return;
 	} else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	} 
 		
@@ -1466,7 +1466,7 @@ void cmd_banGuid(gentity_t *ent) {
 			CP("print \"Client not on server^3!\n\"");
 		return;
 		} else if (count > 1) {			
-			CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+			CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 		} 
 		
@@ -1541,7 +1541,7 @@ void cmd_tempbanGuid(gentity_t *ent) {
 		CP("print \"Client not on server^3!\n\"");
 	return;
 	} else if (count > 1){			
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 	return;
 	} else if (!is_numeric(ent->client->pers.cmd3)) {
 		CPx(ent-g_entities, "print \"^1Error: ^7Invalid syntax used for tempban command. Make sure you use numbers only.\n\"");
@@ -1590,7 +1590,7 @@ void cmd_banIp(gentity_t *ent) {
 		CP("print \"Client not on server^3!\n\"");
 		return;
 	} else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	} 
 		
@@ -1637,7 +1637,7 @@ void cmd_tempBanIp(gentity_t *ent) {
 		CP("print \"Client not on server^3!\n\"");
 		return;
 	} else if (count > 1) {
-		CP(va("print \"To many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
+		CP(va("print \"Too many people with ^3%s ^7in their name^3!\n\"", ent->client->pers.cmd2));
 		return;
 	} 
 		
