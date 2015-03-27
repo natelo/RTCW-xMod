@@ -752,7 +752,7 @@ void cmd_axis(gentity_t *ent) {
 			AP(va("chat \"console: ^7%s has forced player %s ^7to ^1Axis ^7team!\n\"", tag, g_entities[nums[i]].client->pers.netname));
 
 			// Log it
-			log =va("Player %s (IP:%i.%i.%i.%i) has forced user %s into Axis team.", 
+			log =va("Player %s (IP:%i.%i.%i.%i) has forced user %s to Axis team.", 
 				ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
 				ent->client->sess.ip[3], g_entities[nums[i]].client->pers.netname);
 			if (g_extendedLog.integer >= 2) // Only log this if it is set to 2+
@@ -789,10 +789,10 @@ void cmd_allied(gentity_t *ent) {
 			return;
 		}  else
 			SetTeam( &g_entities[nums[i]], "blue", qtrue );				
-			AP(va("chat \"console:^7 %s has forced player %s ^7into ^4Allied ^7team!\n\"", tag, g_entities[nums[i]].client->pers.netname));
+			AP(va("chat \"console:^7 %s has forced player %s ^7to ^4Allied ^7team!\n\"", tag, g_entities[nums[i]].client->pers.netname));
 
 			// Log it
-			log =va("Player %s (IP:%i.%i.%i.%i) has forced user %s into Axis team.", 
+			log =va("Player %s (IP:%i.%i.%i.%i) has forced user %s to Axis team.", 
 				ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2], 
 				ent->client->sess.ip[3], g_entities[nums[i]].client->pers.netname);
 			if (g_extendedLog.integer >= 2) // Only log this if it is set to 2+
@@ -800,6 +800,91 @@ void cmd_allied(gentity_t *ent) {
 	}		
 	return;
 }
+
+/*
+===========
+Forces all matching players to that team
+===========
+*/
+void cmd_forceClan(gentity_t *ent) {
+	int count = 0;
+	int i;
+	char *cTeam = ent->client->pers.cmd2;
+	int team;
+	int nums[MAX_CLIENTS];
+	char *tag, *log;
+	qboolean found = qfalse;
+
+	tag = sortTag(ent);
+
+	if (!Q_stricmp(cTeam, "r") &&
+		!Q_stricmp(cTeam, "b") &&
+		!Q_stricmp(cTeam, "s") &&
+		!Q_stricmp(cTeam, "red") &&
+		!Q_stricmp(cTeam, "blue") &&
+		!Q_stricmp(cTeam, "axis") &&
+		!Q_stricmp(cTeam, "allies") &&
+		!Q_stricmp(cTeam, "allied")
+		) {
+		CP("print \"You need to specify a team^3!\n\"");
+		return;
+	}
+
+	// Sort Team now
+	if (!Q_stricmp(cTeam, "r") || !Q_stricmp(cTeam, "red") || 
+		!Q_stricmp(cTeam, "axis")) {
+		team = TEAM_RED;
+		cTeam = "red";
+	} 
+	else if (!Q_stricmp(cTeam, "b") || !Q_stricmp(cTeam, "blue") || 
+		!Q_stricmp(cTeam, "allies") || !Q_stricmp(cTeam, "allied")) {
+		team = TEAM_BLUE;
+		cTeam = "blue";
+	} 
+	else {
+		team = TEAM_SPECTATOR;
+		cTeam = "spectator";
+	}
+
+	count = ClientNumberFromNameMatch(ent->client->pers.cmd3, nums);
+	if (count == 0) {
+		CP("print \"No matching Clan name found^3!\n\"");
+		return;
+	}
+
+	for (i = 0; i < count; i++) {
+		if (g_entities[nums[i]].client->sess.sessionTeam != team) {
+			SetTeam(&g_entities[nums[i]], cTeam, qtrue);
+			found = qtrue;
+		}
+	}
+
+	if (found) {
+
+		AP(va("chat \"console:^7 %s has forced all %s players ^7to %s ^7team!\n\"",
+			tag,
+			ent->client->pers.cmd3,
+			(!Q_stricmp(cTeam, "blue") ? "^4Allied" :
+				(!Q_stricmp(cTeam, "red") ? "^1Axis" : "^3Spectators")
+			)
+		));
+
+		// Log it
+		log = va("Player %s (IP:%i.%i.%i.%i) has forced user %s into %s team.",
+			ent->client->pers.netname, ent->client->sess.ip[0], ent->client->sess.ip[1], ent->client->sess.ip[2],
+			ent->client->sess.ip[3], g_entities[nums[i]].client->pers.netname,
+			(!Q_stricmp(cTeam, "blue") ? "Allied" :
+				(!Q_stricmp(cTeam, "red") ? "Axis" : "Spectators")
+			)
+		);
+
+		if (g_extendedLog.integer >= 2) // Only log this if it is set to 2+
+			logEntry(ADMACT, log);
+	}
+
+	return;
+}
+
 
 /*
 ===========
@@ -2219,7 +2304,7 @@ void cmd_listCmds(gentity_t *ent) {
 		   "cp warn chat cancelvote passvote restart reset swap shuffle "
 		   "@shuffle specs999 whereis rename ignore unignore clientignore clientunignore permignore "	
 		   "permunignore permclientignore permclientunignore ban banclient tempban banip tempbanip addip event "
-		   "speclock specunlock lock unlock pause unpause *"
+		   "speclock specunlock lock unlock pause unpause start stop forceclan *"
 		;
 
 	if (ent->client->sess.admin == ADM_1)
@@ -2305,6 +2390,7 @@ qboolean do_cmds(gentity_t *ent) {
 	else if (!strcmp(cmd, "unreadyall"))	{ if (canUse(ent, qtrue)) cmd_readyHandle(ent, qtrue); else cantUse(ent); return qtrue; }
 	else if (!strcmp(cmd, "start"))			{ if (canUse(ent, qtrue)) cmd_tourney(ent, qtrue); else cantUse(ent); return qtrue; }
 	else if (!strcmp(cmd, "stop"))			{ if (canUse(ent, qtrue)) cmd_tourney(ent, qfalse); else cantUse(ent); return qtrue; }
+	else if (!strcmp(cmd, "forceclan"))		{ if (canUse(ent, qtrue)) cmd_forceClan(ent); else cantUse(ent); return qtrue; }
 
 	// Any other command (server cvars..)
 	else if (canUse(ent, qfalse))			{ cmdCustom(ent, cmd); return qtrue; }	
@@ -2392,6 +2478,7 @@ static const helpCmd_reference_t helpInfo[] = {
 	_HELP("unreadyall", "Cancels countdown and returns match back in warmup state.", "!unreadyall")
 	_HELP("start", "Starts the tournament.", "!start")
 	_HELP("stop", "Stops the tournament.", "!stop")
+	_HELP("forceclan", "Forces all players that matches query to a selected team.", "!forceclan <r/b/s> <match>")
 	_HELP("*", "Any default command that's allowed per Admin level can be executed accordingly. Note that adding @ at the end will execute it silently otherwise it will be printed to all.", "!g_allowVote 1 or !g_allowVote 1 @ for silent change")
 	// --> Add new ones after this line..
 
