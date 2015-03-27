@@ -12,8 +12,9 @@ Last Updated: 26.07 / 14
 #include "g_local.h"
 
 #ifdef WIN32
+	#define _WINSOCK_DEPRECATED_NO_WARNINGS
 	#include <winsock2.h>
-	#pragma comment(lib,"ws2_32.lib")
+	#pragma comment(lib,"ws2_32.lib")	
 #else
 	#define closesocket close
 	#include <unistd.h>
