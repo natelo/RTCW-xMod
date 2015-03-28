@@ -3566,7 +3566,7 @@ void G_RunFrame( int levelTime ) {
 
 	// L0 - Round Stats
 	if ((level.time > level.statsPrint) &&
-		(g_gamestate.integer != GS_PLAYING) &&
+		(g_gamestate.integer != GS_PLAYING && g_gamestate.integer == GS_INTERMISSION) &&
 		g_roundStats.integer)
 	{
 		stats_RoundStats();

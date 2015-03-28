@@ -3076,6 +3076,12 @@ static void CG_DrawFlashFade( void ) {
 					nOffset += 12;
 				}
 			}
+
+			if (cg.snap->ps.powerups[PW_BLACKOUT] & TEAM_RED && cg.snap->ps.powerups[PW_BLACKOUT] & TEAM_BLUE &&
+				cgs.clientinfo[cg.clientNum].team == TEAM_SPECTATOR) {
+				str = va(format, teams[i]);
+				CG_DrawStringExt(INFOTEXT_STARTX, 470, "We are testing a TE version of the mod, type in console ^7/login spec ^nto bypass speclock..", color, qfalse, qfalse, 5, 5, 0);
+			}
 		}
 	}
 }
