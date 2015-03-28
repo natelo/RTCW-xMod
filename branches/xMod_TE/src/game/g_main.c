@@ -3566,7 +3566,7 @@ void G_RunFrame( int levelTime ) {
 	// L0 - Round Stats
 	if ((level.time > level.statsPrint) &&
 		(g_gamestate.integer == GS_WARMUP_COUNTDOWN) &&
-		g_roundStats.integer)
+		g_roundStats.integer && g_tournamentMode.integer < TOURNY_FULL)
 	{
 		stats_RoundStats();
 	}
