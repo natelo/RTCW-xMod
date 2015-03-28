@@ -229,8 +229,8 @@ static void CG_ParseWarmup( void ) {
 	} else if ( warmup > 0 && cg.warmup <= 0 ) {
 		trap_S_StartLocalSound( cgs.media.countPrepareSound, CHAN_ANNOUNCER );
 
-		// OSPx - Auto Actions
-		if (!cg.demoPlayback && cg_autoAction.integer & AA_DEMORECORD) {
+		// OSPx - Auto Actions										   // Tournament..
+		if (!cg.demoPlayback && (cg_autoAction.integer & AA_DEMORECORD || cgs.tournamentMode == TOURNY_FULL)) {
 			CG_autoRecord_f();
 		}
 	}

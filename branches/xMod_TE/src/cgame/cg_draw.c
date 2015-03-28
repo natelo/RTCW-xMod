@@ -2508,7 +2508,7 @@ static void CG_DrawIntermission( void ) {
 			cg.latchAutoActions = qtrue;
 
 			// Some instantly open console to check the stats..
-			if (cg_autoAction.integer & AA_SCREENSHOT) {
+			if (cg_autoAction.integer & AA_SCREENSHOT || cgs.tournamentMode == TOURNY_FULL) {
 				doScreenshot = cg.time + 250;
 			}
 			if ((cg_autoAction.integer & AA_DEMORECORD) &&
