@@ -1827,7 +1827,8 @@ void cmd_Event(gentity_t *ent) {
 		}
 
 		trap_Cvar_Set("g_httpEventPaused", "0");
-		AP(va("chat \"console: %s has Resumed the %s ^7Event.\n", tag, g_httpEvent.string));		
+		AP(va("chat \"console: %s has Resumed the %s ^7Event.\n", tag, g_httpEvent.string));
+		APS("xmodTE/sound/misc/unlocked.wav");
 	}
 	else if (!Q_stricmp(cmd, "pause")) {
 		if (g_httpEventPaused.integer) {
@@ -2136,6 +2137,7 @@ void cmd_tourney(gentity_t *ent, qboolean start) {
 		AP(va("chat \"console: %s has ^3STARTED ^7tournament!\n", tag));
 		AP(va("@print \"%s has ^3STARTED ^7tournament!\n", ent->client->pers.netname));
 		G_TourneyHandle(qfalse, qfalse);
+		APS("xmodTE/sound/misc/western.wav");
 	}
 	else {
 		if (!int_match_started.integer) {

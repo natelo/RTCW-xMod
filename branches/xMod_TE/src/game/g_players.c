@@ -1139,6 +1139,7 @@ void Cmd_pauseHandle(gentity_t *ent, qboolean dPause) {
 	if (dPause) {
 		if (!teamInfo[team].timeouts) {
 			CP("print \"^3Denied^7: Your team has no more timeouts remaining!\n\"");
+			CPS(ent, "xmodTE/sound/misc/denied.wav");
 			return;
 		}
 		else {
@@ -1148,12 +1149,14 @@ void Cmd_pauseHandle(gentity_t *ent, qboolean dPause) {
 			AP(va("chat \"console: %s ^3Paused ^7the match.\n\"", tName));
 			AP(va("cp \"[%s^7] %d Timeouts Remaining\n\"3", aTeams[team], teamInfo[team].timeouts));
 			AP(va("@print \"%s ^7has ^3PAUSED^7 the match!\n\"", ent->client->pers.netname));
+			APS("xmodTE/sound/misc/paused.wav");
 
 			G_parseTourneyInfo(qtrue);
 		}
 	}
 	else if (team + 128 != level.match_pause) {
 		CP("print \"^3Denied^7: Your team didn't call the timeout!\n\"");
+		CPS(ent, "xmodTE/sound/misc/denied.wav");
 		return;
 	}
 	else {
