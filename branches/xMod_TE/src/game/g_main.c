@@ -3549,7 +3549,8 @@ void G_RunFrame( int levelTime ) {
 		int alliedLeft    = level.numteamVotingClients[1] - level.numFinalDead[1];		
 
 		matchInfo(MT_ME, va( "Allies left: %i Axis left: %i", alliedLeft, axisLeft )); 
-		trap_SendServerCommand( -1, va( "cp \"Allies Left: %i Axis Left: %i\n\"", alliedLeft, axisLeft ) );
+		trap_SendServerCommand( -1, va( "popin \"Allies Left: %i Axis Left: %i\n\"", alliedLeft, axisLeft ) );
+		trap_SendServerCommand(-1, va("print \"Allies Left: %i Axis Left: %i\n\"", alliedLeft, axisLeft));
 
 		level.leftCheck = level.time;
 	}
