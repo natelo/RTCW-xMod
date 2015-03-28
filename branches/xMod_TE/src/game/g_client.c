@@ -821,6 +821,7 @@ void SetWolfSpawnWeapons( gclient_t *client ) {
 	COM_BitSet( client->ps.weapons, WP_KNIFE );
 
 	client->ps.ammo[BG_FindAmmoForWeapon( WP_KNIFE )] = 1;
+	client->ps.ammoclip[BG_FindClipForWeapon(WP_KNIFE)] = 1; // L0 / Bug fix - engine, cgame?  - def a "project" thing
 	client->ps.weapon = WP_KNIFE;
 	client->ps.weaponstate = WEAPON_READY;
 
