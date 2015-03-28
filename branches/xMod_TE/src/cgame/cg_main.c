@@ -313,6 +313,7 @@ vmCvar_t cg_enemyRadar;
 vmCvar_t cg_showFlags;
 vmCvar_t cg_tournamentHUD;
 vmCvar_t cg_showPlayingTimer;
+vmCvar_t cg_drawPickupItems;
 
 // Mappings
 vmCvar_t int_ui_blackout;
@@ -430,7 +431,7 @@ cvarTable_t cvarTable[] = {
 	{ &cg_forceModel, "", "0", CVAR_ARCHIVE  },                           // DHM - Nerve
 	{ &cg_coronafardist, "cg_coronafardist", "1536", CVAR_ARCHIVE },
 	{ &cg_coronas, "cg_coronas", "1", CVAR_ARCHIVE },
-	{ &cg_predictItems, "cg_predictItems", "1", CVAR_ARCHIVE },
+	{ &cg_predictItems, "cg_predictItems", "0", CVAR_ARCHIVE },
 	{ &cg_deferPlayers, "cg_deferPlayers", "1", CVAR_ARCHIVE },
 	{ &cg_drawTeamOverlay, "cg_drawTeamOverlay", "2", CVAR_ARCHIVE },
 	{ &cg_uselessNostalgia, "cg_uselessNostalgia", "0", CVAR_ARCHIVE }, // JPW NERVE
@@ -553,6 +554,7 @@ cvarTable_t cvarTable[] = {
 	{ &cg_showFlags, "cg_showFlags", "1", CVAR_ARCHIVE },
 	{ &cg_tournamentHUD, "cg_tournamentHUD", "1", CVAR_ARCHIVE },
 	{ &cg_showPlayingTimer, "cg_showPlayingTimer", "1", CVAR_ARCHIVE },
+	{ &cg_drawPickupItems, "cg_drawPickupItems", "0", CVAR_ARCHIVE },
 
 	{ &int_ui_blackout, "ui_blackout", "0", CVAR_ROM },
 

@@ -4019,7 +4019,7 @@ static void CG_Draw2D( void ) {
 			//CG_DrawWeaponSelect();
 
 			// OSPx - In warmup we print ready intel there..
-			if (!(cgs.gamestate == GS_WARMUP && cgs.readyState != CREADY_NONE))
+			if (!cgs.gamestate == GS_WARMUP || cg_drawPickupItems.integer )
 				CG_DrawPickupItem();
 		}
 		if ( cgs.gametype >= GT_TEAM ) {

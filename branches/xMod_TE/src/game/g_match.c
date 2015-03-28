@@ -227,7 +227,7 @@ void setDefaultWeapon(gclient_t *client, qboolean isSold) {
 	// This deals with weapon restrictions.
 	if (isSold)  {
 		setDefWeap(client, g_soldierClips.integer);
-	return;
+		return;
 	}
 
 	// Sort any bit flags..
@@ -439,7 +439,7 @@ void CountDown( void ) {
 		return;
 	}
 		// Countdown...
-	if (level.cnNum == 0) 
+	if (level.cnNum == 0)
 		{ index = "prepare.wav"; AP( "cp \"Prepare to fight^2!\n\"2" );}	
 	if (level.cnNum == 1) 
 		{ index = "cn_5.wav"; /*AP( "cp \"Match starts in: ^25\n\"2" );*/}
@@ -473,7 +473,7 @@ void CountDown( void ) {
 				else if ((g_autoShuffle.integer > 2) &&
 					(shuffleTracking.integer == (g_autoShuffle.integer - 1)))
 				{
-					AP(("chat \"^3Notice: ^7Teams will be ^3Auto Shuffled ^7next round^3!\n\""));
+					AP("chat \"^3Notice: ^7Teams will be ^3Auto Shuffled ^7next round^3!\n\"");
 				}
 			}
 		}

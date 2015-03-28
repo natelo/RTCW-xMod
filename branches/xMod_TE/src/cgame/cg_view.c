@@ -2166,7 +2166,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	DEBUGTIME
 	
 	// OSPx - Count time..
-	if (cg.demoPlayback || cg.tournamentInfo.inProgress) {
+	//if (cg.demoPlayback /*|| cg.tournamentInfo.inProgress*/) {
 		if (!cg.timeCounter) {
 			cg.timeCounter = cg.time + 1000;
 			cg.timein++;
@@ -2175,6 +2175,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 			cg.timeCounter = cg.time + 1000;
 			cg.timein++;
 		}
-	}
+	//}
 }
 

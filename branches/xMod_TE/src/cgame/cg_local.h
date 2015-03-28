@@ -2019,6 +2019,7 @@ extern vmCvar_t cg_enemyRadar;
 extern vmCvar_t	cg_showFlags;
 extern vmCvar_t cg_tournamentHUD;
 extern vmCvar_t cg_showPlayingTimer;
+extern vmCvar_t cg_drawPickupItems;
 
 // Mappings
 extern vmCvar_t int_ui_blackout;
