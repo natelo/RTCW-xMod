@@ -825,15 +825,9 @@ void stats_RoundStats(void) {
 					char *score;
 					score = va("%s", roundStats[level.statsNum].out);
 
-					if (!g_tournamentMode.integer)
-						AP(va("popin \"^2%s: ^7%s\n^7%s \n\"2",
-							rSM[level.statsNum - 1].reward, score, roundStats[level.statsNum].player));
-					else
-						AP(va("cp \"^2%s: ^7%s\n^7%s \n\"2",
-							rSM[level.statsNum - 1].reward, score, roundStats[level.statsNum].player));
-
-					APS(va("%s",
-						rSM[level.statsNum - 1].snd));
+					AP(va("cp \"^2%s: ^7%s\n^7%s \n\"2", 
+						rSM[level.statsNum - 1].reward, score, roundStats[level.statsNum].player));
+					APS(va("%s", rSM[level.statsNum - 1].snd));
 				}
 				else
 				{

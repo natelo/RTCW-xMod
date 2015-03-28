@@ -3566,15 +3566,15 @@ void G_RunFrame( int levelTime ) {
 
 	// L0 - Round Stats
 	if ((level.time > level.statsPrint) &&
-		(g_gamestate.integer == GS_WARMUP_COUNTDOWN) &&
-		g_roundStats.integer && g_tournamentMode.integer < TOURNY_FULL)
+		(g_gamestate.integer != GS_PLAYING) &&
+		g_roundStats.integer)
 	{
 		stats_RoundStats();
 	}
 
 	// L0 - Map Stats
 	if (g_mapStats.integer &&
-		(g_gamestate.integer == GS_WARMUP_COUNTDOWN) &&
+		(g_gamestate.integer == GS_WARMUP) &&
 		!level.mapStatsPrinted)
 	{
 		stats_MapStats();
