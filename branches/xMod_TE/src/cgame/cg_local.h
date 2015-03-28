@@ -1160,6 +1160,9 @@ typedef struct {
 	int popinPrintLines;
 	qboolean popinBlink;
 
+	// Auto Actions
+	qboolean	latchAutoActions;
+
 	// Tournament
 	int tourTotalTeam[TEAM_NUM_TEAMS];
 	cg_tournamentInfo_t tournamentInfo;
@@ -2020,6 +2023,8 @@ extern vmCvar_t	cg_showFlags;
 extern vmCvar_t cg_tournamentHUD;
 extern vmCvar_t cg_showPlayingTimer;
 extern vmCvar_t cg_drawPickupItems;
+extern vmCvar_t cg_autoAction;
+extern vmCvar_t cg_useScreenshotJPEG;
 
 // Mappings
 extern vmCvar_t int_ui_blackout;
@@ -2037,6 +2042,7 @@ extern vmCvar_t	demo_noAdvertisement;
 //
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
+char *CG_generateFilename(void);
 
 float CG_Cvar_Get( const char *cvar );
 
@@ -2498,6 +2504,10 @@ void CG_DrawTourneyScoreboard( void );
 qboolean CG_ConsoleCommand( void );
 void CG_InitConsoleCommands( void );
 void CG_ScoresUp_f(void);
+// OSPx
+extern const char *aMonths[12];
+void CG_autoRecord_f(void);
+void CG_autoScreenShot_f(void);
 
 //
 // cg_servercmds.c
@@ -2557,6 +2567,7 @@ void        trap_Error( const char *fmt );
 // milliseconds should only be used for performance tuning, never
 // for anything game related.  Get time from the CG_DrawActiveFrame parameter
 int         trap_Milliseconds( void );
+int         trap_RealTime(qtime_t *qtime); // OSPx - So it's more acessible
 
 // console variable interaction
 void        trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
@@ -2805,6 +2816,10 @@ void CG_PopinPrint(const char *str, int y, int charWidth, qboolean blink);
 #define TOURINFO_RIGHT		640 - 3
 #define TOURINFO_TOP		100
 #define TOURINFO_PLAYERS	32	
+
+// OSP's Autoaction values
+#define AA_DEMORECORD   0x01
+#define AA_SCREENSHOT   0x02
 
 // Macros
 #define Pri( x ) CG_Printf( "[cgnotify]%s", CG_LocalizeServerCommand( x ) )

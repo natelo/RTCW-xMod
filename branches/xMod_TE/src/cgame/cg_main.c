@@ -314,6 +314,8 @@ vmCvar_t cg_showFlags;
 vmCvar_t cg_tournamentHUD;
 vmCvar_t cg_showPlayingTimer;
 vmCvar_t cg_drawPickupItems;
+vmCvar_t cg_autoAction;
+vmCvar_t cg_useScreenshotJPEG;
 
 // Mappings
 vmCvar_t int_ui_blackout;
@@ -555,6 +557,8 @@ cvarTable_t cvarTable[] = {
 	{ &cg_tournamentHUD, "cg_tournamentHUD", "1", CVAR_ARCHIVE },
 	{ &cg_showPlayingTimer, "cg_showPlayingTimer", "1", CVAR_ARCHIVE },
 	{ &cg_drawPickupItems, "cg_drawPickupItems", "0", CVAR_ARCHIVE },
+	{ &cg_autoAction, "cg_autoAction", "0", CVAR_ARCHIVE },
+	{ &cg_useScreenshotJPEG, "cg_useScreenshotJPEG", "1", CVAR_ARCHIVE },
 
 	{ &int_ui_blackout, "ui_blackout", "0", CVAR_ROM },
 
@@ -633,9 +637,10 @@ CG_UpdateCvars
 void CG_UpdateCvars( void ) {
 	int i;
 	cvarTable_t *cv;
+	qboolean fSetFlags = qfalse;	// OSPx - Auto Actions
 
-	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
-		trap_Cvar_Update( cv->vmCvar );
+	for (i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++) {
+		trap_Cvar_Update(cv->vmCvar);
 
 // OSPx 
 		// Crosshairs
@@ -667,7 +672,6 @@ void CG_UpdateCvars( void ) {
 		autoReloadModificationCount = cg_autoReload.modificationCount;
 	}
 }
-
 
 int CG_CrosshairPlayer( void ) {
 	if ( cg.time > ( cg.crosshairClientTime + 1000 ) ) {
@@ -759,6 +763,22 @@ const char *CG_Argv( int arg ) {
 	return buffer;
 }
 
+/*
+================
+OSPx - Name generation for SS's and Demo's
+================
+*/
+// Standard naming for screenshots/demos
+char *CG_generateFilename(void) {
+	qtime_t ct;
+	const char *pszServerInfo = CG_ConfigString(CS_SERVERINFO);
+
+	trap_RealTime(&ct);
+	return(va("%s.%02d.%d/%02d.%02d.%02d-%s",
+		aMonths[ct.tm_mon], ct.tm_mday, 1900 + ct.tm_year,
+		ct.tm_hour, ct.tm_min, ct.tm_sec,
+		Info_ValueForKey(pszServerInfo, "mapname")));
+}
 
 //========================================================================
 void CG_SetupDlightstyles( void ) {
