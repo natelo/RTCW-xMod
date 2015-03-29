@@ -1276,6 +1276,8 @@ G_Say
 #define SAY_ADMIN	4			// L0 - Admin chat
 
 void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, const char *name, const char *message, qboolean localize ) { // removed static so it would link
+	qboolean viewingTeamChat = qfalse;
+
 	if (!other) {
 		return;
 	}
@@ -1285,8 +1287,16 @@ void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, const char 
 	if (!other->client) {
 		return;
 	}
-	if ( mode == SAY_TEAM  && !OnSameTeam(ent, other) ) {
-		return;
+	if ( mode == SAY_TEAM  && !OnSameTeam(ent, other)) {
+		// L0 - Logged in specs see all chats X/ in tournament \X .._all the time_
+		if (/*int_match_started.integer && */ other->client->sess.admin > ADM_NONE 
+			&& other->client->sess.sessionTeam == TEAM_SPECTATOR ) 
+		{ 
+			viewingTeamChat = qtrue;
+		}
+		else {
+			return;
+		}
 	}
 	// no chatting to players in tournements
 	if ( g_gametype.integer == GT_TOURNAMENT
@@ -1316,7 +1326,9 @@ void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, const char 
 	if (g_tournamentMode.integer > TOURNY_BASIC &&
 		ent->client->sess.sessionTeam == TEAM_SPECTATOR &&
 		ent->client->sess.admin == ADM_NONE &&
-		mode != SAY_TEAM) {
+		mode != SAY_TEAM &&
+		int_match_started.integer &&
+		g_gamestate.integer == GS_PLAYING) {
 		return;
 	}
 
@@ -1333,9 +1345,18 @@ void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, const char 
 	}
 	// -NERVE - SMF
 	else {
-		trap_SendServerCommand( other-g_entities, va("%s \"%s%c%c%s\" %i", 
-			mode == SAY_TEAM ? "tchat" : "chat",
-			name, Q_COLOR_ESCAPE, color, message, localize));
+		if (viewingTeamChat) {
+			char *prefix = (ent->client->sess.sessionTeam == TEAM_RED ? "^1*^7" : "^4*^7");
+
+			trap_SendServerCommand(other - g_entities, va("%s \"%s%c%c%s\" %i",
+				mode == SAY_TEAM ? "tchat" : "chat",
+				va("%s%s", prefix, name), Q_COLOR_ESCAPE, color, message, localize));
+		}
+		else {
+			trap_SendServerCommand(other - g_entities, va("%s \"%s%c%c%s\" %i",
+				mode == SAY_TEAM ? "tchat" : "chat",
+				name, Q_COLOR_ESCAPE, color, message, localize));
+		}
 	}
 }
 
