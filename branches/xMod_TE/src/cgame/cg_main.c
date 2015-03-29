@@ -316,6 +316,8 @@ vmCvar_t cg_showPlayingTimer;
 vmCvar_t cg_drawPickupItems;
 vmCvar_t cg_autoAction;
 vmCvar_t cg_useScreenshotJPEG;
+vmCvar_t cg_chatAlpha;
+vmCvar_t cg_chatBackgroundColor;
 
 // Mappings
 vmCvar_t int_ui_blackout;
@@ -559,6 +561,8 @@ cvarTable_t cvarTable[] = {
 	{ &cg_drawPickupItems, "cg_drawPickupItems", "0", CVAR_ARCHIVE },
 	{ &cg_autoAction, "cg_autoAction", "0", CVAR_ARCHIVE },
 	{ &cg_useScreenshotJPEG, "cg_useScreenshotJPEG", "1", CVAR_ARCHIVE },
+	{ &cg_chatAlpha, "cg_chatAlpha", "0.33", CVAR_ARCHIVE },
+	{ &cg_chatBackgroundColor, "cg_chatBackgroundColor", "", CVAR_ARCHIVE },
 
 	{ &int_ui_blackout, "ui_blackout", "0", CVAR_ROM },
 

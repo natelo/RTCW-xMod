@@ -2025,6 +2025,8 @@ extern vmCvar_t cg_showPlayingTimer;
 extern vmCvar_t cg_drawPickupItems;
 extern vmCvar_t cg_autoAction;
 extern vmCvar_t cg_useScreenshotJPEG;
+extern vmCvar_t cg_chatAlpha;
+extern vmCvar_t cg_chatBackgroundColor;
 
 // Mappings
 extern vmCvar_t int_ui_blackout;

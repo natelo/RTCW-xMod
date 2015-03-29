@@ -1052,6 +1052,7 @@ static void CG_DrawTeamInfo( void ) {
 	vec4_t hcolor;
 	int chatHeight;
 	float alphapercent;
+	float chatAlpha = (float)cg_chatAlpha.value;
 
 #define CHATLOC_Y 385 // bottom end
 #define CHATLOC_X 0
@@ -1096,21 +1097,29 @@ static void CG_DrawTeamInfo( void ) {
 				hcolor[0] = 1;
 				hcolor[1] = 0;
 				hcolor[2] = 0;
-//			hcolor[3] = 0.33;
 			} else if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE ) {
 				hcolor[0] = 0;
 				hcolor[1] = 0;
 				hcolor[2] = 1;
-//			hcolor[3] = 0.33;
 			} else {
 				hcolor[0] = 0;
 				hcolor[1] = 1;
 				hcolor[2] = 0;
-//			hcolor[3] = 0.33;
 			}
 
-			hcolor[3] = 0.33f * alphapercent;
+// L0 - Wanted to do this for years..
+			if (chatAlpha > 1.0f) {
+				chatAlpha = 1.0f;
+			}
+			else if (chatAlpha < 0.f) {
+				chatAlpha - 0.f;
+			}
 
+			if (!Q_stricmp(cg_chatBackgroundColor.string, ""))
+				hcolor[3] = chatAlpha * alphapercent;
+			else // Abuse this..
+				BG_setCrosshair(cg_chatBackgroundColor.string, hcolor, chatAlpha * alphapercent, "cg_chatBackgroundColor");
+// End
 			trap_R_SetColor( hcolor );
 			CG_DrawPic( CHATLOC_X, CHATLOC_Y - ( cgs.teamChatPos - i ) * TINYCHAR_HEIGHT, 640, TINYCHAR_HEIGHT, cgs.media.teamStatusBar );
 
