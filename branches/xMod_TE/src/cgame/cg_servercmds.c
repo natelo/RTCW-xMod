@@ -229,8 +229,12 @@ static void CG_ParseWarmup( void ) {
 	} else if ( warmup > 0 && cg.warmup <= 0 ) {
 		trap_S_StartLocalSound( cgs.media.countPrepareSound, CHAN_ANNOUNCER );
 
-		// OSPx - Auto Actions										   // Tournament..
-		if (!cg.demoPlayback && (cg_autoAction.integer & AA_DEMORECORD || cgs.tournamentMode == TOURNY_FULL)) {
+		// OSPx - Auto Actions
+		// Here it will start in warmup..and wont quit if map_restart is issued..
+		if (!cg.demoPlayback &&
+			cg_autoAction.integer & AA_DEMORECORD && 
+			cgs.tournamentMode < TOURNY_FULL )
+		{
 			CG_autoRecord_f();
 		}
 	}
@@ -847,8 +851,7 @@ static void CG_MapRestart( void ) {
 // JPW NERVE -- reset render flags
 	cg_fxflags = 0;
 // jpw
-
-
+	
 	// we really should clear more parts of cg here and stop sounds
 	cg.v_dmg_time = 0;
 	cg.v_noFireTime = 0;
@@ -874,9 +877,27 @@ static void CG_MapRestart( void ) {
 #endif
 
 	// OSPx - Fight Announcement 
-	if (cg.warmup == 0 && cgs.gamestate == GS_WARMUP_COUNTDOWN)
+	if (cg.warmup == 0 && (cgs.gamestate == GS_WARMUP_COUNTDOWN))
+	{
 		// Poor man's solution...replace font one of this days as this is ridicoulus.	:C		
 		CG_AddAnnouncer("F IGH T !", cgs.media.countFightSound, 1.6f, 1200, 0.5f, 0.0f, 0.0f, ANNOUNCER_NORMAL);
+
+		// Hooking auto demo for tournament mode..
+		if (!cg.demoPlayback &&	cgs.tournamentMode == TOURNY_FULL &&
+			cgs.clientinfo[cg.snap->ps.clientNum].team != TEAM_SPECTATOR) 
+		{
+			CG_autoRecord_f();
+		}
+	}
+	else if (cg.warmup == 0 && cgs.gamestate != GS_WARMUP_COUNTDOWN ) {
+		// Bail on the demo if we reset the match or smth..
+		if (!cg.demoPlayback &&					  
+			cgs.tournamentMode == TOURNY_FULL &&
+			cgs.clientinfo[cg.snap->ps.clientNum].team != TEAM_SPECTATOR)
+		{
+			trap_SendConsoleCommand("stoprecord\n");
+		}
+	}
 	// -OSPx
 
 	trap_Cvar_Set( "cg_thirdPerson", "0" );

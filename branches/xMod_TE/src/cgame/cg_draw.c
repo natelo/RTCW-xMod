@@ -2520,10 +2520,8 @@ static void CG_DrawIntermission( void ) {
 			if (cg_autoAction.integer & AA_SCREENSHOT || cgs.tournamentMode == TOURNY_FULL) {
 				doScreenshot = cg.time + 250;
 			}
-			if ((cg_autoAction.integer & AA_DEMORECORD) &&
-				((cgs.gametype == GT_WOLF_STOPWATCH && cgs.currentRound == 0) ||
-				cgs.gametype != GT_WOLF_STOPWATCH)) {
-				doDemostop = cg.time + 5000;
+			if (cg_autoAction.integer & AA_DEMORECORD || cgs.tournamentMode == TOURNY_FULL) {
+				doDemostop = cg.time + 3000;
 			}
 		}
 

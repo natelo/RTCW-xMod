@@ -1074,11 +1074,6 @@ void Cmd_speclock(gentity_t *ent, qboolean lock) {
 		return;
 	}
 
-	if (g_tournamentMode.integer == TOURNY_FULL) {
-		CP("print \"You cannot use this feature Tournament Mode!\n\"");
-		return;
-	}
-
 	if (team == TEAM_RED || team == TEAM_BLUE) {
 		if ((lock && teamInfo[team].spec_lock) || (!lock && !teamInfo[team].spec_lock)) {
 			CP(va("print \"Your team is already %s spectators!\n\"",

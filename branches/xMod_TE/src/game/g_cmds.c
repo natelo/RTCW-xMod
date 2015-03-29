@@ -2063,6 +2063,11 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s %d", arg1, i );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s", arg1, gameNames[i] );
 	} else if ( !Q_stricmp( arg1, "map_restart" ) ) {
+		if (g_tournamentMode.integer == TOURNY_FULL) {
+			CPx(ent-g_entities, "print \"You cannot call a vote for map_restart in Tournament mode.");
+			return;
+		}
+
 		// NERVE - SMF - do a warmup when we restart maps
 		if ( strlen( arg2 ) )
 			Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );

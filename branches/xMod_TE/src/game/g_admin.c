@@ -1145,6 +1145,11 @@ Map restart
 void cmd_restart(gentity_t *ent) {
 	char *tag, *log;
 
+	if (g_doWarmup.integer && g_tournamentMode.integer == TOURNY_FULL) {
+		CP("print \"Please use !allready instead of map_restart in Tournament mode..");
+		return;
+	}
+
 	tag = sortTag(ent);	
 	AP(va("chat \"console: %s has ^3restarted ^7map.\n\"", tag));
 	trap_SendConsoleCommand(EXEC_APPEND, va("map_restart 0"));
