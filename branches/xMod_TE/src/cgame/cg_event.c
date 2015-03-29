@@ -95,8 +95,8 @@ static void CG_Obituary( entityState_t *ent ) {
 	char        *message2;
 	const char  *targetInfo;
 	const char  *attackerInfo;
-	char targetName[32];
-	char attackerName[32];
+	char targetName[MAX_NETNAME];
+	char attackerName[MAX_NETNAME];
 	clientInfo_t    *ci, *ca; // JPW NERVE ca = attacker
 
 	// Ridah, no obituaries in single player

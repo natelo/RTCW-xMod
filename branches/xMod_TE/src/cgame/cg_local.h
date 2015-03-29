@@ -2821,6 +2821,9 @@ void CG_PopinPrint(const char *str, int y, int charWidth, qboolean blink);
 #define AA_DEMORECORD   0x01
 #define AA_SCREENSHOT   0x02
 
+// Should be in bg_ but due 1.0 backwards compatibility it's here..
+#define MAX_NETNAME		36
+
 // Macros
 #define Pri( x ) CG_Printf( "[cgnotify]%s", CG_LocalizeServerCommand( x ) )
 #define CPri( x ) CG_CenterPrint( CG_LocalizeServerCommand( x ), SCREEN_HEIGHT - ( SCREEN_HEIGHT * 0.2 ), SMALLCHAR_WIDTH );
