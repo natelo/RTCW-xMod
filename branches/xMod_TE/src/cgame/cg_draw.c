@@ -1112,7 +1112,7 @@ static void CG_DrawTeamInfo( void ) {
 				chatAlpha = 1.0f;
 			}
 			else if (chatAlpha < 0.f) {
-				chatAlpha - 0.f;
+				chatAlpha = 0.f;
 			}
 
 			if (!Q_stricmp(cg_chatBackgroundColor.string, ""))

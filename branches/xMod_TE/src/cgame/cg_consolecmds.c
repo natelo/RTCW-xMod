@@ -748,7 +748,7 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand( "kill" );
 	trap_AddCommand( "say" );
 	trap_AddCommand( "say_team" );
-	trap_AddCommand( "say_limbo" );           // NERVE - SMF
+	trap_AddCommand( "say_limbo" );           // NERVE - SMF	
 	trap_AddCommand( "tell" );
 //	trap_AddCommand ("vsay");
 //	trap_AddCommand ("vsay_team");
@@ -800,6 +800,9 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand("thompson");
 	trap_AddCommand("sten");
 	trap_AddCommand("commands");
+	trap_AddCommand("say_admin");
+	trap_AddCommand("a");
+	trap_AddCommand("private");
 
 	// Tournament stuff
 	trap_AddCommand("speclock");
