@@ -874,7 +874,7 @@ static void CG_MapRestart( void ) {
 #endif
 
 	// OSPx - Fight Announcement 
-	if (cg.warmup == 0)
+	if (cg.warmup == 0 && cgs.gamestate == GS_WARMUP_COUNTDOWN)
 		// Poor man's solution...replace font one of this days as this is ridicoulus.	:C		
 		CG_AddAnnouncer("F IGH T !", cgs.media.countFightSound, 1.6f, 1200, 0.5f, 0.0f, 0.0f, ANNOUNCER_NORMAL);
 	// -OSPx
