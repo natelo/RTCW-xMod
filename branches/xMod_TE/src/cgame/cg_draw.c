@@ -988,7 +988,7 @@ void CG_gameStartCounter(void) {
 
 	// It is aligned under Respawn timer..
 	str = va("^nTime spent on this Map: ^7%s", CG_CalculateTimeIn());
-	CG_DrawStringExt(TOURINFO_RIGHT - (CG_DrawStrlen(str) * (SMALLCHAR_WIDTH - 4)) - 3, 470, str, colorWhite, qfalse, qtrue, SMALLCHAR_WIDTH - 4, SMALLCHAR_HEIGHT - 7, 0);
+	CG_DrawStringExt(TOURINFO_RIGHT - (CG_DrawStrlen(str) * (SMALLCHAR_WIDTH - 4)) - 3, 470, str, colorWhite, qfalse, qfalse, SMALLCHAR_WIDTH - 4, SMALLCHAR_HEIGHT - 7, 0);
 	return;
 }
 
