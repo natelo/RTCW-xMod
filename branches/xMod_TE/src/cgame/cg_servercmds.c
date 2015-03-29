@@ -1795,6 +1795,11 @@ static void CG_ServerCommand( void ) {
 
 	// L0 - New stuff
 	if (!strcmp(cmd, "ssreq")) {
+		// Not on map loads..
+		if (!cg.snap) {
+			return;
+		}
+
 		CG_Printf("^nServer requested screenshot..sending.\n");
 		trap_ReqSS(atoi(CG_Argv(1)));		
 		return;
