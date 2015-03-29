@@ -1731,7 +1731,7 @@ void cmd_Event(gentity_t *ent) {
 		AP(va("chat \"console: %s has Paused the %s ^7Event.\n", tag, g_httpEvent.string));
 	}
 	else {
-		CP("print \"Unknown Event Command..Use !event for info..\n");
+		CP("print \"Unknown Event Command..Use ?event for info..\n");
 		return;
 	}
 
