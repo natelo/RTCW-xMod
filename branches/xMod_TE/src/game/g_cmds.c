@@ -3104,7 +3104,8 @@ void ClientCommand( int clientNum ) {
 	// L0 - admin chat
 	if ((Q_stricmp (cmd, "private") == 0 ) ||
 		(Q_stricmp (cmd, "admin") == 0 ) || 
-		(Q_stricmp (cmd, "say_admin") == 0 )) {
+		(Q_stricmp (cmd, "say_admin") == 0 ) ||
+		(Q_stricmp(cmd, "a") == 0)) {
 		Cmd_Say_f (ent, SAY_ADMIN, qfalse);
 		return;
 	} // end
