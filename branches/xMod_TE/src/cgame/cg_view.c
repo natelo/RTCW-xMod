@@ -1023,6 +1023,11 @@ static int CG_CalcFov( void ) {
 		cg.zoomTime = 0;
 		cg.zoomval = 0;
 	}
+	else {
+		cg.zoomedVal = cg_fov.value;
+		cg.zoomedTime = cg.time;
+		cg.zoomedFOV = qfalse;
+	}
 
 	if ( cg.predictedPlayerState.pm_type == PM_INTERMISSION ) {
 		// if in intermission, use a fixed value
@@ -1778,6 +1783,17 @@ void CG_DrawSkyBoxPortal( void ) {
 			} else if ( zoomFov > 160 ) {
 				zoomFov = 160;
 			}
+// OSPx - zoomed FOV
+		} else if (cg.zoomedVal) {
+			zoomFov = cg.zoomedVal;   // (SA) use user scrolled amount
+
+			if (zoomFov < 1) {
+				zoomFov = 1;
+			}
+			else if (zoomFov > 140) {
+				zoomFov = 140;
+			}
+// ~OSPx
 		} else {
 			zoomFov = lastfov;
 		}
@@ -1792,8 +1808,7 @@ void CG_DrawSkyBoxPortal( void ) {
 			}
 			lastfov = fov_x;
 // OSPx - zommed FOV
-		}
-		else if (cg.zoomedFOV) {
+		} else if (cg.zoomedFOV) {
 			f = (cg.time - cg.zoomedTime) / (float)ZOOM_TIME;
 			if (f > 1.0) {
 				fov_x = cg.zoomedVal;
