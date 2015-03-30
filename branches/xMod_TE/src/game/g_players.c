@@ -175,6 +175,10 @@ void Cmd_Smoke_f( gentity_t *ent )
 	gclient_t *client = ent->client;
 	char message[64] = "Smoke grenade ";
 
+	if (client->ps.stats[STAT_PLAYER_CLASS] != PC_LT) {
+		return;
+	}
+
 	if (!g_smokeGrenades.integer)	
 	{
 		trap_SendServerCommand(ent-g_entities, va("print \"Smoke grenades are disabled on this server.\n\""));
@@ -190,17 +194,7 @@ void Cmd_Smoke_f( gentity_t *ent )
 	client->ps.selectedSmoke = !client->ps.selectedSmoke;
 	strcat(message, va("%s", (client->ps.selectedSmoke ? "^2enabled" : "^1disabled")));
 
-	trap_SendServerCommand(ent-g_entities, va("cp \"%s^7!\n\" 1", message));
-}
-
-// think function
-extern void G_ExplodeMissile(gentity_t *ent);	
-void weapon_smokeGrenade(gentity_t *ent)
-{
-	ent->s.eFlags |= EF_SMOKINGBLACK;		
-	ent->s.loopSound = G_SoundIndex("sound/world/steam.wav");
-	ent->nextthink = level.time + ((g_smokeGrenades.integer - 1) * 1000);	
-	ent->think = G_ExplodeMissile;	
+	trap_SendServerCommand(ent-g_entities, va("popin \"%s^7!\n\" 1", message));
 }
 
 /*

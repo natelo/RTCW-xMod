@@ -803,6 +803,7 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand("say_admin");
 	trap_AddCommand("a");
 	trap_AddCommand("private");
+	trap_AddCommand("smoke");
 
 	// Tournament stuff
 	trap_AddCommand("speclock");

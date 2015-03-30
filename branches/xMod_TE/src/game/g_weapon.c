@@ -1889,7 +1889,45 @@ void Bullet_Fire_Extended(gentity_t *source, gentity_t *attacker, vec3_t start, 
     } // L0 - end
 }
 
+/*
+==============
+L0 - Smoke "think" function
 
+ET port
+==============
+*/
+#define SMOKEBOMB_GROWTIME 1000
+#define SMOKEBOMB_SMOKETIME 15000
+#define SMOKEBOMB_POSTSMOKETIME 2000
+
+void weapon_smokeGrenade(gentity_t *ent)
+{
+	int lived = 0;
+
+	if (!ent->grenadeExplodeTime)
+		ent->grenadeExplodeTime = level.time;
+
+	lived = level.time - ent->grenadeExplodeTime;
+	ent->nextthink = level.time + FRAMETIME;
+	ent->s.loopSound = G_SoundIndex("sound/world/steam.wav");
+
+	if (lived < SMOKEBOMB_GROWTIME) {
+		// Just been thrown, increase radius
+		ent->s.effect1Time = 16 + lived * ((640.f - 16.f) / (float)SMOKEBOMB_GROWTIME);
+	}
+	else if (lived < SMOKEBOMB_SMOKETIME + SMOKEBOMB_GROWTIME) {
+		// Smoking
+		ent->s.effect1Time = 640;
+	}
+	else if (lived < SMOKEBOMB_SMOKETIME + SMOKEBOMB_GROWTIME + SMOKEBOMB_POSTSMOKETIME) {
+		// Dying out
+		ent->s.effect1Time = -1;
+	}
+	else {
+		// Poof and it's gone
+		G_FreeEntity(ent);
+	}
+}
 
 /*
 ======================================================================
