@@ -30,10 +30,14 @@ void AddScore( gentity_t *ent, int score ) {
 	}
 	// done.
 
-
 	ent->client->ps.persistant[PERS_SCORE] += score;
-	if (g_gametype.integer >= GT_TEAM) // JPW NERVE changed to >=
-		level.teamScores[ ent->client->ps.persistant[PERS_TEAM] ] += score;
+	if (g_gametype.integer >= GT_TEAM) {
+		// L0 - In DM we calculate kills rather than score
+		if (!g_deathMatch.integer) {
+			level.teamScores[ent->client->ps.persistant[PERS_TEAM]] += score;
+		}
+	}
+
 	CalculateRanks();
 }
 
@@ -649,7 +653,13 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 				else
 					CPx(self-g_entities, va("chat \"^3Last life: ^7Kills:^3%d ^7Hs:^3%d ^7Gibs: ^3%d ^7Acc:^3%2.2f ^7Killer: %s^3(%ihp)\n\"",
 					self->client->pers.lifeKills, self->client->pers.lifeHeadshots, self->client->pers.stats.gibs, acc, attacker->client->pers.netname, attacker->health));
-			} // End
+			} 
+			
+			// L0 - Update Scores in DeathMatch
+			if (g_deathMatch.integer) {
+				level.teamScores[attacker->client->ps.persistant[PERS_TEAM]] += 1;
+			}			
+			// End
 		}
 	} else {
 		AddScore( self, -1 );

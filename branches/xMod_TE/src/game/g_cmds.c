@@ -1,4 +1,5 @@
 #include "g_local.h"
+
 /*
 ==================
 DeathmatchScoreboardMessage
@@ -48,9 +49,9 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 		} else {
 			ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
 		}
-		Com_sprintf (entry, sizeof(entry),
+		Com_sprintf (entry, sizeof(entry), // L0 - Updated for DM...rest will sort itself out
 			" %i %i %i %i %i %i %i %i", level.sortedClients[i],
-			cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.enterTime)/60000,
+			(g_deathMatch.integer ? cl->pers.stats.kills : cl->ps.persistant[PERS_SCORE]), ping, (level.time - cl->pers.enterTime) / 60000,
 			scoreFlags, g_entities[level.sortedClients[i]].s.powerups, playerClass, respawnsLeft );
 		j = strlen(entry);
 		if (stringlength + j > 1024)
