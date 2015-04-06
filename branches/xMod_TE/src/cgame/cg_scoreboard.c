@@ -729,35 +729,19 @@ static int WM_TeamScoreboard( int x, int y, team_t team, float fade, int maxrows
 
 	tempx = x;
 
-	// draw player info headings
+	// draw player info headings	
+	CG_DrawSmallString(tempx, y, CG_TranslateString("Name"), fade);
+	tempx += INFO_PLAYER_WIDTH;
+
+	CG_DrawSmallString(tempx, y, CG_TranslateString("Class"), fade);
+	tempx += INFO_CLASS_WIDTH;
 
 	// L0 - Custom scoreboard (note: Account for new types if ever added..)
-	if (cgs.coustomGameType > CGT_NONE) {
-		CG_DrawSmallString(tempx, y, CG_TranslateString("Name"), fade);
-		tempx += INFO_PLAYER_WIDTH;
+	CG_DrawSmallString(tempx, y, ( cgs.coustomGameType > CGT_NONE ? CG_TranslateString("Kills") : CG_TranslateString("Score")), fade);
+	tempx += INFO_SCORE_WIDTH;
 
-		CG_DrawSmallString(tempx, y, CG_TranslateString("Class"), fade);
-		tempx += INFO_CLASS_WIDTH;
-
-		CG_DrawSmallString(tempx, y, CG_TranslateString("Kills"), fade);
-		tempx += INFO_SCORE_WIDTH;
-
-		CG_DrawSmallString(tempx, y, CG_TranslateString("Ping"), fade);
-		tempx += INFO_LATENCY_WIDTH;
-	}
-	else {
-		CG_DrawSmallString(tempx, y, CG_TranslateString("Name"), fade);
-		tempx += INFO_PLAYER_WIDTH;
-
-		CG_DrawSmallString(tempx, y, CG_TranslateString("Class"), fade);
-		tempx += INFO_CLASS_WIDTH;
-
-		CG_DrawSmallString(tempx, y, CG_TranslateString("Score"), fade);
-		tempx += INFO_SCORE_WIDTH;
-
-		CG_DrawSmallString(tempx, y, CG_TranslateString("Ping"), fade);
-		tempx += INFO_LATENCY_WIDTH;
-	}
+	CG_DrawSmallString(tempx, y, CG_TranslateString("Ping"), fade);
+	tempx += INFO_LATENCY_WIDTH;
 
 	y += SMALLCHAR_HEIGHT;
 
