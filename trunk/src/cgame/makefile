@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -pipe -fsigned-char -DNDEBUG -O6 -mcpu=pentiumpro -march=pentium \
+CFLAGS = -pipe -fsigned-char -DNDEBUG -O6 -mcpu=pentiumpro -march=pentium -m32 \
 -fomit-frame-pointer -ffast-math -malign-loops=2 -malign-jumps=2 \
 -malign-functions=2 -fno-strict-aliasing -fstrength-reduce -fPIC -DCGAMEDLL
 
